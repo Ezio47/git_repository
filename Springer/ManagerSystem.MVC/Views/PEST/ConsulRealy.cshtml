@@ -1,0 +1,166 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+}
+@model ManagerSystemModel.PEST_CONSULTATION_Model
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'center'" title="" class="LayoutCenterBG">
+        <div class="divTable" id="divTable">
+            <input id="HidTable" name="HidTable" type="hidden" value="@ViewBag.HidTable" />
+            <input id="HidID" name="HidID" type="hidden" value="@Model.PEST_CONSULTATIONID" />
+            <table id="TationTable" cellpadding="0" cellspacing="0" style="height:280px">
+                <thead>
+                    <tr><th colspan="4">会诊信息</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="width:20%;">标题: </td>
+                        <td class="left" style="width:40%;">@Model.CONSULTITLE</td>
+                        <td colspan="2" rowspan="4">
+                            <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+                                <div id="divImg" data-options="region:'center'" title="" class="LayoutCenterBG">
+
+                                </div>
+                                <div data-options="region:'south'" title="" style=" height:35px; border: none; overflow:hidden; text-align:center;">
+                                    <div class="divOP">
+                                        <input type="button" value="上一张" onclick="ManagerPhoto('Up')" id="btnUp" style="display:none;" class="btnLastsealCss" />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                        <input type="button" value="下一张" onclick="ManagerPhoto('Down')" id="btnDown" style="display:none;" class="btnNextsealCss" />
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>内容:</td>
+                        <td class="left">@Model.CONSULCONTENT</td>
+                    </tr>
+                    <tr>
+                        <td>提问人手机号码:</td>
+                        <td>@Model.CONSULPHONE</td>
+                    </tr>
+                    <tr>
+                        <td>提问时间:</td>
+                        <td>@Model.CONSULTIME</td>
+                    </tr>
+                </tbody>
+            </table>
+            <br />
+            <table id="RelayTable" cellpadding="0" cellspacing="0">
+                <thead>
+                    <tr><th colspan="4">专家回复列表</th></tr>
+                    <tr><th style="width:5%;">序号</th><th style="width:10%;">回复人</th><th style="width:20%;">回复时间</th><th style="width:65%;">回复内容</th></tr>
+                </thead>
+                <tbody id="replyContent"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div data-options="region:'south'" title="" style=" height:35px; border: none; overflow:hidden; text-align:center;">
+        <div class="divOP" style="text-align:left;">
+            内容：<input id="tbxREPLYCONTENT" type="text" value="" style="width:80%" />
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="button" value="回 复" onclick="ManagerREPLY('Add')" class="btnAddCss" />
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    loadImg();
+    query();
+    function loadImg() {
+        $.ajax({
+            url: '/PEST/GetConsulPhoto',
+            data: { PHOTOTYPE: $('#HidTable').val(), PRID: $('#HidID').val() },
+            type: 'post',
+            dataType: 'json',
+            success: function (data) {
+                if (data.Success) {
+                    $('#divImg').html('');
+                    $('#divImg').html(data.Msg);
+                    if (data.Url > 1) {
+                        $('#btnUp').css('display', '');
+                        $('#btnDown').css('display', '');
+                    }
+                }
+                else {
+                    $('#divImg').html('');
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('系统异常!', { icon: 5 });
+            }
+        });
+    }
+
+    function query() {
+        $.ajax({
+            url: '/PEST/GetConsulRealyList',
+            data: { PEST_CONSULTATIONID: $('#HidID').val() },
+            type: 'post',
+            dataType: 'json',
+            success: function (data) {
+                if (data.Success) {
+                    $('#replyContent').html('');
+                    $('#replyContent').html(data.Msg);
+                }
+                else {
+                    $('#replyContent').html('');
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('系统异常!', { icon: 5 });
+            }
+        });
+    }
+
+    function ManagerPhoto(Method) {
+        $.ajax({
+            url: '/PEST/ConsulPhotoManager',
+            data: {
+                PHOTOTYPE: $('#HidTable').val(),
+                PRID: $('#HidID').val(),
+                PEST_PHOTOID: $('#HidPHOTOID').val(),
+                Method: Method
+            },
+            type: 'post',
+            dataType: 'json',
+            success: function (data) {
+                if (data.Success) {
+                    $('#divImg').html('');
+                    $('#divImg').html(data.Msg);
+                }
+                else {
+                    $('#divImg').html('');
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('系统异常!', { icon: 5 });
+            }
+        });
+    }
+
+    function ManagerREPLY(Method) {
+        $.ajax({
+            url: '/PEST/ConsulRepalyManager',
+            data: {
+                PEST_CONSULTATIONID: $('#HidID').val(),
+                REPLYCONTENT: $('#tbxREPLYCONTENT').val(),
+                Method: Method
+            },
+            type: 'post',
+            dataType: 'json',
+            success: function (data) {
+                if (data.Success) {
+                    query();
+                }
+                else {
+                    layer.msg('系统异常!', { icon: 5 });
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('系统异常!', { icon: 5 });
+            }
+        });
+    }
+</script>

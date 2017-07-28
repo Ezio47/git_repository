@@ -1,0 +1,26 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+        <div class="divOP">
+            <div class="home ">
+                <input type="button" value="导出" onclick="Export()" id="btnExport" class="btnOutputCss">
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center'" title="" class="LayoutCenterBG">
+        <input id="tbxJCFID" name="tbxJCFID" type="hidden" value="@ViewBag.JCFID" />
+        <div class="divTable" id="divTable">
+            @Html.Raw(@ViewBag.SeeData)
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function Export() {
+        var url = '/DamageAssess/FireLostExportExcel?JCFID=' + $('#tbxJCFID').val();
+        window.location = url;
+    }
+</script>

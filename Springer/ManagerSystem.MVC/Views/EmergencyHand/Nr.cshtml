@@ -1,0 +1,198 @@
+﻿@{
+    //ViewBag.Title =  "首页";
+    //Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+    Layout = null;
+}
+@model IEnumerable<ManagerSystem.MVC.Models.EHCurFireMode>
+
+<script src="~/Scripts/jquery-easyui-1.4/jquery.min.js"></script>
+<script src="~/Scripts/skyline/3dMapTest.js"></script>
+<link href="~/Content/themes/easyui/easyui.css" rel="stylesheet" />
+<link href="~/Content/themes/easyui/color.css" rel="stylesheet" />
+<link href="~/Content/themes/easyui/icon.css" rel="stylesheet" />
+<link href="~/Content/themes/easyui/Default.css" rel="stylesheet" />
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("input[name=typeRadio]").click(function () {
+            if ($("input[name=typeRadio]:checked").val() == 1) {
+                $('#jdtr').show();
+                $('#wdtr').show();
+                $('#dwtr').show();
+                $('#addresstr').hide();
+                $('#mapstr').hide();
+
+                $("#jd").attr("type", "hidden");
+                $("#wd").attr("type", "hidden");
+                $("#jd_d").attr("type", "text");
+                $("#jd_f").attr("type", "text");
+                $("#jd_m").attr("type", "text");
+                $("#wd_d").attr("type", "text");
+                $("#wd_f").attr("type", "text");
+                $("#wd_m").attr("type", "text");
+                $("#fontDiv1").css("visibility", "");
+                $("#fontDiv2").css("visibility", "");
+                $("#fontDiv3").css("visibility", "");
+                $("#fontDiv4").css("visibility", "");
+                $("#fontDiv5").css("visibility", "");
+                $("#fontDiv6").css("visibility", "");
+                var jd = jsw2tojsw1($("#jd").val());
+                var wd = jsw2tojsw1($("#wd").val());
+                $("#jd_d").val(jd.d);
+                $("#jd_f").val(jd.f);
+                $("#jd_m").val(jd.m.toFixed(4));
+                $("#wd_d").val(wd.d);
+                $("#wd_f").val(wd.f);
+                $("#wd_m").val(wd.m.toFixed(4));
+                //DELcreateImages();
+            }
+            else if ($("input[name=typeRadio]:checked").val() == 2) {
+                $('#addresstr').show();
+                $('#mapstr').hide();
+                $('#jdtr').hide();
+                $('#wdtr').hide();
+                $('#dwtr').hide();
+                //DELcreateImages();
+            }
+            else if ($("input[name=typeRadio]:checked").val() == 3) {
+                $('#mapstr').show();
+                $('#addresstr').hide();
+                $('#jdtr').hide();
+                $('#wdtr').hide();
+                $('#dwtr').hide();
+                createImagesHUO('location.png')
+            }
+            else {
+                //DELcreateImages();
+                $('#jdtr').show();
+                $('#wdtr').show();
+                $('#dwtr').show();
+                $('#addresstr').hide();
+                $('#mapstr').hide();
+                $("#jd").attr("type", "text");
+                $("#wd").attr("type", "text");
+                $("#jd_d").attr("type", "hidden");
+                $("#jd_f").attr("type", "hidden");
+                $("#jd_m").attr("type", "hidden");
+                $("#wd_d").attr("type", "hidden");
+                $("#wd_f").attr("type", "hidden");
+                $("#wd_m").attr("type", "hidden");
+                $("#fontDiv1").css("visibility", "hidden");
+                $("#fontDiv2").css("visibility", "hidden");
+                $("#fontDiv3").css("visibility", "hidden");
+                $("#fontDiv4").css("visibility", "hidden");
+                $("#fontDiv5").css("visibility", "hidden");
+                $("#fontDiv6").css("visibility", "hidden");
+                var obj = new Object();
+                obj.d = $("#jd_d").val();
+                obj.f = $("#jd_f").val();
+                obj.m = $("#jd_m").val();
+                jd = jsw1tojsw2(obj);
+                $("#jd").val(jd.toFixed(8));
+                obj.d = $("#wd_d").val();
+                obj.f = $("#wd_f").val();
+                obj.m = $("#wd_m").val();
+                wd = jsw1tojsw2(obj);
+                $("#wd").val(wd.toFixed(8));
+            }
+
+        });
+    });
+
+    function AddressPostion() {
+        var address = $('#addressid').val();
+        if ($.trim(address) == "") {
+            alert("地址不可为空");
+            $('#addressid').focus();
+            return false;
+        }
+        else {
+            $.ajax({
+                type: "Post",
+                url: "/MapCommon/GetLonLatByAddress",
+                data: { address: address },
+                dataType: "json",
+                success: function (obj) {
+                    alert(obj);
+                    if (obj != null) {
+                        if (obj == "0") {
+                            alert("定位失败");
+                        }
+                        else {
+                            var arr = obj.split(',');
+                            if (arr.length > 0) {
+                                delRealLocTemp();
+                                movetoLoc(arr[0], arr[1]);
+                            }
+                        }
+                    }
+                    else {
+                        alert("定位失败");
+                    }
+                }
+            });
+        }
+    }
+</script>
+
+
+<html>
+<body>
+    <div>
+        <div style="padding-left:3px;padding-top:3px">
+            <table style="width:100%;border:1px solid #03b046; border-collapse:collapse;">
+                <tr style="border:1px solid #03b046">
+                    <td style="border:1px solid #03b046" colspan="2">
+                        <input type="radio" value="1" name="typeRadio" id="dfmid" checked /><label for="dfmid">度分秒</label><input type="radio" value="0" name="typeRadio" id="sjzid" /><label for="sjzid">十进制</label><input type="radio" value="3" name="typeRadio" id="mapLoc" /><label for="mapLoc">地图定位</label><input type="radio" value="2" name="typeRadio" id="addressLoc" /><label for="addressLoc">地址定位</label>
+                    </td>
+                </tr>
+                <tr id="jdtr" style="border:1px solid #03b046">
+                    <td style="border:1px solid #03b046">经度： </td>
+                    <td style="border:1px solid #03b046">
+                        <input id="jd" class="easyui-numberbox" type="hidden" value="0" data-options="required:true" style="width:100px" />
+                        <input id="jd_d" class="easyui-numberbox" type="text" value="0" data-options="required:true" style="width:30px" /><font id="fontDiv1">度</font>
+                        <input id="jd_f" class="easyui-numberbox" type="text" value="0" data-options="required:true" style="width:30px" /><font id="fontDiv2">分</font>
+                        <input id="jd_m" class="easyui-numberbox" type="text" value="0" data-options="required:true" style="width:60px" /><font id="fontDiv6">秒</font>
+                    </td>
+                </tr>
+                <tr id="wdtr" style="border:1px solid #03b046">
+                    <td style="border:1px solid #03b046">纬度： </td>
+                    <td style="border:1px solid #03b046">
+                        <input id="wd" class="easyui-numberbox" type="hidden" value="0" data-options="required:true" style="width:100px" />
+                        <input id="wd_d" class="easyui-numberbox" type="text" value="0" data-options="required:true" style="width:30px" /><font id="fontDiv3">度</font>
+                        <input id="wd_f" class="easyui-numberbox" type="text" value="0" data-options="required:true" style="width:30px" /><font id="fontDiv4">分</font>
+                        <input id="wd_m" class="easyui-numberbox" type="text" value="0" data-options="required:true" style="width:60px" /><font id="fontDiv5">秒</font>
+                    </td>
+                </tr>
+                <tr id="dwtr" style="border:1px solid #03b046">
+                    <td style="border:1px solid #03b046;text-align:center" colspan="2">
+                        <input type="button" onclick="dingwei()" value="定位" style="background-color:#ff9400; " />
+                    </td>
+                </tr>
+                <tr id="mapstr" style="display: none">
+                    <td>
+                        经度：
+                        <input type="text" id="dwjd" value="" style="width:160px;" readonly /><br>
+                        纬度：
+                        <input type="text" id="dwwd" value="" style="width:160px;" readonly /><br>
+                        高程：
+                        <input type="text" id="dwgc" value="" style="width:90px;" readonly />
+                        @*<input type="button" value="定位" onclick="createImagesHUO('location.png')" />*@
+                        <input type="button" value="清空" style="background-color:#A6A600;" onclick="Cancel_createImages1()" />
+                    </td>
+                </tr>
+                <tr id="addresstr" style="display:none">
+                    <td>
+                        地址
+                        <input type="text" id="addressid" value="" style="width:200px;" />
+                    </td>
+                    <td>
+                        <input type="button" value="定位" style="background-color:#A6A600;" onclick="AddressPostion()" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <object id="SGWorld" classid="CLSID:3a4f91b1-65a8-11d5-85c1-0001023952c1" style="visibility:hidden;height:0 "></object>
+</body>
+</html>

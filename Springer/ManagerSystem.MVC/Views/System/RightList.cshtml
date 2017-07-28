@@ -1,0 +1,178 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+}
+@section Header{
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <ul>
+                        <li class="homeUL"><a href="/System/RightList">权限管理</a></li>
+                        @Html.Raw(@ViewBag.navList)
+                    </ul>
+                </div>
+            </div>
+
+            <div data-options="region:'center'" title="" style=" border: none;">
+                <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+                    <div data-options="region:'center'" title="" style=" border: none; ">
+                        <div class="divTable" id="tableList">
+
+                        </div>
+                    </div>
+
+                    <div data-options="region:'south'" title="" style=" height:35px; border: none; overflow:hidden; text-align:center;">
+                        <div class="divOP">
+                            <input id="tbxSubRIGHTID" type="hidden" value="" style="width:80px;" />
+                            编码：<input id="tbxRIGHTID" type="text" value="" style="width:100px;" />
+                            名称：<input id="tbxRIGHTNAME" type="text" value="" style="width:100px;" />
+                            标识符：<input id="tbxSYSFLAG" type="text" value="" style="width: 100px;" />
+                            排序号：<input id="tbxORDERBY" type="text" value="" style="width:60px;" />
+                            <input type="button" value="添 加" onclick="Manager('Add')" id="btnAdd" class="btnAddCss" />&nbsp;&nbsp;&nbsp;
+                            <input type="button" value="修 改" onclick="Manager('Mdy')" id="btnMdy" class="btnMdyCss" />&nbsp;&nbsp;&nbsp;
+                            <input type="button" value="删 除" onclick="Manager('Del')" id="btnDel" class="btnDelCss" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div data-options="region:'west'" title="" style="width:220px; border: none; ">
+                <div id="tt" style="overflow: hidden;" class="easyui-tree">
+
+                </div>
+            </div>
+        </div>
+            </div>
+        </div>
+
+<script type="text/javascript">
+    function selectall(v, c) {
+        var code_Values = document.getElementsByName("chk");
+        for (i = 0; i < code_Values.length; i++) {
+            if (code_Values[i].type == "checkbox") {
+                code_Values[i].checked = c;
+            }
+        }
+    }
+
+    //选中改变颜色
+    function setColor(obj) {
+        $(obj).css("background-color", "#FFDAB9");
+        $("tr").not($(obj)).css("background-color", "");
+    }
+
+    bindTree('', '');
+    function bindTree(AddressID, typeID) {
+        $('#tt').tree({
+            url: '/System/RightTreeGet',
+            checked: false,
+            animate: true,
+            lines: true,
+            cache: false,
+            checkbox: false,
+            onClick: function (node) {
+                clear();
+                $('#tableList').html('');
+                document.getElementById("tbxSubRIGHTID").value = node.id;
+                queryValue();
+            }
+        });
+    }
+
+    queryValue();
+    function clear() {
+        document.getElementById("tbxRIGHTID").value = "";
+        document.getElementById("tbxRIGHTNAME").value = "";
+        document.getElementById("tbxSYSFLAG").value = "";
+        document.getElementById("tbxORDERBY").value = "";
+    }
+    function queryValue() {
+        var rightID = document.getElementById("tbxSubRIGHTID").value;
+        if (rightID == '')
+            rightID = '0';
+        $.ajax({
+            url: '/System/getRightListJson',
+            cache: false,
+            data: { rightID: rightID },
+            type: 'post',
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#tableList').html(ar.Msg);
+                }
+                else {
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('系统错误!', { icon: 5 });
+            }
+        });
+    }
+</script>
+
+<script type="text/javascript">
+    function showValue(ID) {
+        $.ajax({
+            url: '/System/getRightJson',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: { ID: ID },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.RIGHTID != null) {
+                    document.getElementById("tbxRIGHTID").value = ar.RIGHTID;
+                    document.getElementById("tbxRIGHTNAME").value = ar.RIGHTNAME;
+                    document.getElementById("tbxSYSFLAG").value = ar.SYSFLAG;
+                    document.getElementById("tbxORDERBY").value = ar.ORDERBY;
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('系统异常!', { icon: 5 });
+            }
+        });
+    }
+
+    function Manager(Method) {
+        var id = document.getElementsByName('tbxRightID');
+        var RightIDList = new Array();
+        for (var i = 0; i < id.length; i++) {
+            if (id[i].checked)
+                RightIDList.push(id[i].value);
+        }
+        if (Method == "Del") {
+            if (confirm('确实要删除该内容吗?') == false)
+                return false;
+        }
+        $.ajax({
+            url: '/System/RightManager',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: {
+                RIGHTID: document.getElementById("tbxRIGHTID").value,
+                RIGHTNAME: document.getElementById("tbxRIGHTNAME").value,
+                SYSFLAG: document.getElementById("tbxSYSFLAG").value,
+                ORDERBY: document.getElementById("tbxORDERBY").value,
+                Method: Method,
+                returnUrl: ' @Html.Raw(@ViewBag.T_UrlReferrer)'
+            },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    layer.msg(ar.Msg, { icon: 6 });
+                    queryValue();
+                    //  window.location.assign(ar.Url);
+                }
+                else {
+                    layer.msg(ar.Msg, { icon: 5 });
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('保存异常!', { icon: 5 });
+            }
+        });
+    }
+</script>

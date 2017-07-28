@@ -1,0 +1,352 @@
+﻿@{
+    ViewBag.Title = "浮动窗口";
+    Layout = null;
+}
+
+@*@Scripts.Render("~/bundles/jquery")
+    <script src="@Url.Content("~/Scripts/jquery-easyui-1.4/jquery.easyui.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/jquery-easyui-1.4/locale/easyui-lang-zh_CN.js")"></script>
+    <script src="@Url.Content("~/Scripts/jquery-easyui-1.4/validateHelper.js")"></script>
+
+    <link href="@Url.Content("~/Content/kefu.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/themes/easyui/easyui.css")" rel="stylesheet" />
+    <link href="@Url.Content("~/Content/themes/easyui/color.css")" rel="stylesheet" />
+    <link href="@Url.Content("~/Content/themes/easyui/icon.css")" rel="stylesheet" />*@
+
+<!--kefu-->
+<div id="floatTools" class="rides-cs" style="height: 100%;z-index:100">
+    <div class="floatL">
+        <a id="aFloatTools_Show" class="btnCtn" title="关闭采集检索条件" style="top: 20px; display: block" href="javascript:void(0);">收缩</a>
+        <a id="aFloatTools_Hide" class="btnOpen" title="展开采集检索条件" style="top: 20px; display: none" href="javascript:void(0);">展开</a>
+
+    </div>
+    <div id="divFloatToolsView" class="floatR" style="display: none; height: 100%; width:255px;">
+        <div style="margin:5px 0px 0px 5px ">
+
+            <input type="text" id="txtphonehname" style="width:130px" placeholder="手机号码/姓名" />
+            <button type="button" class="btn btn-info no-border btn-sm" onclick="searchUser()">
+                <i class="icon-search bigger-110 green"></i>
+                查 询
+            </button>
+            <br />
+            <br />
+            <table style="background-color:#f3f3f3;width:100%">
+                <tr>
+                    <td>
+                        <div style="height:360px" id="tt" class="easyui-tree" checkbox="true"></div>
+                    </td>
+                </tr>
+            </table>
+            <div style="margin-top:10px">
+                <a href="#" class="btn btn-sm btn-primary no-border" id="btnLoca">
+                    <i class="icon-filter"></i>
+                    实时定位
+                </a>
+                <a href="#" class="btn btn-sm btn-primary no-border" id="btnCon">
+                    <i class="icon-facetime-video"></i>开始监控
+                </a>
+                <a href="#" class="btn btn-sm btn-primary no-border" id="btnConOver" style="display:none">
+                    <i class="icon-facetime-video"></i>结束监控
+                </a>
+                <a href="#" class="btn  btn-sm btn-primary no-border" id="btnHis">
+                    <i class="icon-globe"></i>历史轨迹
+                </a>
+                <a href="#" class="btn  btn-sm btn-primary no-border" id="btnDm">
+                    <i class="icon-comment-alt"></i>实时点名
+                </a>
+                <a href="#" class="btn  btn-sm btn-primary no-border" id="btnDl">
+                    <i class="icon-fire"></i>
+                    电量查询
+                </a>
+                @*
+                    <a href="#" class="easyui-linkbutton" id="btnLoca" iconcls="icon-save">实时定位</a>
+                    <a href="#" class="easyui-linkbutton" id="btnCon" iconcls="icon-save">开始监控</a>
+                    <a href="#" class="easyui-linkbutton" id="btnConOver" iconcls="icon-save" style="display:none">结束监控</a>
+                    <a href="#" class="easyui-linkbutton" id="btnHis" iconcls="icon-save">历史轨迹</a>
+                    <a href="#" class="easyui-linkbutton" id="btnDm" iconcls="icon-save">实时点名</a>
+                    <a href="#" class="easyui-linkbutton" id="btnDl" iconcls="icon-save">电量查询</a>*@
+
+            </div>
+            @*<iframe src="@Url.Action("Tree", "Test")" style="height:100%"></iframe>*@
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $("#aFloatTools_Show").click(function () {
+        $('#divFloatToolsView').animate({ width: 'show', opacity: 'show' }, 100, function () { $('#divFloatToolsView').show(); });
+        $('#aFloatTools_Show').hide();
+        $('#aFloatTools_Hide').show();
+    });
+    $("#aFloatTools_Hide").click(function () {
+        $('#divFloatToolsView').animate({ width: 'hide', opacity: 'hide' }, 100, function () { $('#divFloatToolsView').hide(); });
+        $('#aFloatTools_Show').show();
+        $('#aFloatTools_Hide').hide();
+    });
+
+    function show() {
+        $('#divFloatToolsView').animate({ width: 'show', opacity: 'show' }, 100, function () { $('#divFloatToolsView').show(); });
+        $('#aFloatTools_Show').hide();
+        $('#aFloatTools_Hide').show();
+    }
+
+    //定时刷新tree
+    var int = self.setInterval("treefresh()", 50000);
+    function treefresh() {
+        $('#tt').tree({
+            url: '/Test/TreeGet',
+            checked: false,
+            animate: true,
+            lines: true,
+            cache: false,
+        });
+    }
+
+
+    $(function () {
+        show();
+        $('#tt').tree({
+            url: '/Test/TreeGet',
+            checked: false,
+            animate: true,
+            lines: true,
+            cache: false,
+            //onClick: function (node) {
+            //    $('#grid').datagrid({ url: '/SystemMan/TreeGet' })
+            //}
+        });
+
+        //实时定位
+        $('#btnLoca').linkbutton({
+            onClick: function () {
+                var nodes = $('#tt').tree('getChecked');
+                if (nodes.length > 0) {
+                    var arr = [];
+                    for (var i = 0; i < nodes.length; i++) {
+                        if (nodes[i].id.length > 0) {
+                            arr.push(nodes[i].id);
+                        }
+                    }
+                    hisi = 100000000;//设置历史轨迹回放索引最大值，解决轨迹回放过程中实时定位时继续轨迹回放的功能
+                    getLonLat(arr.toString());
+                }
+                else {
+                    // $.messager.alert("提示", "未选择", "error");
+                    layer.alert('未选择护林员，请选择！', { icon: 5 });
+                }
+            }
+        });
+        //开始实时监控
+        $('#btnCon').linkbutton({
+            onClick: function () {
+                var nodes = $('#tt').tree('getChecked');
+                if (nodes.length > 0) {
+                    var arr = [];
+                    for (var i = 0; i < nodes.length; i++) {
+                        if (nodes[i].id.length > 0) {
+                            arr.push(nodes[i].id);
+                        }
+                    }
+                    if (arr.length > 1) {
+                        layer.alert('请选择1个护林员！', { icon: 2 });
+                        return false;
+                    }
+                    RealLocation('', arr.toString());
+                    btnunenable();
+
+                }
+                else {
+                    // $.messager.alert("提示", "未选择", "error");
+                    layer.alert('未选择护林员，请选择！', { icon: 5 });
+
+                }
+            }
+        });
+        //实时监控结束按钮
+        $('#btnConOver').linkbutton({
+            onClick: function () {
+                clearInterval(intervalMethod);
+                $('#btnConOver').hide();
+                $('#btnCon').show();
+                btnenable();
+            }
+        })
+
+        //历史轨迹
+        $('#btnHis').linkbutton({
+            onClick: function () {
+                var nodes = $('#tt').tree('getChecked');
+                if (nodes.length > 0) {
+                    var arr = [];
+                    for (var i = 0; i < nodes.length; i++) {
+                        if (nodes[i].id.length > 0) {
+                            arr.push(nodes[i].id);
+                        }
+                    }
+                    if (arr.length > 1) {
+                        layer.alert('请选择1个护林员！', { icon: 2 });
+                        return false;
+                    }
+                    showhisdiv(arr.toString());
+
+
+                }
+                else {
+                    // $.messager.alert("提示", "未选择", "error");
+                    layer.alert('未选择护林员，请选择！', { icon: 5 });
+                }
+            }
+        });
+
+    })
+
+    //不可用状态
+    function btnunenable() {
+        $('#btnLoca').removeClass('btn btn-sm btn-primary no-border').addClass('btn disabled btn-primary');
+        $('#btnHis').removeClass('btn btn-sm btn-primary no-border').addClass('btn disabled btn-primary');
+        $('#btnDm').removeClass('btn btn-sm btn-primary no-border').addClass('btn disabled btn-primary');
+        $('#btnDl').removeClass('btn btn-sm btn-primary no-border').addClass('btn disabled btn-primary');
+    }
+
+    //可用状态
+    function btnenable() {
+        $('#btnLoca').removeClass('btn disabled btn-primary').addClass('btn btn-sm btn-primary no-border');
+        $('#btnHis').removeClass('btn disabled btn-primary').addClass('btn btn-sm btn-primary no-border');
+        $('#btnDm').removeClass('btn disabled btn-primary').addClass('btn btn-sm btn-primary no-border');
+        $('#btnDl').removeClass('btn disabled btn-primary').addClass('btn btn-sm btn-primary no-border');
+    }
+
+    //实时点名
+    $('#btnDm').linkbutton({
+        onClick: function () {
+            GetDmFun();//点名管理
+        }
+
+    });
+
+    //点名管理
+    function GetDmFun() {
+        $(".bottomDiv").css("display", "none");
+        var nodes = $('#tt').tree('getChecked');
+        if (nodes.length > 0) {
+            var arr = [];
+            for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].id.length > 0) {
+                    arr.push(nodes[i].id);
+                }
+            }
+            $('#dmstatus').show();
+            showRealCallRecord(arr.toString());
+
+        }
+        else {
+            // $.messager.alert("提示", "未选择", "error");
+            layer.alert('未选择护林员，请选择！', { icon: 5 });
+        }
+    }
+
+
+
+    //电量查询
+    $('#btnDl').linkbutton({
+        onClick: function () {
+            GetElecFun();//电量管理
+        }
+
+    });
+
+    //电量管理
+    function GetElecFun()
+    {
+        $(".bottomDiv").css("display", "none");
+        var nodes = $('#tt').tree('getChecked');
+        if (nodes.length > 0) {
+            var arr = [];
+            for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].id.length > 0) {
+                    arr.push(nodes[i].id);
+                }
+            }
+            $('#userelecid').val(arr.toString());
+            $('#txtElecStartTime').val(getLocalTime(0))
+            $('#txtElecEndTime').val(getLocalTime(0))
+            $('#dl').show();
+            searchElecData();
+            DlCollapseStatus = 0;
+
+        }
+        else {
+            // $.messager.alert("提示", "未选择", "error");
+            layer.alert('未选择护林员，请选择！', { icon: 5 });
+        }
+    }
+
+    //检索护林员
+    function searchUser() {
+        var phonehname = $('#txtphonehname').val();
+        $('#tt').tree({ url: '/Test/TreeGet?phonehname=' + phonehname });
+    }
+
+    //显示实时点名记录(在线状态)
+    function showRealCallRecord(uid) {
+        //$("#divdm").slideDown();
+        $('#dmstatus').css("height", '280px');
+        DmCollapseStatus = 0;
+        $.ajax({
+            type: "Post",
+            url: "/RealSupervision/GetRealCallAjax",
+            data: { uid: uid },
+            dataType: "json",
+            success: function (obj) {
+                if (obj != null && obj.Success) {
+                    $('#divdm').empty();
+                    $('#divdm').html(obj.Msg);
+                    $('#DmTitlle').html("实时点名" + obj.Url);
+                }
+                //else {
+                //    layer.alert('没有实时轨迹数据！', { icon: 5 });
+                //}
+            }
+        });
+    }
+
+
+    //显示电量查询
+    function searchElecData() {
+        var starttime = $('#txtElecStartTime').val();
+        var endtime = $('#txtElecEndTime').val();
+        var uid = $('#userelecid').val();
+        if ($.trim(starttime) == "" || $.trim(endtime) == "") {
+            layer.alert('时间不能为空！', { icon: 2 });
+            return false;
+        }
+        var bo = checkEndTime(starttime, endtime);
+        if (bo == false) {
+            layer.alert('开始时间不能大于结束时间！', { icon: 2 });
+            return false;
+        }
+        if ($.trim(uid) == "") {
+            layer.alert('护林员ID传参失败！', { icon: 2 });
+            return false;
+        }
+        //$("#divdl").slideDown();
+        $('#dl').css("height", '280px');
+        DLCollapseStatus = 0;
+        $.ajax({
+            type: "Post",
+            url: "/RealSupervision/GetElectricAjax",
+            data: { uid: $('#userelecid').val(), startTime: $('#txtElecStartTime').val(), endTime: $('#txtElecEndTime').val() },
+            dataType: "json",
+            success: function (obj) {
+                if (obj != null && obj.Success) {
+                    $('#divdl').empty();
+                    $('#divdl').html(obj.Msg);
+                }
+                //else {
+                //    layer.alert('没有实时轨迹数据！', { icon: 5 });
+                //}
+            }
+        });
+    }
+</script>

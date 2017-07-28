@@ -1,0 +1,58 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+}
+@section Header{
+    <script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+}
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        日期：<input id="tbxYEAR" type="text" class="Wdate" style="width:100px" value="@ViewBag.YEAR" onclick="WdatePicker({ dateFmt: 'yyyy'})" />
+                        <input type="button" value="查询" onclick="Query()" class="btnSearchCss" />
+                        <input type="button" value="导出" onclick="Export()" id="btnExport" class="btnOutputCss">
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <div id="divTable" class="divTable">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    Query();
+    function Query() {
+        $.ajax({
+            type: 'get',
+            url: '/FIRERECORD/AREAREPORTQuery',
+            dataType: 'json',
+            data: { YEAR: $('#tbxYEAR').val() },
+            success: function (data, ioArgs) {
+                if (data.Success) {
+                    $('#divTable').html("");
+                    $('#divTable').html(data.Msg);
+                }
+                else {
+                    layer.msg(data.Msg, { icon: 5 });
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("查询异常!", { icon: 5 });
+            }
+        });
+    }
+    //导出Excel
+    function Export() {
+        var YEAR = $('#tbxYEAR').val();
+        var url = '/FIRERECORD/AREAREPORTExportExcel?YEAR=' + YEAR;
+        window.location = url;
+    }
+</script>

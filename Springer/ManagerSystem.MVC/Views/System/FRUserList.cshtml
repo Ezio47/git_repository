@@ -1,0 +1,246 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+}
+@section Header{
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                   <ul>
+                        <li class="homeUL">
+                            单位：<select id="tbxBYORGNO">@Html.Raw(@ViewBag.vdOrg)</select>
+                            姓名/电话：<input id="tbxHNAME" type="text" value="@ViewBag.HNAME" style="width:80px;" />
+                            状态：<select id="tbxISENABLE">@Html.Raw(@ViewBag.vdISENABLE)</select>
+                            <input type="button" value="查询" onclick="query(1)" class="btnSearchCss" />
+                            <input type="hidden" id="PRID" value="">
+                            <input type="hidden" id="PHOTOTYPE" value="">
+                            <input type="button" value="添加" onclick="Add()" class="btnAddCss" />
+                            <input type="button" value="启用" onclick="Mdy1('0', 'Enable')" class="btnEnableCss" />
+                            <input type="button" value="禁用" onclick="Mdy1('1', 'UnEnable')" class="btnUnEnableCss" />
+                        </li>
+                        <li class="active">
+
+                            @using (@Html.BeginForm("FRUserList", "System", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                            {
+                                <input name="file" style="width:130px;" type="file" id="file" class="btn btn-info btn-sm" />
+                                <button type="submit" name="Upload" value="导入" class="btnInputCss">导 入</button>
+                            }
+                        <li class="active">
+                            <a href="~/UploadFile/HRExcel/护林员模板.xls" target="_blank" title="右键，另存为">下载模板</a>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <div class="divTable" id="divTable">
+                    @Html.Raw(ViewBag.UserList)
+                </div>
+            </div>
+            <div data-options="region:'south'" title="" style=" height:40px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
+                <div class="divPager" id="divPager">                    
+                    @*@Html.Raw(@ViewBag.PagerInfo)*@
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+<div class="divMan" id="Phototableadd" style="display:none;margin-left:5px;margin-top:8px">
+
+</div>
+
+<script type="text/javascript">
+    function Mdy1(isenable, method) {
+        var IDList = $("input:checkbox[name='chk']:checked").map(function (index, elem) {
+            return $(elem).val();
+        }).get().join(',');
+        $.ajax({
+            url: '/System/FRUserManager',
+            cache: false,
+            data: {
+                ID: IDList,
+                Method: method,
+                returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)'
+            },
+            type: 'post',
+            error: function () {
+                alert('错误:异常!', 'error');
+            },
+            success: function (re) {
+                var ar = eval('(' + re + ')');
+                if (ar.Success) {
+                    layer.msg('操作成功');
+                    query(page);
+                }
+                else {
+                    alert(ar.Msg, "Error");
+                }
+            }
+        });
+    }
+    function Add() {
+        layer.open({
+            type: 2,
+            title: '添加',
+            fix: false, //不固定
+            area: ['45%', '50%'],
+            maxmin: true,
+            content: '/System/FRUserMan',
+            end: function () {
+                query(1);
+            }
+        });
+    }
+
+
+    function Mdy(Method,ID,tno) {
+        layer.open({
+            type: 2,
+            title: '修改',
+            fix: false, //不固定
+            area: ['45%', '50%'],
+            maxmin: true,
+            content: '/System/FRUserMan?ID=' + ID + '&tNo=' + tno + '&Method=Mdy',
+            end: function () {
+                query(page);
+            }  
+        });
+    }
+    function See(Method, ID, tno) {
+        layer.open({
+            type: 2,
+            title: '查看',
+            fix: false, //不固定
+            area: ['45%', '50%'],
+            maxmin: true,
+            content: '/System/FRUserMan?ID=' + ID + '&tNo=' + tno + '&Method=See',
+        });
+    }
+    var page = 1;//当前默认页面为1
+    query(1);
+    function query(Page) {
+        page = Page;
+        var pagesize = '0';
+        if (document.getElementById("selPageSize") != null) {
+            pagesize = document.getElementById("selPageSize").value;
+        }
+        $.ajax({
+            url: '/System/getFRUserListAjax',
+            cache: false,
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: {
+                PageSize: pagesize,//document.getElementById("selPageSize").value,
+                HNAME: document.getElementById("tbxHNAME").value,
+                Page:Page,// document.getElementById("selPage").value,
+                BYORGNO: document.getElementById("tbxBYORGNO").value,
+                ISENABLE: document.getElementById("tbxISENABLE").value
+            },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#divTable').html(ar.tableInfo);
+                    $('#divPager').html(ar.pagerInfo);
+                }
+                else {
+                    alert(ar.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                alert('登录异常');
+            }
+        });
+    }
+
+    function Manager(id) {
+        if (confirm('确实要删除该内容吗?')) {
+            $.ajax({
+                url: '/System/FRUserManager',
+                cache: false,
+                data: {
+                    ID: id
+                    , Method: 'Del'
+                    , returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)'
+                },
+                type: 'post',
+                error: function () {
+                    alert('错误:异常!', 'error');
+                },
+                success: function (re) {
+                    var ar = eval('(' + re + ')');
+                    if (ar.Success) {
+                        layer.msg('操作成功');
+                        query(page);
+                    }
+                    else {
+                        alert(ar.Msg, "Error");
+                    }
+                }
+            });
+        }
+    }
+
+    //路线管理
+    function RouteManage(ID, tno) {
+        layer.open({
+            type: 2,
+            title: '路线管理',
+            area: ['1000px', '500px'],
+            //shade: 0,
+            fix: true,
+            maxmin: true,
+            content: '/System/FRUserRotMan?ID=' + ID + "&tNo=" + tno
+        })
+    }
+
+    //围栏管理
+    function FenceManage(ID, tno) {
+        layer.open({
+            type: 2,
+            title: '围栏管理',
+            area: ['1000px', '500px'],
+            //shade: 0,
+            fix: true,
+            maxmin: true,
+            content: '/System/FRUserRaiMan?ID=' + ID + "&tNo=" + tno
+        })
+    }
+
+    ///弹出图片管理页面
+    function GetPhoto(ID) {
+        layer.open({
+            type: 2,
+            title: '图片管理',
+            area: ['900px', '450px'],
+            fix: true,
+            maxmin: true,
+            content: '/DataCenter/PhotoIndex?PHOTOTYPE=T_IPSFR_USER&PRID=' + ID
+        })
+    }
+</script>
+
+
+<script type="text/javascript">
+    function selectall(v, c) {
+        var code_Values = document.getElementsByName("chk");
+        for (i = 0; i < code_Values.length; i++) {
+            if (code_Values[i].type == "checkbox") {
+                code_Values[i].checked = c;
+            }
+        }
+    }
+
+    //选中改变颜色
+    function setColor(obj) {
+        $(obj).css("background-color", "#FFDAB9");
+        $("tr").not($(obj)).css("background-color", "");
+    }
+</script>

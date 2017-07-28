@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="e58b1d57-9c41-423d-b8c6-fc1cf0ee0253" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://192.168.8.168:8100/ThirdSmsService.svc" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="SmsSendService1.wsdl" MetadataType="Wsdl" ID="4eed4d2b-64dd-46e8-a692-4986f41c9590" SourceId="1" SourceUrl="http://192.168.8.168:8100/ThirdSmsService.svc?wsdl" />
+    <MetadataFile FileName="ThirdSmsService1.disco" MetadataType="Disco" ID="cd382302-b41a-4497-aebd-431e5bbf1cc3" SourceId="1" SourceUrl="http://192.168.8.168:8100/ThirdSmsService.svc?disco" />
+    <MetadataFile FileName="ThirdSmsService3.xsd" MetadataType="Schema" ID="3a173928-35df-43a0-a60d-f2803445c731" SourceId="1" SourceUrl="http://192.168.8.168:8100/ThirdSmsService.svc?xsd=xsd0" />
+    <MetadataFile FileName="ThirdSmsService31.xsd" MetadataType="Schema" ID="5501e93d-2eca-40f4-9f91-2a8c0fe8d54d" SourceId="1" SourceUrl="http://192.168.8.168:8100/ThirdSmsService.svc?xsd=xsd2" />
+    <MetadataFile FileName="ThirdSmsService32.xsd" MetadataType="Schema" ID="ab2f5455-fe26-4fa9-a93a-8355f7b5a371" SourceId="1" SourceUrl="http://192.168.8.168:8100/ThirdSmsService.svc?xsd=xsd1" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

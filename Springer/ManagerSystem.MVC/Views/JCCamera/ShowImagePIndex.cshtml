@@ -1,0 +1,71 @@
+﻿@{
+    ViewBag.Title = "大屏图片展示";
+    Layout = null;
+}
+<meta http-equiv="refresh" content="5">
+<link href="~/Content/public.css" rel="stylesheet" />
+<script src="~/Scripts/jquery-1.8.2.min.js"></script>
+
+<script type="text/javascript">
+    $(function () {
+        $(".imgSwitchDiv").imgSwitch();
+    });
+    $.fn.extend({
+        imgSwitch: function () {
+            var $imgsUl = $(this).children(".imgsUl"), $imgsLis = $imgsUl.children(), $prev = $(this).children(".prevPage"), $next = $(this).children(".nextPage");
+            var cur = 0, fadeTime = 300, autoSwitchTime = 5000, int;
+            $imgsLis.hide();
+            $imgsLis.eq(0).show();
+            function switchTo(index) {
+                $imgsLis.eq(cur).fadeOut(fadeTime);
+                cur = index;
+                $imgsLis.eq(cur).fadeIn(fadeTime);
+                clearInterval(int);
+                int = setInterval(function () {
+                    $next.click();
+                }, autoSwitchTime);
+            }
+            $prev.click(function () {
+                if ((cur - 1) >= 0) {
+                    switchTo(cur - 1);
+                } else {
+                    switchTo($imgsLis.length - 1);
+                };
+            });
+            $next.click(function () {
+                if ((cur + 1) < $imgsLis.length) {
+                    switchTo(cur + 1);
+                }
+                else {
+                    switchTo(0);
+                };
+            });
+            int = setInterval(function () {
+                $next.click();
+            }, autoSwitchTime);
+
+        }
+    });
+</script>
+
+<div class="imgSwitchDiv">
+    <ul class="imgsUl">
+        @if (ViewBag.imagelist != null)
+        {
+            foreach (var item in ViewBag.imagelist)
+            {
+                <li>
+                    <div class="imgDiv">
+                        <img src="@Url.Content(item.filename)" style="height:70%">
+                        <div>
+                            <h2>设备: @item.BasicInfoModel.INFRAREDCAMERANAME</h2>
+                            <p>所属单位：【@item.BasicInfoModel.ORGNAME】  手机号码：【@item.tpa】  拍摄地点：【@item.BasicInfoModel.ADDRESS】  接收时间：【@item.recvdatetime】 </p>
+                        </div>
+                    </div>
+                </li>
+            }
+        }
+    </ul>
+    <div class="prevPage"></div>
+    <div class="nextPage"></div>
+</div>

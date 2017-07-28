@@ -1,0 +1,44 @@
+﻿@charset "utf-8";
+body{font-family: "微软雅黑"; font-size:12px; background-color:#effcf2; color:#36393d;}
+*,body,address, caption, cite, code, dfn, em, strong, th,h1,h2,h3,h4,h5,img{margin:0; padding:0; border:0;}
+ol, ul,li,dl,dt,dd{list-style:none;}
+a{text-decoration:none;}
+.clearfix:after {visibility:hidden;display:block;font-size:0;content:"";clear:both;height:0;}
+.clear{ clear:both;}
+.left{ float:left;}
+.right{ float:right;}
+.center{ text-align:center;}
+/*------login.html-------*/
+#container{width:100%; height:100%; position:relative;}
+.logo{ position:absolute; top:44px; left:5%; height:62px; line-height:62px; background:url(../default/ImagesLogin/login_logo.png) no-repeat; padding-left:70px;}
+.logo h1{ color:#156c02; font-size:30px;}
+.loginInfo{ width:100%; position:absolute; top:160px; height:225px; padding-top:39px; background:url(../default/ImagesLogin/login_bg.png) repeat-x;}
+.loginInfo dl{ width:804px; margin:0 auto;}
+.loginInfo dl dt{ width:484px; height:225px; background:url(../default/ImagesLogin/login_img_01.jpg) no-repeat;}
+.loginInfo dl dd{ width:275px; height:188px; background:url(../default/ImagesLogin/login_bg_02.png);padding:30px 0 0 35px;}
+.loginInfo dl dd table{}
+.loginInfo dl dd table tr{height:38px;}
+.loginInfo dl dd table tr td{ font-size:14px; color:#fff;}
+.loginInfo dl dd table td.yonghu{ width:65px; text-align:right; padding-right:5px;}
+.loginInfo dl dd table .text01{ width:148px; height:22px; background-color:#1c7b01; border:1px solid #d1e6cc; border-radius:3px;color:#fff; padding:0 5px;}
+.loginInfo dl dd table .code{width:148px;}
+.loginInfo dl dd table .yzm{width:68px; margin-right:8px;}
+.loginInfo dl dd table .checkbox_01{width:16px; height:16px;margin-right:5px;}
+.loginInfo dl dd table .keep{ padding-left:10px; vertical-align:middle; color:#c7edaf;}
+.loginInfo dl dd table .keep span{ display:block; line-height:15px; float:left;}
+/*.loginInfo dl dd table .butt{ width:90px; height:33px; margin:10px 0 0 12px;}*/
+.loginInfo dl dd table .butt{ width:90px; border:0;height:28px; line-height:28px; color:#fff; text-align:center; margin:10px 0 0 15px; border-radius:3px; font-size:15px;}
+.loginInfo dl dd table .submit{ background-color:#4bbb01;}
+.loginInfo dl dd table .reset{ background-color:#fe9329;}
+.copyright{ width:100%; position:absolute; top:500px; text-align:center;}
+.copyright p{ height:20px; padding-top:28px; background:url(../default/ImagesLogin/login_img_02.png) top center no-repeat;}
+/*.用户名密码样式*/
+.loginInfo dl dd { width: 280px;height: 200px;padding: 18px 0 0 30px;}
+.loginInfo dl dd table .text01 {width: 205px;height: 30px;background-color: #1c7b01;border: 1px solid #d1e6cc;border-radius: 3px;color: #dfe9dd;padding-left: 40px;margin: 8px 0;font-size: 15px;}
+.loginInfo dl dd table .textbg{background: url(/Content/themes/default/ImagesLogin/log_name.png) 5px 4px no-repeat;} 
+.loginInfo dl dd table .passwordbg{background: url(/Content/themes/default/ImagesLogin/log_password.png) 5px 4px no-repeat;} 
+ .loginInfo dl dd table .keep{padding-left: 10px; vertical-align: middle; color: #c7edaf;} 
+ .loginInfo dl dd table .keep span{display: block; line-height: 15px; float: left;} 
+ .loginInfo dl dd table .butt{width: 90px; border: 0; height: 28px; line-height: 28px; color: #fff; text-align: center; margin: 10px 20px; border-radius: 3px; font-size: 15px;}
+
+           

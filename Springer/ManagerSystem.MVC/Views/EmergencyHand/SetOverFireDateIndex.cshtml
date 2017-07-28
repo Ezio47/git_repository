@@ -1,0 +1,67 @@
+﻿@{
+    ViewBag.Title = "SetOverFireDateIndex";
+    Layout = null;
+}
+<script src="~/Scripts/jquery-easyui-1.4/jquery.min.js"></script>
+<script src="/Scripts/jquery-easyui-1.4/jquery.easyui.min.js"></script>
+<script src="/Scripts/jquery-easyui-1.4/locale/easyui-lang-zh_CN.js"></script>
+<script src="/Scripts/jquery-easyui-1.4/validateHelper.js"></script>
+<script src="/Scripts/jquery-easyui-1.4/jquery.SuperSlide.2.1.1.js"></script>
+<link href="/Content/themes/easyui/easyui.css" rel="stylesheet" />
+<link href="/Content/themes/easyui/color.css" rel="stylesheet" />
+<link href="/Content/themes/easyui/icon.css" rel="stylesheet" />
+<script src="~/Scripts/skyline/3dMapTest.js"></script>
+<script type="text/javascript">
+    var sgworld = null;
+    $(function () {
+        CreateSGObj();
+    });
+    //初始化sgapi
+    function CreateSGObj() {
+        sgworld = document.getElementById('SGWorld');
+        if (sgworld == null) {
+            sgworld = document.createElement('object');
+            sgworld.name = "sgworld";
+            sgworld.id = "sgworld";
+            sgworld.classid = "CLSID:3a4f91b1-65a8-11d5-85c1-0001023952c1";
+        }
+        return sgworld;
+    }
+    //确定
+    function SaveFun() {
+        var time = $('#timeover').datetimebox('getValue');		// get datetimebox value
+        alert(time);
+        if ($.trim(time) == "") {
+            $.messager.alert('错误', '灭火时间不可为空', 'error');
+            return false;
+        } else {
+            //$.ajax({
+            //    type: 'post',
+            //    url: '/EmergencyHand/FireOverMethod',
+            //    data: { jcfid: id },
+            //    dataType: "json",
+            //    success: function (data) {
+            //        if (data != null && data.Success) {
+            //            alert("火情标记成功");
+            //            GetCurFireHtml();
+            //        }
+            //        else {
+            //            alert("火情标记失败");
+            //        }
+            //    }
+            //});
+        }
+        sgworld.Window.RemovePopupByCaption("灭火时间设定");
+    }
+    //取消
+    function CancleFun() {
+        alert('12');
+        sgworld.Window.RemovePopupByCaption("灭火时间设定");
+    }
+</script>
+
+<div class="easyui-panel" style="padding:5px">
+    当前灭火时间： <input class="easyui-datetimebox" id="timeover" value="@DateTime.Now.ToString() " required style="width:200px">
+    <input type="button" value="确定" id="Savebtn" onclick="SaveFun()" /><input type="button" value="取消" id="Canclebtn" onclick="CancleFun()" />
+</div>
+<object id="SGWorld" classid="CLSID:3a4f91b1-65a8-11d5-85c1-0001023952c1" style="visibility:hidden;height:0 "></object>

@@ -1,0 +1,346 @@
+﻿@using ManagerSystemClassLibrary;
+@{
+    ViewBag.Title = "转为隔离带";
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+
+    var curorgno = SystemCls.getCurUserOrgNo();
+    if (curorgno.Substring(6, 3) == "000" && curorgno.Substring(4, 2) != "00")
+    {
+        curorgno = curorgno.Substring(0, 6) + "xxx";
+    }
+    else
+    {
+        curorgno = SystemCls.getCurUserOrgNo();
+    }
+}
+<script src="~/js/init.js"></script>
+
+<div class="divMan" id="tableadd" style="margin-left:5px;margin-top:8px">
+    <table cellpadding="0" cellspacing="0">
+        <tr>
+            <td style="width:100px;">
+                单位：
+            </td>
+            <td>
+                <select id="BYORGNO" class="easyui-combotree" style="width:200px;"></select>
+            </td>
+            <td style="width:100px;">
+                隔离带类型：
+            </td>
+            <td>
+                <select id="ISOLATIONTYPE" >
+                    <option value="1">生物</option>
+                    <option value="2">生土</option>
+                    <option value="3">火烧线</option>
+                    <option value="5">规划生物隔离带</option>
+                </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td style="width:100px;">
+                <span style="color:red;">*</span>
+                名称：
+            </td>
+            <td>
+                <input type="text" id="NAME" class="input-small" value="" />
+            </td>
+            <td style="width:100px;">
+                <span style="color:red;">*</span>
+                编号：
+            </td>
+            <td>
+                <input id="NUMBER" type="text" class="input-small" value="" />
+            </td>
+        </tr>
+        <tr>
+            <td style="width:100px;">
+                使用现状类型：
+            </td>
+            <td>
+                <select id="USESTATE">
+                    @Html.Raw(@ViewBag.usestateadd)
+                </select>
+            </td>
+            <td style="width:100px;">
+                维护类型：
+            </td>
+            <td>
+                <select id="MANAGERSTATE">
+                    @Html.Raw(@ViewBag.managerstateadd)
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td style="width:160px;">
+                经纬度点：
+            </td>
+            <td colspan="3">
+                <input id="JWDLIST" type="text" style="width:97%" value="" readonly />
+            </td>
+        </tr>
+        <tr>
+            <td style="width:100px;">
+                宽度：
+            </td>
+            <td>
+                <input id="WIDTH" type="text" class="input-small" value="" />米
+            </td>
+            <td style="width:100px;">
+                长度：
+            </td>
+            <td>
+                <input id="LENGTH" type="text" class="input-small" value="" />米
+            </td>
+        </tr>
+        @*<tr>
+                <td style="width:80px;">
+                    计划面积：
+                </td>
+                <td>
+                    <input id="PLANAREA" type="text" class="input-small" value="" />公顷
+                </td>
+                <td style="width:80px;">
+                    实际面积：
+                </td>
+                <td>
+                    <input id="REALAREA" type="text" class="input-small" value="" />公顷
+                </td>
+            </tr>*@
+        <tr>
+            <td style="width:160px;">
+                价值：
+            </td>
+            <td>
+                <input id="WORTH" type="text" class="input-small" value="" />元
+            </td>
+            <td style="width:100px;">
+                建设日期：
+            </td>
+            <td>
+                <input class="easyui-datebox" id="BUILDDATE" type="text" style="width:90px;height:28px;" value="" />
+            </td>
+        </tr>
+        <tr>
+            <td colspan="4" style="text-align:center;">
+                <input type="button" id="savebtn" value="保存" onclick="Manager()" class="btnAddCss" />
+            </td>
+        </tr>
+
+    </table>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $('#BYORGNO').combotree({
+            url: '/DataCenter/OnlyOrgTreeget',
+            editable: false,
+            required: true,
+            panelHeight: 'auto',
+            onLoadSuccess: function (node, data) {
+                var t = $("#BYORGNO").combotree('tree');//获取tree
+                t.tree("collapseAll");
+                node = t.tree("find", data[0].id);
+                t.tree("expand", node.target);//展开节点 expandTo
+            }
+        });
+        $('#BYORGNO').combotree('setValue', "@curorgno");
+        detailPoints();//获取详细点经纬度
+        //计算长度和面积 1 表示线 2 表示面积
+        var length = getLocaCollectLine(1);
+        $('#LENGTH').val(calcValue);
+    });
+
+    var ID = "";
+    var Method = "Add";
+    //保存
+    function Manager() {
+        var t1 = $('#WIDTH ').val();
+        var t2 = $('#LENGTH ').val();
+        // var t3 = $('#PLANAREA ').val();
+        // var t4 = $('#REALAREA').val();
+        var t5 = $('#WORTH').val();
+        var t6 = $('#NAME').val();
+        var t7 = $('#NUMBER').val();
+        if ($.trim(t1) != "") {
+            if (CheckNUM($.trim(t1)) == false) {
+                layer.msg('宽度请填写数字！', { icon: 5 });
+                $('#WIDTH').focus();
+                return false;
+            }
+        }
+        if ($.trim(t2) != "") {
+            if (CheckNUM($.trim(t2)) == false) {
+                layer.msg('长度请填写数字！', { icon: 5 });
+                $('#LENGTH').focus();
+                return false;
+            }
+        }
+        //if ($.trim(t3) != "") {
+        //    if (CheckNUM($.trim(t3)) == false) {
+        //        layer.msg('计划面积请填写数字！', { icon: 5 });
+        //        $('#PLANAREA').focus();
+        //        return false;
+        //    }
+        //}
+        //if ($.trim(t4) != "") {
+        //    if (CheckNUM($.trim(t4)) == false) {
+        //        layer.msg('实际面积请填写数字！', { icon: 5 });
+        //        $('#REALAREA').focus();
+        //        return false;
+        //    }
+        //}
+        if ($.trim(t5) != "") {
+            if (CheckNUM($.trim(t5)) == false) {
+                layer.msg('价值请填写数字！', { icon: 5 });
+                $('#WORTH').focus();
+                return false;
+            }
+        }
+        if ($.trim(t6) == "") {
+            layer.msg('请填写名称！', { icon: 5 });
+            $('#NAME').focus();
+            return false;
+        }
+        if ($.trim(t7) == "") {
+            layer.msg('请填写编号！', { icon: 5 });
+            $('#NUMBER').focus();
+            return false;
+        }
+        var tt = document.getElementById("JWDLIST").value;
+        var tp = document.getElementById("ISOLATIONTYPE").value;
+        if ($.trim(tt) == "") {
+            layer.msg('经纬度点为空！', { icon: 5 });
+            return false;
+        }
+        $.ajax({
+            type: "Post",
+            url: "/DataCenter/ISOLATIONSTRIPManager",
+            data: {
+                DC_UTILITY_ISOLATIONSTRIP_ID: ID,
+                Method: Method,
+                ISOLATIONTYPE: document.getElementById("ISOLATIONTYPE").value,
+                NUMBER: document.getElementById("NUMBER").value,
+                NAME: document.getElementById("NAME").value,
+                //BYORGNO: document.getElementById("BYORGNO").value,
+                BYORGNO: $('#BYORGNO').combotree('getValue'),
+                USESTATE: document.getElementById("USESTATE").value,
+                MANAGERSTATE: document.getElementById("MANAGERSTATE").value,
+                WIDTH: document.getElementById("WIDTH").value,
+                LENGTH: document.getElementById("LENGTH").value,
+                JWDLIST: document.getElementById("JWDLIST").value,
+                //PLANAREA: document.getElementById("PLANAREA").value,
+                //REALAREA: document.getElementById("REALAREA").value,
+                WORTH: document.getElementById("WORTH").value,
+                BUILDDATE: $('#BUILDDATE').datebox('getValue'),
+            },
+            dataType: "json",
+            error: function () {
+                ID = "";
+                Method = "Add";
+                alert('错误:异常!', 'error');
+            },
+            success: function (re) {
+                if (re.Success) {
+                    layer.msg('操作成功', { icon: 6 });
+                    ID = re.Url;
+                    Method = "Mdy";
+                }
+                else {
+                    ID = "";
+                    Method = "Add";
+                    layer.msg(re.Msg, { icon: 5 });
+                }
+            }
+        });
+    }
+
+
+    //详细点--线集合
+    function detailPoints() {
+        var detailcid = getQueryString("detailid");
+        $.ajax({
+            type: "Post",
+            url: "/SkylineManger/DataCollectDetailList",
+            data: { cid: detailcid },
+            dataType: "json",
+            async: false,
+            success: function (obj) {
+                //console.info(obj);
+                var html = "";
+                if (obj != null) {
+                    for (var i = 0; i < obj.length; i++) {
+                        //  $('#JD').val(parseFloat(obj[i].LONGITUDE).toFixed(6));
+                        //  $('#WD').val(parseFloat(obj[i].LATITUDE).toFixed(6));
+                        html += obj[i].LONGITUDE + "," + obj[i].LATITUDE + "|";
+                    }
+                    $('#JWDLIST').val(html);
+                }
+                else {
+                    layer.alert('获取采集点失败！', { icon: 5 });
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                //通常情况下textStatus和errorThrown只有其中一个包含信息
+                // this;   //调用本次ajax请求时传递的options参数
+                layer.msg('ajax出错！' + textStatus);
+            }
+        });
+    }
+
+    //根据点集合计算线长度
+    var calcValue = "";
+    function getLocaCollectLine(type) {
+        var ring = [];
+        var pl = $('#JWDLIST').val();
+        if ($.trim(pl) != "") {
+            var ss = pl.split('|');
+            if (ss.length > 0) {
+                for (var i = 0; i < ss.length; i++) {
+                    var lng = ss[i].split(',')[0];
+                    var lat = ss[i].split(',')[1];
+                    if (!isNaN(lng) && !isNaN(lat)) {
+                        var latlng = new esri.geometry.Point(parseFloat(lng), parseFloat(lat));
+                        ring.push(latlng);
+                    }
+                }
+                if (type == "1") {
+                    var lineSymbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([255, 0, 0]), 5);
+                    //获取线的点
+                    var polyline = new esri.geometry.Polyline(new esri.SpatialReference({ wkid: 4326 }));
+                    polyline.addPath(ring);
+                    //计算线的长度
+                    calcValue = GetLenthorArea(polyline);
+                }
+                else if (type == "2") {
+                    var polygonSymbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID, new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_DASHDOTDOT, new dojo.Color([255, 0, 0]), 3), new dojo.Color([255, 255, 0, 0.25]));
+                    //获取面的点
+                    var polygon = new esri.geometry.Polygon(new esri.SpatialReference({ wkid: 4326 }));
+                    polygon.addRing(ring);
+                    //计算面积
+                    calcValue = GetLenthorArea(polygon);
+                }
+            }
+            return calcValue;
+        }
+    }
+
+    function GetLenthorArea(geometry) {//画图完毕后计算距离或者面积
+        var unit = "";
+        var str = "";
+        var geo = geometry;
+        if (geometry.type == "polyline") {
+            var Length = new esri.geometry.geodesicLengths([geo], esri.Units.METERS);
+            unit = "米";
+            str = parseFloat(Length).toFixed(2);
+        }
+        else if (geometry.type == "polygon") {
+            var Area = new esri.geometry.geodesicAreas([geo], esri.Units.SQUARE_METERS);
+            unit = "公顷";
+            str = parseFloat(Area / 10000).toFixed(2);
+        }
+
+        return str;
+    }
+
+</script>

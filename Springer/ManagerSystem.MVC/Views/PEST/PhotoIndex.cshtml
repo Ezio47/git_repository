@@ -1,0 +1,96 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutIndexNoMenu.cshtml";
+}
+@section Header{
+    <script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.8.2.min.js")"></script>
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'center'" title="" class="LayoutCenterBG">
+        <div class="divTable" id="divTable">
+            @Html.Raw(@ViewBag.Photo)
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function PHOnclik(Id, DataId, Name, DESCRIBE, URL, TYPE) {
+        $('#PESTCOLLDATAUPLOADID').val(Id);
+        $('#PESTCOLLDATAID').val(DataId);
+        $('#UPLOADNAME').val(Name);
+        $('#UPLOADDESCRIBE').val(DESCRIBE);
+        $('#UPLOADURL').val(URL);
+        $('#UPLOADTYPE').val(TYPE);
+        document.getElementById('btnPhotoDel').style.display = "";
+        document.getElementById('btnPhotoMdy').style.display = "";
+    }
+    //图片管理增、删、改
+    function ManagerPhoto(Method) {
+        var bln = false;
+        if (Method == 'Del') {
+            if (confirm('确实要删除该内容吗?')) {
+                bln = true;
+            }
+        }
+        else {
+            bln = true;
+        }
+        if (bln == true) {
+            $.ajax({
+                type: "Post",
+                url: "/PEST/PhotoManager",
+                data: {
+                    PESTCOLLDATAUPLOADID: $('#PESTCOLLDATAUPLOADID').val(),
+                    PESTCOLLDATAID: $('#PESTCOLLDATAID').val(),
+                    UPLOADNAME: $('#UPLOADNAME').val(),
+                    UPLOADDESCRIBE: $('#UPLOADDESCRIBE').val(),
+                    Method: Method
+                },
+                success: function (data) {
+                    var ar = eval('(' + data + ')');
+                    if (ar.Success) {
+                        layer.msg(data.Msg, { icon: 6 });
+                        window.location.reload();
+                    }
+                    else {
+                        layer.msg(ar.Msg);
+                    }
+                },
+                error: function (err, ioArgs) {
+                    layer.msg('系统异常，请重试!');
+                }
+            });
+        }
+    }
+    //图片上传
+    function UploadPhoto(Method) {
+        var formData = new FormData($("#uploadForm")[0]);
+        formData.append("PESTCOLLDATAUPLOADID", $('#PESTCOLLDATAUPLOADID').val());
+        formData.append("PESTCOLLDATAID", $('#PESTCOLLDATAID').val());
+        formData.append("UPLOADNAME", $('#UPLOADNAME').val());
+        formData.append("UPLOADDESCRIBE", $('#UPLOADDESCRIBE').val());
+        formData.append("Method", Method);
+        $.ajax({
+            type: "post",
+            url: '/PEST/UploadPhoto',
+            data: formData,
+            dataType: "json",
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (data) {
+                if (data.Success) {
+                    layer.msg(data.Msg, { icon: 6 });
+                    window.location.reload();
+                }
+                else {
+                    layer.msg(data.Msg, { icon: 5 });
+                }
+            },
+            error: function (data) {
+                layer.msg("上传失败", { icon: 5 });
+            }
+        });
+    }
+</script>

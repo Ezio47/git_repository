@@ -1,0 +1,21 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" class='indexHtml'>
+<head id="Head1">
+    <title>@ViewBag.title</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+    <script src="~/Scirpts/jquery-1.8.3.min.js"></script>
+    <script src="~/Scirpts/jquery.jBox-2.3.min.js"></script>
+    <script src="~/Scirpts/jquery.jBox-zh-CN.js"></script>
+
+    <link href="~/Content/default/CSS.css" rel="stylesheet" />
+    <link href="~/Content/default/font-awesome.css" rel="stylesheet" />
+    <link href="~/Content/default/jbox.css" rel="stylesheet" />
+
+    @RenderSection("Header", required: false)@*View页面自定义特定js/css使用*@
+</head>
+<body>
+    @RenderBody()
+</body>
+</html>
+

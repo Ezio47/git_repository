@@ -1,0 +1,4 @@
+E:\Project\Springer127\06.Development\SmsMessageWcfService\ComModel\bin\Debug\TLW.AH.ComModel.dll
+E:\Project\Springer127\06.Development\SmsMessageWcfService\ComModel\bin\Debug\TLW.AH.ComModel.pdb
+E:\Project\Springer127\06.Development\SmsMessageWcfService\ComModel\obj\Debug\TLW.AH.ComModel.dll
+E:\Project\Springer127\06.Development\SmsMessageWcfService\ComModel\obj\Debug\TLW.AH.ComModel.pdb

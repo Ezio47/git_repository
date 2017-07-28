@@ -1,0 +1,122 @@
+﻿@{
+    ViewBag.Title = "Tree";
+    Layout = null;
+}<!DOCTYPE html>
+<html>
+<head>
+    <title>树形菜单</title>
+    @Scripts.Render("~/bundles/jquery")
+    <script src="@Url.Content("~/Scripts/jquery-easyui-1.4/jquery.easyui.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/jquery-easyui-1.4/locale/easyui-lang-zh_CN.js")"></script>
+    <script src="@Url.Content("~/Scripts/jquery-easyui-1.4/validateHelper.js")"></script>
+
+    <link href="@Url.Content("~/Content/themes/easyui/easyui.css")" rel="stylesheet" />
+    <link href="@Url.Content("~/Content/themes/easyui/color.css")" rel="stylesheet" />
+    <link href="@Url.Content("~/Content/themes/easyui/icon.css")" rel="stylesheet" />
+
+    <style type="text/css">
+        button, input {
+            border: 1px solid #999;
+            padding: 5px 10px;
+            margin: 0 10px 10px 0;
+        }
+
+        button {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="tt" style="width:240px" class="easyui-tree" data-options="checkbox:true"></div>
+
+    <input type="text" id="txtid" name="txtid" />
+    <input type="text" id="txtname" name="txtname" />
+
+    <script type="text/javascript">
+
+        Array.prototype.remove = function (val) {
+            var index = this.indexOf(val);
+            if (index > -1) {
+                this.splice(index, 1);
+            }
+        };
+
+        function delHtmlTag(str) {
+            return str.replace(/<[^>]+>/g, "");//去掉所有的html标记
+        }
+
+        var index = parent.layer.getFrameIndex(window.name);
+        $(function () {
+            //$('#btnSave').linkbutton({
+            //    onClick: function () {
+
+            //        var nodes = $('#tt').tree('getChecked');
+            //        if (nodes.length > 0) {
+            //            var arr = [];
+            //            for (var i = 0; i < nodes.length; i++) {
+            //                if (nodes[i].id.length > 0) {
+            //                    arr.push(nodes[i].id);
+            //                }
+            //                //alert(rows[i].GROUPNAME);
+            //                //orderlist.push(rows[i].OrderNo);
+            //            }
+            //            alert(arr);
+
+            //        }
+            //        else {
+
+            //            $.messager.alert("提示", "未选择", "error");
+            //        }
+            //    }
+            //});
+            treeload();
+            //  reset();
+        })
+
+        function treeload() {
+            var arr = [];
+            var arrname = [];
+            $('#tt').tree({
+                url: '/JCFireInfo/GetHlyPerson',
+                checked: false,
+                animate: true,
+                lines: true,
+                cache: false,
+                onlyLeafCheck: true,
+                onCheck: function (node, checked) {
+                    if (0 < node.id.length < 9) {
+                        if (checked == true) {
+                            arr.push(node.id);
+                            arrname.push(delHtmlTag(node.text));
+                        }
+                        else {
+                            arr.remove(node.id);
+                            arrname.remove(delHtmlTag(node.text));
+                        }
+                    }
+                    $('#txtid').val(arr);
+                    $('#txtname').val(arrname);
+                }
+            })
+        }
+        function reset() {
+            var person = $('#txtid').val();
+            alert(person);
+            if ($.trim(person) != "") {
+                alert('11');
+                var str = person.split(',');
+                ////check (勾选person里的人)
+                for (var i = 0; i < str.length ; i++) {
+                    var node = $('#tt').tree('find', str[i]);
+                    alert(node);
+                    $('#tt').tree('check', node.target);
+                }
+            }
+        }
+
+
+    </script>
+
+</body>
+</html>

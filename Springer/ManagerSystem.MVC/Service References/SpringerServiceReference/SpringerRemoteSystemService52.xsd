@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/Springer.EntityModel.Entity" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/Springer.EntityModel.Entity" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:complexType name="ArrayOfDataInfoModel">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="DataInfoModel" nillable="true" type="tns:DataInfoModel" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfDataInfoModel" nillable="true" type="tns:ArrayOfDataInfoModel" />
+  <xs:complexType name="DataInfoModel">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="cjtime" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="dir" type="xs:decimal" />
+      <xs:element minOccurs="0" name="height" type="xs:decimal" />
+      <xs:element minOccurs="0" name="lat" type="xs:decimal" />
+      <xs:element minOccurs="0" name="lon" type="xs:decimal" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="DataInfoModel" nillable="true" type="tns:DataInfoModel" />
+  <xs:complexType name="FileUploadMessageModel">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="FileData" nillable="true" type="xs:base64Binary" />
+      <xs:element minOccurs="0" name="FileDescripe" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="FileName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="FileType" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="FileUploadMessageModel" nillable="true" type="tns:FileUploadMessageModel" />
+  <xs:complexType name="ArrayOfTXLModel">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="TXLModel" nillable="true" type="tns:TXLModel" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfTXLModel" nillable="true" type="tns:ArrayOfTXLModel" />
+  <xs:complexType name="TXLModel">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="ADID" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Address" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="DepJob" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="DepName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Phone" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="TXLModel" nillable="true" type="tns:TXLModel" />
+  <xs:complexType name="ArrayOfHLYTXLModel">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="HLYTXLModel" nillable="true" type="tns:HLYTXLModel" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfHLYTXLModel" nillable="true" type="tns:ArrayOfHLYTXLModel" />
+  <xs:complexType name="HLYTXLModel">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="HID" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="HNAME" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ORGNO" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="PHONE" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="HLYTXLModel" nillable="true" type="tns:HLYTXLModel" />
+  <xs:complexType name="ArrayOfPoints">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Points" nillable="true" type="tns:Points" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfPoints" nillable="true" type="tns:ArrayOfPoints" />
+  <xs:complexType name="Points">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="JD" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="WD" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Points" nillable="true" type="tns:Points" />
+</xs:schema>

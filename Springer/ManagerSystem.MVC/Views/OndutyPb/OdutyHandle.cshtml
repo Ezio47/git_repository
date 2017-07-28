@@ -1,0 +1,437 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+}
+
+<div class="easyui-layout" data-options="fit:true" style="border: 0;">
+
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style="height: auto; border: none; overflow: hidden;">
+                <div class="divOP">
+                    <div class="home right wd_9" id="divODUserInfo">
+                        当前用户：@ViewBag.SystemName
+                        &nbsp;&nbsp;所属单位：@ViewBag.SysOrgName
+                        &nbsp;&nbsp;值班状态：@ViewBag.sysState @ViewBag.dtc1
+                        &nbsp;&nbsp;
+                        <input type="button" value='填写日报' style="width:80px;" class="btnWriteCss" onclick="$('#ww').window('open')" />
+                    </div>
+                </div>
+            </div>
+            <div id="www" class="easyui-window" title="填写领导意见" data-options="resizable: false,collapsible: false,minimizable:false,maximizable:false,modal:true,closed:true,iconCls:'icon-save'" style="width: 550px; height: 250px; padding: 10px;">
+                <table>
+                    <tr>
+                        <td>领导人:</td>
+                        <td>@ViewBag.trueName<span style="float: right;">时间：<span>@DateTime.Now.ToLongDateString():@DateTime.Now.ToLongTimeString()</span></span></td>
+                    </tr>
+                    <tr>
+                        <td>领导意见:</td>
+                        <td>
+                            <textarea id="txtlead" style="width: 400px; height: 90px; resize: none;"></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <input onclick="SaveLead()" type="button" value="保存" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div id="w" class="easyui-window" title="交班信息" data-options="resizable: false,collapsible: false,minimizable:false,maximizable:false,modal:true,closed:true,iconCls:'icon-save'" style="width: 600px; height: 480px; padding: 10px;">
+                <table>
+                    <tr>
+                        <td>交班人:</td>
+                        <td>
+                            <input id="hidenrq" type="hidden" /><input id="hidenbc" type="hidden" /><input id="hidenuid" type="hidden" />@ViewBag.trueName&nbsp;&nbsp;&nbsp;&nbsp;交班时间：<span>@DateTime.Now.ToLongDateString():@DateTime.Now.ToLongTimeString()</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>接班人:</td>
+                        <td>
+                            <select id="s1"></select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            上班交<br />
+                            班事项：
+                        </td>
+                        <td>
+                            <textarea id="txtjb" readonly="readonly" style="width: 450px; height: 150px; resize: none;"></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            交班主<br />
+                            要事项:
+                        </td>
+                        <td>
+                            <textarea id="txtOpconent" style="width: 450px; height: 150px; resize: none;"></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <input onclick="HandOver()" type="button" value="交班" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div id="ww" class="easyui-window" title="本日情况上报" data-options="resizable: false,collapsible: false,minimizable:false,maximizable:false,modal:true,closed:true,iconCls:'icon-save'">
+                <table>
+                    <tr>
+                        <td>上报单位:</td>
+                        <td>@ViewBag.orgNameTrue</td>
+                        <td>上报人员:</td>
+                        <td>@ViewBag.trueName</td>
+                        <td>上报日期:</td>
+                        <td>@DateTime.Now.ToLongDateString()</td>
+                    </tr>
+                    <tr>
+                        <td colspan="6">
+                            <textarea id="txtDaily" style="height: 300px; width: 400px; resize: none;">@ViewBag.dayLog</textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="6">
+                            <input type="button" onclick="DailyAdd()" style="padding:3px 10px" value="日报提交" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div data-options="region:'center'" title="" class="LayoutCenterBG">
+
+                <div class="divMan" id="msgClass">
+                </div>
+                <div class="divTable" id="msg">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    //领导意见保存事件 已更改 叶磊 2016年6月24日12时04分38秒
+    function SaveLead() {
+        var CurUserID = $("#hidenuid").val();
+        var dt = $("#hidenrq").val();
+        var dcClass = $("#hidenbc").val();
+        $.ajax({
+            url: '/OndutyPb/SaveLeadAdd',
+            data: {
+                ONDUTYDATE: dt,//日期
+                ONDUTYUSERID: CurUserID,//领导ID
+                ONDUTYUSERTYPE: dcClass,//对应早中晚班次
+                content: document.getElementById("txtlead").value//领导意见
+            },
+            type: 'post',
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    layer.alert(ar.Msg, { icon: 1 });
+                    $('#www').window('close');
+                    loadClass();
+                }
+                else {
+                    layer.alert(ar.Msg, { icon: 1 });
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.alert('领导意见提交异常，请重试或与管理员联系！', { icon: 0 });
+            }
+        });
+    }
+
+    loadODUserInfo();//默认加载日报一行信息
+    //日报一行信息 已更改 叶磊 2016年6月24日14时42分10秒
+    function loadODUserInfo() {
+
+        $.ajax({
+            url: '/OndutyPb/getODUserInfo',
+            data: {
+                tm: '',//2016-3-10 6:00:00',
+            },
+            type: 'post',
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    //$('#divODUserInfo').html('').removeAttr("style");
+                    $('#divODUserInfo').html(ar.Msg);
+                }
+                else {
+                    //$('#msgClass').html('');
+                    //$('#msgClass').html('该日期为非排班日期！').css("color", "red");
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.alert("系统错误！");
+            }
+        });
+    }
+
+    //日报保存事件 已更改 叶磊 2016年6月24日12时04分31秒
+    function DailyAdd() {
+        //if (document.getElementById("txtDaily").value == "" || document.getElementById("txtDaily").value == null) {
+        //    layer.alert("日报不能为空！", { icon: 0 });
+        //    return false;
+        //}
+        $.ajax({
+            url: '/OndutyPb/OdutyDailyAdd',
+            data: {
+                content: document.getElementById("txtDaily").value//日报信息
+            },
+            type: 'post',
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    layer.alert('提交成功！', { icon: 1 });
+                    $('#ww').window('close');
+                    loadODUserInfo();
+                }
+                else {
+                    layer.alert(ar.Msg, { icon: 0 });
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.alert('日报保存异常，请重试或与管理员联系！', { icon: 0 });
+            }
+        });
+    }
+
+    //值班人签到 已更改 叶磊 2016年6月24日12时04分26秒
+    function zbyQD(CurUserID, dt, dcClass) {
+        //alert('值班员签到 用户序号' + CurUserID + ' 日期' + dt + ' 班次' + dcClass);
+        $.ajax({
+            url: '/OndutyPb/SignAgien',
+            data: {
+                strUserId: CurUserID,//签到人ID
+                ondutyDate: dt,//签到人值班日期
+                ondutyType: dcClass//2016-3-10 6:00:00'值班班次
+            },
+            type: 'post',
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    layer.alert(ar.Msg, { icon: 1 });
+                    loadClass();
+                }
+                else {
+                    layer.alert(ar.Msg, { icon: 0 });
+                }
+
+            },
+            error: function (err, ioArgs) {
+                layer.alert('签到出现系统错误，请重试或与管理员联系！', { icon: 0 });
+            }
+        });
+        loadClass();
+    }
+
+
+    //领导意见弹出层 已更改 叶磊 2016年6月24日12时04分20秒
+    function LDYJ(CurUserID, dt, dcClass) {
+        $("#hidenrq").val(dt);//利用隐藏域保存本班次信息
+        $("#hidenbc").val(dcClass);
+        $("#hidenuid").val(CurUserID);
+        $('#www').window('open');
+        loadClass();
+    }
+
+    //领导签到事件 已更改 叶磊 2016年6月24日12时04分13秒
+    function LDQD(CurUserID, dt) {
+        var dcClass = "-1";//领导所属
+        $.ajax({
+            url: '/OndutyPb/SignAgien',
+            data: {
+                strUserId: CurUserID,//签到人ID
+                ondutyDate: dt,//签到人值班日期
+                ondutyType: dcClass//值班班次
+            },
+            type: 'post',
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    layer.alert(ar.Msg, { icon: 1 });
+                    loadClass();
+                }
+                else {
+                    layer.alert(ar.Msg, { icon: 0 });
+                }
+
+            },
+            error: function (err, ioArgs) {
+                layer.alert('领导签到出现系统错误，请重试或与管理员联系！', { icon: 0 });
+            }
+        });
+        loadClass();
+    }
+
+    //提交交班信息 已更改叶磊2016年6月24日12时04分45秒
+    function HandOver() {
+        var CurUserID = $("#hidenuid").val();
+        var dt = $("#hidenrq").val();
+        var dcClass = $("#hidenbc").val();
+        var jbrID = $("#s1").val();
+        //if (document.getElementById("txtOpconent").value == "" || document.getElementById("txtOpconent").value == null) {
+        //    layer.alert('交班内容不能为空！', { icon: 0 });
+        //    return false;
+        //}
+        $.ajax({
+            url: '/OndutyPb/HandOverCreatejb',
+            data: {
+                strUserId: CurUserID,//签到人ID
+                odutyTime: dt,//签到人值班日期
+                ondutyType: dcClass,//值班班次
+                jbrID: jbrID,//接班ID
+                opcontent: document.getElementById("txtOpconent").value//交班信息
+            },
+            type: 'post',
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    layer.alert(ar.Msg, { icon: 1 });
+                    $('#w').window('close');
+                    loadClass();
+                }
+                else {
+                    layer.alert(ar.Msg, { icon: 1 });
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.alert('交班出现系统错误，请重试或与管理员联系！！', { icon: 0 });
+            }
+        });
+    }
+
+    //交班事件 叶磊2016年6月24日11时54分35秒
+    function JB(CurUserID, dt, dcClass) {
+        var s = "一、上班交办事项：无 \n二、本班处理事项：本班未收到热点和火情。 \n三、班内传真机、打印机正常。";
+        document.getElementById("txtOpconent").value = s;
+        //alert(dt); alert(dcClass);
+        $.ajax({
+            url: '/OndutyPb/getclassNest',//获取下一班次的接班人（已签到的人员）
+            data: {
+                dt: dt,//2016-3-10 6:00:00',
+                dcClass: dcClass
+            },
+            type: 'post',
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+
+                    $('#s1').html(ar.Msg);
+                    if (document.getElementById("s1").value == -1) {
+                        layer.alert("无接班人禁止交班！", { icon: 0 });
+                        return false;
+                    }
+                    else {
+                        $("#hidenrq").val(dt);//利用隐藏域保存本班次信息
+                        $("#hidenbc").val(dcClass);
+                        $("#hidenuid").val(CurUserID);
+                        $.ajax({
+                            url: '/OndutyPb/getclassJbsx',//获取上一班次的交班信息
+                            data: {
+                                dt: dt,//2016-3-10 6:00:00',
+                                dcClass: dcClass
+                            },
+                            type: 'post',
+                            success: function (data, ioArgs) {
+                                var ar = eval('(' + data + ')');
+                                if (ar.Success) {
+
+                                    $('#txtjb').html(ar.Msg);
+
+                                }
+                                else {
+                                    //$('#msgClass').html('');
+                                    //$('#msgClass').html('该日期为非排班日期！').css("color", "red");
+                                }
+                            },
+                            error: function (err, ioArgs) {
+                                layer.alert("系统错误！", { icon: 0 });
+
+                            }
+                        });
+
+
+                        $('#w').window('open');
+
+
+
+                        //$('#txtjb').text(ar.url);
+                        //alert(ar.url);
+
+                    }
+
+                }
+                else {
+                    layer.alert(ar.Msg, { icon: 0 });//早退提示
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.alert("系统错误！");
+            }
+        });
+
+        return false;
+        loadClass();
+    }
+
+
+    getdaybytype('');//根据当前日期，返回值班情况
+    //加载上周、本周、下周值班员列表信息 已修改 叶磊 2016年6月24日14时48分00秒
+    function getdaybytype(dt) {
+        $.ajax({
+            url: '/OndutyPb/getDCInfoByDT',
+            data: {
+                dt: dt,
+            },
+            type: 'post',
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    //$('#msg').html('').removeAttr("style");
+                    $('#msg').html(ar.Msg);
+                }
+                else {
+                    //$('#msg').html('');
+                    //$('#msg').html('该日期为非排班日期！').css("color", "red");
+                    layer.alert(ar.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.alert("系统错误！");
+            }
+        });
+    }
+
+    loadClass();//页面加载
+    //加载各班次信息
+    function loadClass() {
+
+        $.ajax({
+            url: '/OndutyPb/getClass',
+            data: {
+                tm: '',//2016-3-10 6:00:00',
+            },
+            type: 'post',
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#msgClass').html('').removeAttr("style");
+                    $('#msgClass').html(ar.Msg);
+                }
+                else {
+                    $('#msgClass').html('');
+                    $('#msgClass').html('该日期不需要值班！').css("color", "red");
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.alert("系统错误！");
+            }
+        });
+    }
+</script>

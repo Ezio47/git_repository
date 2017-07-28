@@ -1,0 +1,423 @@
+﻿@using ManagerSystemClassLibrary;
+@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+    var curorgno = SystemCls.getCurUserOrgNo();
+    if (curorgno.Substring(6, 3) == "000" && curorgno.Substring(4, 2) != "00")
+    {
+        curorgno = curorgno.Substring(0, 6) + "xxx";
+    }
+    else
+    {
+        curorgno = SystemCls.getCurUserOrgNo();
+    }
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <ul>
+                        <li class="homeUL">
+                            单位：<div id="tbxORGNO" class="easyui-tree"></div>&nbsp;&nbsp;&nbsp;
+                            无线电传输方式：<select id="tbxTRANSFERMODETYPE">@Html.Raw(@ViewBag.TransfermodeType)</select>&nbsp;&nbsp;&nbsp;
+                            使用现状：<select id="tbxUSESTATE">@Html.Raw(@ViewBag.UsesSate)</select>&nbsp;&nbsp;&nbsp;
+                            名称：<input id="tbxNAME" type="text" class="input-small" style="width:120px" value="" />
+                            <input type="button" value="查询" onclick="query('1')" class="btnSearchCss" />
+                            <input type="button" value="添加" onclick="Manager('Add','','')" id="btnAdd" style="display:none;" class="btnAddCss" />
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" class="LayoutCenterBG">
+                <div class="divTable" id="divTable">
+
+                </div>
+            </div>
+            <div data-options="region:'south'" title="" style=" height:40px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
+                <div class="divPager" id="divPager">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="divMan" id="tableAdd" style="display:none;margin-left:5px;margin-top:8px">
+    <input id="HidID" name="HidID" type="hidden" value="" />
+    <table cellpadding="0" cellspacing="0">
+        <tr>
+            <td style="width:80px;">单位：</td>
+            <td><select id="BYORGNO" class="easyui-combotree" style="width:200px;"></select> </td>
+            <td style="width:110px;">无线电传输方式：</td>
+            <td><select id="TRANSFERMODETYPE" style="width:99%">@Html.Raw(@ViewBag.TransfermodeTypeAdd) </select> </td>
+        </tr>
+        <tr>
+            <td style="width:80px;"><span style="color:red;">*</span>编号：</td>
+            <td><input id="NUMBER" type="text" class="input-small" value="" style="width:99%;" /></td>
+            <td style="width:80px;"><span style="color:red;">*</span>名称：</td>
+            <td><input id="NAME" type="text" class="input-small" value="" style="width:99%;" /></td>
+        </tr>
+        <tr>
+            <td style="width:80px;"><span style="color:red;">*</span>型号：</td>
+            <td><input id="MODEL" type="text" class="input-small" value="" style="width:99%;" /></td>
+            <td style="width:80px;"><span style="color:red;">*</span>监测内容：</td>
+            <td><input id="MONICONTENT" type="text" class="input-small" value="" style="width:99%;" /></td>
+        </tr>
+        <tr>
+            <td style="width:100px;">使用现状：</td>
+            <td><select id="USESTATE" style="width:99%">@Html.Raw(@ViewBag.UsesSateAdd) </select></td>
+            <td style="width:100px;">维护管理：</td>
+            <td><select id="MANAGERSTATE" style="width:99%">@Html.Raw(@ViewBag.ManagerStateAdd) </select></td>
+        </tr>
+        <tr>
+            <td style="width:80px;">经度：</td>
+            <td><input id="JD" type="text" class="input-small" value="" style="width:99%;" /></td>
+            <td style="width:80px;">纬度：</td>
+            <td>
+                <input id="WD" type="text" class="input-small" value="" style="width:65%;" />
+                <input type="button" value="地图定位" onclick="setPoint()" class="btnMapLoaclCss" />
+            </td>
+        </tr>
+        <tr>
+            <td style="width:80px;">建设日期：</td>
+            <td><input id="BUILDDATE" type="text" class="easyui-datebox" style="width:200px;height:28px;" value="" /> </td>
+            <td style="width:80px;">总价：</td>
+            <td><input id="WORTH" type="text" class="input-small" value="" style="width:86%" />&nbsp;万元</td>
+        </tr>
+        <tr>
+            <td style="width:80px;">地址：</td>
+            <td colspan="3"><input id="ADDRESS" type="text" class="input-small" value="" style="width:99%;" /></td>
+        </tr>
+        <tr>
+            <td style="width:80px;">备注：</td>
+            <td colspan="3"><input id="MARK" type="text" class="input-small" value="" style="width:99%;" /></td>
+        </tr>
+    </table>
+</div>
+
+<script type="text/javascript">
+    var bln = '@ViewBag.IsAdd';
+    if (bln == "1") {
+        document.getElementById('btnAdd').style.display = "";
+    }
+    //查询时的单位选择下拉框
+    $(function () {
+        $('#tbxORGNO').combotree({
+            url: '/DataCenter/OrgTreeget',
+            editable: false,
+            required: true,
+            panelHeight: 'auto',
+            onLoadSuccess: function (node, data) {
+                var t = $("#tbxORGNO").combotree('tree');//获取tree
+                t.tree("collapseAll");
+                node = t.tree("find", data[0].id);
+                t.tree("expand", node.target);//展开节点 expandTo
+            }
+        });
+        $('#tbxORGNO').combotree('setValue', "@curorgno");
+        query('1');
+    });
+
+    //添加、修改单位选择下拉框
+    $(function () {
+        $('#BYORGNO').combotree({
+            url: '/DataCenter/OnlyOrgTreeget',
+            editable: false,
+            required: true,
+            panelHeight: 'auto',
+            onLoadSuccess: function (node, data) {
+                var t = $("#BYORGNO").combotree('tree');//获取tree
+                t.tree("collapseAll");
+                node = t.tree("find", data[0].id);
+                t.tree("expand", node.target);//展开节点 expandTo
+            }
+        });
+        $('#BYORGNO').combotree('setValue', "@curorgno");
+    });
+
+    //查询
+    function query(Page) {
+        var pagesize = '0';
+        if (document.getElementById("selPageSize") != null) {
+            pagesize = document.getElementById("selPageSize").value;
+        }
+        var ORGNO = $('#tbxORGNO').combotree('getValue');
+        $.ajax({
+            url: '/PEST/GetMonitoringStationList',
+            data: {
+                BYORGNO: ORGNO,
+                TRANSFERMODETYPE: $("#tbxTRANSFERMODETYPE").val(),
+                USESTATE: $("#tbxUSESTATE").val(),
+                NAME: $("#tbxNAME").val(),
+                PageSize: pagesize,
+                Page: Page,
+            },
+            type: 'post',
+            dataType: 'json',
+            success: function (data) {
+                if (data.Success) {
+                    $('#divTable').html('');
+                    $('#divPager').html('');
+                    $('#divTable').html(data.tableInfo);
+                    $('#divPager').html(data.pagerInfo);
+                }
+                else {
+                    $('#divTable').html('');
+                    $('#divPager').html('');
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('系统异常!', { icon: 5 });
+            }
+        });
+    }
+
+    //选中改变颜色
+    function setColor(obj) {
+        $(obj).css("background-color", "#FFDAB9");
+        $("tr").not($(obj)).css("background-color", "");
+    }
+
+    //地图定位
+    function setPoint() {
+        var name = $('#NAME').val();
+        var jd = $("#JD").val();
+        var wd = $("#WD").val();
+        layer.open({
+            type: 2,
+            title: name + '地图位置设置',
+            btn: ['保存', '关闭'],
+            area: ['70%', '80%'],
+            fix: false, //不固定
+            maxmin: true,
+            content: '/MapCommon/GetMapPontIndex?jd=' + jd + "&wd=" + wd,
+            yes: function (index, layero) { //或者使用btn1
+                //按钮【按钮一】的回调
+                var ptxt = layer.getChildFrame("p", index);
+                var arr = ptxt.html().split(',');
+                if ($.trim(arr) != "") {
+                    var jd = parseFloat(arr[0]).toFixed(6);
+                    var wd = parseFloat(arr[1]).toFixed(6);
+                    $('#JD').val(jd);
+                    $('#WD').val(wd);
+                }
+                layer.close(index);
+            },
+            cancel: function (index) {
+                layer.close(index);
+            }
+        });
+    }
+
+    //地图定位展示
+    function Position(tablename, id, name) {
+        layer.open({
+            type: 2,
+            title: name + '地图位置',
+            area: ['70%', '80%'],
+            fix: true,
+            maxmin: true,
+            content: '/MapCommon/MapPostionCommonIndex?tablename=' + tablename + "&id=" + id
+        })
+    }
+
+    //数据增、删、改、查看
+    function Manager(Method, ID, page) {
+        if (Method == 'Del') {
+            layer.confirm('确实要删除吗?', { icon: 3, title: '提示' }, function (index) {
+                $.ajax({
+                    type: "post",
+                    url: "/PEST/MonitoringStationManager",
+                    data: { PEST_MONITORINGSTATIONID: ID, Method: Method },
+                    dataType: "json",
+                    success: function (re) {
+                        if (re.Success) {
+                            layer.msg(re.Msg, { icon: 6 });
+                            query(page);
+                        }
+                        else {
+                            layer.msg(re.Msg, { icon: 5 });
+                        }
+                    },
+                    error: function () {
+                        layer.msg('系统异常!', { icon: 5 });
+                    }
+                });
+            });
+        }
+        else if (Method == 'See') {
+            layer.open({
+                type: 2,
+                title: '查看监测点',
+                area: ['55%', '65%'],
+                fix: true,
+                maxmin: true,
+                content: '/PEST/MonitoringStationDataSee?PEST_MONITORINGSTATIONID=' + ID,
+            })
+        }
+        else {
+            if (Method == 'Mdy') {
+                $.ajax({
+                    type: "post",
+                    url: "/PEST/GetMONITORINGSTATIONjson",
+                    data: { PEST_MONITORINGSTATIONID: ID, },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.PEST_MONITORINGSTATIONID != '') {
+                            $('#BYORGNO').combotree('setValue', data.BYORGNO);
+                            $("#TRANSFERMODETYPE").val(data.TRANSFERMODETYPE);
+                            $("#NUMBER").val(data.NUMBER);
+                            $("#NAME").val(data.NAME);
+                            $("#MODEL").val(data.MODEL);
+                            $("#MONICONTENT").val(data.MONICONTENT);
+                            $("#USESTATE").val(data.USESTATE);
+                            $("#MANAGERSTATE").val(data.MANAGERSTATE);
+                            $("#JD").val(data.JD);
+                            $("#WD").val(data.WD);
+                            $('#BUILDDATE').datebox('setValue', data.BUILDDATE);
+                            $("#WORTH").val(data.WORTH);
+                            $("#ADDRESS").val(data.ADDRESS);
+                            $("#MARK").val(data.MARK);
+                        }
+                    },
+                    error: function () {
+                        layer.msg('系统异常!', { icon: 5 });
+                    }
+                });
+            }
+            if (Method == 'Add') {
+                $('#HidID').val('');
+                $('#BYORGNO').combotree('setValue', '@curorgno');
+                $("#TRANSFERMODETYPE").val('');
+                $("#NUMBER").val('');
+                $("#NAME").val('');
+                $("#MODEL").val('');
+                $("#MONICONTENT").val('');
+                $("#USESTATE").val('');
+                $("#MANAGERSTATE").val('');
+                $("#JD").val('');
+                $("#WD").val('');
+                $('#BUILDDATE').datebox('setValue', '');
+                $("#WORTH").val('');
+                $("#ADDRESS").val('');
+                $("#MARK").val('');
+            }
+            var btnInfo = ['保存', '取消'];
+            var str = "添加监测点";
+            if (Method == "Mdy")
+                str = "修改监测点";
+            layer.open({
+                type: 1,
+                title: str,
+                area: ['55%', '70%'],
+                btn: btnInfo,
+                shade: 0,
+                maxmin: true,
+                content: $('#tableAdd'),
+                yes: function (index, layero) {
+                    var HID = $('#HidID').val();
+                    if (HID != "") {
+                        ID = HID;
+                        Method = 'Mdy';
+                    }
+                    var number = $('#NUMBER').val();                                                                                                                 
+                    if ($.trim(number) == "") {
+                        layer.msg('请输入编号!', { icon: 5 });
+                        $('#NUMBER').focus();
+                        return;
+                    }
+                    var name = $('#NAME').val();
+                    if ($.trim(name) == "") {
+                        layer.msg('请输入名称!', { icon: 5 });
+                        $('#NAME').focus();
+                        return;
+                    }
+                    var model = $('#MODEL').val();
+                    if ($.trim(model) == "") {
+                        layer.msg('请输入型号!', { icon: 5 });
+                        $('#MODEL').focus();
+                        return;
+                    }
+                    var monicontent = $("#MONICONTENT").val();
+                    if ($.trim(monicontent) == "") {
+                        layer.msg('请输入监测内容!', { icon: 5 });
+                        $('#MONICONTENT').focus();
+                        return;
+                    }
+                    var worth = $("#WORTH").val();
+                    if ($.trim(worth) != "") {
+                        if (CheckNUM($.trim(worth)) == false) {
+                            layer.msg('总价请填写数字!', { icon: 5 });
+                            $('#WORTH').focus();
+                            return;
+                        }
+                    }
+                    var reg = /^-?\d+\.\d{1,6}$/;
+                    var jd = $("#JD").val();
+                    if ($.trim(jd) != "") {
+                        if (!reg.test(jd)) {
+                            layer.msg('经度格式不正确!', { icon: 5 });
+                            $('#JD').focus();
+                            return;
+                        }
+                    }
+                    var wd = $("#WD").val();
+                    if ($.trim(wd) != "") {
+                        if (!reg.test(wd)) {
+                            layer.msg('经度格式不正确!', { icon: 5 });
+                            $('#WD').focus();
+                            return;
+                        }
+                    }
+                    $.ajax({
+                        type: "post",
+                        url: "/PEST/MonitoringStationManager",
+                        data: {
+                            PEST_MONITORINGSTATIONID: ID,
+                            BYORGNO: $('#BYORGNO').combotree('getValue'),
+                            TRANSFERMODETYPE: $("#TRANSFERMODETYPE").val(),
+                            NUMBER: $("#NUMBER").val(),
+                            NAME: $("#NAME").val(),
+                            MODEL: $("#MODEL").val(),
+                            MONICONTENT: $("#MONICONTENT").val(),
+                            USESTATE: $("#USESTATE").val(),
+                            MANAGERSTATE: $("#MANAGERSTATE").val(),
+                            JD: $("#JD").val(),
+                            WD: $("#WD").val(),
+                            BUILDDATE: $('#BUILDDATE').datebox('getValue'),
+                            WORTH: $("#WORTH").val(),
+                            ADDRESS: $("#ADDRESS").val(),
+                            MARK: $("#MARK").val(),
+                            Method: Method
+                        },
+                        dataType: "json",
+                        success: function (re) {
+                            if (re.Success) {
+                                $('#HidID').val(re.Url);
+                                layer.confirm(re.Msg + ' 请返回?', { icon: 3, title: '提示' }, function (index2) {
+                                    layer.close(index2);
+                                    layer.close(index);
+                                });
+                                query('1');
+                            }
+                            else {
+                                layer.msg(re.Msg, { icon: 5 });
+                            }
+                        },
+                        error: function () {
+                            layer.msg('系统异常!', { icon: 5 });
+                        }
+                    });
+                },
+                cancel: function (index) {
+                    layer.close(index);
+                }
+            })
+        }
+    }
+</script>

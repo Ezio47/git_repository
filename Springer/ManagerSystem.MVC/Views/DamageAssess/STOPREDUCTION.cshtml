@@ -1,0 +1,392 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        停(减)产名称： <input id="STOPNAME" type="text" value="" />
+                        停(减)产类别：<select id="STOPCODE" onchange="query()" style="width:100px;">@Html.Raw(@ViewBag.STOPCODE)</select>
+                        <input type="button" value="查询" onclick="query()" class="btnSearchCss" />
+                        <input type="button" value="添加" onclick="Manager('Add', '', '')" class="btnAddCss" />
+                    </div>
+                </div>
+            </div>
+
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <input id="hidFIREINFOID" type="hidden" value="@ViewBag.FIREINFOID" />
+                <div class="divTable" id="divTable">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="divMan" id="tableAdd" style="display:none;margin-left:5px;margin-top:8px">
+    <input id="HidID" name="HidID" type="hidden" value="" />
+    <table cellpadding="0" cellspacing="0">
+        <tr>
+            <td style="width:100px;">停(减)产名称: </td>
+            <td><input id="tbxSTOPNAME" type="text" value="" style="width:99%;" /></td>
+            <td style="width:100px;">停(减)产类别: </td>
+            <td><select id="tbxSTOPCODE" style="width: 99%;" onchange="stopCodeChange(null)">@Html.Raw(@ViewBag.STOPCODEAdd)</select></td>
+        </tr>
+        <tr>
+            <td id="td1">停产人数:</td>
+            <td>
+                <input id="tbxSTOPCOUNT" type="text" value="" style="width:80%;" disabled="" />
+                <span style="color: gray;" id="span1">人</span>
+            </td>
+            <td id="td2">停产天数:</td>
+            <td>
+                <input id="tbxSTOPTIME" type="text" value="" style="width: 80%;" />
+                <span style="color: gray;" id="span2">d</span>
+            </td>
+        </tr>
+        <tr>
+            <td id="td3">日均工资总额:</td>
+            <td>
+                <input id="tbxSTOPPRICE" type="text" value="" style="width: 70%;" />
+                <span style="color: gray;" id="span3">元/人/d</span>
+            </td>
+            <td colspan="2"></td>
+        </tr>
+        <tr>
+            <td>备注:</td>
+            <td colspan="3"><input id="tbxMARK" type="text" value="" style="width:99%;" /></td>
+        </tr>
+    </table>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        query();
+        stopCodeChange(null);
+    });
+
+    //查询
+    function query() {
+        $.ajax({
+            url: '/DamageAssess/GetSTOPREDUCTIONList',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: { FIREINFOID: $("#hidFIREINFOID").val(), STOPNNAME: $("#STOPNAME").val(), STOPNCODE: $("#STOPCODE").val() },
+            dataType: 'json',
+            success: function (data) {
+                if (data.Success) {
+                    $('#divTable').html('');
+                    $('#divTable').html(data.Msg);
+                }
+                else {
+                    $('#divTable').html('');
+                }
+            },
+            error: function (error) {
+                layer.msg('查询异常!', { icon: 5 });
+            }
+        });
+    }
+
+    //停(减)产类别
+    function stopCodeChange(code) {
+        if (code == null) {
+            code = $('#tbxSTOPCODE').val();
+        }
+        if (code == "1") {
+            $('#tbxSTOPCOUNT').removeAttr("disabled");
+            $('#td1').html('停工人数');
+            $('#span1').html('人');
+            $('#td2').html('停工天数');
+            $('#span2').html('d')
+            $('#td3').html('日均工资总额');
+            $('#span3').html('元/人/d')
+            $("#tbxSTOPNAME").val('');
+            $("#tbxSTOPCOUNT").val('');
+            $("#tbxSTOPTIME").val('');
+            $("#tbxSTOPPRICE").val('');
+            $("#tbxMARK").val('');
+        }
+        if (code == "2") {
+            $('#tbxSTOPCOUNT').removeAttr("disabled");
+            $('#td1').html('产品数量');
+            $('#span1').html('件/d');
+            $('#td2').html('停(减)产时间');
+            $('#span2').html('d')
+            $('#td3').html('产品出厂价');
+            $('#span3').html('元/件')
+            $("#tbxSTOPNAME").val('');
+            $("#tbxSTOPCOUNT").val('');
+            $("#tbxSTOPTIME").val('');
+            $("#tbxSTOPPRICE").val('');
+            $("#tbxMARK").val('');
+        }
+        if (code == "3") {
+            $('#tbxSTOPCOUNT').attr("disabled", "disabled");;
+            $('#td1').html('停业数量');
+            $('#span1').html('');
+            $('#td2').html('停业天数');
+            $('#span2').html('d')
+            $('#td3').html('日营业额');
+            $('#span3').html('元/d')
+            $("#tbxSTOPNAME").val('');
+            $("#tbxSTOPCOUNT").val('');
+            $("#tbxSTOPTIME").val('');
+            $("#tbxSTOPPRICE").val('');
+            $("#tbxMARK").val('');
+        }
+    }
+
+    //选中改变颜色
+    function setColor(obj) {
+        $(obj).css("background-color", "#FFDAB9");
+        $("tr").not($(obj)).css("background-color", "");
+    }
+
+    //数据增、删、改、查看
+    function Manager(Method, ID) {
+        if (Method == 'Del') {
+            layer.confirm('确实要删除吗?', { icon: 3, title: '提示' }, function (index) {
+                $.ajax({
+                    type: "post",
+                    url: "/DamageAssess/STOPREDUCTIONManager",
+                    data: { STOPID: ID, Method: Method },
+                    dataType: "json",
+                    success: function (re) {
+                        if (re.Success) {
+                            layer.msg(re.Msg, { icon: 6 });
+                            query();
+                        }
+                        else {
+                            layer.msg(re.Msg, { icon: 5 });
+                        }
+                    },
+                    error: function () {
+                        layer.msg('系统异常!', { icon: 5 });
+                    }
+                });
+            });
+        }
+        else if (Method == 'See') {
+            layer.open({
+                type: 2,
+                title: '查看停(减)产损失',
+                area: ['70%', '70%'],
+                fix: true,
+                maxmin: true,
+                content: '/DamageAssess/STOPREDUCTIONDataSee?STOPID=' + ID,
+            })
+        }
+        else {
+            if (Method == 'Add') {
+                stopCodeChange('1');
+                $("#HidID").val('');
+                $("#tbxSTOPNAME").val('');
+                $("#tbxSTOPCODE").val('1');
+                $("#tbxSTOPCOUNT").val('');
+                $("#tbxSTOPTIME").val('');
+                $("#tbxSTOPPRICE").val('');
+                $("#tbxMARK").val('');
+            }
+            if (Method == 'Mdy') {
+                $.ajax({
+                    type: "post",
+                    url: "/DamageAssess/GetSTOPREDUCTIONJson",
+                    data: { STOPID: ID, },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.STOPREDUCTIONID != '') {
+                            stopCodeChange(data.STOPREDUCTIONCODE);
+                            $('#HidID').val(data.STOPREDUCTIONID);
+                            $("#tbxSTOPNAME").val(data.STOPREDUCTIONNAME);
+                            $("#tbxSTOPCODE").val(data.STOPREDUCTIONCODE);
+                            $("#tbxSTOPCOUNT").val(data.STOPREDUCTIONCOUNT);
+                            $("#tbxSTOPTIME").val(data.STOPREDUCTIONTIME);
+                            $("#tbxSTOPPRICE").val(data.STOPREDUCTIONPRICE);
+                            $("#tbxMARK").val(data.MARK);
+                        }
+                    },
+                    error: function () {
+                        layer.msg('系统异常!', { icon: 5 });
+                    }
+                });
+            }
+            var btnInfo = ['保存', '取消'];
+            var str = "添加停(减)产损失";
+            if (Method == "Mdy") {
+                str = "修改停(减)产损失";
+            }
+            layer.open({
+                type: 1,
+                title: str,
+                area: ['70%', '72%'],
+                btn: btnInfo,
+                shade: 0,
+                maxmin: true,
+                content: $('#tableAdd'),
+                yes: function (index, layero) {
+                    var HID = $('#HidID').val();
+                    if (HID != "") {
+                        ID = HID;
+                        Method = 'Mdy';
+                    }
+                    var stopName = $("#tbxSTOPNAME").val();
+                    if ($.trim(stopName) == "") {
+                        layer.msg('请输入停(减)产名称!', { icon: 5 });
+                        $("#tbxSTOPNAME").focus();
+                        return;
+                    }
+                    var stopCode = $("#tbxSTOPCODE").val();
+                    var stopCount = $("#tbxSTOPCOUNT").val();
+                    var stopTime = $("#tbxSTOPTIME").val();
+                    var stopPrice = $("#tbxSTOPPRICE").val();
+                    if (stopCode == "1") {
+                        if ($.trim(stopCount) == "") {
+                            layer.msg('请输入停工人数!', { icon: 5 });
+                            $("#tbxSTOPCOUNT").focus();
+                            return;
+                        }
+                        else {
+                            if (CheckINT(stopCount) == false) {
+                                layer.msg('停工人数请输入正整数!', { icon: 5 });
+                                $('#tbxSTOPCOUNT').focus();
+                                return;
+                            }
+                        }
+
+                        if ($.trim(stopTime) == "") {
+                            layer.msg('请输入停工天数!', { icon: 5 });
+                            $("#tbxSTOPTIME").focus();
+                            return;
+                        }
+                        else {
+                            if (CheckINT(stopTime) == false) {
+                                layer.msg('停工天数请输入正整数!', { icon: 5 });
+                                $('#tbxSTOPTIME').focus();
+                                return;
+                            }
+                        }
+
+                        if ($.trim(stopPrice) == "") {
+                            layer.msg('请输入日均工资总额!', { icon: 5 });
+                            $("#tbxSTOPPRICE").focus();
+                            return;
+                        }
+                        else {
+                            if (CheckNUM2(stopPrice) == false) {
+                                layer.msg('日均工资总额请输入数字,且最多保留2位有效数字!', { icon: 5 });
+                                $('#tbxSTOPPRICE').focus();
+                                return;
+                            }
+                        }
+                    }
+                    if (stopCode == "2") {
+                        if ($.trim(stopCount) == "") {
+                            layer.msg('请输入产品数量!', { icon: 5 });
+                            $("#tbxSTOPCOUNT").focus();
+                            return;
+                        }
+                        else {
+                            if (CheckNUM2(stopCount) == false) {
+                                layer.msg('产品数量请输入数字,且最多保留2位有效数字!', { icon: 5 });
+                                $('#tbxSTOPCOUNT').focus();
+                                return;
+                            }
+                        }
+
+                        if ($.trim(stopTime) == "") {
+                            layer.msg('请输入停(减)产时间!', { icon: 5 });
+                            $("#tbxSTOPTIME").focus();
+                            return;
+                        }
+                        else {
+                            if (CheckINT(stopTime) == false) {
+                                layer.msg('停(减)产时间请输入正整数!', { icon: 5 });
+                                $('#tbxSTOPTIME').focus();
+                                return;
+                            }
+                        }
+
+                        if ($.trim(stopPrice) == "") {
+                            layer.msg('请输入产品出厂价!', { icon: 5 });
+                            $("#tbxSTOPPRICE").focus();
+                            return;
+                        }
+                        else {
+                            if (CheckNUM2(stopPrice) == false) {
+                                layer.msg('产品出厂价请输入数字,且最多保留2位有效数字!', { icon: 5 });
+                                $('#tbxSTOPPRICE').focus();
+                                return;
+                            }
+                        }
+                    }
+
+                    if (stopCode == "3") {
+                        if ($.trim(stopTime) == "") {
+                            layer.msg('请输入停业天数!', { icon: 5 });
+                            $("#tbxSTOPTIME").focus();
+                            return;
+                        }
+                        else {
+                            if (CheckINT(stopTime) == false) {
+                                layer.msg('停业天数请输入正整数!', { icon: 5 });
+                                $('#tbxSTOPTIME').focus();
+                                return;
+                            }
+                        }
+
+                        if ($.trim(stopPrice) == "") {
+                            layer.msg('请输入日均工资总额!', { icon: 5 });
+                            $("#tbxSTOPPRICE").focus();
+                            return;
+                        }
+                        else {
+                            if (CheckNUM2(stopPrice) == false) {
+                                layer.msg('日均工资总额请输入数字,且最多保留2位有效数字!', { icon: 5 });
+                                $('#tbxSTOPPRICE').focus();
+                                return;
+                            }
+                        }
+                    }
+
+                    $.ajax({
+                        type: "post",
+                        url: "/DamageAssess/STOPREDUCTIONManager",
+                        data: {
+                            STOPID: ID,
+                            FIREINFOID: $('#hidFIREINFOID').val(),
+                            STOPNAME: stopName,
+                            STOPCODE: stopCode,
+                            STOPCOUNT: stopCount,
+                            STOPTIME: stopTime,
+                            STOPPRICE: stopPrice,
+                            MARK: $('#tbxMARK').val(),
+                            Method: Method
+                        },
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.Success) {
+                                $('#HidID').val(data.Url);
+                                layer.confirm(data.Msg + ' 请返回?', { icon: 3, title: '提示' }, function (index2) {
+                                    layer.close(index2);
+                                    layer.close(index);
+                                });
+                                query();
+                            }
+                            else {
+                                layer.msg(data.Msg, { icon: 5 });
+                            }
+                        },
+                        error: function () {
+                            layer.msg('系统异常!', { icon: 5 });
+                        }
+                    });
+                },
+                cancel: function (index) {
+                    layer.close(index);
+                }
+            })
+        }
+    }
+</script>

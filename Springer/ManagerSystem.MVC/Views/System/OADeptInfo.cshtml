@@ -1,0 +1,142 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+}
+@section Header{
+}
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        <input type="button" value="保存" onclick="Manager()" id="btnSave" class="btnSaveCss">
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <div class="divTable">
+                    <table cellpadding="0" cellspacing="0">
+                        <thead>
+                            <tr><th style="width:50%;">森林防火系统</th><th style="width:50%;">OA办公系统</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="center"><select id="tbxORGNO" onchange="ORGNOChange()">@Html.Raw(@ViewBag.SysOrg)</select></td>
+                                <td class="center"></td>
+                            </tr>
+                        </tbody>
+                        <tbody id="OABodyInfo">
+                            @Html.Raw(@ViewBag.DeptInfo)
+                        </tbody>
+                        <tbody>
+                            <tr>
+                                <td class="left " colspan="2"><font color="red">说明：将防火系统部门与办公系统部门做关联,方便从防火系统同传到办公系统的用户找到所属部门。</font></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    FindOADept();
+    //行政单位发生变化
+    function ORGNOChange() {
+        var orgNo = $("#tbxORGNO").val();
+        $.ajax({
+            type: 'get',
+            url: '/System/ORGNOChange',
+            dataType: 'html',
+            data: { orgNo: orgNo },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#OABodyInfo').html("");
+                    $('#OABodyInfo').html(ar.Msg);
+                    FindOADept();
+                }
+                else {
+                    layer.msg(ar.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("查询异常!", { icon: 5 });
+            }
+        });
+    }
+    //查找已关联的OA部门
+    function FindOADept() {
+        var _len = $("#OABodyInfo tr").length;//行数
+        if (_len > 0) {
+            var ORGNO = document.getElementById("tbxORGNO").value;
+            var SysDeptId = "";
+            for (var i = 0; i < _len; i++) {
+                if (i == _len - 1) {
+                    SysDeptId = SysDeptId + document.getElementById("sysdept" + i).value;
+                }
+                else {
+                    SysDeptId = SysDeptId + document.getElementById("sysdept" + i).value + ',';
+                }
+            }
+            $.ajax({
+                url: '/System/FindOADept',
+                timeout: 10000, //10秒后超时，如果为0则永不超时
+                data: { sysORGNO: ORGNO, sysDeptIdList: SysDeptId },
+                success: function (data, ioArgs) {
+                    var ar = eval('(' + data + ')');
+                    if (ar.Success) {
+                        var IdArray = ar.Msg.split(',');
+                        for (var i = 0; i < IdArray.length; i++) {
+                            $('#tbxOADept' + i + '').val(IdArray[i])
+                        }
+                    }
+                    else {
+                        layer.msg(ar.Msg);
+                    }
+                },
+                error: function (err) {
+                    layer.msg("查询异常!");
+                }
+            });
+        }
+    }
+    //保存部门关联
+    function Manager() {
+        var _len = $("#OABodyInfo tr").length;//行数
+        var SysORGNO = document.getElementById("tbxORGNO").value;
+        var SysDeptID = "";
+        var OADeptID = "";
+        for (var i = 0; i < _len; i++) {
+            if (i == _len - 1) {
+                SysDeptID = SysDeptID + document.getElementById("sysdept" + i).value;
+                OADeptID = OADeptID + document.getElementById("tbxOADept" + i).value;
+            }
+            else {
+                SysDeptID = SysDeptID + document.getElementById("sysdept" + i).value + ',';
+                OADeptID = OADeptID + document.getElementById("tbxOADept" + i).value + ',';
+            }
+        }
+        $.ajax({
+            url: '/System/OADeptManager',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: { SysORGNO: SysORGNO, SysDeptID: SysDeptID, OADeptID: OADeptID },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    layer.alert(ar.Msg, { icon: 6 });
+                }
+                else {
+                    layer.msg(ar.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("保存异常!");
+            }
+        });
+    }
+</script>

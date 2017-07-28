@@ -1,0 +1,58 @@
+﻿@{
+    Layout = null;
+}<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" class='indexHtml'>
+<head id="Head1">
+    <title>@ViewBag.Title</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+    @Scripts.Render("~/bundles/jquery")
+    <script src="/Scripts/jquery-easyui-1.4/jquery.easyui.min.js"></script>
+    <script src="/Scripts/jquery-easyui-1.4/locale/easyui-lang-zh_CN.js"></script>
+    <script src="/Scripts/jquery-easyui-1.4/validateHelper.js"></script>
+    <link href="/Content/themes/easyui/easyui.css" rel="stylesheet" />
+    <link href="/Content/themes/easyui/color.css" rel="stylesheet" />
+    <link href="/Content/themes/easyui/icon.css" rel="stylesheet" />
+
+
+    <link href="/Content/themes/easyui/Default.css" rel="stylesheet" />
+
+    <script src="~/Scripts/layer/layer.js"></script>
+    <script src="~/Scripts/laydate/laydate.js"></script>
+    <script src="~/Scripts/Springer.js"></script>
+    <link rel="stylesheet" href="~/Content/themes/assets/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="~/Content/themes/assets/css/font-awesome.css" />
+
+</head>
+<body>
+    <div class="divTable" id="DivTableList">
+        @*@Html.Raw(ViewBag.PERALARMList)*@
+    </div>
+</body>
+</html>
+<script language="javascript">
+    $.ajax({
+        url: '/System/getYJ_XY_WORKTable',
+
+        data: {
+        },
+        success: function (data, ioArgs) {
+            var ar = eval('(' + data + ')');
+            if (ar.Success) {
+                $('#DivTableList').html(ar.Msg);
+                //layer.msg(ar.Msg);//   alert('保存成功!！');
+
+            }
+            else {
+            }
+        },
+        error: function (err, ioArgs) {
+            layer.msg('获取异常，请刷新重试');
+        }
+    });
+
+    function show(DANGERCLASS, YJXYDEPT) {
+
+
+    }
+</script>

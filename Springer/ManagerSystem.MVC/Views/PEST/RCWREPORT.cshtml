@@ -1,0 +1,133 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+}
+@section Header{
+    <script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        单位：<select id="tbxORGNO" onchange="Query()">@Html.Raw(@ViewBag.vdOrg)</select>&nbsp;&nbsp;&nbsp;
+                        年份：<input id="tbxTime" type="text" class="Wdate" style="width:100px" value="@ViewBag.Time" onclick="WdatePicker({ dateFmt: 'yyyy'})" />
+                        <input type="button" value="查询" onclick="Query()" class="btnSearchCss" />
+                        <input type="button" value="保存" onclick="Manager()" id="btnSave" class="btnSaveCss" style="display:none;">
+                        <input type="button" value="导出" onclick="Export()" id="btnExport" class="btnOutputCss" style="display:none;">
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <input id="REPORTCount" type="hidden" value="@ViewBag.REPORTCount" />
+                <input id="REPORTCols" type="hidden" value="@ViewBag.REPORTCols" />
+                <div id="divTable" class="divTable">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var blnSave = '@ViewBag.Save';
+    if (blnSave == "1") {
+        document.getElementById('btnSave').style.display = "";
+    }
+    var blnExport = '@ViewBag.Export';
+    if (blnExport == "1") {
+        document.getElementById('btnExport').style.display = "";
+    }
+    Query();
+    function Query() {
+        var time = $('#tbxTime').val();
+        if (time == "") {
+            layer.msg("请选择查询年份!", { icon: 5 });
+            return;
+        }
+        $.ajax({
+            type: 'get',
+            url: '/PEST/RCWREPORTQuery',
+            dataType: 'json',
+            data: { ORGNO: $('#tbxORGNO').val(), Time: time },
+            success: function (data, ioArgs) {
+                if (data.Success) {
+                    $('#divTable').html("");
+                    $('#divTable').html(data.Msg);
+                }
+                else {
+                    $('#divTable').html("");
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("查询异常!", { icon: 5 });
+            }
+        });
+    }
+
+    function Manager() {
+        var REPORTCount = $('#REPORTCount').val();
+        if (REPORTCount != "") {
+            REPORTCount = parseInt(REPORTCount);
+        }
+        if (REPORTCount > 0) {
+            var REPORTCols = $('#REPORTCols').val().split(',');
+            var strRCWCODE = "";
+            var strRCWVALUE = "";
+            for (var i = 0; i < REPORTCount; i++) {
+                var Cols = REPORTCols[i];
+                for (var x = 0; x < Cols; x++) {
+                    var temp = i.toString() + x.toString();
+                    var RCWVALUE = $('#txtValue' + temp + '').val();
+                    if ($.trim(RCWVALUE) != "") {
+                        if (!CheckNUM2(RCWVALUE)) {
+                            layer.msg('财务数据请输入正数,且最多保留2位有效小数!', { icon: 5 });
+                            $('#txtValue' + temp + '').focus();
+                            return;
+                        }
+                        else {
+                            strRCWCODE = strRCWCODE + $('#txtCode' + temp + '').val() + ",";
+                            strRCWVALUE = strRCWVALUE + RCWVALUE + ",";
+                        }
+                    }
+                }
+            }
+            $.ajax({
+                url: '/PEST/RCWREPORTManager',
+                type: 'post',
+                timeout: 10000, //10秒后超时，如果为0则永不超时
+                dataType: 'json',
+                data: {
+                    BYORGNO: $('#tbxORGNO').val(),
+                    RCWYEAR: $('#tbxTime').val(),
+                    RCWCODE: strRCWCODE,
+                    RCWVALUE: strRCWVALUE
+                },
+                success: function (data, ioArgs) {
+                    if (data.Success) {
+                        layer.msg(data.Msg, { icon: 6 });
+                        Query();
+                    }
+                    else {
+                        layer.msg(data.Msg, { icon: 5 });
+                    }
+                },
+                error: function (err, ioArgs) {
+                    layer.msg("保存异常!", { icon: 5 });
+                }
+            });
+        }
+    }
+
+    function Export() {
+        var ORGNO = $('#tbxORGNO').val();
+        var Time = $('#tbxTime').val();
+        var url = '/PEST/RCWREPORTExportExcel?ORGNO=' + ORGNO + '&Time=' + Time;
+        window.location = url;
+    }
+</script>

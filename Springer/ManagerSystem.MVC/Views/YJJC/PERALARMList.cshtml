@@ -1,0 +1,118 @@
+﻿@{
+    //ViewBag.Title =  "首页";
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+}
+ 
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="" class="LayoutCenterBG">
+        <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+            <div class="divOP">
+                <div class="home ">
+                    区域：<select id="tbxBYORGNO">
+                        @Html.Raw(@ViewBag.vdOrg)
+                    </select>
+                    姓名：<input id="tbxPERALARMNAME" type="text" style="width:90px" value="@ViewBag.PERALARMNAME" />
+                    号码：<input id="tbxPERALARMPHONE" type="text" style="width:80px" value="@ViewBag.PERALARMPHONE" />
+                    时间：<input class="easyui-datebox" id="tbxDateBegin" type="text" style="width:90px;height:28px;" value="@ViewBag.DateBegin" />
+                    至<input class="easyui-datebox" id="tbxDateEnd" type="text" value="@ViewBag.DateEnd" style="width:90px;height:28px;" />
+
+                    @*开始时间：<input class="date-picker" id="tbxDateBegin" value="@ViewBag.DateBegin" style="width:90px;" type="text" data-date-format="yyyy-mm-dd">
+                        结束时间：<input class="date-picker" id="tbxDateEnd" value="@ViewBag.DateEnd" style="width:90px;" type="text" data-date-format="yyyy-mm-dd">*@
+                    @*处理结果：<select id="tbxMANSTATE">
+                            <option value="">全部</option>
+                            <option value="0">待处理</option>
+                            <option value="1">非火情</option>
+                            <option value="2">火情</option>
+                        </select>*@
+                    <input type="button" class="btnAddCss" value="添加" onclick="Manager('Add')">
+                    <input type="button" class="btnSearchCss" value="查询" onclick="query()" />
+
+                </div>
+            </div>
+        </div>
+        <div data-options="region:'center'" title="" class="LayoutCenterBG">
+            <div class="divTable">
+                @Html.Raw(ViewBag.PERALARMList)
+            </div>
+        </div>
+        <div data-options="region:'south'" title="" style=" height:40px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
+            @Html.Raw(@ViewBag.PagerInfo)
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    //document.getElementById("tbxMANSTATE").value = '@ViewBag.MANSTATE';
+
+    function Del(id) {
+        if (confirm('确实要删除该内容吗?')) {
+            $.ajax({
+                url: '/YJJC/PERALARMManger',
+                cache: false,
+                data: {
+                    PERALARMID: id
+                    , Method: 'Del'
+                    , returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)'
+                },
+                type: 'post',
+                error: function () {
+                    alert('错误:异常!', 'error');
+                },
+                success: function (re) {
+
+                    var ar = eval('(' + re + ')');
+                    if (ar.Success) {
+                        if (confirm(ar.Msg + ' 请返回！')) {
+                            window.location.reload();//.assign(ar.Url);
+                        }
+                    }
+                    else {
+                        alert(ar.Msg, "Error");
+                    }
+                }
+            });
+        }
+
+
+    }
+
+    @*$('#tbxMANSTATE').val('@ViewBag.MANSTATE');*@
+
+    function Manager() {
+        window.location.assign('/YJJC/PERALARMMan');
+    }//查询
+    function query() {
+        $.ajax({
+            url: '/YJJC/PERALARMListQuery',
+            cache: false,
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: {
+                PageSize: document.getElementById("selPageSize").value,
+                BYORGNO: document.getElementById("tbxBYORGNO").value,
+                PERALARMNAME: document.getElementById("tbxPERALARMNAME").value,
+                PERALARMPHONE: document.getElementById("tbxPERALARMPHONE").value,
+                DateBegin: $('#tbxDateBegin').datebox('getValue'),//document.getElementById("tbxDateBegin").value,
+                DateEnd: $('#tbxDateEnd').datebox('getValue'),//document.getElementById("tbxDateEnd").value,
+                Page: document.getElementById("selPage").value,
+                //MANSTATE: document.getElementById("tbxMANSTATE").value
+            },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    window.location.assign(ar.Url);
+
+                }
+                else {
+                    alert(ar.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                alert('登录异常');
+            }
+        });
+    }
+
+</script>

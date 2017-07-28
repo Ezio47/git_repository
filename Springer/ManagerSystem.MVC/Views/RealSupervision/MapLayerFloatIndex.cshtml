@@ -1,0 +1,51 @@
+﻿@{
+    ViewBag.Title = "图层浮动";
+    Layout = null;
+}
+
+<link href="~/Content/MapLayerFloat.css" rel="stylesheet" />
+<style type="text/css">
+    .rightDiv {
+        color: blue;
+        font-family: 'Microsoft YaHei';
+    }
+</style>
+
+<!-- 代码部分begin -->
+<div class="lanren">
+    <div class="slide_min"></div>
+    <div class="slide_box" style="display:none;">
+        <h2><img src="http://demo.lanrenzhijia.com/2014/service1205/images/slide_box.jpg" /></h2>
+        @*<p><a title="点击这里给我发消息" href="http://wpa.qq.com/msgrd?v=3&amp;uin=123456789&amp;site=www.cactussoft.cn&amp;menu=yes" target="_blank"><img src="http://wpa.qq.com/pa?p=2:123456789:41"></a></p>
+            <p>
+                <img src="http://demo.lanrenzhijia.com/2014/service1205/images/weixin.jpg" class="weixin" /><br />
+                <b>客户服务热线</b><br />
+                130-0000-0000
+            </p>*@
+        <div id="mapdiv" style=" text-align: left; margin: 5px 0 10px 15px;line-height: normal;"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        var thisBox = $('.lanren');
+        var defaultTop = thisBox.offset().top;
+        var slide_min = $('.lanren .slide_min');
+        var slide_box = $('.lanren .slide_box');
+        var closed = $('.lanren .slide_box h2 img');
+        slide_min.on('click', function () { $(this).hide(); slide_box.show(); });
+        closed.on('click', function () { slide_box.hide().hide(); slide_min.show(); });
+        // 页面滚动的同时，悬浮框也跟着滚动
+        $(window).on('scroll', function () { scro(); });
+        $(window).onload = scro();
+        function scro() {
+            var offsetTop = defaultTop + $(window).scrollTop() + 'px';
+            thisBox.animate({ top: offsetTop },
+            {
+                duration: 600,	//滑动速度
+                queue: false    //此动画将不进入动画队列
+            });
+        }
+    });
+</script>
+

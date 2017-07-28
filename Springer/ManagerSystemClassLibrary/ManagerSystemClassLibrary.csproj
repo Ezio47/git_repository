@@ -1,0 +1,519 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{4531BEC1-57C7-49FF-BEAE-947FD6813643}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ManagerSystemClassLibrary</RootNamespace>
+    <AssemblyName>ManagerSystemClassLibrary</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\ManagerSystemClassLibrary.XML</DocumentationFile>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="ManagerSystemSearchWhereModel">
+      <HintPath>..\ManagerSystemSearchWhereModel\bin\Debug\ManagerSystemSearchWhereModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.4.5.11\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI, Version=2.1.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\NPOI.2.1.3.1\lib\net40\NPOI.dll</HintPath>
+    </Reference>
+    <Reference Include="OAModel">
+      <HintPath>..\packages\OA\OAModel.dll</HintPath>
+    </Reference>
+    <Reference Include="PublicClassLibrary">
+      <HintPath>..\PublicClassLibrary\bin\Debug\PublicClassLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Teleware.Security">
+      <HintPath>..\packages\Teleware\Teleware.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Teleware.Utility">
+      <HintPath>..\packages\Teleware\Teleware.Utility.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ART_DOCUMENTCls.cs" />
+    <Compile Include="ART_TYPECls.cs" />
+    <Compile Include="BaseDT\ART_DOCUMENT.cs" />
+    <Compile Include="BaseDT\ART_TYPE.cs" />
+    <Compile Include="BaseDT\DC_ARMY.cs" />
+    <Compile Include="BaseDT\DC_ARMY_EQUIP.cs" />
+    <Compile Include="BaseDT\DC_ARMY_MEMBER.cs" />
+    <Compile Include="BaseDT\DC_CAR.cs" />
+    <Compile Include="BaseDT\DC_DETAILS.cs" />
+    <Compile Include="BaseDT\DC_EQUIP.cs" />
+    <Compile Include="BaseDT\DC_EQUIP_NEW.cs" />
+    <Compile Include="BaseDT\DC_FACILITY.cs" />
+    <Compile Include="BaseDT\DC_PHOTO.cs" />
+    <Compile Include="BaseDT\DC_PROTEAM.cs" />
+    <Compile Include="BaseDT\DC_REPOSITORY.cs" />
+    <Compile Include="BaseDT\DC_RESOURCE.cs" />
+    <Compile Include="BaseDT\DC_RESOURCE_NEW.cs" />
+    <Compile Include="BaseDT\DC_SUPPLIES.cs" />
+    <Compile Include="BaseDT\DC_SUPPLIESPROP.cs" />
+    <Compile Include="BaseDT\DC_TYPE.cs" />
+    <Compile Include="BaseDT\DC_UTILITY_CAMP.cs" />
+    <Compile Include="BaseDT\DC_UTILITY_FACTORCOLLECTSTATION.cs" />
+    <Compile Include="BaseDT\DC_UTILITY_FIRECHANNEL.cs" />
+    <Compile Include="BaseDT\DC_UTILITY_ISOLATIONSTRIP.cs" />
+    <Compile Include="BaseDT\DC_UTILITY_MONITORINGSTATION.cs" />
+    <Compile Include="BaseDT\DC_UTILITY_OVERWATCH.cs" />
+    <Compile Include="BaseDT\DC_UTILITY_PROPAGANDASTELE.cs" />
+    <Compile Include="BaseDT\DC_UTILITY_RELAY.cs" />
+    <Compile Include="BaseDT\DC_WATCHTOWER.cs" />
+    <Compile Include="BaseDT\DC_WATCHTOWERUSER.cs" />
+    <Compile Include="BaseDT\Duty\DUTY_CLASS.cs" />
+    <Compile Include="BaseDT\Duty\DUTY_HANDOVER.cs" />
+    <Compile Include="BaseDT\Duty\DUTY_USER.cs" />
+    <Compile Include="BaseDT\EM_Message.cs" />
+    <Compile Include="BaseDT\E_FILE.cs" />
+    <Compile Include="BaseDT\E_GROUP.cs" />
+    <Compile Include="BaseDT\E_RECEIVE.cs" />
+    <Compile Include="BaseDT\E_SUBJECT.cs" />
+    <Compile Include="BaseDT\DC_FULLTIMEUSER.cs" />
+    <Compile Include="BaseDT\Firedepartment.cs" />
+    <Compile Include="BaseDT\FIRELOST_FIREINFO.cs" />
+    <Compile Include="BaseDT\FIRELOST_LOSTTYPECOUNT.cs" />
+    <Compile Include="BaseDT\FIRELOST_LOSTTYPE_ATTACK_P1.cs" />
+    <Compile Include="BaseDT\FIRELOST_LOSTTYPE_ATTACK_P2.cs" />
+    <Compile Include="BaseDT\FIRELOST_LOSTTYPE_ATTACK_P3.cs" />
+    <Compile Include="BaseDT\FIRELOST_LOSTTYPE_ATTACK_P4.cs" />
+    <Compile Include="BaseDT\FIRELOST_LOSTTYPE_ATTACK_P5.cs" />
+    <Compile Include="BaseDT\FIRELOST_LOSTTYPE_ATTACK_P6.cs" />
+    <Compile Include="BaseDT\FIRELOST_LOSTTYPE_CASUALTY.cs" />
+    <Compile Include="BaseDT\FIRELOST_LOSTTYPE_CASUALTYDETAIL.cs" />
+    <Compile Include="BaseDT\FIRELOST_LOSTTYPE_CURRENTASSETS.cs" />
+    <Compile Include="BaseDT\FIRELOST_LOSTTYPE_FARMPASTUREPRODUCT.cs" />
+    <Compile Include="BaseDT\FIRELOST_LOSTTYPE_FIXEDASSETS.cs" />
+    <Compile Include="BaseDT\FIRELOST_LOSTTYPE_LOSTPROCESS.cs" />
+    <Compile Include="BaseDT\FIRELOST_LOSTTYPE_NTFP.cs" />
+    <Compile Include="BaseDT\FIRELOST_LOSTTYPE_RESIDENTPROPERTY.cs" />
+    <Compile Include="BaseDT\FIRELOST_LOSTTYPE_STOPREDUCTION.cs" />
+    <Compile Include="BaseDT\FIRELOST_LOSTTYPE_WILDANIMAL.cs" />
+    <Compile Include="BaseDT\FIRELOST_LOSTTYPE_WOOD.cs" />
+    <Compile Include="BaseDT\FIRERECORD_ARMY.cs" />
+    <Compile Include="BaseDT\FIRERECORD_REPORT12.cs" />
+    <Compile Include="BaseDT\FIRERECORD_REPORT11.cs" />
+    <Compile Include="BaseDT\FIRERECORD_REPORT10.cs" />
+    <Compile Include="BaseDT\FIRERECORD_REPORT9.cs" />
+    <Compile Include="BaseDT\FIRERECORD_REPORT8.cs" />
+    <Compile Include="BaseDT\FIRERECORD_FIREINFO.cs" />
+    <Compile Include="BaseDT\FULLTIMEUSER.cs" />
+    <Compile Include="BaseDT\JC_FIRE.cs" />
+    <Compile Include="BaseDT\JC_FIRETICKLING.cs" />
+    <Compile Include="BaseDT\JC_FIRE_PLAN.cs" />
+    <Compile Include="BaseDT\JC_FIRE_PLOTTING.cs" />
+    <Compile Include="BaseDT\JC_FIRE_PROP.cs" />
+    <Compile Include="BaseDT\JC_FIRE_REPORT.cs" />
+    <Compile Include="BaseDT\JC_INFRAREDCAMERA_BASICINFO.cs" />
+    <Compile Include="BaseDT\JC_INFRAREDCAMERA_PHOTO.cs" />
+    <Compile Include="BaseDT\JC_MONITOR.cs" />
+    <Compile Include="BaseDT\JC_MONITOR_BASICINFO.cs" />
+    <Compile Include="BaseDT\JC_PERALARM.cs" />
+    <Compile Include="BaseDT\JC_UAV.cs" />
+    <Compile Include="BaseDT\Map_Common.cs" />
+    <Compile Include="BaseDT\OnDuty\OD_HANDOVER.cs" />
+    <Compile Include="BaseDT\OnDuty\OD_USER.cs" />
+    <Compile Include="BaseDT\OnDuty\OD_CLASS.cs" />
+    <Compile Include="BaseDT\OnDuty\OD_DATE.cs" />
+    <Compile Include="BaseDT\OnDuty\OD_TYPE.cs" />
+    <Compile Include="BaseDT\PEST_COLLECTDATA.cs" />
+    <Compile Include="BaseDT\PEST_COLLECT_DATAUPLOAD.cs" />
+    <Compile Include="BaseDT\PEST_CONSULREPLY.cs" />
+    <Compile Include="BaseDT\PEST_CONSULTATION.cs" />
+    <Compile Include="BaseDT\PEST_LOCALTREESPECIES.cs" />
+    <Compile Include="BaseDT\PEST_MONITORINGSTATION.cs" />
+    <Compile Include="BaseDT\PEST_PHOTO.cs" />
+    <Compile Include="BaseDT\PEST_REMOTEDIAGN.cs" />
+    <Compile Include="BaseDT\PEST_REPORT_ASSESSINGTARGET.cs" />
+    <Compile Include="BaseDT\PEST_REPORT_CONTROL.cs" />
+    <Compile Include="BaseDT\PEST_REPORT_DIEPINESURVEY.cs" />
+    <Compile Include="BaseDT\PEST_REPORT_FORECAST.cs" />
+    <Compile Include="BaseDT\PEST_REPORT_HAPPEN.cs" />
+    <Compile Include="BaseDT\PEST_REPORT_HARM.cs" />
+    <Compile Include="BaseDT\PEST_REPORT_QUARANTINE.cs" />
+    <Compile Include="BaseDT\PEST_REPORT_RCW.cs" />
+    <Compile Include="BaseDT\PEST_REPORT_RCWTYPE.cs" />
+    <Compile Include="BaseDT\PEST_REPORT_SCXCBFZ.cs" />
+    <Compile Include="BaseDT\PEST_REPORT_SCXCBFZMX.cs" />
+    <Compile Include="BaseDT\PEST_REPORT_SCXCBPC.cs" />
+    <Compile Include="BaseDT\SDE\BINGCHONGHAI.cs" />
+    <Compile Include="BaseDT\SDE\GONGYILIN.cs" />
+    <Compile Include="BaseDT\SDE\GUSHUMINGMU.cs" />
+    <Compile Include="BaseDT\SDE\TD_CAMP.cs" />
+    <Compile Include="BaseDT\SDE\TD_CAR.cs" />
+    <Compile Include="BaseDT\SDE\TD_CUNZHUDI.cs" />
+    <Compile Include="BaseDT\SDE\TD_DUTYAREA.cs" />
+    <Compile Include="BaseDT\SDE\TD_EQUIP.cs" />
+    <Compile Include="BaseDT\SDE\TD_FACTORCOLLECTSTATION.cs" />
+    <Compile Include="BaseDT\SDE\TD_FIRECHANNEL.cs" />
+    <Compile Include="BaseDT\SDE\TD_HUOSHAOMIAN.cs" />
+    <Compile Include="BaseDT\SDE\TD_ISOLATIONSTRIP.cs" />
+    <Compile Include="BaseDT\SDE\TD_MONITORINGSTATION.cs" />
+    <Compile Include="BaseDT\SDE\TD_MOUNTAIN.cs" />
+    <Compile Include="BaseDT\SDE\TD_OVERWATCH.cs" />
+    <Compile Include="BaseDT\SDE\TD_POINTMARK.cs" />
+    <Compile Include="BaseDT\SDE\TD_PROPAGANDASTELE.cs" />
+    <Compile Include="BaseDT\SDE\TD_RELAY.cs" />
+    <Compile Include="BaseDT\SDE\TD_REPOSITORY.cs" />
+    <Compile Include="BaseDT\SDE\TD_RESOURCE.cs" />
+    <Compile Include="BaseDT\SDE\TD_DUTYROUTE.cs" />
+    <Compile Include="BaseDT\SDE\YHSWJCD.cs" />
+    <Compile Include="BaseDT\TASK_FEEDBACK.cs" />
+    <Compile Include="BaseDT\TASK_INFO.cs" />
+    <Compile Include="BaseDT\TASK_TURNOVER.cs" />
+    <Compile Include="BaseDT\TREES_TREEGROUPINFO.cs" />
+    <Compile Include="BaseDT\TREES_TREEGROUPINFO_DATAUPLOAD.cs" />
+    <Compile Include="BaseDT\TREES_TREESINFO.cs" />
+    <Compile Include="BaseDT\TREES_TREESINFO_DATAUPLOAD.cs" />
+    <Compile Include="BaseDT\T_ALL_AREA.cs" />
+    <Compile Include="BaseDT\T_COLLECTLINES.cs" />
+    <Compile Include="BaseDT\T_COLLECTPOINTS.cs" />
+    <Compile Include="BaseDT\T_IPSCOL_COLLECT.cs" />
+    <Compile Include="BaseDT\T_IPSCOL_COLLECTDATA.cs" />
+    <Compile Include="BaseDT\T_IPSFR_ROUTERAIL.cs" />
+    <Compile Include="BaseDT\T_IPSFR_ROUTERAIL_PATROL.cs" />
+    <Compile Include="BaseDT\T_IPSFR_ROUTERAIL_RAIL.cs" />
+    <Compile Include="BaseDT\T_IPSFR_USER.cs" />
+    <Compile Include="BaseDT\T_IPSRPT_REPORT.cs" />
+    <Compile Include="BaseDT\T_IPS_ALARM.cs" />
+    <Compile Include="BaseDT\T_IPS_HOTS.cs" />
+    <Compile Include="BaseDT\T_IPS_REALDATA.cs" />
+    <Compile Include="BaseDT\T_RDXXZL.cs" />
+    <Compile Include="BaseDT\T_SysDept_OADept.cs" />
+    <Compile Include="BaseDT\T_SYSSEC_IPSUSER.cs" />
+    <Compile Include="BaseDT\T_SYSSEC_ROLE.cs" />
+    <Compile Include="BaseDT\T_SYSSEC_ROLE_RIGHT.cs" />
+    <Compile Include="BaseDT\T_SYSSEC_USER.cs" />
+    <Compile Include="BaseDT\T_SYSSEC_USER_ROLE.cs" />
+    <Compile Include="BaseDT\T_SYSSEC_RIGHT.cs" />
+    <Compile Include="BaseDT\T_SYS_ADDREDDBOOK.cs" />
+    <Compile Include="BaseDT\T_SYS_ADDREDDTYPE.cs" />
+    <Compile Include="BaseDT\T_SYS_DICT.cs" />
+    <Compile Include="BaseDT\T_SYS_LAYER.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="BaseDT\T_SYS_LOG.cs" />
+    <Compile Include="BaseDT\T_SYS_MENU.cs" />
+    <Compile Include="BaseDT\T_SYS_NOTICE.cs" />
+    <Compile Include="BaseDT\T_SYS_ORG.cs" />
+    <Compile Include="BaseDT\T_IPS_REALDATATEMPORARY.cs" />
+    <Compile Include="BaseDT\T_SYS_ORG_CWH.cs" />
+    <Compile Include="BaseDT\T_SYS_ORG_EXTENDID.cs" />
+    <Compile Include="BaseDT\T_SYS_ORG_LINK.cs" />
+    <Compile Include="BaseDT\T_SYS_PARAMETER.cs" />
+    <Compile Include="BaseDT\T_SYS_PEST.cs" />
+    <Compile Include="BaseDT\T_SYS_PEST_OBSERVEAREA.cs" />
+    <Compile Include="BaseDT\T_SYS_TREESPECIES.cs" />
+    <Compile Include="BaseDT\T_SYS_TREESPECIES_PEST.cs" />
+    <Compile Include="BaseDT\YJ_DANGERCLASS.cs" />
+    <Compile Include="BaseDT\YJ_DCSMS_SEND.cs" />
+    <Compile Include="BaseDT\YJ_DCSMS_TMP.cs" />
+    <Compile Include="BaseDT\YJ_SATELLITECLOUD.cs" />
+    <Compile Include="BaseDT\YJ_WEATHER.cs" />
+    <Compile Include="BaseDT\YJ_XY_WORK.cs" />
+    <Compile Include="ConfigCls.cs" />
+    <Compile Include="DC_ARMYCls.cs" />
+    <Compile Include="DC_ARMY_EQUIPCls.cs" />
+    <Compile Include="DC_ARMY_MEMBERCls.cs" />
+    <Compile Include="DC_CARCls.cs" />
+    <Compile Include="DC_DETAILSCls.cs" />
+    <Compile Include="DC_DUTYAREACls.cs" />
+    <Compile Include="DC_EQUIPCls.cs" />
+    <Compile Include="DC_EQUIP_NEWCls.cs" />
+    <Compile Include="DC_FACILITYCls.cs" />
+    <Compile Include="DC_FULLTIMEUSERCls.cs" />
+    <Compile Include="DC_PHOTOCls.cs" />
+    <Compile Include="DC_PROTEAMCls.cs" />
+    <Compile Include="DC_REPOSITORYCls.cs" />
+    <Compile Include="DC_RESOURCECls.cs" />
+    <Compile Include="DC_RESOURCE_NEWCls.cs" />
+    <Compile Include="DC_SUPPLIESCls.cs" />
+    <Compile Include="DC_SUPPLIESPROPCls.cs" />
+    <Compile Include="DC_TYPECls.cs" />
+    <Compile Include="DC_UTILITY_CAMPCls.cs" />
+    <Compile Include="DC_UTILITY_FACTORCOLLECTSTATIONCls.cs" />
+    <Compile Include="DC_UTILITY_FIRECHANNELCls.cs" />
+    <Compile Include="DC_UTILITY_ISOLATIONSTRIPCls.cs" />
+    <Compile Include="DC_UTILITY_MONITORINGSTATIONCls.cs" />
+    <Compile Include="DC_UTILITY_OVERWATCHCls.cs" />
+    <Compile Include="DC_UTILITY_PROPAGANDASTELECls.cs" />
+    <Compile Include="DC_UTILITY_RELAYCls.cs" />
+    <Compile Include="DC_WATCHTOWERCls.cs" />
+    <Compile Include="DC_WATCHTOWERUSERCls.cs" />
+    <Compile Include="DC_DUTYROUTECls.cs" />
+    <Compile Include="DUTY\DUTY_CLASSCls.cs" />
+    <Compile Include="DUTY\DUTY_HANDOVERCls.cs" />
+    <Compile Include="DUTY\DUTY_USERCls.cs" />
+    <Compile Include="EM_MessageCls.cs" />
+    <Compile Include="EnumCls\EnumClsType.cs" />
+    <Compile Include="E_FILECls.cs" />
+    <Compile Include="E_GROUPCls.cs" />
+    <Compile Include="E_RECEIVE_Cls.cs" />
+    <Compile Include="E_SUBJECTCls.cs" />
+    <Compile Include="FileOptionCls.cs" />
+    <Compile Include="FiredepartmentCls.cs" />
+    <Compile Include="FIRELOST_FIREINFOCls.cs" />
+    <Compile Include="FIRELOST_LOSTTYPECOUNTCls.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_ATTACK_P1Cls.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_ATTACK_P2Cls.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_ATTACK_P3Cls.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_ATTACK_P4Cls.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_ATTACK_P5Cls.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_ATTACK_P6Cls.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_CASUALTYCls.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_CASUALTYDETAILCls.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_CURRENTASSETSCls.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_FARMPASTUREPRODUCTCls.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_FIXEDASSETSCls.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_LOSTPROCESSCls.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_NTFPCls.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_RESIDENTPROPERTYCls.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_STOPREDUCTIONCls.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_WILDANIMALCls.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_WOODCls.cs" />
+    <Compile Include="FIRERECORD_ARMYCls.cs" />
+    <Compile Include="FIRERECORD_REPORT12Cls.cs" />
+    <Compile Include="FIRERECORD_REPORT11Cls.cs" />
+    <Compile Include="FIRERECORD_REPORT10Cls.cs" />
+    <Compile Include="FIRERECORD_REPORT9Cls.cs" />
+    <Compile Include="FIRERECORD_REPORT8Cls.cs" />
+    <Compile Include="FIRERECORD_FIREINFOCls.cs" />
+    <Compile Include="HUCheckCls.cs" />
+    <Compile Include="DataCenterCountCls.cs" />
+    <Compile Include="HUReportCls.cs" />
+    <Compile Include="JC_FIRECls.cs" />
+    <Compile Include="JC_FIRETICKLINGCls.cs" />
+    <Compile Include="JC_FIRE_PLANCls.cs" />
+    <Compile Include="JC_FIRE_PLOTTINGCls.cs" />
+    <Compile Include="JC_FIRE_PROPCls.cs" />
+    <Compile Include="JC_FIRE_REPORTCls.cs" />
+    <Compile Include="JC_INFRAREDCAMERACls.cs" />
+    <Compile Include="JC_MONITORCls.cs" />
+    <Compile Include="JC_PERALARMCls.cs" />
+    <Compile Include="JC_UAVCls.cs" />
+    <Compile Include="OnDuty\OD_CLASSCls.cs" />
+    <Compile Include="OnDuty\OD_HANDOVERCls.cs" />
+    <Compile Include="OnDuty\OD_USERCls.cs" />
+    <Compile Include="OnDuty\OD_DATECls.cs" />
+    <Compile Include="OnDuty\OD_TYPECls.cs" />
+    <Compile Include="PagerCls.cs" />
+    <Compile Include="PEST_COLLECTDATACls.cs" />
+    <Compile Include="PEST_COLLECT_DATAUPLOADCls.cs" />
+    <Compile Include="PEST_CONSULREPLYCls.cs" />
+    <Compile Include="PEST_CONSULTATIONCls.cs" />
+    <Compile Include="PEST_LOCALTREESPECIESCls.cs" />
+    <Compile Include="PEST_MONITORINGSTATIONCls.cs" />
+    <Compile Include="PEST_PHOTOCls.cs" />
+    <Compile Include="PEST_REMOTEDIAGNCls.cs" />
+    <Compile Include="PEST_REPORT_ASSESSINGTARGETCls.cs" />
+    <Compile Include="PEST_REPORT_CONTROLCls.cs" />
+    <Compile Include="PEST_REPORT_DIEPINESURVEYCls.cs" />
+    <Compile Include="PEST_REPORT_FORECASTCls.cs" />
+    <Compile Include="PEST_REPORT_HAPPENCls.cs" />
+    <Compile Include="PEST_REPORT_HARMCls.cs" />
+    <Compile Include="PEST_REPORT_QUARANTINECls.cs" />
+    <Compile Include="PEST_REPORT_RCWCls.cs" />
+    <Compile Include="PEST_REPORT_RCWTYPECls.cs" />
+    <Compile Include="PEST_REPORT_SCXCBFZCls.cs" />
+    <Compile Include="PEST_REPORT_SCXCBFZMXCls.cs" />
+    <Compile Include="PEST_REPORT_SCXCBPCCls.cs" />
+    <Compile Include="PublicCls.cs" />
+    <Compile Include="SDECLS\BINGCHONGHAICls.cs" />
+    <Compile Include="SDECLS\GONGYILINCls.cs" />
+    <Compile Include="SDECLS\TD_CUNZHUDICls.cs" />
+    <Compile Include="SDECLS\YHSWJCDCls.cs" />
+    <Compile Include="SendMessageCls.cs" />
+    <Compile Include="Service References\OAService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\SmsSendService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="SmsHelp\SmsCom.cs" />
+    <Compile Include="TASK_FEEDBACKCls.cs" />
+    <Compile Include="TASK_INFOCls.cs" />
+    <Compile Include="TASK_TURNOVERCls.cs" />
+    <Compile Include="TD_MOUNTAINCls.cs" />
+    <Compile Include="TD_POINTMARKCls.cs" />
+    <Compile Include="SystemCls.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TD_CAMPCls.cs" />
+    <Compile Include="TD_CARCls.cs" />
+    <Compile Include="TD_EQUIPCls.cs" />
+    <Compile Include="TD_FACTORCOLLECTSTATIONCls.cs" />
+    <Compile Include="TD_FIRECHANNELCls.cs" />
+    <Compile Include="TD_HUOSHAOMIANCLS.cs" />
+    <Compile Include="TD_ISOLATIONSTRIPCls.cs" />
+    <Compile Include="TD_MONITORINGSTATIONCls.cs" />
+    <Compile Include="TD_OVERWATCHCls.cs" />
+    <Compile Include="TD_PROPAGANDASTELECls.cs" />
+    <Compile Include="TD_RELAYCls.cs" />
+    <Compile Include="TD_REPOSITORYCls.cs" />
+    <Compile Include="TD_RESOURCECLS.cs" />
+    <Compile Include="TREES_TREEGROUPINFOCls.cs" />
+    <Compile Include="TREES_TREEGROUPINFO_DATAUPLOADCls.cs" />
+    <Compile Include="TREES_TREESINFOCls.cs" />
+    <Compile Include="TREES_TREESINFO_DATAUPLOADCls.cs" />
+    <Compile Include="T_ALL_AREACls.cs" />
+    <Compile Include="T_COLLECTLINESCls.cs" />
+    <Compile Include="T_COLLECTPOINTSCls.cs" />
+    <Compile Include="T_IPSCOL_COLLECTCls.cs" />
+    <Compile Include="T_IPSCOL_COLLECTDATACls.cs" />
+    <Compile Include="T_IPSFR_ROUTERAILCls.cs" />
+    <Compile Include="T_IPSFR_USERCls.cs" />
+    <Compile Include="T_IPSRPT_REPORTCls.cs" />
+    <Compile Include="T_IPS_ALARMCls.cs" />
+    <Compile Include="T_IPS_HOTSCls.cs" />
+    <Compile Include="T_IPS_REALDATACls.cs" />
+    <Compile Include="T_IPS_REALDATATEMPORARYCls.cs" />
+    <Compile Include="OACls.cs" />
+    <Compile Include="T_RDXXZLCls.cs" />
+    <Compile Include="T_SYSSEC_IPSUSERCls.cs" />
+    <Compile Include="T_SYSSEC_ROLECls.cs" />
+    <Compile Include="T_SYSSEC_RIGHTCls.cs" />
+    <Compile Include="T_SYS_ADDREDDBOOKCls.cs" />
+    <Compile Include="T_SYS_ADDREDDTYPECls.cs" />
+    <Compile Include="T_SYS_DICTCls.cs" />
+    <Compile Include="T_SYS_LAYERCls.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="T_SYS_LOGCls.cs" />
+    <Compile Include="T_SYS_MENUCls.cs" />
+    <Compile Include="T_SYS_NOTICECls.cs" />
+    <Compile Include="T_SYS_ORGCls.cs" />
+    <Compile Include="T_SYS_ORG_CWHCls.cs" />
+    <Compile Include="T_SYS_ORG_EXTENDIDCls.cs" />
+    <Compile Include="T_SYS_ORG_LINKCls.cs" />
+    <Compile Include="T_SYS_PARAMETERCls.cs" />
+    <Compile Include="T_SYS_PESTCls.cs" />
+    <Compile Include="T_SYS_PEST_OBSERVEAREACls.cs" />
+    <Compile Include="T_SYS_TREESPECIESCls.cs" />
+    <Compile Include="T_SYS_TREESPECIES_PESTCls.cs" />
+    <Compile Include="WeatherCls.cs" />
+    <Compile Include="YJ_DANGERCLASSCls.cs" />
+    <Compile Include="YJ_DCSMS_SENDCls.cs" />
+    <Compile Include="YJ_DCSMS_TMPCls.cs" />
+    <Compile Include="YJ_SATELLITECLOUDCls.cs" />
+    <Compile Include="YJ_WEATHERCls.cs" />
+    <Compile Include="YJ_XY_WORKCls.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DataBaseClassLibrary\DataBaseClassLibrary.csproj">
+      <Project>{a580c4fe-94d3-4d8b-9111-396e5e7257b1}</Project>
+      <Name>DataBaseClassLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ManagerSystemModel\ManagerSystemModel.csproj">
+      <Project>{ae48b06f-e03b-4897-a82f-073ae747d20e}</Project>
+      <Name>ManagerSystemModel</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OAService\WebService1.wsdl" />
+    <None Include="Service References\SmsSendService\ManagerSystemClassLibrary.SmsSendService.SmsMessage.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\SmsSendService\SmsSendService1.wsdl" />
+    <None Include="Service References\SmsSendService\ThirdSmsService3.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\SmsSendService\ThirdSmsService31.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\SmsSendService\ThirdSmsService32.xsd">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Service References\OAService\" />
+    <WCFMetadataStorage Include="Service References\SmsSendService\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\SmsSendService\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\SmsSendService\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\SmsSendService\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\OAService\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\OAService\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\OAService\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\OAService\WebService1.disco" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\SmsSendService\ThirdSmsService1.disco" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,308 @@
+﻿@using ManagerSystemClassLibrary;
+@{
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+    var curorgno = SystemCls.getCurUserOrgNo();
+    if (curorgno.Substring(6, 3) == "000" && curorgno.Substring(4, 2) != "00")
+    {
+        curorgno = curorgno.Substring(0, 6) + "xxx";
+    }
+    else
+    {
+        curorgno = SystemCls.getCurUserOrgNo();
+    }
+}
+@section Header{
+    <script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+}
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+    <div data-options="region:'west'" title="" style=" width:220px; border: none;">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="" style=" border: none;">
+
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        单位：<div id="tbxBYORGNO" class="easyui-tree"></div>
+                        年份：<input id="tbxYEAR" type="text" class="Wdate" style="width:100px" value="@ViewBag.YEAR" onclick="WdatePicker({ dateFmt: 'yyyy'})" />
+                        @*<input id="tbxFIRENAME" type="text" class="input-small" style="width:80px ;display:none" value="" />*@
+                        火情来源：<select id="tbxFIREFROM">@Html.Raw(@ViewBag.FIREFROM)</select>
+                        <input type="button" value="查询" onclick="query('1')" class="btnSearchCss" />
+                        <input type="button" value="添加" onclick="Manager('','Add')" class="btnAddCss" />
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" class="LayoutCenterBG">
+                <input id="HidJCFID" name="HidJCFID" type="hidden" value="@ViewBag.JCFID" />
+                <div class="divTable" id="divTable">
+
+                </div>
+            </div>
+            <div data-options="region:'south'" title="" style=" height:40px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
+                <div class="divPager" id="divPager">
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="divMan" id="tablefk" style="display:none;margin-left:5px;margin-top:8px">
+
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $('#tbxBYORGNO').combotree({
+            url: '/DataCenter/OrgTreeget',
+            editable: false,
+            required: true,
+            panelHeight: 300,
+            onLoadSuccess: function (node, data) {
+                var t = $("#tbxBYORGNO").combotree('tree');//获取tree
+                t.tree("collapseAll");
+                node = t.tree("find", data[0].id);
+                t.tree("expand", node.target);//展开节点 expandTo
+            }
+        });
+        $('#tbxBYORGNO').combotree('setValue', "@curorgno");
+        query('1');
+    });
+    var page = 1;//当前默认页面为1
+    function query(Page) {
+        page = Page;
+        var pagesize = '0';
+        if (document.getElementById("selPageSize") != null) {
+            pagesize = document.getElementById("selPageSize").value;
+        }
+        var ORGNOS = $('#tbxBYORGNO').combotree('getValue');
+        $.ajax({
+            url: '/DataCenter/getArchivallist',
+            //timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: {
+                BYORGNO: ORGNOS,
+                YEAR: $('#tbxYEAR').val(),
+                //FIRENAME: document.getElementById("tbxFIRENAME").value,
+                FIREFROM: document.getElementById("tbxFIREFROM").value,
+                PageSize: pagesize,
+                Page: Page,
+            },
+            type: 'post',
+            success: function (data) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#divTable').html(ar.tableInfo);
+                    $('#divPager').html(ar.pagerInfo);
+                }
+                else {
+                    layer.msg('登录异常');
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('登录异常');
+            }
+        });
+    }
+    //反馈信息
+    function Feedback(ID) {
+        $.ajax({
+            type: "Post",
+            url: "/DataCenter/getFIRETICKLINGjson",
+            data: {
+                JCFID: ID,
+            },
+            dataType: "json",
+            error: function () {
+                layer.msg('错误:异常!', 'error');
+            },
+            success: function (data) {
+                $('#tablefk').html(data.tableInfo);
+                layer.open({
+                    type: 1,
+                    title: '最新反馈',
+                    area: ['50%', '60%'],
+                    shade: 0,
+                    maxmin: true,
+                    content: $('#tablefk')
+                })
+            }
+        });
+    }
+
+    //地图定位
+    function Position(tablename, id, name) {
+        layer.open({
+            type: 2,
+            title: name + '地图定位',
+            area: ['70%', '80%'],
+            //shade: 0,
+            fix: true,
+            maxmin: true,
+            content: '/MapCommon/MapPostionCommonIndex?tablename=' + tablename + "&id=" + id
+        })
+    }
+
+    //火情报告
+    function FireReport(ID) {
+        $.ajax({
+            url: '/DataCenter/getFIREReport',
+            data: {
+                JCFID: ID,
+            },
+            type: 'post',
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    layer.open({
+                        type: 1,
+                        title: '火情报告',
+                        area: ['70%', '70%'],
+                        shade: 0,
+                        content: ar.tableInfo
+                    });
+                }
+                else {
+                    layer.alert(ar.Msg, { icon: 5 });
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('获取异常，请刷新重试');
+            }
+        });
+    }
+
+    //状态Logs
+    function StateLogsLayer(jcfid, orgno) {
+        $.ajax({
+            type: "Post",
+            url: "/MainYJJC/GetStateLogs",
+            data: { jcfid: jcfid, orgno: orgno },
+            dataType: "json",
+            success: function (obj) {
+                if (obj != null && obj.Success) {
+                    layer.open({
+                        type: 1,
+                        title: '热点状态信息',
+                        area: ['70%', '65%'],
+                        content: obj.Msg,//注意，如果str是object，那么需要字符拼接。
+                        shadeClose: false,
+                        btn: ["取消"],
+                        cancel: function (index) {
+                            layer.closeAll();
+                        }
+                    })
+                }
+                else {
+                    layer.msg('取值失败！', { icon: 5 });
+                }
+            }
+        });
+    };
+
+    function See(ID, tablename) {
+        layer.open({
+            type: 2,
+            title: '档案查看',
+            area: ['60%', '70%'],
+            fix: true,
+            maxmin: true,
+            content: '/DataCenter/SeeIndex?tablename=' + tablename + "&ID=" + ID
+        })
+    }
+    //将查看，反馈信息和操作流程，火情报告，查看火情档案综合到一个查看按钮
+    function TotalSee(ID) {
+        layer.open({
+            type: 2,
+            title: '查看',
+            area: ['65%', '80%'],
+            fix: true,
+            maxmin: true,
+            content: '/DataCenter/TotalSee?ID=' + ID 
+        })
+    }
+    //function TotalSee(ID, tablename, orgno, tmp) {
+    //    layer.open({
+    //        type: 2,
+    //        title: '查看',
+    //        area: ['65%', '80%'],
+    //        fix: true,
+    //        maxmin: true,
+    //        content: '/DataCenter/TotalSee?tablename=' + tablename + "&ID=" + ID + "&orgno=" + orgno
+    //    })
+    //}
+    //选中改变颜色
+    function setColor(obj, JCFID) {
+        $(obj).css("background-color", "#FFDAB9");
+        $("tr").not($(obj)).css("background-color", "");
+        $('#HidJCFID').val(JCFID);
+    }
+
+    //添加火情档案
+    var JCFID = $('#HidJCFID').val();
+    function Manager(FRFIID, Method, JCFID) {
+        if (Method == 'Add') {
+            layer.open({
+                type: 2,
+                title: '添加火情档案',
+                area: ['70%', '85%'],  //[长,高]
+                fix: false, //不固定
+                maxmin: true,
+                content: '/FIRERECORD/FIRERECORD_FIREINFOMan?FRFIID=' + FRFIID + "&Method=" + Method + "&JCFID=" + JCFID,
+                end: function () {
+                    query(page);
+                }
+            });
+        }
+        if (Method == 'See1') {
+            layer.open({
+                type: 2,
+                title: '查看火情档案',
+                area: ['70%', '90%'],  //[长,高]
+                fix: false, //不固定
+                maxmin: true,
+                content: '/FIRERECORD/FIRERECORD_FIREINFOSee1?FRFIID=' + FRFIID + "&Method=" + Method + "&JCFID=" + JCFID,
+            });
+        }
+        if (Method == 'Mdy') {
+            layer.open({
+                type: 2,
+                title: '修改火情档案',
+                area: ['70%', '85%'],  //[长,高]
+                fix: false, //不固定
+                maxmin: true,
+                content: '/FIRERECORD/FIRERECORD_FIREINFOMan?FRFIID=' + FRFIID + "&Method=" + Method + "&JCFID=" + JCFID,
+                end: function () {
+                    query(page);
+                }
+            });
+        }
+        if (Method == 'Del') {
+            if (confirm('确实要删除吗?')) {
+                $.ajax({
+                    url: '/FIRERECORD/FIRERECORD_FIREINFOManager',
+                    cache: false,
+                    data: { JCFID: JCFID, Method: Method },
+                    type: 'post',
+                    success: function (data) {
+                        var ar = eval('(' + data + ')');
+                        if (ar.Success) {
+                            layer.msg(ar.Msg, { icon: 5 });
+                            query(page);
+                        }
+                        else {
+                            layer.msg(ar.Msg, { icon: 5 });
+                        }
+                    },
+                    error: function () {
+                        layer.msg("删除异常!");
+                    }
+                });
+            }
+        }
+    }
+</script>

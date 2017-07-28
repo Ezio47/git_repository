@@ -1,0 +1,617 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>PublicClassLibrary</name>
+    </assembly>
+    <members>
+        <member name="T:PublicClassLibrary.ClsCoordinateRectify">
+            <summary>
+            坐标偏移操作类
+            </summary>
+        </member>
+        <member name="M:PublicClassLibrary.ClsCoordinateRectify.transform(System.Double,System.Double,System.Double[])">
+            <summary>
+            偏移
+            </summary>
+            <param name="wgLat">经度</param>
+            <param name="wgLon">纬度</param>
+            <param name="latlng">数组</param>
+        </member>
+        <member name="M:PublicClassLibrary.ClsCoordinateRectify.transform2(System.Double,System.Double)">
+            <summary>
+            偏移计算
+            </summary>
+            <param name="wgLat">经度</param>
+            <param name="wgLon">纬度</param>
+            <returns>偏移计算后的经纬度</returns>
+        </member>
+        <member name="M:PublicClassLibrary.ClsCoordinateRectify.outOfChina(System.Double,System.Double)">
+            <summary>
+            备用 
+            </summary>
+            <param name="lat">经度</param>
+            <param name="lon">纬度</param>
+            <returns>bool型</returns>
+        </member>
+        <member name="M:PublicClassLibrary.ClsCoordinateRectify.transformLat(System.Double,System.Double)">
+            <summary>
+            备用
+            </summary>
+            <param name="x">x</param>
+            <param name="y">t</param>
+            <returns>double型</returns>
+        </member>
+        <member name="M:PublicClassLibrary.ClsCoordinateRectify.transformLon(System.Double,System.Double)">
+            <summary>
+            备用 
+            </summary>
+            <param name="x">x</param>
+            <param name="y">t</param>
+            <returns>double型</returns>
+        </member>
+        <member name="T:PublicClassLibrary.ClsHtml">
+            <summary>
+            Html操作类
+            </summary>
+        </member>
+        <member name="M:PublicClassLibrary.ClsHtml.GetIP">
+            <summary>
+            获取客户端IP地址
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:PublicClassLibrary.ClsJson">
+            <summary>
+            JSON操作类
+            </summary>
+        </member>
+        <member name="M:PublicClassLibrary.ClsJson.EntityToJSON(System.Object)">
+            <summary>
+            将实体转化为json
+            </summary>
+            <param name="entity">实体</param>
+            <returns>
+            返回值
+            成功：json
+            失败：null
+            </returns>
+        </member>
+        <member name="M:PublicClassLibrary.ClsJson.JSONToEntity``1(System.String)">
+            <summary>
+            将Json转化为实体
+            </summary>
+            <param name="json">实体</param>
+            <returns>
+            返回值
+            成功：json
+            失败：null
+            </returns>
+        </member>
+        <member name="T:PublicClassLibrary.ClsMapCommon">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:PublicClassLibrary.ClsMapCommon.ConvertDigitalToDegrees(System.String)">
+            <summary>
+            数字经纬度和度分秒经纬度转换 (Digital degree of latitude and longitude and vehicle to latitude and longitude conversion)
+            </summary>
+            <param name="digitalLati_Longi">数字经纬度</param>
+            <return>度分秒经纬度</return>
+        </member>
+        <member name="M:PublicClassLibrary.ClsMapCommon.ConvertDigitalToDegrees(System.Double)">
+            <summary>
+            数字经纬度和度分秒经纬度转换 (Digital degree of latitude and longitude and vehicle to latitude and longitude conversion)
+            </summary>
+            <param name="digitalDegree">数字经纬度</param>
+            <return>度分秒经纬度</return>
+        </member>
+        <member name="M:PublicClassLibrary.ClsMapCommon.ConvertDegreesToDigital(System.String)">
+            <summary>
+            度分秒经纬度(必须含有'°')和数字经纬度转换
+            </summary>
+            <param name="degrees">度分秒经纬度</param>
+            <return>数字经纬度</return>
+        </member>
+        <member name="M:PublicClassLibrary.ClsMapCommon.ConvertDegreesToDigital_default(System.String)">
+            <summary>
+            度分秒经纬度(必须含有'/')和数字经纬度转换
+            </summary>
+            <param name="degrees">度分秒经纬度</param>
+            <return>数字经纬度</return>
+        </member>
+        <member name="M:PublicClassLibrary.ClsMapCommon.ConvertDegreesToDigital(System.String,System.Char)">
+            <summary>
+            度分秒经纬度和数字经纬度转换
+            </summary>
+            <param name="degrees">度分秒经纬度</param>
+            <param name="cflag">分隔符</param>
+            <return>数字经纬度</return>
+        </member>
+        <member name="T:PublicClassLibrary.ClsPositionTrans">
+            各地图API坐标系统比较与转换; 
+            WGS84坐标系：即地球坐标系，国际上通用的坐标系。设备一般包含GPS芯片或者北斗芯片获取的经纬度为WGS84地理坐标系, 
+            谷歌地图采用的是WGS84地理坐标系（中国范围除外）; 
+            GCJ02坐标系：即火星坐标系，是由中国国家测绘局制订的地理信息系统的坐标系统。由WGS84坐标系经加密后的坐标系。 
+            谷歌中国地图和搜搜中国地图采用的是GCJ02地理坐标系; BD09坐标系：即百度坐标系，GCJ02坐标系经加密后的坐标系; 
+            搜狗坐标系、图吧坐标系等，估计也是在GCJ02基础上加密而成的。 chenhua 
+        </member>
+        <member name="F:PublicClassLibrary.ClsPositionTrans.BAIDU_LBS_TYPE">
+            <summary>
+            BAIDU_LBS_TYPE
+            </summary>
+        </member>
+        <member name="F:PublicClassLibrary.ClsPositionTrans.pi">
+            <summary>
+            Pi
+            </summary>
+        </member>
+        <member name="F:PublicClassLibrary.ClsPositionTrans.a">
+            <summary>
+            长半轴
+            </summary>
+        </member>
+        <member name="F:PublicClassLibrary.ClsPositionTrans.ee">
+            <summary>
+            ee
+            </summary>
+        </member>
+        <member name="M:PublicClassLibrary.ClsPositionTrans.GpsTransform(System.Double,System.Double,System.String)">
+            @param lat 纬度
+            @param lon 经度
+            @param type webcongig配置需要转换的地图类型
+            @return 
+        </member>
+        <member name="M:PublicClassLibrary.ClsPositionTrans.outOfChina(System.Double,System.Double)">
+            <summary>
+            判断坐标是否出中国范围
+            </summary>
+            <param name="lat"></param>
+            <param name="lon"></param>
+            <returns></returns>
+        </member>
+        <member name="M:PublicClassLibrary.ClsPositionTrans.transformLat(System.Double,System.Double)">
+            <summary>
+            转换纬度算法
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <returns></returns>
+        </member>
+        <member name="M:PublicClassLibrary.ClsPositionTrans.transformLon(System.Double,System.Double)">
+            <summary>
+            转换经度算法
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <returns></returns>
+        </member>
+        <member name="T:PublicClassLibrary.ClsPositionUtil">
+            各地图API坐标系统比较与转换; 
+            WGS84坐标系：即地球坐标系，国际上通用的坐标系。设备一般包含GPS芯片或者北斗芯片获取的经纬度为WGS84地理坐标系, 
+            谷歌地图采用的是WGS84地理坐标系（中国范围除外）; 
+            GCJ02坐标系：即火星坐标系，是由中国国家测绘局制订的地理信息系统的坐标系统。由WGS84坐标系经加密后的坐标系。 
+            谷歌中国地图和搜搜中国地图采用的是GCJ02地理坐标系; BD09坐标系：即百度坐标系，GCJ02坐标系经加密后的坐标系; 
+            搜狗坐标系、图吧坐标系等，估计也是在GCJ02基础上加密而成的。 chenhua 
+        </member>
+        <member name="F:PublicClassLibrary.ClsPositionUtil.BAIDU_LBS_TYPE">
+            <summary>
+            BAIDU_LBS_TYPE
+            </summary>
+        </member>
+        <member name="F:PublicClassLibrary.ClsPositionUtil.pi">
+            <summary>
+            pi
+            </summary>
+        </member>
+        <member name="F:PublicClassLibrary.ClsPositionUtil.a">
+            <summary>
+            长半轴
+            </summary>
+        </member>
+        <member name="F:PublicClassLibrary.ClsPositionUtil.ee">
+            <summary>
+            ee
+            </summary>
+        </member>
+        <member name="M:PublicClassLibrary.ClsPositionUtil.gps84_To_Gcj02(System.Double,System.Double)">
+            84 to 火星坐标系 (GCJ-02) World Geodetic System ==> Mars Geodetic System 
+             
+            @param lat 
+            @param lon 
+            @return 
+        </member>
+        <member name="M:PublicClassLibrary.ClsPositionUtil.gcj_To_Gps84(System.Double,System.Double)">
+            * 火星坐标系 (GCJ-02) to 84 * * @param lon * @param lat * @return 
+            
+        </member>
+        <member name="M:PublicClassLibrary.ClsPositionUtil.gcj02_To_Bd09(System.Double,System.Double)">
+            火星坐标系 (GCJ-02) 与百度坐标系 (BD-09) 的转换算法 将 GCJ-02 坐标转换成 BD-09 坐标 
+             
+            @param gg_lat 
+            @param gg_lon 
+        </member>
+        <member name="M:PublicClassLibrary.ClsPositionUtil.bd09_To_Gcj02(System.Double,System.Double)">
+            * 火星坐标系 (GCJ-02) 与百度坐标系 (BD-09) 的转换算法 * * 将 BD-09 坐标转换成GCJ-02 坐标 * * @param 
+            bd_lat * @param bd_lon * @return 
+        </member>
+        <member name="M:PublicClassLibrary.ClsPositionUtil.bd09_To_Gps84(System.Double,System.Double)">
+            (BD-09)-->84 
+            @param bd_lat 
+            @param bd_lon 
+            @return 
+        </member>
+        <member name="M:PublicClassLibrary.ClsPositionUtil.outOfChina(System.Double,System.Double)">
+            <summary>
+            
+            </summary>
+            <param name="lat">lat</param>
+            <param name="lon">lon</param>
+            <returns></returns>
+        </member>
+        <member name="M:PublicClassLibrary.ClsPositionUtil.transform(System.Double,System.Double)">
+            <summary>
+            火星坐标转wgs84
+            </summary>
+            <param name="lat"></param>
+            <param name="lon"></param>
+            <returns></returns>
+        </member>
+        <member name="M:PublicClassLibrary.ClsPositionUtil.transformLat(System.Double,System.Double)">
+            <summary>
+            
+            </summary>
+            <param name="x">x</param>
+            <param name="y">y</param>
+            <returns></returns>
+        </member>
+        <member name="M:PublicClassLibrary.ClsPositionUtil.transformLon(System.Double,System.Double)">
+            <summary>
+            
+            </summary>
+            <param name="x">x</param>
+            <param name="y">y</param>
+            <returns></returns>
+        </member>
+        <member name="T:PublicClassLibrary.ClsSql">
+            <summary>
+            数据库语句操作类
+            </summary>
+        </member>
+        <member name="M:PublicClassLibrary.ClsSql.saveNullField(System.String)">
+            <summary>
+            判断字段，如果为空，则添加null
+            </summary>
+            <param name="str"></param>
+            <returns></returns>
+        </member>
+        <member name="M:PublicClassLibrary.ClsSql.EncodeSql(System.String)">
+            <summary>
+            去除ＳＱＬ非法字符
+            </summary>
+            <param name="str"></param>
+            <returns>参见模型</returns>
+        </member>
+        <member name="M:PublicClassLibrary.ClsSql.SwitchStrToSqlIn(System.String)">
+            <summary>
+            将字符串分隔成SQL中In字符型条件
+            </summary>
+            <param name="str"></param>
+            <returns>参见模型</returns>
+        </member>
+        <member name="T:PublicClassLibrary.ClsStr">
+            <summary>
+            字符串操作类
+            </summary>
+        </member>
+        <member name="M:PublicClassLibrary.ClsStr.Week(System.Object)">
+            <summary>
+            根据日期获取星期几
+            </summary>
+            <param name="str"></param>
+            <returns></returns>
+        </member>
+        <member name="M:PublicClassLibrary.ClsStr.getWeeks(System.String)">
+            <summary>
+            根据时间获取上周、本周、下周开始结束时间
+            </summary>
+            <param name="str">时间</param>
+            <returns>上周、本周、下周开始结束时间</returns>
+        </member>
+        <member name="M:PublicClassLibrary.ClsStr.getDateDiff(System.Object,System.Object)">
+            <summary>
+            判断两个日期相差天数
+            </summary>
+            <param name="obj1">开始日期</param>
+            <param name="obj2">结束日期</param>
+            <returns>相差天数</returns>
+        </member>
+        <member name="M:PublicClassLibrary.ClsStr.getMinutesDiff(System.Object,System.Object)">
+            <summary>
+            判断两个日期相差分钟数
+            </summary>
+            <param name="obj1"></param>
+            <param name="obj2"></param>
+            <returns></returns>
+        </member>
+        <member name="M:PublicClassLibrary.ClsStr.getDiff(System.Object,System.Object)">
+            <summary>
+            计算相差
+            </summary>
+            <param name="obj1">被减数</param>
+            <param name="obj2">减数</param>
+            <returns>计算相差</returns>
+        </member>
+        <member name="M:PublicClassLibrary.ClsStr.getPercent(System.Object,System.Object)">
+            <summary>
+            计算百分率
+            </summary>
+            <param name="obj1">分子</param>
+            <param name="obj2">分母</param>
+            <returns>计算百分率</returns>
+        </member>
+        <member name="M:PublicClassLibrary.ClsStr.getModelContent(System.Object)">
+            <summary>
+            将Model组合成字符串
+            </summary>
+            <param name="model">object型</param>
+            <returns>将Model组合成字符串</returns>
+        </member>
+        <member name="M:PublicClassLibrary.ClsStr.getSystemManMd5(System.String)">
+            <summary>
+            获取字符串随机加密
+            </summary>
+            <param name="str">要加密的字符串</param>
+            <returns>字符串随机加密</returns>
+        </member>
+        <member name="M:PublicClassLibrary.ClsStr.md5(System.String)">
+            <summary>
+            md5加密
+            </summary>
+            <param name="str">要加密的字符串</param>
+            <returns>参见模型</returns>
+        </member>
+        <member name="M:PublicClassLibrary.ClsStr.EncryptA01(System.String,System.String)">
+            <summary>
+            加密
+            </summary>
+            <param name="pToEncrypt">要加密的字符串</param>
+            <param name="sKey">加密密码 8个字符</param>
+            <returns>加密后的字符串</returns>
+        </member>
+        <member name="M:PublicClassLibrary.ClsStr.DecryptA01(System.String,System.String)">
+            <summary>
+            解密
+            </summary>
+            <param name="pToDecrypt">要解密的字符串</param>
+            <param name="sKey">解密密码 8个字符（需要与加密密码保持一致）</param>
+            <returns>解密后的字符串</returns>
+        </member>
+        <member name="T:PublicClassLibrary.ClsSwitch">
+            <summary>
+            数据转换操作类
+            </summary>
+        </member>
+        <member name="M:PublicClassLibrary.ClsSwitch.SwitDate(System.Object)">
+            <summary>
+            转换成标准格式日期
+            </summary>
+            <param name="obj"></param>
+            <returns>参见模型</returns>
+        </member>
+        <member name="M:PublicClassLibrary.ClsSwitch.SwitTM(System.Object)">
+            <summary>
+            转换为时间类型yyyy-MM-dd HH:mm:ss
+            </summary>
+            <param name="obj">要转移的时间</param>
+            <returns>格式化后的时间</returns>
+        </member>
+        <member name="M:PublicClassLibrary.ClsSwitch.SwitMN(System.Object)">
+            <summary>
+            转换为时间类型yyyy-MM-dd HH:mm
+            </summary>
+            <param name="obj">要转移的时间</param>
+            <returns>格式化后的时间</returns>
+        </member>
+        <member name="M:PublicClassLibrary.ClsSwitch.compDate(System.Object,System.Object,System.String)">
+            <summary>
+            比较开始时间是否小于结束时间
+            </summary>
+            <param name="dateBegin">开始时间</param>
+            <param name="dateEnd">结束时间</param>
+            <param name="type">0 开始日期小于结束日期 1开始日期小于等于结束日期</param>
+            <returns>true 小于等于结束日期 false 大于等于结束日期</returns>
+        </member>
+        <member name="T:PublicClassLibrary.GaussSphere">
+            <summary>
+            GaussSphere 为自定义枚举类型
+            高斯投影中所选用的参考椭球
+            </summary>
+        </member>
+        <member name="F:PublicClassLibrary.GaussSphere.Beijing54">
+            <summary>
+            Beijing54
+            </summary>
+        </member>
+        <member name="F:PublicClassLibrary.GaussSphere.Xian80">
+            <summary>
+             Xian80
+            </summary>
+        </member>
+        <member name="F:PublicClassLibrary.GaussSphere.WGS84">
+            <summary>
+            WGS84
+            </summary>
+        </member>
+        <member name="T:PublicClassLibrary.LogHelper">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:PublicClassLibrary.LogHelper.GetInstance">
+            <summary>
+            初始化
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:PublicClassLibrary.LogHelper.GetInstance(System.String)">
+            <summary>
+            初始化
+            </summary>
+            <param name="configPath"></param>
+            <returns></returns>
+        </member>
+        <member name="M:PublicClassLibrary.LogHelper.#ctor(System.String)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="configPath"></param>
+        </member>
+        <member name="T:PublicClassLibrary.MapComHelpr">
+            <summary>
+            地图公共方法
+            </summary>
+        </member>
+        <member name="M:PublicClassLibrary.MapComHelpr.GetDistance(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            计算两个经纬度之间的距离
+            </summary>
+            <param name="lat1">纬度1</param>
+            <param name="lng1">经度1</param>
+            <param name="lat2">纬度2</param>
+            <param name="lng2">经度2</param>
+            <returns></returns>
+        </member>
+        <member name="M:PublicClassLibrary.MapComHelpr.DistanceOfTwoPoints(System.Double,System.Double,System.Double,System.Double,PublicClassLibrary.GaussSphere)">
+            <summary>
+            以米为单位
+            </summary>
+            <param name="lng1"></param>
+            <param name="lat1"></param>
+            <param name="lng2"></param>
+            <param name="lat2"></param>
+            <param name="gs"></param>
+            <returns></returns>
+        </member>
+        <member name="M:PublicClassLibrary.MapComHelpr.ConvertDigitalToDegrees(System.String)">
+            <summary>
+            数字经纬度和度分秒经纬度转换 (Digital degree of latitude and longitude and vehicle to latitude and longitude conversion)
+            </summary>
+            <param name="digitalLati_Longi">数字经纬度</param>
+            <return>度分秒经纬度</return>
+        </member>
+        <member name="M:PublicClassLibrary.MapComHelpr.ConvertDigitalToDegrees(System.Double)">
+            <summary>
+            数字经纬度和度分秒经纬度转换 (Digital degree of latitude and longitude and vehicle to latitude and longitude conversion)
+            </summary>
+            <param name="digitalDegree">数字经纬度</param>
+            <return>度分秒经纬度</return>
+        </member>
+        <member name="M:PublicClassLibrary.MapComHelpr.ConvertDegreesToDigital(System.String)">
+            <summary>
+            度分秒经纬度(必须含有'°')和数字经纬度转换
+            </summary>
+            <param name="degrees">度分秒经纬度</param>
+            <return>数字经纬度</return>
+        </member>
+        <member name="M:PublicClassLibrary.MapComHelpr.ConvertDegreesToDigital_default(System.String)">
+            <summary>
+            度分秒经纬度(必须含有'/')和数字经纬度转换
+            </summary>
+            <param name="degrees">度分秒经纬度</param>
+            <return>数字经纬度</return>
+        </member>
+        <member name="M:PublicClassLibrary.MapComHelpr.ConvertDegreesToDigital(System.String,System.Char)">
+            <summary>
+            度分秒经纬度和数字经纬度转换
+            </summary>
+            <param name="degrees">度分秒经纬度</param>
+            <param name="cflag">分隔符</param>
+            <return>数字经纬度</return>
+        </member>
+        <member name="T:PublicClassLibrary.PublicCom.LogicalCalcTools">
+            <summary>
+            公共逻辑计算类
+            </summary>
+        </member>
+        <member name="M:PublicClassLibrary.PublicCom.LogicalCalcTools.CalcMil(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            计算两点地图坐标的距离
+            </summary>
+            <param name="X1"></param>
+            <param name="Y1"></param>
+            <param name="X2"></param>
+            <param name="Y2"></param>
+            <returns></returns>
+        </member>
+        <member name="T:PublicClassLibrary.PublicCom.PublicTools">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:PublicClassLibrary.PublicCom.PublicTools.ToDataTable``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            list to datable
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="collection"></param>
+            <returns></returns>
+        </member>
+        <member name="M:PublicClassLibrary.PublicCom.PublicTools.ConvertTo``1(System.Data.DataTable)">
+            <summary>
+            datable to list
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="table"></param>
+            <returns></returns>
+        </member>
+        <member name="M:PublicClassLibrary.PublicCom.PublicTools.ConvertTo``1(System.Collections.Generic.IList{System.Data.DataRow})">
+            <summary>
+            
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="rows"></param>
+            <returns></returns>
+        </member>
+        <member name="M:PublicClassLibrary.PublicCom.PublicTools.CreateItem``1(System.Data.DataRow)">
+            <summary>
+            
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="row"></param>
+            <returns></returns>
+        </member>
+        <member name="T:PublicClassLibrary.PublicCom.ReflectCom">
+            <summary>
+            反射类
+            </summary>
+        </member>
+        <member name="M:PublicClassLibrary.PublicCom.ReflectCom.GetObjectPropertyValue``1(``0,System.String)">
+            <summary>
+            获取属性值
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="t"></param>
+            <param name="propertyname"></param>
+            <returns></returns>
+        </member>
+        <member name="T:PublicClassLibrary.ThirdDockService.TaskUtil">
+            <summary>
+            参数修改--》通知手机段即使更新（信云服务对接）
+            </summary>
+        </member>
+        <member name="M:PublicClassLibrary.ThirdDockService.TaskUtil.NotifyRefreshData(System.String,System.String)">
+            <summary>
+            通知数据更新
+            </summary>
+            <param name="notifyType">通知类别</param>
+            <param name="eID">单位ID</param>
+        </member>
+        <member name="M:PublicClassLibrary.ThirdDockService.TaskUtil.TaskNotifyCacheUserData(System.Object)">
+            <summary>
+            通知网关应用缓存指定单位的用户数据
+            </summary>
+            <param name="url"></param>
+        </member>
+    </members>
+</doc>

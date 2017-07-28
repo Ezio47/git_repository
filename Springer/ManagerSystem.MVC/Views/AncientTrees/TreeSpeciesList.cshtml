@@ -1,0 +1,217 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+
+    <div data-options="region:'center'" title="">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <ul>
+                        <li class="homeUL"><a href="/AncientTrees/TreeSpeciesList">古树名木管理</a></li>
+                        @Html.Raw(@ViewBag.navList)
+                    </ul>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; " class="LayoutCenterBG">
+                <div id="divTable" class="divTable">
+                    @Html.Raw(@ViewBag.TreeSpeciesList)
+                </div>
+            </div>
+            <div data-options="region:'south'" title="" style=" height:40px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
+                <div class="divOP" style="text-align:left;">
+                    <div class="home">
+                        编码：<input id="tbxTSPCODE" name="tbxTSPCODE" type="text" value="" style="width:100px;" />
+                        名称：<input id="tbxTSPNAME" name="tbxTSPNAME" type="text" value="" style="width:100px;" />
+                        拉丁名称：<input id="tbxLATINNAME" name="tbxLATINNAME" type="text" value="" style="width:100px;" />
+                        排序号：<input id="tbxORDERBY" name="tbxORDERBY" type="text" value="" style="width:70px;" />
+                        <input id="hidTSPCODE" name="hidTSPCODE" type="hidden" value="@ViewBag.TSPCODE" />
+                        <input type="button" value="添加" onclick="Manager('Add')" id="btnAdd" class="btnAddCss" style="display:none;" />
+                        <input type="button" value="修改" onclick="Manager('Mdy')" id="btnMdy" class="btnMdyCss" style="display:none;" />
+                        <input type="button" value="删除" onclick="Manager('Del')" id="btnDel" class="btnDelCss" style="display:none;" />
+                        编码格式：例如"010203","01"科，"02"属，"03"种;
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var blnAdd = '@ViewBag.Add';
+    var blnMdy = '@ViewBag.Mdy';
+    var blnDel = '@ViewBag.Del';
+    if (blnAdd == "1") {
+        document.getElementById('btnAdd').style.display = "";
+    }
+    if (blnDel == "1") {
+        document.getElementById('btnMdy').style.display = "";
+    }
+    if (blnDel == "1") {
+        document.getElementById('btnDel').style.display = "";
+    }
+
+    function Query() {
+        $.ajax({
+            url: '/AncientTrees/AncientTreesListQuery',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: { TSPCODE: $('#hidTSPCODE').val() },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#divTable').html("");
+                    $('#divTable').html(ar.Msg);
+                }
+                else {
+                    layer.msg(ar.Msg, { icon: 5 });
+                }
+            },
+            error: function () {
+                layer.msg("系统异常!", { icon: 5 });
+            }
+        });
+    }
+
+    function showValue(TSPCODE) {
+        $.ajax({
+            url: '/AncientTrees/getAncientTreesJson',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            cache: false,
+            data: { TSPCODE: TSPCODE },
+            dataType: "json",
+            success: function (data) {
+                if (data.TSPCODE != null) {
+                    $('#tbxTSPCODE').val(data.TSPCODE);
+                    $('#tbxTSPNAME').val(data.TSPNAME);
+                    $("#tbxLATINNAME").val(data.LATINNAME);
+                    $("#tbxORDERBY").val(data.ORDERBY);
+                }
+                else {
+                    layer.msg('系统异常!', { icon: 5 });
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('系统异常!', { icon: 5 });
+            }
+        });
+    }
+
+    function Manager(Method) {
+        if (Method == 'Del') {
+            var TSPCODE = $('#tbxTSPCODE').val();
+            if (TSPCODE !== "") {
+                layer.confirm('确实要删除吗?', { icon: 3, title: '提示' }, function (index) {
+                    $.ajax({
+                        url: '/AncientTrees/AncientTreesManager',
+                        cache: false,
+                        data: { TSPCODE: TSPCODE, Method: Method },
+                        type: 'post',
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.Success) {
+                                layer.msg(data.Msg, { icon: 6 });
+                                Query();
+                            }
+                            else {
+                                layer.msg(data.Msg, { icon: 5 });
+                            }
+                        },
+                        error: function () {
+                            layer.msg("系统异常!", { icon: 5 });
+                        }
+                    });
+                });
+            }
+            else {
+                layer.msg("请选择要删除的树种!", { icon: 5 });
+                return;
+            }
+        }
+        else {
+            var TSPCODE = $('#tbxTSPCODE').val();
+            if (Method == 'Mdy') {
+                if (TSPCODE == "") {
+                    layer.msg("请选择要修改的树种!", { icon: 5 });
+                    return;
+                }
+            }
+            var code = $('#hidTSPCODE').val();
+            var len = code.length;
+            var len2 = len + 2;
+            if ($.trim(TSPCODE) != "") {
+                var reg = new RegExp("^[0-9]*$");
+                if (!reg.test(TSPCODE)) {
+                    layer.msg('请输入' + len2 + '数字编码!', { icon: 5 });
+                    $("#tbxTSPCODE").focus();
+                    return;
+                }
+                else {
+                    if (TSPCODE.length != len2) {
+                        layer.msg('请输入' + len2 + '数字编码!', { icon: 5 });
+                        $("#tbxTSPCODE").focus();
+                        return;
+                    }
+                    else {
+                        if (len > 0) {
+                            if (TSPCODE.substring(0, len) != code) {
+                                layer.msg('请输入' + len2 + '数字编码,请前' + len + '位为' + code + '!', { icon: 5 });
+                                $("#tbxTSPCODE").focus();
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                layer.msg('请输入' + len2 + '数字编码!', { icon: 5 });
+                $("#tbxTSPCODE").focus();
+                return
+            }
+
+            var TSPNAME = $('#tbxTSPNAME').val();
+            if ($.trim(TSPNAME) == "") {
+                layer.msg('请输入名称!', { icon: 5 });
+                $("#tbxTSPNAME").focus();
+                return;
+            }
+
+            var LATINNAME = $('#tbxLATINNAME').val();
+            if ($.trim(LATINNAME) == "") {
+                layer.msg('请输入拉丁名称!', { icon: 5 });
+                $("#tbxLATINNAME").focus();
+                return;
+            }
+
+            var ORDERBY = $('#tbxORDERBY').val();
+            if ($.trim(ORDERBY) == "") {
+                layer.msg('请输入排序号!', { icon: 5 });
+                $("#tbxORDERBY").focus();
+                return;
+            }
+
+            $.ajax({
+                url: '/AncientTrees/AncientTreesManager',
+                timeout: 10000, //10秒后超时，如果为0则永不超时
+                cache: false,
+                data: { TSPCODE: TSPCODE, TSPNAME: TSPNAME, LATINNAME: LATINNAME, ORDERBY: ORDERBY, Method: Method, },
+                success: function (data) {
+                    var ar = eval('(' + data + ')');
+                    if (ar.Success) {
+                        layer.msg(ar.Msg, { icon: 6 });
+                        Query();
+                    }
+                    else {
+                        layer.msg(ar.Msg, { icon: 5 });
+                    }
+                },
+                error: function (err, ioArgs) {
+                    layer.msg('系统异常!', { icon: 5 });
+                }
+            });
+        }
+    }
+</script>

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="http://tempuri.org/" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="SmsSendService" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://tempuri.org/Imports">
+      <xsd:import schemaLocation="http://192.168.8.168:8100/ThirdSmsService.svc?xsd=xsd0" namespace="http://tempuri.org/" />
+      <xsd:import schemaLocation="http://192.168.8.168:8100/ThirdSmsService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xsd:import schemaLocation="http://192.168.8.168:8100/ThirdSmsService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/TLW.Project.SmsMessageWcfService.Model" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="ISmsSendService_SendMsg_InputMessage">
+    <wsdl:part name="parameters" element="tns:SendMsg" />
+  </wsdl:message>
+  <wsdl:message name="ISmsSendService_SendMsg_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SendMsgResponse" />
+  </wsdl:message>
+  <wsdl:message name="ISmsSendService_SmsTemplateModify_InputMessage">
+    <wsdl:part name="parameters" element="tns:SmsTemplateModify" />
+  </wsdl:message>
+  <wsdl:message name="ISmsSendService_SmsTemplateModify_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SmsTemplateModifyResponse" />
+  </wsdl:message>
+  <wsdl:message name="ISmsSendService_GetSign_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetSign" />
+  </wsdl:message>
+  <wsdl:message name="ISmsSendService_GetSign_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetSignResponse" />
+  </wsdl:message>
+  <wsdl:message name="ISmsSendService_GetSmsTotal_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetSmsTotal" />
+  </wsdl:message>
+  <wsdl:message name="ISmsSendService_GetSmsTotal_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetSmsTotalResponse" />
+  </wsdl:message>
+  <wsdl:message name="ISmsSendService_GetMsgTest_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetMsgTest" />
+  </wsdl:message>
+  <wsdl:message name="ISmsSendService_GetMsgTest_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetMsgTestResponse" />
+  </wsdl:message>
+  <wsdl:message name="ISmsSendService_GetStrTest_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetStrTest" />
+  </wsdl:message>
+  <wsdl:message name="ISmsSendService_GetStrTest_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetStrTestResponse" />
+  </wsdl:message>
+  <wsdl:portType name="ISmsSendService">
+    <wsdl:operation name="SendMsg">
+      <wsdl:input wsaw:Action="http://tempuri.org/ISmsSendService/SendMsg" message="tns:ISmsSendService_SendMsg_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/ISmsSendService/SendMsgResponse" message="tns:ISmsSendService_SendMsg_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SmsTemplateModify">
+      <wsdl:input wsaw:Action="http://tempuri.org/ISmsSendService/SmsTemplateModify" message="tns:ISmsSendService_SmsTemplateModify_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/ISmsSendService/SmsTemplateModifyResponse" message="tns:ISmsSendService_SmsTemplateModify_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetSign">
+      <wsdl:input wsaw:Action="http://tempuri.org/ISmsSendService/GetSign" message="tns:ISmsSendService_GetSign_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/ISmsSendService/GetSignResponse" message="tns:ISmsSendService_GetSign_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetSmsTotal">
+      <wsdl:input wsaw:Action="http://tempuri.org/ISmsSendService/GetSmsTotal" message="tns:ISmsSendService_GetSmsTotal_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/ISmsSendService/GetSmsTotalResponse" message="tns:ISmsSendService_GetSmsTotal_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetMsgTest">
+      <wsdl:input wsaw:Action="http://tempuri.org/ISmsSendService/GetMsgTest" message="tns:ISmsSendService_GetMsgTest_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/ISmsSendService/GetMsgTestResponse" message="tns:ISmsSendService_GetMsgTest_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetStrTest">
+      <wsdl:input wsaw:Action="http://tempuri.org/ISmsSendService/GetStrTest" message="tns:ISmsSendService_GetStrTest_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/ISmsSendService/GetStrTestResponse" message="tns:ISmsSendService_GetStrTest_OutputMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="BasicHttpBinding_ISmsSendService" type="tns:ISmsSendService">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="SendMsg">
+      <soap:operation soapAction="http://tempuri.org/ISmsSendService/SendMsg" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SmsTemplateModify">
+      <soap:operation soapAction="http://tempuri.org/ISmsSendService/SmsTemplateModify" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSign">
+      <soap:operation soapAction="http://tempuri.org/ISmsSendService/GetSign" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSmsTotal">
+      <soap:operation soapAction="http://tempuri.org/ISmsSendService/GetSmsTotal" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetMsgTest">
+      <soap:operation soapAction="http://tempuri.org/ISmsSendService/GetMsgTest" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetStrTest">
+      <soap:operation soapAction="http://tempuri.org/ISmsSendService/GetStrTest" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="SmsSendService">
+    <wsdl:port name="BasicHttpBinding_ISmsSendService" binding="tns:BasicHttpBinding_ISmsSendService">
+      <soap:address location="http://192.168.8.168:8100/ThirdSmsService.svc" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

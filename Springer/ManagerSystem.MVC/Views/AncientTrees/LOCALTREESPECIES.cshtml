@@ -1,0 +1,106 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        单位：<select id="tbxORGNO" onchange="Query()">@Html.Raw(@ViewBag.vdOrg)</select>&nbsp;&nbsp;&nbsp;
+                        <input type="button" value="保存" onclick="Manager()" id="btnSave" class="btnSaveCss" style="display:none;">
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <div id="divTable" class="divTable">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var blnSave = '@ViewBag.Save';
+    if (blnSave == "1") {
+        document.getElementById('btnSave').style.display = "";
+    }
+    Query();
+    function Query() {
+        $.ajax({
+            url: '/AncientTrees/LOCALTREESPECIESQuery',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: { ORGNO: $('#tbxORGNO').val() },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#divTable').html("");
+                    $('#divTable').html(ar.Msg);
+                }
+                else {
+                    layer.msg(ar.Msg, { icon: 5 });
+                }
+            },
+            error: function () {
+                layer.msg("系统异常!", { icon: 5 });
+            }
+        });
+    }
+
+    //勾选
+    function SelectAll(v, c) {
+        var _len = $("#LOCALTREESPECIESTable tr").length - 1;//行数
+        if (_len > 0) {
+            if (v == "ALL") {
+                for (var i = 0; i < _len; i++) {
+                    document.getElementById('tbxTSP' + i).checked = c;
+                }
+            }
+        }
+    }
+
+    function Manager() {
+        var strTSPCODE = $("input:checkbox[name='tbxTSP']:checked").map(function (index, elem) { return $(elem).val(); }).get().join(',');
+        if (strTSPCODE.length > 0) {
+            var arrTSPCODE = strTSPCODE.split(',');
+            var strTSPAREA = "";
+            for (var i = 0; i < arrTSPCODE.length; i++) {
+                var CODE = arrTSPCODE[i];
+                var AREA = $('#tbxAREA' + CODE + '').val();
+                if ($.trim(AREA) != "") {
+                    var reg = /^[1-9]{1}\d*(.\d{1,2})?$|^0.\d{1,2}$/;
+                    if (!reg.test(AREA)) {
+                        layer.msg('本地面积请输入正数,且最多保留2位有效小数!', { icon: 5 });
+                        $('#tbxAREA' + CODE + '').focus();
+                        return;
+                    }
+                }
+                strTSPAREA = strTSPAREA + AREA + ",";
+            }
+            $.ajax({
+                url: '/AncientTrees/LOCALTREESPECIESManager',
+                timeout: 10000, //10秒后超时，如果为0则永不超时
+                data: { ORGNO: $('#tbxORGNO').val(), TSPCODE: strTSPCODE, TSPAREA: strTSPAREA },
+                success: function (data, ioArgs) {
+                    var ar = eval('(' + data + ')');
+                    if (ar.Success) {
+                        layer.msg(ar.Msg, { icon: 6 });
+                        Query();
+                    }
+                    else {
+                        layer.msg(ar.Msg, { icon: 5 });
+                    }
+                },
+                error: function (err, ioArgs) {
+                    layer.msg("保存异常!", { icon: 5 });
+                }
+            });
+        }
+    }
+</script>

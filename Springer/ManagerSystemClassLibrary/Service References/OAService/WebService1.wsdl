@@ -1,0 +1,712 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://tempuri.org/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/">
+      <s:element name="isExists">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="userId" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="isExistsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="isExistsResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetOfficeNum">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="userId" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetOfficeNumResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetOfficeNumResult" type="tns:ArrayOfInt" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfInt">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="int" type="s:int" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="FindDeptInfo">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="deptId" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="FindDeptInfoResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="FindDeptInfoResult" type="tns:ArrayOfString" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfString">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="string" nillable="true" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="GetDeptOption">
+        <s:complexType />
+      </s:element>
+      <s:element name="GetDeptOptionResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetDeptOptionResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="OpenUsers">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="jsonUsers" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="OpenUsersResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="OpenUsersResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CloseUsers">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="userIdList" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CloseUsersResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="CloseUsersResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="DelUser">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="userId" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="DelUserResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="DelUserResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="InitPwd">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="userId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="pwd" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="InitPwdResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="InitPwdResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="boolean" type="s:boolean" />
+      <s:element name="ArrayOfInt" nillable="true" type="tns:ArrayOfInt" />
+      <s:element name="ArrayOfString" nillable="true" type="tns:ArrayOfString" />
+      <s:element name="string" nillable="true" type="s:string" />
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="isExistsSoapIn">
+    <wsdl:part name="parameters" element="tns:isExists" />
+  </wsdl:message>
+  <wsdl:message name="isExistsSoapOut">
+    <wsdl:part name="parameters" element="tns:isExistsResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetOfficeNumSoapIn">
+    <wsdl:part name="parameters" element="tns:GetOfficeNum" />
+  </wsdl:message>
+  <wsdl:message name="GetOfficeNumSoapOut">
+    <wsdl:part name="parameters" element="tns:GetOfficeNumResponse" />
+  </wsdl:message>
+  <wsdl:message name="FindDeptInfoSoapIn">
+    <wsdl:part name="parameters" element="tns:FindDeptInfo" />
+  </wsdl:message>
+  <wsdl:message name="FindDeptInfoSoapOut">
+    <wsdl:part name="parameters" element="tns:FindDeptInfoResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetDeptOptionSoapIn">
+    <wsdl:part name="parameters" element="tns:GetDeptOption" />
+  </wsdl:message>
+  <wsdl:message name="GetDeptOptionSoapOut">
+    <wsdl:part name="parameters" element="tns:GetDeptOptionResponse" />
+  </wsdl:message>
+  <wsdl:message name="OpenUsersSoapIn">
+    <wsdl:part name="parameters" element="tns:OpenUsers" />
+  </wsdl:message>
+  <wsdl:message name="OpenUsersSoapOut">
+    <wsdl:part name="parameters" element="tns:OpenUsersResponse" />
+  </wsdl:message>
+  <wsdl:message name="CloseUsersSoapIn">
+    <wsdl:part name="parameters" element="tns:CloseUsers" />
+  </wsdl:message>
+  <wsdl:message name="CloseUsersSoapOut">
+    <wsdl:part name="parameters" element="tns:CloseUsersResponse" />
+  </wsdl:message>
+  <wsdl:message name="DelUserSoapIn">
+    <wsdl:part name="parameters" element="tns:DelUser" />
+  </wsdl:message>
+  <wsdl:message name="DelUserSoapOut">
+    <wsdl:part name="parameters" element="tns:DelUserResponse" />
+  </wsdl:message>
+  <wsdl:message name="InitPwdSoapIn">
+    <wsdl:part name="parameters" element="tns:InitPwd" />
+  </wsdl:message>
+  <wsdl:message name="InitPwdSoapOut">
+    <wsdl:part name="parameters" element="tns:InitPwdResponse" />
+  </wsdl:message>
+  <wsdl:message name="isExistsHttpGetIn">
+    <wsdl:part name="userId" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="isExistsHttpGetOut">
+    <wsdl:part name="Body" element="tns:boolean" />
+  </wsdl:message>
+  <wsdl:message name="GetOfficeNumHttpGetIn">
+    <wsdl:part name="userId" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetOfficeNumHttpGetOut">
+    <wsdl:part name="Body" element="tns:ArrayOfInt" />
+  </wsdl:message>
+  <wsdl:message name="FindDeptInfoHttpGetIn">
+    <wsdl:part name="deptId" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="FindDeptInfoHttpGetOut">
+    <wsdl:part name="Body" element="tns:ArrayOfString" />
+  </wsdl:message>
+  <wsdl:message name="GetDeptOptionHttpGetIn" />
+  <wsdl:message name="GetDeptOptionHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="OpenUsersHttpGetIn">
+    <wsdl:part name="jsonUsers" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="OpenUsersHttpGetOut">
+    <wsdl:part name="Body" element="tns:boolean" />
+  </wsdl:message>
+  <wsdl:message name="CloseUsersHttpGetIn">
+    <wsdl:part name="userIdList" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="CloseUsersHttpGetOut">
+    <wsdl:part name="Body" element="tns:boolean" />
+  </wsdl:message>
+  <wsdl:message name="DelUserHttpGetIn">
+    <wsdl:part name="userId" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="DelUserHttpGetOut">
+    <wsdl:part name="Body" element="tns:boolean" />
+  </wsdl:message>
+  <wsdl:message name="InitPwdHttpGetIn">
+    <wsdl:part name="userId" type="s:string" />
+    <wsdl:part name="pwd" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="InitPwdHttpGetOut">
+    <wsdl:part name="Body" element="tns:boolean" />
+  </wsdl:message>
+  <wsdl:message name="isExistsHttpPostIn">
+    <wsdl:part name="userId" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="isExistsHttpPostOut">
+    <wsdl:part name="Body" element="tns:boolean" />
+  </wsdl:message>
+  <wsdl:message name="GetOfficeNumHttpPostIn">
+    <wsdl:part name="userId" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetOfficeNumHttpPostOut">
+    <wsdl:part name="Body" element="tns:ArrayOfInt" />
+  </wsdl:message>
+  <wsdl:message name="FindDeptInfoHttpPostIn">
+    <wsdl:part name="deptId" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="FindDeptInfoHttpPostOut">
+    <wsdl:part name="Body" element="tns:ArrayOfString" />
+  </wsdl:message>
+  <wsdl:message name="GetDeptOptionHttpPostIn" />
+  <wsdl:message name="GetDeptOptionHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="OpenUsersHttpPostIn">
+    <wsdl:part name="jsonUsers" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="OpenUsersHttpPostOut">
+    <wsdl:part name="Body" element="tns:boolean" />
+  </wsdl:message>
+  <wsdl:message name="CloseUsersHttpPostIn">
+    <wsdl:part name="userIdList" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="CloseUsersHttpPostOut">
+    <wsdl:part name="Body" element="tns:boolean" />
+  </wsdl:message>
+  <wsdl:message name="DelUserHttpPostIn">
+    <wsdl:part name="userId" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="DelUserHttpPostOut">
+    <wsdl:part name="Body" element="tns:boolean" />
+  </wsdl:message>
+  <wsdl:message name="InitPwdHttpPostIn">
+    <wsdl:part name="userId" type="s:string" />
+    <wsdl:part name="pwd" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="InitPwdHttpPostOut">
+    <wsdl:part name="Body" element="tns:boolean" />
+  </wsdl:message>
+  <wsdl:portType name="WebServiceSoap">
+    <wsdl:operation name="isExists">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">判断用户是否存在</wsdl:documentation>
+      <wsdl:input message="tns:isExistsSoapIn" />
+      <wsdl:output message="tns:isExistsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetOfficeNum">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">获取办公报件数[待办,短信]</wsdl:documentation>
+      <wsdl:input message="tns:GetOfficeNumSoapIn" />
+      <wsdl:output message="tns:GetOfficeNumSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="FindDeptInfo">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">查找部门信息--[部门ID,主管ID,组织架构ID]</wsdl:documentation>
+      <wsdl:input message="tns:FindDeptInfoSoapIn" />
+      <wsdl:output message="tns:FindDeptInfoSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDeptOption">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">获取部门下拉框列表</wsdl:documentation>
+      <wsdl:input message="tns:GetDeptOptionSoapIn" />
+      <wsdl:output message="tns:GetDeptOptionSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="OpenUsers">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">开通OA账号,存在则修改,不存在则添加--true:成功;false:失败</wsdl:documentation>
+      <wsdl:input message="tns:OpenUsersSoapIn" />
+      <wsdl:output message="tns:OpenUsersSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CloseUsers">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">禁用OA账号--true:成功;false:失败</wsdl:documentation>
+      <wsdl:input message="tns:CloseUsersSoapIn" />
+      <wsdl:output message="tns:CloseUsersSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="DelUser">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">删除用户信息--true:删除成功;false:删除失败</wsdl:documentation>
+      <wsdl:input message="tns:DelUserSoapIn" />
+      <wsdl:output message="tns:DelUserSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="InitPwd">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">初始化OA账号秘密--true:成功;false:失败</wsdl:documentation>
+      <wsdl:input message="tns:InitPwdSoapIn" />
+      <wsdl:output message="tns:InitPwdSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="WebServiceHttpGet">
+    <wsdl:operation name="isExists">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">判断用户是否存在</wsdl:documentation>
+      <wsdl:input message="tns:isExistsHttpGetIn" />
+      <wsdl:output message="tns:isExistsHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetOfficeNum">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">获取办公报件数[待办,短信]</wsdl:documentation>
+      <wsdl:input message="tns:GetOfficeNumHttpGetIn" />
+      <wsdl:output message="tns:GetOfficeNumHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="FindDeptInfo">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">查找部门信息--[部门ID,主管ID,组织架构ID]</wsdl:documentation>
+      <wsdl:input message="tns:FindDeptInfoHttpGetIn" />
+      <wsdl:output message="tns:FindDeptInfoHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDeptOption">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">获取部门下拉框列表</wsdl:documentation>
+      <wsdl:input message="tns:GetDeptOptionHttpGetIn" />
+      <wsdl:output message="tns:GetDeptOptionHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="OpenUsers">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">开通OA账号,存在则修改,不存在则添加--true:成功;false:失败</wsdl:documentation>
+      <wsdl:input message="tns:OpenUsersHttpGetIn" />
+      <wsdl:output message="tns:OpenUsersHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CloseUsers">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">禁用OA账号--true:成功;false:失败</wsdl:documentation>
+      <wsdl:input message="tns:CloseUsersHttpGetIn" />
+      <wsdl:output message="tns:CloseUsersHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="DelUser">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">删除用户信息--true:删除成功;false:删除失败</wsdl:documentation>
+      <wsdl:input message="tns:DelUserHttpGetIn" />
+      <wsdl:output message="tns:DelUserHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="InitPwd">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">初始化OA账号秘密--true:成功;false:失败</wsdl:documentation>
+      <wsdl:input message="tns:InitPwdHttpGetIn" />
+      <wsdl:output message="tns:InitPwdHttpGetOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="WebServiceHttpPost">
+    <wsdl:operation name="isExists">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">判断用户是否存在</wsdl:documentation>
+      <wsdl:input message="tns:isExistsHttpPostIn" />
+      <wsdl:output message="tns:isExistsHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetOfficeNum">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">获取办公报件数[待办,短信]</wsdl:documentation>
+      <wsdl:input message="tns:GetOfficeNumHttpPostIn" />
+      <wsdl:output message="tns:GetOfficeNumHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="FindDeptInfo">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">查找部门信息--[部门ID,主管ID,组织架构ID]</wsdl:documentation>
+      <wsdl:input message="tns:FindDeptInfoHttpPostIn" />
+      <wsdl:output message="tns:FindDeptInfoHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDeptOption">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">获取部门下拉框列表</wsdl:documentation>
+      <wsdl:input message="tns:GetDeptOptionHttpPostIn" />
+      <wsdl:output message="tns:GetDeptOptionHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="OpenUsers">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">开通OA账号,存在则修改,不存在则添加--true:成功;false:失败</wsdl:documentation>
+      <wsdl:input message="tns:OpenUsersHttpPostIn" />
+      <wsdl:output message="tns:OpenUsersHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CloseUsers">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">禁用OA账号--true:成功;false:失败</wsdl:documentation>
+      <wsdl:input message="tns:CloseUsersHttpPostIn" />
+      <wsdl:output message="tns:CloseUsersHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="DelUser">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">删除用户信息--true:删除成功;false:删除失败</wsdl:documentation>
+      <wsdl:input message="tns:DelUserHttpPostIn" />
+      <wsdl:output message="tns:DelUserHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="InitPwd">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">初始化OA账号秘密--true:成功;false:失败</wsdl:documentation>
+      <wsdl:input message="tns:InitPwdHttpPostIn" />
+      <wsdl:output message="tns:InitPwdHttpPostOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="WebServiceSoap" type="tns:WebServiceSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="isExists">
+      <soap:operation soapAction="http://tempuri.org/isExists" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetOfficeNum">
+      <soap:operation soapAction="http://tempuri.org/GetOfficeNum" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="FindDeptInfo">
+      <soap:operation soapAction="http://tempuri.org/FindDeptInfo" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDeptOption">
+      <soap:operation soapAction="http://tempuri.org/GetDeptOption" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="OpenUsers">
+      <soap:operation soapAction="http://tempuri.org/OpenUsers" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CloseUsers">
+      <soap:operation soapAction="http://tempuri.org/CloseUsers" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DelUser">
+      <soap:operation soapAction="http://tempuri.org/DelUser" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="InitPwd">
+      <soap:operation soapAction="http://tempuri.org/InitPwd" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="WebServiceSoap12" type="tns:WebServiceSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="isExists">
+      <soap12:operation soapAction="http://tempuri.org/isExists" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetOfficeNum">
+      <soap12:operation soapAction="http://tempuri.org/GetOfficeNum" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="FindDeptInfo">
+      <soap12:operation soapAction="http://tempuri.org/FindDeptInfo" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDeptOption">
+      <soap12:operation soapAction="http://tempuri.org/GetDeptOption" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="OpenUsers">
+      <soap12:operation soapAction="http://tempuri.org/OpenUsers" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CloseUsers">
+      <soap12:operation soapAction="http://tempuri.org/CloseUsers" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DelUser">
+      <soap12:operation soapAction="http://tempuri.org/DelUser" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="InitPwd">
+      <soap12:operation soapAction="http://tempuri.org/InitPwd" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="WebServiceHttpGet" type="tns:WebServiceHttpGet">
+    <http:binding verb="GET" />
+    <wsdl:operation name="isExists">
+      <http:operation location="/isExists" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetOfficeNum">
+      <http:operation location="/GetOfficeNum" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="FindDeptInfo">
+      <http:operation location="/FindDeptInfo" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDeptOption">
+      <http:operation location="/GetDeptOption" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="OpenUsers">
+      <http:operation location="/OpenUsers" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CloseUsers">
+      <http:operation location="/CloseUsers" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DelUser">
+      <http:operation location="/DelUser" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="InitPwd">
+      <http:operation location="/InitPwd" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="WebServiceHttpPost" type="tns:WebServiceHttpPost">
+    <http:binding verb="POST" />
+    <wsdl:operation name="isExists">
+      <http:operation location="/isExists" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetOfficeNum">
+      <http:operation location="/GetOfficeNum" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="FindDeptInfo">
+      <http:operation location="/FindDeptInfo" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDeptOption">
+      <http:operation location="/GetDeptOption" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="OpenUsers">
+      <http:operation location="/OpenUsers" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CloseUsers">
+      <http:operation location="/CloseUsers" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DelUser">
+      <http:operation location="/DelUser" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="InitPwd">
+      <http:operation location="/InitPwd" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="WebService">
+    <wsdl:port name="WebServiceSoap" binding="tns:WebServiceSoap">
+      <soap:address location="http://36.7.68.79:9006/WebService.asmx" />
+    </wsdl:port>
+    <wsdl:port name="WebServiceSoap12" binding="tns:WebServiceSoap12">
+      <soap12:address location="http://36.7.68.79:9006/WebService.asmx" />
+    </wsdl:port>
+    <wsdl:port name="WebServiceHttpGet" binding="tns:WebServiceHttpGet">
+      <http:address location="http://36.7.68.79:9006/WebService.asmx" />
+    </wsdl:port>
+    <wsdl:port name="WebServiceHttpPost" binding="tns:WebServiceHttpPost">
+      <http:address location="http://36.7.68.79:9006/WebService.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

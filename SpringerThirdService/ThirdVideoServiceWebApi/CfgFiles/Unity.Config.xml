@@ -1,0 +1,19 @@
+﻿<configuration>
+  <configSections>
+    <section name="unity" type="Microsoft.Practices.Unity.Configuration.UnityConfigurationSection, Microsoft.Practices.Unity.Configuration"/>
+  </configSections>
+  <unity>
+    <!--<sectionExtension type ="Microsoft.Practices.Unity.InterceptionExtension.Configuration.InterceptionConfigurationExtension,Microsoft.Practices.Unity.Interception.Configuration"></sectionExtension >-->
+    <containers>
+      <container name="defaultContainer">
+        <!--<extension type= "Interception"/>-->
+        <register type="System.Data.Entity.DbContext, EntityFramework" mapTo="TLW.AH.Business.DBUtility.SpringerDBContext, TLW.AH.Business.DBUtility"/>
+        <register type="TLW.AH.Business.ServiceIDal.IJCFireService,TLW.AH.Business.ServiceIDal" mapTo="TLW.AH.Business.ServiceDal.JCFireService,TLW.AH.Business.ServiceDal"/>
+        <register type="TLW.AH.Application.Interfance.IJCFireApplicationService,TLW.AH.Application.Interfance" mapTo="TLW.AH.Application.Service.JCFireApplicationService, TLW.AH.Application.Service"/>
+        <register type="TLW.AH.Business.ServiceIDal.IVideoOriginalService,TLW.AH.Business.ServiceIDal" mapTo="TLW.AH.Business.ServiceDal.VideoOriginalService,TLW.AH.Business.ServiceDal"/>
+        <register type="TLW.AH.Application.Interfance.IVideoOriginalApplicationService,TLW.AH.Application.Interfance" mapTo="TLW.AH.Application.Service.VideoOriginalApplicationService, TLW.AH.Application.Service"/>
+      </container>
+
+    </containers>
+  </unity>
+</configuration>

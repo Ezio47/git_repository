@@ -1,0 +1,187 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+}
+<script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="" class="LayoutCenterBG">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <ul>
+                        <li class="homeUL">
+                            @using (@Html.BeginForm("FireLevelInput", "FireSatellite", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                            {
+                                <label>日期：</label>
+                                <input id="tbxQueryTime" name="tbxQueryTime" type="text" class="Wdate" value="@ViewBag.time" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd'})" />
+                                <input type="button" value="查询" onclick="query()" class="btnSearchCss" />
+                                <input id="btnSave" type="button" value="保存" onclick="SaveFireLevelInput()" class="btnSaveCss" style="display:none;" />
+                            }
+                    </ul>
+                </div>
+            </div>
+
+            <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+                <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+                    <div data-options="region:'center'" title="" style=" border: none; ">
+                        <div class="divTable">
+                            @Html.Raw(@ViewBag.pageList)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var blnSave = '@ViewBag.Save';
+    if (blnSave == "1") {
+        document.getElementById('btnSave').style.display = "";
+    }
+    //查询
+    function query() {
+        var date = $('#tbxQueryTime').val();
+        if ($.trim(date) == "") {
+            layer.msg('请选择需要查询的日期!', { icon: 5 });
+            $('#tbxQueryTime').focus();
+            return;
+        }
+        var areacode = "";
+        if (document.getElementById('tbxArea')) {
+            areacode = $('#tbxArea option:selected').val();
+        }
+        $.ajax({
+            url: '/FireSatellite/FireLevelInputQuery',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: { DCDATE: date, AreaCode: areacode },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    window.location.assign(ar.Url);
+                }
+                else {
+                    layer.msg(ar.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("查询异常!", { icon: 5 });
+            }
+        });
+    }
+
+    //区域改变
+    function AreaChange() {
+        var date = $('#tbxQueryTime').val();
+        if ($.trim(date) == "") {
+            layer.msg('请选择需要查询的日期!', { icon: 5 });
+            $('#tbxQueryTime').focus();
+            return;
+        }
+        var areaCode = "";
+        if (document.getElementById('tbxArea')) {
+            areacode = $('#tbxArea option:selected').val();
+        }
+        $.ajax({
+            url: '/FireSatellite/AreaChange',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: { DCDATE: date, AreaCode: areacode },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#tcontent').html("");
+                    $('#tcontent').html(ar.tableInfo);
+                }
+                else {
+                    layer.msg(ar.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("查询异常!", { icon: 5 });
+            }
+        });
+    }
+
+    //保存火险等级
+    function SaveFireLevelInput() {
+        var _len = $("#FireLevelInput tr").length - 2;//行数
+        if (_len > 0) {
+            var strTOPTOWNNAME = $('#tbxArea option:selected').text();
+            var strTOWNNAME = "";
+            var strBYORGNO = "";
+            var strWeather = "";
+            var strTemp = "";
+            var strWind = "";
+            var strDangerClass = "";
+            var strTime = "";
+
+            for (var i = 0; i < _len; i++) {
+                var s1 = $('#tbxArea' + i + '').val();
+                var s2 = $('#hidArea' + i + '').val();
+                var s3 = $('#tbxWeather' + i + '').val();
+                var s4 = $('#tbxTemp' + i + '').val();
+                var s5 = $('#tbxWind' + i + '').val();
+                var s6 = $('#tbxDangerClass' + i + '').val();
+                var s7 = $('#tbxTime' + i + '').val();
+
+                if (s3 != "" || s4 != "" || s5 != "") {
+                    if ($.trim(s6) == "") {
+                        layer.msg('火险等级不可为空!', { icon: 5 });
+                        $('#tbxDangerClass' + i + '').focus();
+                        return;
+                    }
+                    else {
+                        var reg = new RegExp("^[0-9]*[1-9][0-9]*$");
+                        if (!reg.test(s6)) {
+                            layer.msg('火险等级请输入数字!', { icon: 5 });
+                            $('#tbxDangerClass' + i + '').focus();
+                            return;
+                        }
+                        if (parseInt(s6) > 5 || parseInt(s6) < 1) {
+                            layer.msg('火险等级请输入1-5!', { icon: 5 });
+                            $('#tbxDangerClass' + i + '').focus();
+                            return;
+                        }
+                    }
+                }
+                strTOWNNAME = strTOWNNAME + s1 + ",";
+                strBYORGNO = strBYORGNO + s2 + ",";
+                strWeather = strWeather + s3 + ",";
+                strTemp = strTemp + s4 + ",";
+                strWind = strWind + s5 + ",";
+                strDangerClass = strDangerClass + s6 + ",";
+                strTime = strTime + s7 + ",";
+            }
+            $.ajax({
+                url: '/FireSatellite/FireLevelInputSave',
+                timeout: 10000, //10秒后超时，如果为0则永不超时
+                data: {
+                    TOPTOWNNAME: strTOPTOWNNAME,
+                    TOWNNAME: strTOWNNAME,
+                    BYORGNO: strBYORGNO,
+                    WEATHER: strWeather,
+                    TEMPREATURE: strTemp,
+                    WINDYSPEED: strWind,
+                    DANGERCLASS: strDangerClass,
+                    DCDATE: strTime
+                },
+                success: function (data, ioArgs) {
+                    var ar = eval('(' + data + ')');
+                    if (ar.Success) {
+                        layer.msg(ar.Msg, { icon: 6 });
+                        query();
+                    }
+                    else {
+                        layer.msg(ar.Msg);
+                    }
+                },
+                error: function (err, ioArgs) {
+                    layer.msg("保存异常!");
+                }
+            });
+        }
+    }
+</script>

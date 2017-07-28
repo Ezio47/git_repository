@@ -1,0 +1,63 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+}
+
+@section Header{
+}
+<div class="easyui-layout" data-options="fit:true" style="border: 0;">
+
+
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style="height: 35px; border: none; overflow: hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        开始日期：<input class="easyui-datebox" id="tbxTIMEBegin" value="@ViewBag.dateB" type="text" style="width: 90px; height: 28px;" />
+                        结束日期：<input class="easyui-datebox" id="tbxTIMEEnd" value="@ViewBag.dateE" type="text" style="width: 90px; height: 28px;" />
+                        <input type="button" value="查 询" onclick="query()" class="btnSearchCss">
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" class="LayoutCenterBG">
+
+                <div id="msg" class="divTable">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+        <script type="text/javascript">
+            $(function () {
+                query();
+            });
+            function query() {
+                $.ajax({
+                    url: '/OndutyPb/OdutyQueryUser',
+                    timeout: 10000, //10秒后超时，如果为0则永不超时
+
+                    data: {
+                        dateB: $('#tbxTIMEBegin').datebox('getValue'),//开始日期
+                        dateE: $('#tbxTIMEEnd').datebox('getValue')//结束日期
+                    },
+                    success: function (data, ioArgs) {
+                        var ar = eval('(' + data + ')');
+                        if (ar.Success) {
+                            $('#msg').html('').removeAttr("style");
+                            $('#msg').html(ar.Msg);
+                        }
+                        else {
+                            $('#msg').html(ar.Msg);
+                            //alert(ar.Msg);
+                        }
+                    },
+                    error: function (err, ioArgs) {
+                        $('#msg').html('');
+                        $('#msg').html('该日期为非排班日期！').css("color", "red");
+                    }
+                });
+            }
+        </script>

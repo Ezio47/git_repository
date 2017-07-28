@@ -1,0 +1,193 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+}
+@section Header{
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        单位名称：<select id="tbxBYORGNO">
+                            @Html.Raw(@ViewBag.vdOrg)
+                        </select>
+                        设备编号：
+                        <input id="tbxTTBH" type="text" value="" />
+
+                        <input type="button" value="查询" onclick="query()" class="btnSearchCss" />
+                        <input type="button" value="添加" id="btnAdd" style="display:none" onclick="Add()" class="btnAddCss" />
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; ">
+
+                <div class="divTable" id="divTable">
+                    @Html.Raw(ViewBag.MONITOR_INFOList)
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<script type="text/javascript">
+    $(function () {
+        var bln = '@ViewBag.isAdd';
+        if (bln == "1") {
+            document.getElementById('btnAdd').style.display = "";
+        }
+    })
+
+    function Manager(id) {
+        if (confirm('确实要删除该内容吗?')) {
+            $.ajax({
+                url: '/YJJC/MONITOR_INFOManger',
+                cache: false,
+                data: {
+                    EMID: id
+                    , Method: 'Del'
+                    , returnUrl: ''
+                },
+                type: 'post',
+                error: function () {
+                    alert('错误:异常!', 'error');
+                },
+                success: function (re) {
+
+                    var ar = eval('(' + re + ')');
+                    if (ar.Success) {
+                        if (confirm(ar.Msg)) {
+                            query();//  window.location.reload();//.assign(ar.Url);
+                        }
+                    }
+                    else {
+                        alert(ar.Msg, "Error");
+                    }
+                }
+            });
+        }
+
+
+    }
+    function Add() {
+        layer.open({
+            type: 2,
+            title: '添加',
+            fix: false, //不固定
+            area: ['50%', '75%'],
+            maxmin: true,
+            content: '/YJJC/MONITOR_INFOMan',
+            end: function () {
+                query();
+            }
+        });
+    }
+    //function Add() {
+    //    window.location.assign('/YJJC/MONITOR_INFOMan');
+    //}
+
+    function Mdy(ID,Method) {
+        layer.open({
+            type: 2,
+            title: '修改',
+            fix: false, //不固定
+            area: ['58%', '75%'],
+            maxmin: true,
+            content: '/YJJC/MONITOR_INFOMan?ID=' + ID + '&Method=Mdy',
+            end: function () {
+                query();
+            }
+        });
+    }
+
+    function See(ID, Method) {
+        layer.open({
+            type: 2,
+            title: '查看',
+            fix: false, //不固定
+            area: ['50%', '75%'],
+            maxmin: true,
+            content: '/YJJC/MONITOR_INFOMan?ID=' + ID + '&Method=See',
+         
+        });
+    }
+    query();
+    function query() {
+        $.ajax({
+            url: '/YJJC/getMONITOR_INFOListAjax',
+            cache: false,
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+
+            data: {
+                TTBH: document.getElementById("tbxTTBH").value,
+                BYORGNO: document.getElementById("tbxBYORGNO").value
+            },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#divTable').html(ar.tableInfo);
+                    //window.location.assign(ar.Url);
+                }
+                else {
+                    alert(ar.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                alert('登录异常');
+            }
+        });
+    }
+
+
+    //视频查看
+    function VidewView(orgno, eid,name,orgname,type) {
+        var index = layer.open({
+            type: 2,
+            title: "【"+ orgname + "---" + name + "】监控点",
+            // btn: ['保存', '关闭'],
+            area: ['100%', '100%'],
+            fix: false, //不固定
+            maxmin: true,
+            shadeClose: true,
+            content: '/BaseCommon/VideoHWIndex?id=' + orgno + "&eid=" + eid + "&type=" + type,
+            //yes: function (index, layero) { //或者使用btn1
+            //    //按钮【按钮一】的回调
+            //    var ptxt = layer.getChildFrame("p", index);
+            //    var arr = ptxt.html().split(',');
+            //    if ($.trim(arr) != "") {
+            //        var jd = parseFloat(arr[0]).toFixed(6);
+            //        var wd = parseFloat(arr[1]).toFixed(6);
+            //        $('#JD').val(jd);
+            //        $('#WD').val(wd);
+            //    }
+            //    layer.close(index);
+            //}, cancel: function (index) {
+            //    layer.close(index);
+            //}
+        });
+        layer.full(index);
+    }
+
+    //地图定位展示
+    function Position(tablename, id,name) {
+        layer.open({
+            type: 2,
+            title:name+ '地图定位',
+            area: ['1000px', '500px'],
+            //shade: 0,
+            fix: true,
+            maxmin: true,
+            content: '/MapCommon/MapPostionCommonIndex?tablename=' + tablename + "&id=" + id
+        })
+    }
+
+</script>

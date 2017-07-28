@@ -1,0 +1,57 @@
+﻿@{
+    ViewBag.Title = "详细信息--个人";
+    Layout = "~/Views/Shared/_LayoutIndexNoMenu.cshtml";
+}
+@model ManagerSystemModel.T_IPSFR_USER_Model
+@section Header{
+    
+}
+
+<div class="cxjg_info">
+    <div class="info_tex">
+        <table cellspacing="0" cellpadding="0" style="width:100%;height:100%">
+            <tbody>
+                <tr>
+                    <td class="bg1">姓名：</td>
+                    <td class="text_01">@Model.HNAME</td>
+                    <td class="bg1">性别：</td>
+                    <td class="text_01">@Model.SEXNAME</td>
+                    @if (@ViewBag.picurl != "")
+                    {
+                        <td rowspan="3" colspan="2" style="text-align:center">
+                            <img src="@ViewBag.picurl" style="width:200px;height:250px" />
+                        </td>
+                    }
+                    else
+                    {
+                        <td rowspan="3" colspan="2" style="text-align:center">
+                            <img src="~/Images/photo.png" style="width:200px;height:200px" />
+                        </td>
+                    }
+                </tr>
+                <tr>
+                    <td class="bg1">电话号码：</td>
+                    <td class="text_01">@Model.PHONE</td>
+                    <td class="bg1">出生日期：</td>
+                    <td class="text_01">@Model.BIRTH</td>
+                </tr>
+                <tr>
+                    <td class="bg1">设备号：</td>
+                    <td class="text_01">@Model.SN</td>
+                    <td class="bg1">固/兼职：</td>
+                    <td class="text_01">@Model.ONSTATENAME</td>
+                </tr>
+                <tr>
+                    <td class="bg1">是否启用：</td>
+                    <td class="text_01">@Model.ISENABLENAME</td>
+                    <td class="bg1">所属机构：</td>
+                    <td colspan="3" class="text_01">@Model.ORGNAME</td>
+                </tr>
+                <tr>
+                    <td colspan="6" style="text-align:center"><input type="button" class="btnDJCss" value="对讲" /></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>

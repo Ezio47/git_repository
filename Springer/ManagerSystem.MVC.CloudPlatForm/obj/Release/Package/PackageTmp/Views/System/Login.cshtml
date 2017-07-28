@@ -1,0 +1,60 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOut.cshtml";
+}
+
+<div class="loginlogo">
+    <img alt="" src="~/Images/Login/loginlogo_tt.png" />
+</div>
+<div class="log_all">
+    <div class="log_width">
+        <div class="log_left">
+            <img src="~/Images/Login/log_img_tt.png">
+        </div>
+        <div class="log_right">
+            <div class="logintextall">
+                <div class="userlog">
+                    用户登录
+                </div>
+                <div class="logintext">
+                    用户名：
+                    <input name="txtUsername" type="text" id="txtUsername" value="sys_admin" class="textlogin" placeholder="请输入用户名" autocomplete="off" autofocus="" />
+                </div>
+                <div class="logintext">
+                    密&nbsp;&nbsp;&nbsp;码：
+                    <input name="txtPassword" type="password" id="txtPassword" class="textlogin" value="123456" placeholder="请输入密码" />
+                </div>
+                @*<div class="logintext">
+                    验证码：
+                    <input name="yzm" type="text" id="yzm" class="yzmlogin" placeholder="请输入验证码" onclick="this.value='';" />
+                    <a id="A2" href="" onclick="ChangeCode();return false;" style="">
+                        <img id="ImageCheck" title="看不清，换一个" on="" src="ValidateCode.aspx" align="absmiddle"
+                             style="height: 34px;" />
+                    </a><a href="#" onclick="ChangeCode()"></a>
+                </div>*@
+                <div class="loginbott">
+                    <input type="submit" name="Login_btn" value="登 录" onclick="Login();" id="Login_btn" class="logbot" />
+                    <input name="" type="button" value="重 置" class="logbot_qx">
+                </div>
+                <div id="up">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="log_btbg">
+        <img src="~/Images/Login/log_botbg.png">
+    </div>
+</div>
+<div class="loginfooten">
+    <p>技术支持：福建特力惠信息科技股份有限公司</p>
+</div>
+
+<script type="text/javascript">
+
+    function Login() {
+        // window.location.assign("SpringerCloud/Home/Index");
+        window.location.href="@Url.Action("Index","Home")";
+    }
+</script>
+
+

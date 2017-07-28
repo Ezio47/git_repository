@@ -1,0 +1,104 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+    <div data-options="region:'west'" title="" style=" width:220px; border: none;">
+
+        <div id="divLeftMenu" class="LeftMenu">@Html.Raw( @ViewBag.typeList)
+        </div>
+    </div>
+    <div data-options="region:'center'" title="" style=" border: none;">
+
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        主题:<input id="tbxTITLE" type="text" style="width:200px" value="@ViewBag.SearchTITLE" />
+
+                        <input type="button" value="搜索" onclick="query()" />
+                        <input type="button" value="添加" onclick="Add()" />
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" class="LayoutCenterBG">
+
+                <div class="divTable">
+                    @Html.Raw(@ViewBag.List)
+                </div>
+            </div>
+            <div data-options="region:'south'" title="" style=" height:40px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
+                @Html.Raw(@ViewBag.PagerInfo)
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    function Add() {
+        window.location.assign('/DataCenter/DocMan?tid=@ViewBag.typeid');
+    }
+    function query() {
+        $.ajax({
+            url: '/DataCenter/DocQuery',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: {
+                TITLE: document.getElementById("tbxTITLE").value,
+                PageSize: document.getElementById("selPageSize").value,
+                Page: document.getElementById("selPage").value,
+                tid:'@ViewBag.typeid'
+            },
+            type: 'post',
+            success: function (data) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    window.location.assign(ar.Url);
+
+                }
+                else {
+                    alert(ar.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                alert('登录异常');
+            }
+        });
+    }
+
+    function Manager(id) {
+        if (confirm('确实要删除该内容吗?')) {
+            $.ajax({
+                url: '/DataCenter/DocManager',
+                data: {
+                    id: id
+                    , Method: 'Del'
+                    , returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)'
+                },
+                type: 'post',
+                error: function () {
+                    alert('错误:异常!', 'error');
+                },
+                success: function (re) {
+
+                    var ar = eval('(' + re + ')');
+                    if (ar.Success) {
+                        if (confirm(ar.Msg + ' 请返回！')) {
+                            window.location.reload();//.assign(ar.Url);
+                        }
+                    }
+                    else {
+                        alert(ar.Msg, "Error");
+                    }
+                }
+            });
+        }
+
+
+    }
+</script>

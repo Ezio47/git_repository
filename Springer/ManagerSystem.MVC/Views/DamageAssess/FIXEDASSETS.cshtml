@@ -1,0 +1,278 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        固定资产名称： <input id="DASSETSNAME" type="text" value="" />
+                        <input type="button" value="查询" onclick="query()" class="btnSearchCss" />
+                        <input type="button" value="添加" onclick="Manager('Add','','')" class="btnAddCss" />
+                    </div>
+                </div>
+            </div>
+
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <input id="hidFIREINFOID" type="hidden" value="@ViewBag.FIREINFOID" />
+                <div class="divTable" id="divTable">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="divMan" id="tableAdd" style="display:none;margin-left:5px;margin-top:8px">
+    <input id="HidID" name="HidID" type="hidden" value="" />
+    <table cellpadding="0" cellspacing="0">
+        <tr>
+            <td style="width:100px;">资产名称: </td>
+            <td><input id="tbxDASSETSNAME" type="text" value="" style="width:99%;" /></td>
+            <td style="width:100px;">重置价值: </td>
+            <td>
+                <input id="tbxRESETVALUE" type="text" value="" style="width:85%;" />
+                <span style="color: gray;">元</span>
+            </td>
+        </tr>
+        <tr>
+            <td>年平均折旧率:</td>
+            <td>
+                <input id="tbxDEPRECIATIONRATE" type="text" value="" style="width:85%;" />
+                <span style="color: gray;">%</span>
+            </td>
+            <td>已使用年限:</td>
+            <td><input id="tbxHAVEUSEYEAR" type="text" value="" style="width:99%;" /></td>
+        </tr>
+        <tr>
+            <td>烧毁率:</td>
+            <td>
+                <input id="tbxBURNRATE" type="text" value="" style="width:85%;" />
+                <span style="color: gray;">%</span>
+            </td>
+            <td colspan="2"></td>
+        </tr>
+        <tr>
+            <td>备注:</td>
+            <td colspan="3"><input id="tbxMARK" type="text" value="" style="width:99%;" /></td>
+        </tr>
+    </table>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        query();
+    });
+
+    //查询
+    function query() {
+        $.ajax({
+            url: '/DamageAssess/GetFIXEDASSETSList',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: { FIREINFOID: $("#hidFIREINFOID").val(), DASSETSNAME: $("#DASSETSNAME").val() },
+            dataType: 'json',
+            success: function (data) {
+                if (data.Success) {
+                    $('#divTable').html('');
+                    $('#divTable').html(data.Msg);
+                }
+                else {
+                    $('#divTable').html('');
+                }
+            },
+            error: function (error) {
+                layer.msg('查询异常!', { icon: 5 });
+            }
+        });
+    }
+
+    //选中改变颜色
+    function setColor(obj) {
+        $(obj).css("background-color", "#FFDAB9");
+        $("tr").not($(obj)).css("background-color", "");
+    }
+
+    //数据增、删、改、查看
+    function Manager(Method, ID) {
+        if (Method == 'Del') {
+            layer.confirm('确实要删除吗?', { icon: 3, title: '提示' }, function (index) {
+                $.ajax({
+                    type: "post",
+                    url: "/DamageAssess/FIXEDASSETSManager",
+                    data: { FIXEDASSETSID: ID, Method: Method },
+                    dataType: "json",
+                    success: function (re) {
+                        if (re.Success) {
+                            layer.msg(re.Msg, { icon: 6 });
+                            query();
+                        }
+                        else {
+                            layer.msg(re.Msg, { icon: 5 });
+                        }
+                    },
+                    error: function () {
+                        layer.msg('系统异常!', { icon: 5 });
+                    }
+                });
+            });
+        }
+        else if (Method == 'See') {
+            layer.open({
+                type: 2,
+                title: '查看固定资产损失',
+                area: ['70%', '70%'],
+                fix: true,
+                maxmin: true,
+                content: '/DamageAssess/FIXEDASSETSDataSee?FIXEDASSETSID=' + ID,
+            })
+        }
+        else {
+            if (Method == 'Add') {
+                $("#HidID").val('');
+                $("#tbxDASSETSNAME").val('');
+                $("#tbxRESETVALUE").val('');
+                $("#tbxDEPRECIATIONRATE").val('');
+                $("#tbxHAVEUSEYEAR").val('');
+                $("#tbxBURNRATE").val('');
+                $("#tbxMARK").val('');
+            }
+            if (Method == 'Mdy') {
+                $.ajax({
+                    type: "post",
+                    url: "/DamageAssess/GetFIXEDASSETSJson",
+                    data: { FIXEDASSETSID: ID, },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.FIRELOST_LOSTTYPE_FIXEDASSETSID != '') {
+                            $('#HidID').val(data.FIRELOST_LOSTTYPE_FIXEDASSETSID);
+                            $("#tbxDASSETSNAME").val(data.FIXEDASSETSNAME);
+                            $("#tbxRESETVALUE").val(data.RESETVALUE);
+                            $("#tbxDEPRECIATIONRATE").val(data.YEARAVGDEPRECIATIONRATE);
+                            $("#tbxHAVEUSEYEAR").val(data.HAVEUSEYEAR);
+                            $("#tbxBURNRATE").val(data.BURNRATE);
+                            $("#tbxMARK").val(data.MARK);
+                        }
+                    },
+                    error: function () {
+                        layer.msg('系统异常!', { icon: 5 });
+                    }
+                });
+            }
+            var btnInfo = ['保存', '取消'];
+            var str = "添加固定资产损失";
+            if (Method == "Mdy") {
+                str = "修改固定资产损失";
+            }
+            layer.open({
+                type: 1,
+                title: str,
+                area: ['70%', '72%'],
+                btn: btnInfo,
+                shade: 0,
+                maxmin: true,
+                content: $('#tableAdd'),
+                yes: function (index, layero) {
+                    var HID = $('#HidID').val();
+                    if (HID != "") {
+                        ID = HID;
+                        Method = 'Mdy';
+                    }
+                    var dassetName = $("#tbxDASSETSNAME").val();
+                    if ($.trim(dassetName) == "") {
+                        layer.msg('请输入资产名称!', { icon: 5 });
+                        $("#tbxDASSETSNAME").focus();
+                        return;
+                    }
+                    var resetValue = $("#tbxRESETVALUE").val();
+                    if ($.trim(resetValue) == "") {
+                        layer.msg('请输入重置价值!', { icon: 5 });
+                        $("#tbxRESIDUALVALUE").focus();
+                        return;
+                    }
+                    else {
+                        if (CheckNUM2(resetValue) == false) {
+                            layer.msg('重置价值请输入数字,且最多保留2位有效数字!', { icon: 5 });
+                            $('#tbxRESETVALUE').focus();
+                            return;
+                        }
+                    }
+                    var depreciatonRate = $("#tbxDEPRECIATIONRATE").val();
+                    if ($.trim(depreciatonRate) == "") {
+                        layer.msg('请输入年平均折旧率!', { icon: 5 });
+                        $("#tbxDEPRECIATIONRATE").focus();
+                        return;
+                    }
+                    else {
+                        if (CheckNUM2(depreciatonRate) == false) {
+                            layer.msg('年平均折旧率请输入数字,且最多保留2位有效数字!', { icon: 5 });
+                            $('#tbxDEPRECIATIONRATE').focus();
+                            return;
+                        }
+                    }
+                    var haveuseYear = $("#tbxHAVEUSEYEAR").val();
+                    if ($.trim(haveuseYear) == "") {
+                        layer.msg('请输入已使用年限!', { icon: 5 });
+                        $("#tbxHAVEUSEYEAR").focus();
+                        return;
+                    }
+                    else {
+                        if (CheckINT(haveuseYear) == false) {
+                            layer.msg('已使用年限请输入正整数!', { icon: 5 });
+                            $('#tbxMARKETPRICE').focus();
+                            return;
+                        }
+                    }
+                    var burRate = $("#tbxBURNRATE").val();
+                    if ($.trim(burRate) == "") {
+                        layer.msg('请输入烧毁率!', { icon: 5 });
+                        $("#tbxHAVEUSEYEAR").focus();
+                        return;
+                    }
+                    else {
+                        if (CheckNUM2(burRate) == false) {
+                            layer.msg('烧毁率请输入数字,且最多保留2位有效数字!', { icon: 5 });
+                            $('#tbxBURNRATE').focus();
+                            return;
+                        }
+                    }
+                    $.ajax({
+                        type: "post",
+                        url: "/DamageAssess/FIXEDASSETSManager",
+                        data: {
+                            FIXEDASSETSID: ID,
+                            FIREINFOID: $('#hidFIREINFOID').val(),
+                            DASSETSNAME: dassetName,
+                            RESETVALUE: resetValue,
+                            DEPRECIATIONRATE: depreciatonRate,
+                            HAVEUSEYEAR: haveuseYear,
+                            BURNRATE: burRate,
+                            MARK: $('#tbxMARK').val(),
+                            Method: Method
+                        },
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.Success) {
+                                $('#HidID').val(data.Url);
+                                layer.confirm(data.Msg + ' 请返回?', { icon: 3, title: '提示' }, function (index2) {
+                                    layer.close(index2);
+                                    layer.close(index);
+                                });
+                                query();
+                            }
+                            else {
+                                layer.msg(data.Msg, { icon: 5 });
+                            }
+                        },
+                        error: function () {
+                            layer.msg('系统异常!', { icon: 5 });
+                        }
+                    });
+                },
+                cancel: function (index) {
+                    layer.close(index);
+                }
+            })
+        }
+    }
+</script>

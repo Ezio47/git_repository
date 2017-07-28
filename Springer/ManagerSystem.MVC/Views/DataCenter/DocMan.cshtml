@@ -1,0 +1,176 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+}
+@section Header{
+    <link href="@Url.Content("~/Scripts/umeditor/themes/default/css/umeditor.css")" type="text/css" rel="stylesheet">
+
+    <script type="text/javascript" charset="utf-8" src="@Url.Content("~/Scripts/umeditor/umeditor.config.js")"></script>
+    <script type="text/javascript" charset="utf-8" src="@Url.Content("~/Scripts/umeditor/umeditor.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/umeditor/lang/zh-cn/zh-cn.js")"></script>
+}
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+    <div data-options="region:'west'" title="" style=" width:220px; border: none;">
+
+        <div id="divLeftMenu" class="LeftMenu">
+            @Html.Raw(@ViewBag.typeList)
+        </div>
+    </div>
+    <div data-options="region:'center'" title="" style=" border: none; ">
+
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+
+                    <div class="homeUL">
+                        <input type="button" value="保存" onclick="Manager()">
+                        <input type="button" value="返回" onclick="javascript: history.go(-1);">
+                    </div>
+
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" class="LayoutCenterBG">
+                <div class="divMan">
+                    <table cellpadding="0" cellspacing="0">
+
+                        <tr>
+                            <td style="width:80px;">
+                                标题:
+                            </td>
+                            <td>
+                                <input type="text" id="tbxARTTITLE" value="" style="width:650px" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                附件:
+                            </td>
+                            <td colspan="3">
+                                <input type="hidden" id="tbxPLANFILENAME" value="" style="width:650px" />
+                                <form id="uploadForm" enctype="multipart/form-data">
+                                    <input type="file" name="uploadify" id="attachment" style="width:500px;" />
+
+                                    <input type="button" value="上传" onclick="upload()">
+                                    <label id="lblInfo" style="color:red;"></label>
+
+                                </form>
+                            </td>
+                        </tr>
+                        <tr class="row1">
+                            <td>
+                                内容:
+                            </td>
+                            <td>
+                                <script type="text/plain" id="myEditor" style="width:650px;height:300px;">
+                                </script>
+                            </td>
+                        </tr>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var um = UM.getEditor('myEditor');
+    UM.getEditor('myEditor').setContent("", false);
+
+    $.ajax({
+        url: '/DataCenter/getDocJson',
+        data: {
+            id: '@ViewBag.id'
+        },
+        type: 'post',
+        success: function (data) {
+            var ar = eval('(' + data + ')');
+            if (ar.ARTID != null) {
+                document.getElementById("tbxARTTITLE").value = ar.ARTTITLE;
+                UM.getEditor('myEditor').setContent(ar.ARTCONTENT, false);
+                document.getElementById("tbxPLANFILENAME").value = ar.PLANFILENAME;
+
+                if (ar.PLANFILENAME != '') {
+
+                    document.getElementById('lblInfo').innerText = "已上传";
+                }
+                if ('@ViewBag.T_Method' == "Del") {
+                    Manager();
+                }
+            }
+            else {
+                UM.getEditor('myEditor').setContent("", false);
+            }
+        },
+        error: function (err, ioArgs) {
+            alert('登录异常');
+        }
+    });
+    function Manager() {
+        $.ajax({
+            url: '/DataCenter/DocManager',
+            data: {
+                ARTTITLE: document.getElementById("tbxARTTITLE").value
+                , ARTCONTENT: UM.getEditor('myEditor').getContent()
+                , PLANFILENAME: document.getElementById("tbxPLANFILENAME").value
+                , id: '@ViewBag.id'
+                , Method: '@ViewBag.T_Method'
+                , tid: '@ViewBag.tid'
+                , returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)'
+            },
+            type: 'post',
+            error: function () {
+                alert('错误:异常!', 'error');
+            },
+            success: function (re) {
+
+                var ar = eval('(' + re + ')');
+                if (ar.Success) {
+                    if (confirm(ar.Msg + ' 请返回！')) {
+                        window.location.assign(ar.Url);
+                    }
+                }
+                else {
+                    alert(ar.Msg, "Error");
+                }
+            }
+        });
+
+
+    }
+
+    //增加附件
+    function upload() {
+
+        //upload method
+        var formData = new FormData($("#uploadForm")[0]);
+        $.ajax({
+            type: "post",
+            url: "@Url.Action("DocUpload","DataCenter")",
+            data: formData,
+            dataType: "json",
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (data) {
+                if (data.Success) {
+                    alert('上传成功');
+                    document.getElementById('lblInfo').innerText = "已上传";
+                    $('#tbxPLANFILENAME').val(data.Msg);
+                }
+                else {
+                    alert(data.Msg);
+                }
+            },
+            error: function (data) {
+                alert("上传失败");
+            }
+        });
+        //$("#attachment").filebox('clear');
+    }
+</script>

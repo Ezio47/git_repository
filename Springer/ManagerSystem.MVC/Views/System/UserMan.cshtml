@@ -1,0 +1,180 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+}
+@section Header{
+    <script src="~/Scripts/SpringerCommonValidate.js"></script>
+}
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'center'" title="" style=" border: none; ">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="homeUL">
+                        <input type="button" value="保存" onclick="Manager()" id="btnSave" style="display:none;" class="btnSaveCss">
+                        @*<input type="button" value="返回" onclick="javascript: history.go(-1);" class="btnReturnCss">*@
+                    </div>
+                </div>
+            </div>
+
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <div class="divMan">
+                    <table cellpadding="0" cellspacing="0">
+                        <tr class='row1'>
+                            <td style="width:100px;">登录用户名: </td>
+                            <td> <input id="tbxLOGINUSERNAME" type="text" value="" style="width:90%;" /></td>
+                            <td style="width:100px;"> 真实姓名: </td>
+                            <td><input id="tbxUSERNAME" type="text" value="" style="width:90%;" /> </td>
+                        </tr>
+                        <tr>
+                            <td> 密码: </td>
+                            <td><input id="tbxUSERPWD" type="password" value="" style="width:90%;" /></td>
+                            <td> 确认密码: </td>
+                            <td><input id="tbxUSERPWD1" type="password" value="" style="width:90%;" /></td>
+                        </tr>
+                        <tr>
+                            <td> 性别:</td>
+                            <td><select id="tbxSEX">@Html.Raw(@ViewBag.vdSex)</select></td>
+                            <td>所属市县乡镇:</td>
+                            <td>
+                                <select id="tbxORGNO" onchange="setDepeart();">@Html.Raw(@ViewBag.vdOrg)</select>
+                                科室: <select id="tbxDEPARTMENT"> @Html.Raw(@ViewBag.depart)</select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>手机号码:</td>
+                            <td><input id="tbxPHONE" type="text" value="" style="width:90%;" /></td>
+                            <td>职位: </td>
+                            <td><input id="tbxUSERJOB" type="text" value="" style="width:90%;" /></td>
+                        </tr>
+                        <tr>
+                            <td>所属角色:</td>
+                            <td colspan="3"> @Html.Raw(@ViewBag.RoleChk)</td>
+                        </tr>
+                        <tr>
+                            <td>备注:</td>
+                            <td colspan="3"><input id="tbxNOTE" type="text" value="" style="width:90%;" /></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    if ('@ViewBag.T_Method' != 'See') {
+        document.getElementById("btnSave").style.display = '';
+    }
+    $.ajax({
+        url: '/System/getUserJson',
+        cache: false,
+        timeout: 10000, //10秒后超时，如果为0则永不超时
+        data: { USERID: '@ViewBag.T_USERID' },
+        success: function (data, ioArgs) {
+            var ar = eval('(' + data + ')');
+            if (ar.USERID != null) {
+                document.getElementById("tbxLOGINUSERNAME").value = ar.LOGINUSERNAME;
+                document.getElementById("tbxUSERNAME").value = ar.USERNAME;
+                document.getElementById("tbxSEX").value = ar.SEX;
+                document.getElementById("tbxORGNO").value = ar.ORGNO;
+                document.getElementById("tbxPHONE").value = ar.PHONE;
+                document.getElementById("tbxUSERJOB").value = ar.USERJOB;
+                document.getElementById("tbxNOTE").value = ar.NOTE;
+                document.getElementById("tbxDEPARTMENT").value = ar.DEPARTMENT;
+                setDepeart();//必须先给单位赋值后，再动态绑定科室
+                if ('@ViewBag.T_Method' == "See") {
+                    document.getElementById('btnSave').style.display = 'none';
+                }
+                if ('@ViewBag.T_Method' == "Mdy") {
+                    document.getElementById("tbxLOGINUSERNAME").disabled = 'true';
+                }
+                if ('@ViewBag.T_Method' == "Del") {
+                    Manager();
+                }
+            }
+        },
+        error: function (err, ioArgs) {
+            alert('登录异常');
+        }
+    });
+    function Manager() {
+        var t1 = $('#tbxPHONE').val();
+        if ($.trim(t1) == "") {
+            layer.msg('手机号码不可为空!', { icon: 5 });
+            $('#tbxPHONE').focus();
+            return false;
+        }
+        if ($.trim(t1) !== "") {
+            if (checkPhone(t1) == false) {
+                layer.msg('手机号码格式不正确!', { icon: 5 });
+                $('#tbxPHONE').focus();
+                return false;
+            }
+        }
+        var ROLEID = $("input:checkbox[name='tbxROLEID']:checked").map(function (index, elem) {
+            return $(elem).val();
+        }).get().join(',');
+        if (ROLEID == "") {
+            layer.msg('角色不可为空,请选择角色!', { icon: 5 });
+            return false;
+        }
+        $.ajax({
+            url: '/System/UserManager',
+            cache: false,
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: {
+                LOGINUSERNAME: document.getElementById("tbxLOGINUSERNAME").value,
+                USERNAME: document.getElementById("tbxUSERNAME").value,
+                USERPWD: document.getElementById("tbxUSERPWD").value,
+                USERPWD1: document.getElementById("tbxUSERPWD1").value,
+                SEX: document.getElementById("tbxSEX").value,
+                ORGNO: document.getElementById("tbxORGNO").value,
+                PHONE: document.getElementById("tbxPHONE").value,
+                USERJOB: document.getElementById("tbxUSERJOB").value,
+                NOTE: document.getElementById("tbxNOTE").value,
+                DEPARTMENT: document.getElementById("tbxDEPARTMENT").value,
+                USERID: '@ViewBag.T_USERID',
+                Method: '@ViewBag.T_Method',
+                returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)',
+                ROLEID: ROLEID
+            },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    alert(ar.Msg);
+                    // layer.msg('删除成功', { icon: 6 });
+                    // if (confirm(ar.Msg + ' 请返回!'))
+                    var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                    parent.layer.close(index);
+                    //window.location.assign(ar.Url);
+                }
+                else {
+                    alert(ar.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                alert('保存异常!');
+            }
+        });
+    }
+    //根据单位动态绑定科室
+    function setDepeart() {
+        //获取机构的ID
+        var orgNo = $("#tbxORGNO").val();
+        $.ajax({
+            url: "/System/GetOrgByDepartByFlag/",
+            type: "post",
+            dataType: "html",
+            data: { orgNo: orgNo },
+            success: function (result) {
+                var myHTML = "";
+                $('#tbxDEPARTMENT').html("");//赋值之前先清空
+                myHTML = result;
+                $('#tbxDEPARTMENT').html(myHTML);
+            },
+            error: function (result) {
+                alert(result.responseText);
+            }
+        });
+    }
+</script>

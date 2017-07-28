@@ -1,0 +1,237 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+}
+@section Header{
+    <script src="~/Scripts/Springer.js"></script>
+    <script src="~/Scripts/Springer/SpringerMapCommon.js"></script>
+    <script src="~/Scripts/Springer/SpringerMainYYJC.js"></script>
+    <script src="~/Scripts/Springer/SpringerMapFireInfo.js"></script>
+}
+
+<div class="easyui-layout" data-options="fit:true">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'">
+        <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+            <div class="divOP">
+                <div class="home ">
+                    热点区域：<select id="tbxBYORGNO">
+                        @Html.Raw(@ViewBag.hotOrg)
+                    </select>
+                    @*热点状态：<select id="tbxHotState">
+                            @Html.Raw(@ViewBag.hotState)
+                        </select>*@
+                    来源：<select id="tbxHotSource">
+                        @Html.Raw(@ViewBag.hotSource)
+                    </select>
+                    热点类别：<select id="tbxhotType">
+                        @Html.Raw(@ViewBag.hotType)
+                    </select>
+                    接收时间：<input class="easyui-datebox" id="startTime" type="text" style="width:90px;height:28px;" value="@ViewBag.starttime" /> 至<input class="easyui-datebox" id="endTime" type="text" value="@ViewBag.endtime" style="width:90px;height:28px;" />
+                    <input type="button" id="mapshow" class="btnSearchCss" value="查  询" onclick="query()" />
+                    <input type="button" id="export" value="导  出" class="btnOutputCss" onclick="Export()" />
+                    @*<input type="button" id="mapshow" value="查看地图" onclick="ShowMap()" />*@
+                </div>
+            </div>
+        </div>
+        <div data-options="region:'center'" title="" class="LayoutCenterBG">
+            <div class="divTable">
+                @Html.Raw(@ViewBag.ResponseList)
+            </div>
+        </div>
+        <div data-options="region:'south'" title="" style=" height:40px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
+            @Html.Raw(@ViewBag.PagerInfo)
+        </div>
+    </div>
+</div>
+
+@*签收单位选择select
+    <div id="divselect" style="display:none" class="widget-main">
+        <div style="float:left;"><label for="QSselect">签收单位：</label></div>
+        <div style="float:left;width:200px">
+            <select class="form-control" id="QSselect"></select>
+        </div>
+    </div>
+*@
+<script type="text/javascript">
+    function query() {
+        var bo = queryCheck();
+        if (bo) {
+            $.ajax({
+                url: '/MainYJJC/YJResponseQuery',
+                timeout: 10000000, //10秒后超时，如果为0则永不超时
+                data: {
+                    PageSize: document.getElementById("selPageSize").value,
+                    Page: document.getElementById("selPage").value,
+                    OrgNo: $('#tbxBYORGNO').val(),
+                    State: "",
+                    Source: $('#tbxHotSource').val(),
+                    Starttime: $('#startTime').datebox('getValue'),//document.getElementById("startTime").text, //$('#startTime').val(),
+                    Endtime: $('#endTime').datebox('getValue'),// document.getElementById("endTime").text,//$('#endTime').val()
+                    HotType: $('#tbxhotType').val() //热点类别
+                },
+                success: function (data) {
+                    var ar = eval('(' + data + ')');
+                    if (ar.Success) {
+                        window.location.assign(ar.Url);
+                    }
+                    else {
+                        layer.alert(ar.Msg, { icon: 5 });
+                    }
+                },
+                error: function (err, ioArgs) {
+                    layer.alert('登录异常', { icon: 5 });
+                }
+            });
+        }
+
+    }
+
+
+    //导出excel
+    function Export() {
+        var OrgNo = $('#tbxBYORGNO').val();
+        var Source = $('#tbxHotSource').val();
+        var Starttime = $('#startTime').datebox('getValue');
+        var Endtime = $('#endTime').datebox('getValue');
+        var HotType = $('#tbxhotType').val();//热点类别
+        var url = "/MainYJJC/ExportFireExcel?OrgNo= " + OrgNo + "&Source=" + Source + "&Starttime=" + Starttime + "&Endtime=" + Endtime + "&HotType=" + HotType;
+        //询问框
+        layer.confirm('是否导出数据？', {
+            btn: ['确定', '取消'] //按钮
+        }, function () {
+            var bo = queryCheck();
+            if (bo) {
+                layer.msg('正在导出。。。。', { icon: 1 });
+                window.location = url;
+            }
+
+        });
+
+    }
+
+    //查询check
+    function queryCheck() {
+        var starttime = $('#startTime').datebox('getValue');// $('#startTime').val();
+        var endtime = $('#endTime').datebox('getValue');// $('#endTime').val();
+        // var state = $('#tbxHotState').val();
+        //if ($.trim(starttime) == "") {
+        //    $('#startTime').focus();
+        //    layer.alert("开始时间不可为空！", { icon: 2 });
+        //    return false;
+        //}
+        //if ($.trim(endtime) == "") {
+        //    $('#endTime').focus();
+        //    layer.alert("结束时间不可为空！", { icon: 2 });
+        //    return false;
+        //}
+        //if ($.trim(state) == "") {
+        //    $('#tbxHotState').focus();
+        //    layer.alert("处理状态不可为空！", { icon: 2 });
+        //    return false;
+        //}
+        var bo = checkEndTime(starttime, endtime);
+        if (bo == false) {
+            layer.alert('开始时间不能大于结束时间！', { icon: 2 });
+            return false;
+        }
+        return true;
+    }
+
+
+    //（市局）签收单位选择
+    function QSSJOrgSelect(id) {
+        $.ajax({
+            type: "Post",
+            url: '/JCFireInfo/getSJQSSelect',
+            data: {},
+            dataType: "json",
+            //async: false, //默认为true 异步
+            success: function (str) {
+                layer.open({
+                    type: 1,
+                    title: '签收单位选择',
+                    //skin: 'layui-layer-molv',
+                    area: ['300px', '150px'],
+                    content: str.Msg,//$('#divselect'),
+                    shadeClose: false,
+                    btn: ["签收", "取消"],
+                    yes: function (index, layero) {
+                        //do something
+                        var orgno = $('#QSselect').val();
+                        if ($.trim(orgno) != "") {
+                            QS(id, orgno);
+                            layer.close(index); //如果设定了yes回调，需进行手工关闭
+                            window.location.reload();//重载
+                        }
+                        else {
+                            layer.alert("签收单位不可为空", { icon: 5 });
+                        }
+
+                    },
+                    cancel: function (index) {
+                        layer.closeAll();
+                    }
+                });
+            }
+        });
+    }
+    //(县局)签收
+    function QSXJ(id) {
+        QS(id, '');//县局签收
+        window.location.reload();//重载
+    }
+
+    //反馈火情Html
+    function FkFireInfo(url, jcfid, ftype, type) {
+        getAjaxFKFireInfo(url, jcfid, ftype, type);
+
+    }
+    //状态
+    function StateLogsLayer(jcfid, orgno) {
+        $.ajax({
+            type: "Post",
+            url: "/MainYJJC/GetStateLogs",
+            data: { jcfid: jcfid, orgno: orgno },
+            dataType: "json",
+            success: function (obj) {
+                if (obj != null && obj.Success) {
+                    layer.open({
+                        type: 1,
+                        title: '热点状态信息',
+                        area: '700px',
+                        content: obj.Msg,//注意，如果str是object，那么需要字符拼接。
+                        shadeClose: false,
+                        btn: ["取消"],
+                        cancel: function (index) {
+                            layer.closeAll();
+                        }
+                    })
+                }
+                else {
+                    layer.alert('取值失败！', { icon: 5 });
+                }
+            }
+
+
+        });
+
+
+    }
+
+    //地图查看
+    function ShowMap() {
+        //iframe层-父子操作
+        var index = layer.open({
+            type: 2,
+            title: '地图查看',
+            area: ['1000px', '530px'],
+            fix: false, //不固定
+            maxmin: true,
+            content: '@Url.Action("Index","MapCommon")'
+        });
+        layer.full(index);
+    }
+
+</script>

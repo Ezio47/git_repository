@@ -1,0 +1,40 @@
+﻿@{
+    ViewBag.Title = "HlyOnLineIndex";
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+}
+
+<div id="HlyOnLineDiv">
+</div>
+
+<script type="text/javascript">
+    var obj = 0;
+    $(function () {
+        obj = getQueryString("obj");
+        $.ajax({
+            type: "post",
+            url: "@Url.Action("showHlyLineInOrOut", "MainDefault")",
+            data: { obj: obj },
+            dataType: "json",
+            success: function (data) {
+                if (data != null) {
+                    if (data.Success) {
+                        $('#HlyOnLineDiv').html(data.Msg);
+                    } else {
+                        layer.msg(data.Msg, { icon: 2 });
+                    }
+                }
+                else {
+                    layer.msg('出错', { icon: 2 });
+                }
+            }
+
+        })
+    });
+
+    ///正则表达式获取Url参数
+    function getQueryString(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return unescape(r[2]); return null;
+    }
+</script>

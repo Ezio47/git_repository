@@ -1,0 +1,158 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+}
+@section Header{
+<script src="~/Scripts/scroll.js"></script>
+<style type="text/css">
+    table tbody td {
+        word-break: break-all;
+        word-wrap: break-word;
+    }
+</style>
+
+}
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        单位：<select id="tbxBYORGNO">
+                            @Html.Raw(@ViewBag.vdOrg)
+                        </select>
+                        开始时间：<input class="easyui-datebox" id="tbxTIMEBegin" type="text" style="width:90px;height:28px;" value="@ViewBag.TIMEBegin" />
+                        结束时间<input class="easyui-datebox" id="tbxTIMEEnd" type="text" value="@ViewBag.TIMEEnd" style="width:90px;height:28px;" />
+                        @*@if (@ViewBag.type1 == "1")
+                        { <input type="checkbox" name="checkbox" value="1" checked>}
+                        else
+                        {
+                            <input type="checkbox" name="checkbox" value="1">
+                        }
+                        热点类别
+                        @if (@ViewBag.type2 == "1")
+                        { <input type="checkbox" name="checkbox" value="1" checked>}
+                        else
+                        {
+                            <input type="checkbox" name="checkbox" value="1">
+                        }火险等级
+                        @if (@ViewBag.type3 == "1")
+                        { <input type="checkbox" name="checkbox" value="1" checked>}
+                        else
+                        {
+                            <input type="checkbox" name="checkbox" value="1">
+                        }火情来源*@
+                        <select id="type">
+                            <option value="1">热点类别</option>
+                            <option value="2">火险等级</option>
+                            <option value="3">火情来源</option>
+                        </select>
+                        <input type="button" value="查询" onclick="query()" class="btnSearchCss" />
+                        <input type="button" value="导出" onclick="exportExcel()" class="btnOutputCss" />
+                        <input type="button" value="图形展示" onclick="Echarts()" class="btnEchartsCss" />
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; ">
+
+                <div class="divTable" id="tableContainer" style="height:100%;margin:0 0;">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="divMan" id="BYORGNOadd" style="display:none;margin-left:5px;margin-top:8px">
+
+</div>
+<script type="text/javascript">
+    //$(document).ready(function () {
+    //    $("#tableContainer").FixedHead({ tableLayout: "fixed" });
+    //});
+    function query() {
+        var TIMEBegin = $('#tbxTIMEBegin').datebox('getValue');
+        var TIMEEnd = $('#tbxTIMEEnd').datebox('getValue');
+        if (TIMEEnd < TIMEBegin) {
+            layer.msg("开始时间不能大于结束时间！");
+            return;
+        }
+        $.ajax({
+            url: '/DataCenterCount/getArchivalCountStr',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: {
+                TYPE: document.getElementById("type").value,
+                BYORGNO: document.getElementById("tbxBYORGNO").value,
+                TIMEBegin: $('#tbxTIMEBegin').datebox('getValue'),
+                TIMEEnd: $('#tbxTIMEEnd').datebox('getValue'),
+            },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#tableContainer').html(ar.Msg);
+                }
+                else {
+                    layer.msg(ar.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('登录异常');
+            }
+        });
+    }
+    function exportExcel() {
+        var url = '/DataCenterCount/ArchivalCountExportExcel?BYORGNO=' + document.getElementById("tbxBYORGNO").value + '&TYPE=' + document.getElementById("type").value + '&TIMEBegin=' + document.getElementById("tbxTIMEBegin").value + '&TIMEEnd=' + document.getElementById("tbxTIMEEnd").value;
+        window.location = url;
+
+    }
+    function Layer(BYORGNO, ORGNAME) {
+        $.ajax({
+            url: '/DataCenterCount/getArchivalidDetailStr',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: {
+                TYPE: document.getElementById("type").value,
+                BYORGNO: BYORGNO,
+                TIMEBegin: $('#tbxTIMEBegin').datebox('getValue'),
+                TIMEEnd: $('#tbxTIMEEnd').datebox('getValue'),
+            },
+            dataType: "json",
+            success: function (data) {
+                if (data.Success) {
+                    $('#BYORGNOadd').html(data.Msg);
+                    layer.open({
+                        type: 1,
+                        title: ORGNAME + '火灾档案详细',
+                        area: ['80%', '80%'],
+                        fix: false, //不固定
+                        maxmin: true,
+                        shade: 0,
+                        offset: ['3%'],
+                        content: $('#BYORGNOadd'),
+                    });
+                }
+                else {
+                    layer.msg(ar.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('登录异常');
+            }
+
+        });
+    }
+    function Echarts() {
+        layer.open({
+            type: 2,
+            title: '图形展示',
+            area: ['100%', '100%'],
+            fix: false, //不固定
+            maxmin: true,
+            content: '/DataCenterCount/ArchivalCountMan',
+        });
+    }
+</script>

@@ -1,0 +1,138 @@
+﻿@using ManagerSystem.MVC.HelpCom;
+@{
+    ViewBag.Title = "Index";
+    //系统参数读取坐标上传时间点
+    var stime = StateSwitch.GetParamenterByKey("STATR_TIME");
+    var edtime = StateSwitch.GetParamenterByKey("END_TIME");
+    Layout = null;
+}
+@Scripts.Render("~/bundles/jquery")
+<link href="~/Content/themes/assets/css/bootstrap.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="~/Content/themes/assets/css/font-awesome.min.css" />
+<link rel="stylesheet" href="~/Content/themes/assets/css/font-awesome.css" />
+<link rel="stylesheet" href="~/Content/themes/assets/css/ace.min.css" />
+<link rel="stylesheet" href="~/Content/themes/assets/css/ace-rtl.min.css" />
+<link rel="stylesheet" href="~/Content/themes/assets/css/ace-skins.min.css" />
+<link href="~/Content/themes/assets/css/jquery.gritter.css" rel="stylesheet" />
+<link rel="stylesheet" href="~/Content/themes/assets/css/bootstrap-timepicker.css" />
+<script src="~/Content/themes/assets/js/ace-extra.min.js"></script>
+<script src="~/Content/themes/assets/js/bootstrap.min.js"></script>
+<script src="~/Content/themes/assets/js/jquery.gritter.min.js"></script>
+<script src="~/Content/themes/assets/js/bootbox.min.js"></script>
+<script src="~/Content/themes/assets/js/ace-elements.min.js"></script>
+<script src="~/Content/themes/assets/js/ace.min.js"></script>
+<script src="~/Content/themes/assets/js/date-time/bootstrap-datepicker.min.js"></script>
+<script src="~/Content/themes/assets/js/date-time/daterangepicker.min.js"></script>
+<script src="~/Content/themes/assets/js/date-time/bootstrap-timepicker.min.js"></script>
+<script src="~/Scripts/layer/layer.js"></script>
+<script src="~/Scripts/Springer.js"></script>
+<script src="~/Scripts/Springer/SpringerMapCommon.js"></script>
+<script src="~/Scripts/skyline/3dMapTest.js"></script>
+<style type="text/css">
+    #sample-table-1 {
+        font-size: 12px;
+    }
+</style>
+<script>
+    $(function ($) {
+        $('.date-picker').datepicker({ autoclose: true, language: 'cn' }).next().on(ace.click_event, function () {
+            $(this).prev().focus();
+        });
+        //时分开始
+        $('#timepickerStart').timepicker({
+            minuteStep: 1,
+            showSeconds: false,
+            showMeridian: false
+        }).next().on(ace.click_event, function () {
+            $(this).prev().focus();
+        });
+
+        //时分结束
+        $('#timepickerEnd').timepicker({
+            minuteStep: 1,
+            showSeconds: false,
+            showMeridian: false
+        }).next().on(ace.click_event, function () {
+            $(this).prev().focus();
+        });
+    });
+</script>
+@*历史轨迹*@
+<div class="widget-box bottomDiv" id="gj">
+    <div class="widget-header">
+        <table style="width:100%;height:55px;font-size:14px;display:inline-table;">
+            <tr>
+                @*<td style="font-size:16px;width:90px">历史轨迹</td>*@
+                <td><input type="hidden" id="userid" value="@ViewBag.uid" />开始：<input class="date-picker" id="txtStartTime" value="@DateTime.Now.AddDays(-7).ToString("yyyy-MM-dd")" style=" width:90px;" type="text" data-date-format="yyyy-mm-dd"></td>
+
+                <td style="width:100%;float:left;padding-right:20%">
+                    <div class="input-group bootstrap-timepicker" style="width:100px">
+                        <input id="timepickerStart" type="text" value="@stime" class="form-control" />
+                        <span class="input-group-addon">
+                            <i class="icon-time"></i>
+                        </span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>结束：<input class="date-picker" id="txtEndTime" value="@DateTime.Now.ToString("yyyy-MM-dd")" style="width:90px;" type="text" data-date-format="yyyy-mm-dd"></td>
+
+                <td style="width:100%;float:left;padding-right:20%">
+                    <div class="input-group bootstrap-timepicker" style="width:100px">
+                        <input id="timepickerEnd" type="text" value="@edtime" class="form-control" />
+                        <span class="input-group-addon">
+                            <i class="icon-time"></i>
+                        </span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align:center">
+                    <button type="button" class="btn btn-info btn-sm" onclick="searchHisData()">
+                        <i class="icon-search bigger-110 green"></i>
+                        查 询
+                    </button>
+                </td>
+
+            </tr>
+
+        </table>
+
+    </div>
+    <div class="widget-body">
+        <div class="widget-main">
+            <div style="height: 100%;overflow:auto;" id="divhisgj">
+            </div>
+        </div>
+    </div>
+</div>
+<object id="SGWorld" classid="CLSID:3a4f91b1-65a8-11d5-85c1-0001023952c1" style="visibility:hidden;height:0 "></object>
+<script type="text/javascript">
+
+
+    $(function () {
+        searchHisData();
+
+    })
+    //查询数据
+    function searchHisData() {
+        var starttime = $('#txtStartTime').val();
+        var endtime = $('#txtEndTime').val();
+        var uid = $('#userid').val();
+        $.ajax({
+            type: "Post",
+            url: "/RealSupervision/GetHisGJAjax",
+            data: { uid: uid, starttime: starttime, endtime: endtime, maptype: "Skyline" },
+            dataType: "json",
+            success: function (obj) {
+                if (obj != null && obj.Success) {
+                    $('#divhisgj').empty();
+                    $('#divhisgj').html(obj.Msg);
+                }
+                else {
+                    alert('执行失败！');
+                }
+            }
+        });
+    }
+</script>

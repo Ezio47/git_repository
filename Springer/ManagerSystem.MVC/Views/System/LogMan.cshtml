@@ -1,0 +1,105 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+}
+@section Header{
+}
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+    @*<div data-options="region:'west'" title="" style=" width:220px; border: none;">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>*@
+    <div data-options="region:'center'" title="" style=" border: none; ">
+
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="homeUL"> 
+                        @*<input type="button" value="返回" onclick="javascript: history.go(-1);" class="btnReturnCss" />*@
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; ">
+
+                <div class="divMan">
+                    <table cellpadding="0" cellspacing="0">
+
+                        <tr class='row1'>
+                            <td style="width:15%;">
+                                类别:
+                            </td>
+                            <td style="width:35%;">
+                                <div id="divLOGTYPE"></div>
+                            </td>
+                            <td style="width:15%;">
+                                操作人:
+                            </td>
+                            <td style="width:35%;">
+                                <div id="divLOGINUSERName"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                操作时间:
+                            </td>
+                            <td>
+                                <div id="divOPERATETIME"></div>
+                            </td>
+                            <td>
+                                操作IP:
+                            </td>
+                            <td>
+                                <div id="divUSERIP"></div>
+                            </td>
+                        </tr>
+                        <tr class='row1'>
+                            <td>
+                                标题:
+                            </td>
+                            <td colspan="3">
+                                <div id="divOPERATION"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="4">
+
+                                <textarea id="divOPERATIONCONTENT" rows="12" style="width:100%;"></textarea>
+                            </td>
+                        </tr>
+
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    $.ajax({
+        url: '/System/getLogJson',
+        timeout: 10000, //10秒后超时，如果为0则永不超时
+
+        data: {
+            ID: '@ViewBag.T_ID'
+        },
+        success: function (data, ioArgs) {
+            var ar = eval('(' + data + ')');
+            if (ar.LOGID != null) {
+                document.getElementById("divLOGTYPE").innerHTML = ar.LOGTYPENAME;
+                document.getElementById("divLOGINUSERName").innerHTML = ar.LOGINUSERName;
+                document.getElementById("divOPERATETIME").innerHTML = ar.OPERATETIME;
+                document.getElementById("divUSERIP").innerHTML = ar.USERIP;
+                document.getElementById("divOPERATION").innerHTML = ar.OPERATION;
+                document.getElementById("divOPERATIONCONTENT").innerHTML = "" + ar.OPERATIONCONTENT;
+            }
+        }, 
+        error: function (err, ioArgs) {
+            
+        }
+    });
+</script>

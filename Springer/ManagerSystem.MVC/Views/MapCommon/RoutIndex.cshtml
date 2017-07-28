@@ -1,0 +1,263 @@
+﻿@using ManagerSystem.MVC.Models;
+@model IEnumerable<ManagerSystemModel.T_IPSFR_USER_Model>
+@{
+    ViewBag.Title = "RoutIndex";
+    Layout = null;
+    var dic = ViewBag.data as IEnumerable<ManagerSystemModel.T_IPSFR_USER_Model>;
+}
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.8.2.min.js")"></script>
+@*map*@
+<link rel="stylesheet" href="~/js/esri/css/esri.css" />
+<link rel="stylesheet" href="~/Content/themes/dijit/themes/tundra/tundra.css" />
+<script src="~/js/init.js"></script>
+
+<link href="~/Content/MapStyle.css" rel="stylesheet" />
+<script src="~/Scripts/Springer.js"></script>
+<script src="~/Scripts/Springer/SpringerMapCommon.js"></script>
+<script src="~/Scripts/Springer/SpringerMapCollect.js"></script>
+<style type="text/css">
+    body, table, th, tr, td {
+        margin: 0;
+        padding: 0;
+    }
+
+    .xbsx {
+        width: 96%;
+        font-family: 微软雅黑;
+        background-color: #4d951e;
+        padding: 1% 2%;
+        color: #0c2501;
+        margin: 1% auto;
+    }
+
+        .xbsx h1 {
+            text-align: left;
+            margin-left: 2%;
+            font-size: 15px;
+            color: #fff;
+        }
+
+        .xbsx table {
+            width: 100%;
+            height: auto;
+            border-collapse: collapse;
+            border: 1px solid #b8d3b3;
+            background-color: #fff;
+        }
+
+            .xbsx table tr {
+                border: 1px solid #b8d3b3;
+                text-align: left;
+                height: 28px;
+            }
+
+                .xbsx table tr th {
+                    border: 1px solid #b8d3b3;
+                    padding-left: 2%;
+                    font-size: 13px;
+                }
+
+                .xbsx table tr td {
+                    border: 1px solid #b8d3b3;
+                    padding-left: 2%;
+                    font-size: 12px;
+                }
+
+                .xbsx table tr:hover {
+                    background-color: #ffe5cc;
+                }
+</style>
+
+<div class="xbsx">
+    @*<h1>详细信息</h1>*@
+    <table cellpadding="0" cellspacing="0">
+        @*<thead>
+            <tr class="zd">
+                <th>字段名</th>
+                <th>值</th>
+            </tr>
+        </thead>*@
+        <tbody>
+            @if (dic.Any())
+            {
+                foreach (var item in dic)
+                {
+                    <tr>
+                        <td>姓名</td>
+                        <td>@item.HNAME</td>
+                    </tr>
+                    <tr>
+                        <td>单位</td>
+                        <td>@item.ORGNAME</td>
+                    </tr>
+                    <tr>
+                        <td>手机号码</td>
+                        <td>@item.PHONE</td>
+                    </tr>
+                    <tr>
+                        <td>终端编号</td>
+                        <td>@item.SN</td>
+                    </tr>
+                    <tr>
+                        <td>性别</td>
+                        <td>@item.SEXNAME</td>
+                    </tr>
+                    if (ViewBag.type == 2)
+                    {
+                        <tr>
+                            <td>总面积</td>
+                            <td id="AREA"></td>
+                        </tr>
+                    }
+                    if (ViewBag.type == 1)
+                    {
+                        <tr>
+                            <td>总长度</td>
+                            <td id="length"></td>
+                        </tr>
+                    }
+                }
+            }
+        </tbody>
+    </table>
+</div>
+<script type="text/javascript">
+
+    if ('@ViewBag.type' == 1) {
+        getLocaCollectLine();//计算线长度
+    }
+    else {
+        getLocaCollectLine1();//计算面积
+    }
+    //计算线长度
+    function getLocaCollectLine() {
+            $.ajax({
+                type: "Post",
+                url: "/MapCommon/GetFRUserRots1",
+                data: { id: '@ViewBag.id', type: '0' },
+                dataType: "json",
+                success: function (obj) {
+                    if (obj != null && obj.Success) {
+                        var data = obj.Data;
+                        if (data != null) {
+                            var datalist = data.DataList;
+                            var arr = [];
+                            if (datalist.length > 0) {
+                                for (var j = 0; j < datalist.length; j++) {
+                                    var ring = [];
+                                    var ss = datalist[j];
+                                    var str = "";
+                                    for (var i = 0; i < ss.length; i++) {
+                                        var lng = ss[i].LONGITUDE;
+                                        var lat = ss[i].LATITUDE;
+                                        if (!isNaN(lng) && !isNaN(lat)) {
+                                            var latlng = new esri.geometry.Point(parseFloat(lng), parseFloat(lat));
+                                            ring.push(latlng);
+                                            str += lng + "," + lat + "|";
+                                        }
+                                        var lineSymbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([255, 0, 0]), 5);
+                                        //获取线的点
+                                        var polyline = new esri.geometry.Polyline(new esri.SpatialReference({ wkid: 4326 }));
+                                        polyline.addPath(ring);
+
+                                    }
+                                    arr.push(str);
+                                    //计算线面的长度和面积
+                                    GetLenthorArea(polyline, "1");
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    //计算面积
+    function getLocaCollectLine1() {
+            $.ajax({
+                type: "Post",
+                url: "/MapCommon/GetFRUserRots1",
+                data: { id: '@ViewBag.id', type: '1' },
+                dataType: "json",
+                success: function (obj) {
+                    if (obj != null && obj.Success) {
+                        var data = obj.Data;
+                        if (data != null) {
+                            var datalist = data.DataList;
+                            var arr = [];
+                            if (datalist.length > 0) {
+                                for (var j = 0; j < datalist.length; j++) {
+                                    var ring = [];
+                                    var ss = datalist[j];
+                                    var str = "";
+                                    for (var i = 0; i < ss.length; i++) {
+                                        var lng = ss[i].LONGITUDE;
+                                        var lat = ss[i].LATITUDE;
+                                        if (!isNaN(lng) && !isNaN(lat)) {
+                                            var latlng = new esri.geometry.Point(parseFloat(lng), parseFloat(lat));
+                                            ring.push(latlng);
+                                            str += lng + "," + lat + "|";
+                                        }
+                                        var polygonSymbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID, new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_DASHDOTDOT, new dojo.Color([255, 0, 0]), 3), new dojo.Color([255, 255, 0, 0.25]));
+                                        //获取面的点
+                                        var polygon = new esri.geometry.Polygon(new esri.SpatialReference({ wkid: 4326 }));
+                                        polygon.addRing(ring);
+                                    }
+                                    arr.push(str);
+                                    GetLenthorArea(polygon, "1");
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }  
+    //量算面积和长度方法：
+    var str = "0";
+    var LenthorAreaStr = "";
+    function GetLenthorArea(geometry, type) {//画图完毕后计算距离或者面积 type 1 为无需转经纬度坐标
+        var unit = "";
+        if (geometry.type == "polyline") {
+            var geo = new esri.geometry.webMercatorToGeographic(geometry);//投影坐标转84经纬度
+            if (type == "1") {//2 为经纬度坐标的地图
+                geo = geometry;
+            }
+            var Length = new esri.geometry.geodesicLengths([geo], esri.Units.METERS);
+            str = parseFloat(parseFloat(str) + parseFloat(Length)).toFixed(2);
+            //alert(str);
+        }
+        else if (geometry.type == "polygon") {
+            var geo = new esri.geometry.webMercatorToGeographic(geometry);
+            if (type == "1") {//2 为经纬度坐标的地图
+                geo = geometry;
+            }
+            var Area = new esri.geometry.geodesicAreas([geo], esri.Units.SQUARE_METERS);
+            str = parseFloat(parseFloat(str) + parseFloat(Area / 10000)).toFixed(2);
+            //alert(str);
+        }
+        $('#AREA').text(str + "公顷");
+        $('#length').text(str + "米");
+
+    }
+
+    function GetLenthorArea1(geometry) {//画图完毕后计算距离或者面积
+        var unit = "";
+        var str = "";
+        var geo = geometry;
+        if (geometry.type == "polyline") {
+            var Length = new esri.geometry.geodesicLengths([geo], esri.Units.METERS);
+            unit = "米";
+            str = parseFloat(Length).toFixed(2);
+        }
+        else if (geometry.type == "polygon") {
+            var Area = new esri.geometry.geodesicAreas([geo], esri.Units.SQUARE_METERS);
+            unit = "公顷";
+            str = parseFloat(Area / 10000).toFixed(2);
+        }
+        if ('@ViewBag.type' == 2) {
+            $('#AREA').text(str + unit);
+        }
+        else {
+            $('#length').text(str + unit);
+        }
+    }
+</script>

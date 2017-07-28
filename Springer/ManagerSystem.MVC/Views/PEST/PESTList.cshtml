@@ -1,0 +1,240 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+
+    <div data-options="region:'center'" title="">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <ul>
+                        <li class="homeUL"><a href="/PEST/PESTList">有害生物管理</a></li>
+                        @Html.Raw(@ViewBag.navList)
+                        <li><input id="btnAdd" type="button" value="添加" onclick="Manager('Add','')" style="display:none;" class="btnAddCss" /></li>
+                        <li><input id="btnDel" type="button" value="删除" onclick="Manager('Del','')" style="display:none;" class="btnDelCss" /></li>
+                    </ul>
+                    <input id="hidPESTCODE" name="hidPESTCODE" type="hidden" value="@ViewBag.PESTCODE" />
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; " class="LayoutCenterBG">
+                <div id="divTable" class="divTable">
+                    @Html.Raw(@ViewBag.PESTList)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="tableAdd" class="divMan" style="display:none;margin-left:5px;margin-top:8px">
+    <table cellpadding="0" cellspacing="0">
+        <tr>
+            <td style="width:100px">编码：</td>
+            <td><input id="tbxPESTCODE" name="tbxPESTCODE" type="text" value="" style="width:98%;" /></td>
+            <td>名称：</td>
+            <td><input id="tbxPESTNAME" name="tbxPESTNAME" type="text" value="" style="width: 98%;" /> </td>
+        </tr>
+        <tr>
+            <td style="width:70px">拉丁名称：</td>
+            <td><input id="tbxLATINNAME" name="tbxLATINNAME" type="text" value="" style="width: 98%;" /></td>
+            <td>排序号：</td>
+            <td><input id="tbxORDERBY" name="tbxORDERBY" type="text" value="" style="width: 98%;" /></td>
+        </tr>
+    </table>
+</div>
+
+<script type="text/javascript">
+    var blnAdd = '@ViewBag.Add';
+    var blnDel = '@ViewBag.Del';
+    if (blnAdd == "1") {
+        document.getElementById('btnAdd').style.display = "";
+    }
+    if (blnDel == "1") {
+        document.getElementById('btnDel').style.display = "";
+    }
+    //行选中改变颜色
+    function SetColor(obj) {
+        $(obj).css("background-color", "#FFDAB9");
+        $("tr").not($(obj)).css("background-color", "");
+    }
+    //勾选
+    function SelectAll(v, c) {
+        var _len = $("#PestTable tr").length - 1
+        if (_len > 0) {
+            if (v == "ALL") {
+                for (var i = 0; i < _len; i++) {
+                    document.getElementById('tbxPESTCODE' + i).checked = c;
+                }
+            }
+        }
+    }
+    //查询
+    function Query() {
+        $.ajax({
+            url: '/PEST/PESTListQuery',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: { PESTCODE: $('#hidPESTCODE').val() },
+            dataType: 'json',
+            success: function (data, ioArgs) {
+                if (data.Success) {
+                    $('#divTable').html("");
+                    $('#divTable').html(data.Msg);
+                }
+                else {
+                    $('#divTable').html("");
+                }
+            },
+            error: function () {
+                layer.msg("系统异常!", { icon: 5 });
+            }
+        });
+    }
+    //增、删、改
+    function Manager(Method, PESTCODE) {
+        if (Method == 'Del') {
+            var PESTCODEList = $("input:checkbox[name='tbxPESTCODE']:checked").map(function (index, elem) { return $(elem).val(); }).get().join(',');
+            if (PESTCODEList.length > 0) {
+                layer.confirm('确实要删除吗?', { icon: 3, title: '提示' }, function (index) {
+                    $.ajax({
+                        url: '/PEST/PESTManager',
+                        cache: false,
+                        data: { PESTCODE: PESTCODEList, Method: Method },
+                        type: 'post',
+                        dataType:'json',
+                        success: function (data) {
+                            if (data.Success) {
+                                layer.msg(data.Msg, { icon: 6 });
+                                Query();
+                            }
+                            else {
+                                layer.msg(data.Msg, { icon: 5 });
+                            }
+                        },
+                        error: function () {
+                            layer.msg("系统异常!", { icon: 5 });
+                        }
+                    });
+                });
+            }
+            else {
+                layer.msg("请选择要删除的有害生物!", { icon: 5 });
+            }
+        }
+        else {
+            var btnInfo = ['保存', '取消'];
+            var str = "添加有害生物";
+            if (Method == "Add") {
+                $('#tbxPESTCODE').attr("disabled", false);
+                $('#tbxPESTCODE').val('');
+                $('#tbxPESTNAME').val('');
+                $('#tbxLATINNAME').val('');
+                $('#tbxORDERBY').val('');
+            }
+            else if (Method == 'Mdy') {
+                str = "修改有害生物";
+                $('#tbxPESTCODE').attr("disabled", true);
+                $.ajax({
+                    type: "get",
+                    url: "/PEST/GetPESTDataJson",
+                    data: { PESTCODE: PESTCODE },
+                    dataType: "json",
+                    error: function () {
+                        layer.msg('系统异常!', { icon: 5 });
+                    },
+                    success: function (data) {
+                        $('#tbxPESTCODE').val(data.PESTCODE);
+                        $('#tbxPESTNAME').val(data.PESTNAME);
+                        $('#tbxLATINNAME').val(data.LATINNAME);
+                        $('#tbxORDERBY').val(data.ORDERBY);
+                    }
+                });
+            }
+            layer.open({
+                type: 1,
+                title: str,
+                area: ['45%', '30%'],
+                btn: btnInfo,
+                shade: 0,
+                maxmin: true,
+                content: $('#tableAdd'),
+                yes: function (index, layero) {
+                    var code = $("#hidPESTCODE").val();
+                    var len = code.length;
+                    var len2 = len + 2;
+                    var PESTCODE = $("#tbxPESTCODE").val();                   
+                    if ($.trim(PESTCODE) == "") {
+                        layer.msg('请输入' + len + '位数字编码!', { icon: 5 });
+                        $("#tbxPESTCODE").focus();
+                        return;
+                    }
+                    else {
+                        var reg = /^[0-9]*$/;
+                        if (!reg.test(PESTCODE)) {
+                            layer.msg('请输入' + len + '位数字数字编码!', { icon: 5 });
+                            $("#tbxPESTCODE").focus();
+                            return;
+                        }
+                        else {
+                            if (PESTCODE.length != len2) {
+                                layer.msg('请输入' + len2 + '位数字编码!', { icon: 5 });
+                                $("#tbxPESTCODE").focus();
+                                return;
+                            }
+                            else {                        
+                                if (len > 0) {
+                                    if (PESTCODE.substring(0, len) != code) {
+                                        layer.msg('请输入' + len2 + '位数字编码,且前' + len + '位必须为' + code + '!', { icon: 5 });
+                                        $("#tbxPESTCODE").focus();
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    var PESTNAME = $("#tbxPESTNAME").val();
+                    if ($.trim(PESTNAME) == "") {
+                        layer.msg('请输入名称!', { icon: 5 });
+                        $("#tbxPESTNAME").focus();
+                        return;
+                    }
+                    var ORDERBY = $("#tbxORDERBY").val();
+                    if ($.trim(ORDERBY) == "") {
+                        layer.msg('请输入排序号!', { icon: 5 });
+                        $("#tbxORDERBY").focus();
+                        return;
+                    }
+                    var LATINNAME = $("#tbxLATINNAME").val();
+                    $.ajax({
+                        url: '/PEST/PESTManager',
+                        type: 'post',
+                        cache: false,
+                        timeout: 10000, //10秒后超时，如果为0则永不超时
+                        data: { PESTCODE: PESTCODE, PESTNAME: PESTNAME, LATINNAME: LATINNAME, ORDERBY: ORDERBY, Method: Method },
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.Success) {
+                                layer.confirm(data.Msg + '请返回?', { icon: 3, title: '提示' }, function (index2) {
+                                    layer.close(index2);
+                                    layer.close(index);
+                                    Query();
+                                });
+                            }
+                            else {
+                                layer.msg(data.Msg, { icon: 5 });
+                            }
+                        },
+                        error: function (err, ioArgs) {
+                            layer.msg('系统异常!', { icon: 5 });
+                        }
+                    });
+                },
+                cancel: function (index) {
+                    layer.close(index);
+                }
+            });
+        }
+    }
+</script>

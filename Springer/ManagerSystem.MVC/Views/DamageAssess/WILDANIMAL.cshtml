@@ -1,0 +1,254 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        野生动物名称： <input id="DANIMALNAME" type="text" value="" />
+                        <input type="button" value="查询" onclick="query()" class="btnSearchCss" />
+                        <input type="button" value="添加" onclick="Manager('Add', '', '')" class="btnAddCss" />
+                    </div>
+                </div>
+            </div>
+
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <input id="hidFIREINFOID" type="hidden" value="@ViewBag.FIREINFOID" />
+                <div class="divTable" id="divTable">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="divMan" id="tableAdd" style="display:none;margin-left:5px;margin-top:8px">
+    <input id="HidID" name="HidID" type="hidden" value="" />
+    <table cellpadding="0" cellspacing="0">
+        <tr>
+            <td style="width:100px;">野生动物名称: </td>
+            <td><input id="tbxDANIMALNAME" type="text" value="" style="width:99%;" /></td>
+            <td style="width:100px;">烧死数量: </td>
+            <td>
+                <input id="tbxDANIMALCOUNT" type="text" value="" style="width:75%;" />
+                <span style="color: gray;">头或只</span>
+            </td>
+        </tr>
+        <tr>
+            <td>价格:</td>
+            <td><input id="tbxDANIMALPRICE" type="text" value="" style="width:99%;" /></td>
+            <td>残值:</td>
+            <td><input id="tbxRESIDUALVALUE" type="text" value="" style="width:99%;" /></td>
+        </tr>
+        <tr>
+            <td>备注:</td>
+            <td colspan="3"><input id="tbxMARK" type="text" value="" style="width:99%;" /></td>
+        </tr>
+    </table>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        query();
+    });
+
+    //查询
+    function query() {
+        $.ajax({
+            url: '/DamageAssess/GetWILDANIMALList',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: { FIREINFOID: $("#hidFIREINFOID").val(), DANIMALNAME: $("#DANIMALNAME").val() },
+            dataType: 'json',
+            success: function (data) {
+                if (data.Success) {
+                    $('#divTable').html('');
+                    $('#divTable').html(data.Msg);
+                }
+                else {
+                    $('#divTable').html('');
+                }
+            },
+            error: function (error) {
+                layer.msg('查询异常!', { icon: 5 });
+            }
+        });
+    }
+
+    //选中改变颜色
+    function setColor(obj) {
+        $(obj).css("background-color", "#FFDAB9");
+        $("tr").not($(obj)).css("background-color", "");
+    }
+
+    //数据增、删、改、查看
+    function Manager(Method, ID) {
+        if (Method == 'Del') {
+            layer.confirm('确实要删除吗?', { icon: 3, title: '提示' }, function (index) {
+                $.ajax({
+                    type: "post",
+                    url: "/DamageAssess/WILDANIMALManager",
+                    data: { DANIMALID: ID, Method: Method },
+                    dataType: "json",
+                    success: function (re) {
+                        if (re.Success) {
+                            layer.msg(re.Msg, { icon: 6 });
+                            query();
+                        }
+                        else {
+                            layer.msg(re.Msg, { icon: 5 });
+                        }
+                    },
+                    error: function () {
+                        layer.msg('系统异常!', { icon: 5 });
+                    }
+                });
+            });
+        }
+        else if (Method == 'See') {
+            layer.open({
+                type: 2,
+                title: '查看野生动物损失',
+                area: ['70%', '70%'],
+                fix: true,
+                maxmin: true,
+                content: '/DamageAssess/WILDANIMALDataSee?DANIMALID=' + ID,
+            })
+        }
+        else {
+            if (Method == 'Add') {
+                $("#HidID").val('');
+                $("#tbxDANIMALNAME").val('');
+                $("#tbxDANIMALCOUNT").val('');
+                $("#tbxDANIMALPRICE").val('');
+                $("#tbxRESIDUALVALUE").val('');
+                $("#tbxMARK").val('');
+            }
+            if (Method == 'Mdy') {
+                $.ajax({
+                    type: "post",
+                    url: "/DamageAssess/GetWILDANIMALJson",
+                    data: { DANIMALID: ID, },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.WILDANIMALID != '') {
+                            $('#HidID').val(data.WILDANIMALID);
+                            $("#tbxDANIMALNAME").val(data.WILDANIMALNAME);
+                            $("#tbxDANIMALCOUNT").val(data.WILDANIMALCOUNT);
+                            $("#tbxDANIMALPRICE").val(data.WILDANIMALPRICE);
+                            $("#tbxRESIDUALVALUE").val(data.RESIDUALVALUE);
+                            $("#tbxMARK").val(data.MARK);
+                        }
+                    },
+                    error: function () {
+                        layer.msg('系统异常!', { icon: 5 });
+                    }
+                });
+            }
+            var btnInfo = ['保存', '取消'];
+            var str = "添加野生动物损失";
+            if (Method == "Mdy") {
+                str = "修改野生动物损失";
+            }
+            layer.open({
+                type: 1,
+                title: str,
+                area: ['70%', '72%'],
+                btn: btnInfo,
+                shade: 0,
+                maxmin: true,
+                content: $('#tableAdd'),
+                yes: function (index, layero) {
+                    var HID = $('#HidID').val();
+                    if (HID != "") {
+                        ID = HID;
+                        Method = 'Mdy';
+                    }
+                    var daniMaiName = $("#tbxDANIMALNAME").val();
+                    if ($.trim(daniMaiName) == "") {
+                        layer.msg('请输入野生动物名称!', { icon: 5 });
+                        $("#tbxDANIMALNAME").focus();
+                        return;
+                    }
+                    var daniMaiCount = $("#tbxDANIMALCOUNT").val();
+                    if ($.trim(daniMaiCount) == "") {
+                        layer.msg('请输入烧死数量!', { icon: 5 });
+                        $("#tbxDANIMALCOUNT").focus();
+                        return;
+                    }
+                    else {
+                        if (CheckINT(daniMaiCount) == false) {
+                            layer.msg('烧死数量请输入正整数!', { icon: 5 });
+                            $('#tbxDANIMALCOUNT').focus();
+                            return;
+                        }
+                    }
+
+                    var daniMaiPrice = $("#tbxDANIMALPRICE").val();
+                    if ($.trim(daniMaiPrice) == "") {
+                        layer.msg('请输入价格!', { icon: 5 });
+                        $("#tbxDANIMALPRICE").focus();
+                        return;
+                    }
+                    else {
+                        if (CheckNUM2(daniMaiPrice) == false) {
+                            layer.msg('价格请输入数字,且最多保留2位有效数字!', { icon: 5 });
+                            $('#tbxDANIMALPRICE').focus();
+                            return;
+                        }
+                    }
+                    var resudualValue = $("#tbxRESIDUALVALUE").val();
+                    if ($.trim(resudualValue) == "") {
+                        layer.msg('请输入购入价!', { icon: 5 });
+                        $("#tbxRESIDUALVALUE").focus();
+                        return;
+                    }
+                    else {
+                        if (CheckNUM2(resudualValue) == false) {
+                            layer.msg('购入价请输入数字,且最多保留2位有效数字!', { icon: 5 });
+                            $('#tbxRESIDUALVALUE').focus();
+                            return;
+                        }
+                    }
+                    $.ajax({
+                        type: "post",
+                        url: "/DamageAssess/WILDANIMALManager",
+                        data: {
+                            DANIMALID: ID,
+                            FIREINFOID: $('#hidFIREINFOID').val(),
+                            DANIMALNAME: daniMaiName,
+                            DANIMALCOUNT: daniMaiCount,
+                            DANIMALPRICE: daniMaiPrice,
+                            RESIDUALVALUE: resudualValue,
+                            MARK: $('#tbxMARK').val(),
+                            Method: Method
+                        },
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.Success) {
+                                $('#HidID').val(data.Url);
+                                layer.confirm(data.Msg + ' 请返回?', { icon: 3, title: '提示' }, function (index2) {
+                                    layer.close(index2);
+                                    layer.close(index);
+                                });
+                                query();
+                            }
+                            else {
+                                layer.msg(data.Msg, { icon: 5 });
+                            }
+                        },
+                        error: function () {
+                            layer.msg('系统异常!', { icon: 5 });
+                        }
+                    });
+                },
+                cancel: function (index) {
+                    layer.close(index);
+                }
+            })
+        }
+    }
+</script>
+
+

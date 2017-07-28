@@ -1,0 +1,209 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" class='indexHtml'>
+<head id="Head1">
+    <title>@ViewBag.Title</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+    @Scripts.Render("~/bundles/jquery")
+    <script src="~/Scripts/jquery-easyui-1.4/jquery.easyui.min.js"></script>
+    <script src="~/Scripts/jquery-easyui-1.4/locale/easyui-lang-zh_CN.js"></script>
+    <script src="~/Scripts/jquery-easyui-1.4/validateHelper.js"></script>
+    <script src="~/Scripts/jquery-easyui-1.4/jquery.SuperSlide.2.1.1.js"></script>
+    <link href="~/Content/themes/easyui/easyui.css" rel="stylesheet" />
+    <link href="~/Content/themes/easyui/color.css" rel="stylesheet" />
+    <link href="~/Content/themes/easyui/icon.css" rel="stylesheet" />
+    <link href="~/Content/themes/default/Default.css" rel="stylesheet" />
+    <link href="~/Content/themes/default/Public.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/Content/themes/assets/css/font-awesome.min.css" />
+    <script src="~/Scripts/SpringerCommonValidate.js"></script>
+    <script src="~/Scripts/layer/layer.js"></script>
+    <script src="~/Scripts/laydate/laydate.js"></script>
+    <script src="~/Scripts/Springer.js"></script>
+
+    <script type="text/javascript">
+        var strR = "@ViewBag.isPageRight";
+        if (strR != "True") {
+            alert('没有访问的权限或是登录期限已过，请重新登录');
+            window.location = "/System/LoginOut";
+        }
+        layer.config({
+            extend: 'extend/layer.ext.js'
+        });
+    </script>
+
+    <script language="javascript">
+        loadClassAlarm();
+        window.setInterval(loadClassAlarm, 1000 * 5 * 60);
+        function loadClassAlarm() {
+            $.ajax({
+                url: '/MainDefault/GetHotInfoJson',
+                data: { type: 'Alarm' },
+                type: 'post',
+                success: function (data, ioArgs) {
+                    var ar = eval('(' + data + ')');
+                    if (ar.Success) {
+                        $('#divAlarm').html(ar.Msg);
+                    }
+                    else {
+                        window.location = "/System/LoginOut";
+                    }
+                },
+                error: function (err, ioArgs) {
+                }
+            });
+        }
+    </script>
+
+    @RenderSection("Header", required: false) @*View页面自定义特定js/css使用*@
+</head>
+<body>
+    <div id="cc" class="easyui-layout" data-options="fit:true" style=" border:0;">
+        <div data-options="region:'north',split:false" style="height:113px;border:none;">
+            <div class="easyui-layout" data-options="fit:true" style=" border:0; height:80px;">
+                <div data-options="region:'north' " class="LayOutHeader">
+                    <table style="width:100%; height:60px;border:0px;">
+                        <tr>
+                            <td class="td1">
+                                &nbsp;
+                            </td>
+                            <td class="td11">
+                                <div id="demo" class="qimo8">
+                                    <div class="qimo">
+                                        <div id="demo1">
+                                            <ul>
+                                                <li class='marqueeSysInfoSys'>
+                                                    @Html.Raw(@ViewBag.marqueeSysInfo)
+                                                    </li>
+                                                </ul>
+                                        </div>
+                                        <div id="demo2"></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="td3">
+                                <table style="width:100%; height:100%;border:0;">
+                                    <tr>
+                                        <td style="text-align:right;"><div id="divAlarm"></div></td>
+                                        <td class="officeTools">
+                                            <dl class="floatLeft">
+                                                <dt style="margin-top:-20px">
+                                                    @if (@ViewBag.fireLevel != "" && ViewBag.fireLevel != null)
+                                                    {
+                                                        <img src="/images/FireLevel/@{@ViewBag.fireLevel}.png" style="width:20px;height:23px;cursor:pointer;" onclick="msgShow1()">
+                                                    }
+
+                                                    @*<span id="dbNum">@ViewBag.DANGERCLASS</span>*@
+                                                </dt>
+                                            </dl>
+                                        </td>
+                                        <td id="OAInfo">&nbsp;</td>
+                                        <td style="width:144px;overflow:hidden;">
+                                            <dl class="loginerInfo floatRight">
+                                                <dt class="floatLeft"><img src="../../images/tools/portrait.png"></dt>
+                                                @{
+                                                    string name = ViewBag.trueName;
+                                                }
+                                                <dd class="floatLeft"><p style="text-align:left;font-weight:bold;color:white" title="@name">@(@name.Length > 3 ? @name.Substring(0, 4) + "..." : @name)<br />欢迎光临！</p></dd>
+                                            </dl>
+                                        </td>
+                                        <td><a href='/System/LoginOut' style="color:#fff"><img style="border:0;" src="../../images/tools/tuichu.png"></a></td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div data-options="region:'center'" title="" style="border:none;" class="indexMenuDiv">
+                    <div class="indexMenuDiv">
+                        <iframe frameborder="0" scrolling="no" style="background-color:transparent; position: absolute; z-index: -1; width: 100%; height: 100%; top: 0; left:0;"></iframe>
+                        @Html.Raw(@ViewBag.getPageMenuStr)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div data-options="region:'south',split:false" title="" class="LayOutFooter" style="overflow:hidden;">
+            <p>建议使用1280*768以上使用本系统</p>
+        </div>
+
+        <div data-options="region:'center',split:false" title="" style=" border:none;">
+            @RenderBody()
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".LiDefault").each(function () {
+                var liNum = $("li", this).length;
+                var height = liNum * 39 + 36;
+                if (liNum > 0) {
+                    $("li:first", this).prepend("<iframe frameborder='0' scrolling='no' style='left: auto; top: 0px; width: 85px; height: " + height + "px; position: absolute; z-index: -1; background-color: transparent;'></iframe>");
+                }
+            });
+        });
+
+        var demo = document.getElementById("demo");
+        var demo1 = document.getElementById("demo1");
+        var demo2 = document.getElementById("demo2");
+        demo2.innerHTML = document.getElementById("demo1").innerHTML;
+        function Marquee() {
+            if (demo.scrollLeft - demo2.offsetWidth >= 0) {
+                demo.scrollLeft -= demo1.offsetWidth;
+            }
+            else {
+                demo.scrollLeft++;
+            }
+        }
+        var myvar = setInterval(Marquee, 30);
+        demo.onmouseout = function () {
+            myvar = setInterval(Marquee, 30);
+        }
+        demo.onmouseover = function () {
+            clearInterval(myvar);
+        }
+    </script>
+
+    <script type="text/javascript">
+        jQuery(".indexMenuDiv").slide({ type: "menu", titCell: "dd", targetCell: "ul", delayTime: 0, defaultPlay: false, returnDefault: true });
+    </script>
+</body>
+</html>
+
+<script language="javascript">
+    window.onload = function () {
+            LoadOAInfo();
+            window.setInterval(LoadOAInfo, 1000 * 5 * 60);
+    }
+    function LoadOAInfo() {
+        $.ajax({
+            type: 'get',
+            url: '/OA/OAInfo',
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#OAInfo').html('');
+                    $('#OAInfo').html(ar.Msg);
+                }
+                else {
+                    $('#OAInfo').html('');
+                }
+            },
+            error: function (err, ioArgs) {
+                $('#OAInfo').html('');
+            }
+        });
+    }
+
+    function msgShow1() {
+        layer.open({
+            type: 2,
+            title: '预案信息',
+            area: ['950px', '360px'],
+            offset: ['10px', '200px'],
+            fix: true, //固定
+            maxmin: true,
+            content: '/BaseCommon/YJXYCS'
+        });
+    }
+</script>

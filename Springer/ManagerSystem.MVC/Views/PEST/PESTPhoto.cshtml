@@ -1,0 +1,97 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+}
+@section Header{
+    <script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.8.2.min.js")"></script>
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'center'" title="" class="LayoutCenterBG">
+        <div class="divTable" id="divTable">
+            @Html.Raw(@ViewBag.PESTPhoto)
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function ShowValues(ID, TITLE, EXPLAIN, FILENAME) {
+        $('#PEST_PHOTOID').val(ID);
+        $('#PHOTOTITLE').val(TITLE);
+        $('#PHOTOEXPLAIN').val(EXPLAIN);
+        $('#PHOTOFILENAME').val(FILENAME);
+        document.getElementById('btnPhotoMdy').style.display = "";
+        document.getElementById('btnPhotoDel').style.display = "";
+    }
+
+    function PESTPhotoUpload(Method) {
+        var formData = new FormData($("#uploadForm")[0]);
+        formData.append("PEST_PHOTOID", $('#PEST_PHOTOID').val());
+        formData.append("PHOTOTITLE", $('#PHOTOTITLE').val());
+        formData.append("PHOTOEXPLAIN", $('#PHOTOEXPLAIN').val());
+        formData.append("PHOTOTYPE", $('#PHOTOTYPE').val());
+        formData.append("PRID", $('#PRID').val());
+        formData.append("Method", Method);
+        $.ajax({
+            type: "post",
+            url: '/PEST/PESTPhotoUpload',
+            data: formData,
+            dataType: "json",
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (data) {
+                if (data.Success) {
+                    layer.msg(data.Msg, { icon: 6 });
+                    window.location.reload();
+                }
+                else {
+                    layer.msg(data.Msg, { icon: 5 });
+                }
+            },
+            error: function (data) {
+                layer.msg("上传失败", { icon: 5 });
+            }
+        });
+    }
+
+    function PESTPhotoManager(Method) {
+        var bln = false;
+        if (Method == 'Del') {
+            if (confirm('确实要删除该照片吗?')) {
+                bln = true;
+            }
+        }
+        else {
+            bln = true;
+        }
+        if (bln == true) {
+            $.ajax({
+                type: "Post",
+                url: "/PEST/PESTPhotoManager",
+                data: {
+                    PEST_PHOTOID: $('#PEST_PHOTOID').val(),
+                    PHOTOTITLE: $('#PHOTOTITLE').val(),
+                    PHOTOEXPLAIN: $('#PHOTOEXPLAIN').val(),
+                    PHOTOFILENAME: $('#PHOTOFILENAME').val(),
+                    PHOTOTYPE: $('#PHOTOTYPE').val(),
+                    PRID: $('#PRID').val(),
+                    Method: Method
+                },
+                success: function (data) {
+                    var ar = eval('(' + data + ')');
+                    if (ar.Success) {
+                        layer.msg(data.Msg, { icon: 6 });
+                        window.location.reload();
+                    }
+                    else {
+                        layer.msg(ar.Msg, { icon: 5 });
+                    }
+                },
+                error: function (err, ioArgs) {
+                    layer.msg('系统异常，请重试!');
+                }
+            });
+        }
+    }
+</script>

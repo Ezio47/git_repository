@@ -1,0 +1,282 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        财产名称： <input id="ROPERTYNAME" type="text" value="" />
+                        <input type="button" value="查询" onclick="query()" class="btnSearchCss" />
+                        <input type="button" value="添加" onclick="Manager('Add','','')" class="btnAddCss" />
+                    </div>
+                </div>
+            </div>
+
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <input id="hidFIREINFOID" type="hidden" value="@ViewBag.FIREINFOID" />
+                <div class="divTable" id="divTable">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="divMan" id="tableAdd" style="display:none;margin-left:5px;margin-top:8px">
+    <input id="HidID" name="HidID" type="hidden" value="" />
+    <table cellpadding="0" cellspacing="0">
+        <tr>
+            <td style="width:100px;">财产名称: </td>
+            <td><input id="tbxPROPERTYNAME" type="text" value="" style="width:99%;" /></td>
+            <td style="width:100px;">财产单位: </td>
+            <td><input id="tbxPROPERTYUNIT" type="text" value="" style="width:99%;" /> </td>
+        </tr>
+        <tr>
+            <td>财产数量:</td>
+            <td><input id="tbxPROPERTYCOUNT" type="text" value="" style="width:99%;" /></td>
+            <td>购入价:</td>
+            <td><input id="tbxPROPERTYPRICE" type="text" value="" style="width:99%;" /></td>
+        </tr>
+        <tr>
+            <td>年平均折旧率:</td>
+            <td>
+                <input id="tbxPRECIATIONRATE" type="text" value="" style="width:85%;" />
+                <span style="color: gray;">%</span>
+            </td>
+            <td>已使用年限:</td>
+            <td><input id="tbxHAVEUSEYEAR" type="text" value="" style="width:85%;" /></td>
+        </tr>
+        <tr>
+            <td>备注:</td>
+            <td colspan="3"><input id="tbxMARK" type="text" value="" style="width:99%;" /></td>
+        </tr>
+    </table>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        query();
+    });
+
+    //查询
+    function query() {
+        $.ajax({
+            url: '/DamageAssess/GetRESIDENTPROPERTYList',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: { FIREINFOID: $("#hidFIREINFOID").val(), ROPERTYNAME: $("#ROPERTYNAME").val() },
+            dataType: 'json',
+            success: function (data) {
+                if (data.Success) {
+                    $('#divTable').html('');
+                    $('#divTable').html(data.Msg);
+                }
+                else {
+                    $('#divTable').html('');
+                }
+            },
+            error: function (error) {
+                layer.msg('查询异常!', { icon: 5 });
+            }
+        });
+    }
+
+    //选中改变颜色
+    function setColor(obj) {
+        $(obj).css("background-color", "#FFDAB9");
+        $("tr").not($(obj)).css("background-color", "");
+    }
+
+    //数据增、删、改、查看
+    function Manager(Method, ID) {
+        if (Method == 'Del') {
+            layer.confirm('确实要删除吗?', { icon: 3, title: '提示' }, function (index) {
+                $.ajax({
+                    type: "post",
+                    url: "/DamageAssess/RESIDENTPROPERTYManager",
+                    data: { PROPERTYID: ID, Method: Method },
+                    dataType: "json",
+                    success: function (re) {
+                        if (re.Success) {
+                            layer.msg(re.Msg, { icon: 6 });
+                            query();
+                        }
+                        else {
+                            layer.msg(re.Msg, { icon: 5 });
+                        }
+                    },
+                    error: function () {
+                        layer.msg('系统异常!', { icon: 5 });
+                    }
+                });
+            });
+        }
+        else if (Method == 'See') {
+            layer.open({
+                type: 2,
+                title: '查看居民财产损失',
+                area: ['70%', '70%'],
+                fix: true,
+                maxmin: true,
+                content: '/DamageAssess/RESIDENTPROPERTYDataSee?ROPERTYID=' + ID,
+            })
+        }
+        else {
+            if (Method == 'Add') {
+                $("#HidID").val('');
+                $("#tbxPROPERTYNAME").val('');
+                $("#tbxPROPERTYUNIT").val('');
+                $("#tbxPROPERTYCOUNT").val('');
+                $("#tbxPROPERTYPRICE").val('');
+                $("#tbxPRECIATIONRATE").val('');
+                $("#tbxHAVEUSEYEAR").val('');
+                $("#tbxMARK").val('');
+            }
+            if (Method == 'Mdy') {
+                $.ajax({
+                    type: "post",
+                    url: "/DamageAssess/GetRESIDENTPROPERTYJson",
+                    data: { ROPERTYID: ID, },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.RESIDENTPROPERTYID != '') {
+                            $('#HidID').val(data.RESIDENTPROPERTYID);
+                            $("#tbxPROPERTYNAME").val(data.RESIDENTPROPERTYNAME);
+                            $("#tbxPROPERTYUNIT").val(data.RESIDENTPROPERTYUNIT);
+                            $("#tbxPROPERTYCOUNT").val(data.RESIDENTPROPERTYCOUNT);
+                            $("#tbxPROPERTYPRICE").val(data.RESIDENTPROPERTYPRICE);
+                            $("#tbxPRECIATIONRATE").val(data.YEARAVGDEPRECIATIONRATE);
+                            $("#tbxHAVEUSEYEAR").val(data.HAVEUSEYEAR);
+                            $("#tbxMARK").val(data.MARK);
+                        }
+                    },
+                    error: function () {
+                        layer.msg('系统异常!', { icon: 5 });
+                    }
+                });
+            }
+            var btnInfo = ['保存', '取消'];
+            var str = "添加居民财产损失";
+            if (Method == "Mdy") {
+                str = "修改居民财产损失";
+            }
+            layer.open({
+                type: 1,
+                title: str,
+                area: ['70%', '72%'],
+                btn: btnInfo,
+                shade: 0,
+                maxmin: true,
+                content: $('#tableAdd'),
+                yes: function (index, layero) {
+                    var HID = $('#HidID').val();
+                    if (HID != "") {
+                        ID = HID;
+                        Method = 'Mdy';
+                    }
+                    var propertName = $("#tbxPROPERTYNAME").val();
+                    if ($.trim(propertName) == "") {
+                        layer.msg('请输入财产名称!', { icon: 5 });
+                        $("#tbxPROPERTYNAME").focus();
+                        return;
+                    }
+                    var propertUnit = $("#tbxPROPERTYUNIT").val();
+                    if ($.trim(propertUnit) == "") {
+                        layer.msg('请输入财产单位!', { icon: 5 });
+                        $("#tbxPROPERTYUNIT").focus();
+                        return;
+                    }
+                    var propertCount = $("#tbxPROPERTYCOUNT").val();
+                    if ($.trim(propertCount) == "") {
+                        layer.msg('请输入财产数量!', { icon: 5 });
+                        $("#tbxPROPERTYCOUNT").focus();
+                        return;
+                    }
+                    else {
+                        if (CheckNUM2(propertCount) == false) {
+                            layer.msg('财产数量请输入数字,且最多保留2位有效数字!', { icon: 5 });
+                            $('#tbxPROPERTYCOUNT').focus();
+                            return;
+                        }
+                    }
+                    var propertPrice = $("#tbxPROPERTYPRICE").val();
+                    if ($.trim(propertPrice) == "") {
+                        layer.msg('请输入购入价!', { icon: 5 });
+                        $("#tbxPROPERTYPRICE").focus();
+                        return;
+                    }
+                    else {
+                        if (CheckNUM2(propertPrice) == false) {
+                            layer.msg('购入价请输入数字,且最多保留2位有效数字!', { icon: 5 });
+                            $('#tbxPROPERTYPRICE').focus();
+                            return;
+                        }
+                    }
+                    var preciationRate = $("#tbxPRECIATIONRATE").val();
+                    if ($.trim(preciationRate) == "") {
+                        layer.msg('请输入年平均折旧率!', { icon: 5 });
+                        $("#tbxPRECIATIONRATE").focus();
+                        return;
+                    }
+                    else {
+                        if (CheckNUM2(preciationRate) == false) {
+                            layer.msg('年平均折旧率请输入数字,且最多保留2位有效数字!', { icon: 5 });
+                            $('#tbxPRECIATIONRATE').focus();
+                            return;
+                        }
+                    }
+                    var haveuseYear = $("#tbxHAVEUSEYEAR").val();
+                    if ($.trim(haveuseYear) == "") {
+                        layer.msg('请输入已使用年限!', { icon: 5 });
+                        $("#tbxHAVEUSEYEAR").focus();
+                        return;
+                    }
+                    else {
+                        if (CheckINT(haveuseYear) == false) {
+                            layer.msg('已使用年限请输入正整数!', { icon: 5 });
+                            $('#tbxHAVEUSEYEAR').focus();
+                            return;
+                        }
+                    }
+                    $.ajax({
+                        type: "post",
+                        url: "/DamageAssess/RESIDENTPROPERTYManager",
+                        data: {
+                            PROPERTYID: ID,
+                            FIREINFOID: $('#hidFIREINFOID').val(),
+                            ROPERTYNAME: propertName,
+                            PROPERTYUNIT: propertUnit,
+                            PROPERTYCOUNT: propertCount,
+                            ROPERTYPRICE: propertPrice,
+                            PRECIATIONRATE: preciationRate,
+                            HAVEUSEYEAR: haveuseYear,
+                            MARK: $('#tbxMARK').val(),
+                            Method: Method
+                        },
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.Success) {
+                                $('#HidID').val(data.Url);
+                                layer.confirm(data.Msg + ' 请返回?', { icon: 3, title: '提示' }, function (index2) {
+                                    layer.close(index2);
+                                    layer.close(index);
+                                });
+                                query();
+                            }
+                            else {
+                                layer.msg(data.Msg, { icon: 5 });
+                            }
+                        },
+                        error: function () {
+                            layer.msg('系统异常!', { icon: 5 });
+                        }
+                    });
+                },
+                cancel: function (index) {
+                    layer.close(index);
+                }
+            })
+        }
+    }
+</script>

@@ -1,0 +1,38 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+}
+
+<div class="easyui-layout" data-options="fit:true">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+
+    <div data-options="region:'center'" title="" style=" border: none; overflow:hidden;">
+        <div class="easyui-layout" data-options="fit:true">
+            <div data-options="region:'south'" title="" style=" height:40px; overflow:hidden;">
+                <div class="divOP">
+                    <input type="button" id="firelevelshow" value="查看火险等级表格" onclick="PopFireLevel()" />
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; overflow:hidden;">
+                <iframe id="mapframe" src="@Url.Action("FireLeverIndex","MainDefault", new { level="" })" allowtransparency="true" frameborder="0" style="width:100%;height:100%"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    //火险等级查看
+    function PopFireLevel() {
+        layer.open({
+            type: 2,
+            title: '火险等级查看',
+            area: ['750px', '500px'],
+            fix: false, //不固定
+            maxmin: true,
+            content: '@Url.Action("PopFireLevelIndex", "BaseCommon")'
+        });
+    }
+
+</script>

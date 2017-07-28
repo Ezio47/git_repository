@@ -1,0 +1,160 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutIndexNoMenu.cshtml";
+}
+<script src="~/Scripts/Chart/echarts.js"></script>
+<script src="~/Scripts/Chart/DataCenterChart/ResourseChart.js"></script>
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+    <div data-options="region:'center'" title="" style=" border: none;">
+
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home">
+                        <div style="float:left;">
+                            单位:<select id="ORGNO">
+                                @Html.Raw(@ViewBag.vdOrg)
+                            </select>
+                            类型:<select id="type" onchange="TypeChange()">
+                                <option value="1">资源类型</option>
+                                <option value="2">林龄类别</option>
+                                <option value="3">起源类型</option>
+                                <option value="4">可燃类型</option>
+                                <option value="5">林木类型</option>
+                            </select>
+                            查询选项:<select id="Op">
+                                <option value="1">面积</option>
+                                <option value="2">个数</option>
+                            </select>
+                        </div>
+                            <div id="resourcetype" style="float:left;display:none;">
+                                @Html.Raw(@ViewBag.resourcetype)
+                            </div>
+                            <div id="agetype" style="float:left;display:none;">
+                                @Html.Raw(@ViewBag.agetype)
+                            </div>
+                            <div id="originttype" style="float:left;display:none;">
+                                @Html.Raw(@ViewBag.originttype)
+                            </div>
+                            <div id="burntype" style="float:left;display:none;">
+                                @Html.Raw(@ViewBag.burntype)
+                            </div>
+                            <div id="treetype" style="float:left;display:none;">
+                                @Html.Raw(@ViewBag.treetype)
+                            </div>
+                            <input type="button" value="查询" onclick="query()" class="btnSearchCss" />
+                        </div>
+                </div>
+            </div>
+
+            <div data-options="region:'center'" title="" class="LayoutCenterBG" style="width:100%;">
+                <div id="ResourseChart" style="width:100%;height:500px;float:left;">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var ResourseChart = echarts.init(document.getElementById('ResourseChart'));//个数展示
+    var Resourcetype = '';
+    var Agetype = '';
+    var Type = '';
+    var Originttype = '';
+    var Burntype = '';
+    var Treetype = '';
+    var Option = '';
+    TypeChange()
+    function TypeChange() {
+        Type = $('#type').val()
+        if (Type == "1" || Type == '') {
+            document.getElementById('resourcetype').style.display = "";
+            document.getElementById('agetype').style.display = "none";
+            document.getElementById('originttype').style.display = "none";
+            document.getElementById('burntype').style.display = "none";
+            document.getElementById('treetype').style.display = "none";
+        }
+        if (Type == "2") {
+            document.getElementById('agetype').style.display = "";
+            document.getElementById('resourcetype').style.display = "none";
+            document.getElementById('originttype').style.display = "none";
+            document.getElementById('burntype').style.display = "none";
+            document.getElementById('treetype').style.display = "none";
+        }
+        if (Type == "3") {
+            document.getElementById('originttype').style.display = "";
+            document.getElementById('resourcetype').style.display = "none";
+            document.getElementById('agetype').style.display = "none";
+            document.getElementById('burntype').style.display = "none";
+            document.getElementById('treetype').style.display = "none";
+        }
+        if (Type == "4") {
+            document.getElementById('burntype').style.display = "";
+            document.getElementById('resourcetype').style.display = "none";
+            document.getElementById('agetype').style.display = "none";
+            document.getElementById('originttype').style.display = "none";
+            document.getElementById('treetype').style.display = "none";
+        }
+        if (Type == "5") {
+            document.getElementById('treetype').style.display = "";
+            document.getElementById('resourcetype').style.display = "none";
+            document.getElementById('agetype').style.display = "none";
+            document.getElementById('burntype').style.display = "none";
+            document.getElementById('originttype').style.display = "none";
+        }
+    }
+
+
+
+    function query() {
+        var TopEchart = $('#ORGNO').val();
+        Type = $('#type').val();
+        Option = $('#Op').val();
+        if (Type == "1" || Type == '') {
+            Resourcetype = $("input:checkbox[name='chk2']:checked").map(function (index, elem) {
+                return $(elem).val();
+            }).get().join(',');
+            Agetype = '';
+            Originttype = '';
+            Burntype = '';
+            Treetype = '';
+        }
+        if (Type == "2") {
+            Agetype = $("input:checkbox[name='chk1']:checked").map(function (index, elem) {
+                return $(elem).val();
+            }).get().join(',');
+            Resourcetype = '';
+            Originttype = '';
+            Burntype = '';
+            Treetype = '';
+        }
+        if (Type == "3") {
+            Originttype = $("input:checkbox[name='chk3']:checked").map(function (index, elem) {
+                return $(elem).val();
+            }).get().join(',');
+            Resourcetype = '';
+            Agetype = '';
+            Burntype = '';
+            Treetype = '';
+        }
+        if (Type == "4") {
+            Burntype = $("input:checkbox[name='chk4']:checked").map(function (index, elem) {
+                return $(elem).val();
+            }).get().join(',');
+            Resourcetype = '';
+            Agetype = '';
+            Originttype = '';
+            Treetype = '';
+        }
+        if (Type == "5") {
+            Treetype = $("input:checkbox[name='chk5']:checked").map(function (index, elem) {
+                return $(elem).val();
+            }).get().join(',');
+            Resourcetype = '';
+            Agetype = '';
+            Originttype = '';
+            Burntype = '';
+        }
+        getResourseCount(TopEchart, Resourcetype, Agetype, Originttype, Burntype, Treetype, Option);
+    }
+</script>

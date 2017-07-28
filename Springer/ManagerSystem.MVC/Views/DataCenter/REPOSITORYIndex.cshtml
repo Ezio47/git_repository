@@ -1,0 +1,126 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+}
+
+@section Header{
+    <link rel="stylesheet" href="~/js/esri/css/esri.css" />
+    <script src="~/js/init.js"></script>
+
+    <link href="~/Content/MapStyle.css" rel="stylesheet" />
+}
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+    <div data-options="region:'west'" title="" style=" width:320px; border: none; background:#feeddd;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+            <div data-options="region:'north'" title="" style=" height:30px; border: none; overflow:hidden;">
+                <div class="DefaultDivTitle">仓库</div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; ">
+
+                <div id="tt" style="width:240px" class="easyui-tree"></div>
+
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center'" title="">
+
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP ">
+                    <div class="home ">
+                        <input type="button" value="入库" onclick="Manager('Add')">
+                        <input type="button" value="出库" onclick="Manager('ADD')">
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+                <div class="left" id="divSupplies">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+    <script type="text/javascript">
+        $(function () {
+            $('#tt').tree({
+                url: '/DataCenter/getREPOSITORYtree',
+                checked: false,
+                animate: true,
+                lines: true,
+                cache: false,
+                onClick: function (node) {
+                    var nodes = $('#tt').tree('isLeaf', node.target);
+                    if (nodes == false) {
+                        return false;
+                    }
+                    else {
+                        getSupplies(node.id);
+                    }
+                }
+            });
+        })
+
+        function getSupplies(id) {
+            $.ajax({
+                url: '/DataCenter/getSupplie',
+                data: {
+                    id: id,
+                },
+                type: 'post',
+                success: function (data) {
+                    var ar = eval('(' + data + ')');
+                    if (ar.Success) {
+                        $('#divSupplies').html(ar.Msg);
+                    }
+                    else {
+                    }
+                },
+                error: function (err, ioArgs) {
+                }
+            });
+        }
+        function Manager(Method) {
+            var nodes = $('#tt').tree('getSelected');
+            var inputs = $("input[type='text']");
+            for (var i = 0; i < inputs.length; i++) {
+                $.ajax({
+                    url: '/DataCenter/REPOSITORYManger',
+                    data: {
+                        REPID: nodes.id,
+                        DCREPSUPCOUNT: inputs[i].value,
+                        SUPID: inputs[i].id,
+                        Method: Method,
+                        returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)'
+                    },
+                    type: 'post',
+                    error: function () {
+                        layer.msg('错误:异常!', 'error');
+                    },
+                    success: function (re) {
+
+                        var ar = eval('(' + re + ')');
+                        if (ar.Success) {
+                            if (confirm(ar.Msg + '请返回！')) {
+                                window.location.assign(ar.Url);
+                            }
+                        }
+                        else {
+                            layer.msg(ar.Msg, "Error");
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+
+
+

@@ -1,0 +1,271 @@
+﻿@{
+    //ViewBag.Title =  "首页";
+    //Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+    Layout = null;
+}
+@model IEnumerable<ManagerSystem.MVC.Models.EHCurFireMode>
+<script src="~/Scripts/jquery-easyui-1.4/jquery.min.js"></script>
+<script src="/Scripts/jquery-easyui-1.4/jquery.easyui.min.js"></script>
+<script src="/Scripts/jquery-easyui-1.4/locale/easyui-lang-zh_CN.js"></script>
+<script src="/Scripts/jquery-easyui-1.4/validateHelper.js"></script>
+<script src="/Scripts/jquery-easyui-1.4/jquery.SuperSlide.2.1.1.js"></script>
+<link href="/Content/themes/easyui/easyui.css" rel="stylesheet" />
+<link href="/Content/themes/easyui/color.css" rel="stylesheet" />
+<link href="/Content/themes/easyui/icon.css" rel="stylesheet" />
+<script src="~/Scripts/skyline/3dMapTest.js"></script>
+<script src="~/Scripts/JSLINQ.js"></script>
+<script src="~/Scripts/json2.js"></script>
+<script type="text/javascript">
+    var LAYERNAME = '@ViewBag.LAYERNAME';
+    var DEFAULTCH = '@ViewBag.DEFAULTCH';
+    var LAYERCODE = '@ViewBag.LAYERCODE';
+    var YEAR = '@ViewBag.YEAR';
+    var arrayLAYERNAME = LAYERNAME.split(',');
+    var arrayLAYERCODE = LAYERCODE.split(',');
+    var dataNameCode = new Array();
+    for (var i = 0; i < arrayLAYERNAME.length; i++) {
+        dataNameCode[i] = new Array(); //将每一个子元素又定义为数组
+        dataNameCode[i] = arrayLAYERNAME[i] + ":" + arrayLAYERCODE[i];
+    }
+    var TreeData1 = @Html.Raw(@ViewBag.TreeData);
+    var arr=[];
+
+    var arrTest = YEAR.split(',');
+    var num=1;
+    for (var i = 0; i < arrTest.length; i++) {
+        var str = '{ "id": "0101150' + num + '", "text": "' + arrTest[i] + '年"}';
+        arr.push(str);
+        ++num;
+    }
+
+    //JSon转化成字符串
+    var TreeData2 = JSON.stringify(TreeData1).replace('{"id":"010115","text":"火情档案","children":[]}',
+            '{"id": "010115", "text": "火情档案", "state": "closed", "children": [' + arr + ']}');
+
+    //字符串转化成Json
+    var TreeData = eval(TreeData2);
+    $(document).ready(function () {
+        initTree();
+    });
+
+    function initTree() {
+        initCookie();
+        $('#ttckz').tree({
+            data: TreeData,
+            checkbox: true,
+            onCheck: function (node, checked) {
+                setLayerVisibility(node, checked);
+            }
+        });
+    }
+
+    //初始化sgapi
+    function CreateSGObj() {
+        var obj = document.getElementById('SGWorld');
+        if (obj == null) {
+            obj = document.createElement('object');
+            obj.name = "sgworld";
+            obj.id = "sgworld";
+            obj.classid = "CLSID:3a4f91b1-65a8-11d5-85c1-0001023952c1";
+        }
+        return obj;
+    }
+    var arrCookie=[];
+    var arrYear=[];
+    //图层节点点击控制
+    function setLayerVisibility(node, checked) {
+        var sgworld = CreateSGObj();
+        var sgworld = new CreateSGObj();
+        var ItemID = sgworld.ProjectTree.FindItem(node.text);
+        if (ItemID != 0) {
+            sgworld.ProjectTree.SetVisibility(ItemID, checked);
+        }
+        else {
+            setNameID(node.id,checked);
+        }
+        var tckz = $("#ttckz").tree("getChecked");
+        if (node.id.substring(0,7)=='0101150') {
+            for (var i = 0; i < tckz.length; i++) {
+                if (tckz[i].text.indexOf('20')!=-1) {
+                    var year=tckz[i].text.substring(0,4);
+                    arrYear.push(year)
+                }
+            }
+            var ItemID = sgworld.ProjectTree.FindItem('火情档案');
+            if (ItemID != 0) {
+                sgworld.ProjectTree.SetVisibility(ItemID, true);
+            }
+            var obj = sgworld.ProjectTree.GetLayer(ItemID);
+            obj.Filter='YEAR IN('+arrYear+')';
+            obj.Refresh();
+        }
+        arrYear=[];//清空
+        if (node.text=="火情档案") {
+            var ItemID = sgworld.ProjectTree.FindItem(node.text);
+            if (ItemID != 0) {
+                sgworld.ProjectTree.SetVisibility(ItemID, checked);
+            }
+            var obj = sgworld.ProjectTree.GetLayer(ItemID);
+            obj.Filter='1=1';
+            obj.Refresh();
+        }
+        var checkedValue=$("#ttckz").tree("getChecked");
+        for (var i = 0; i < checkedValue.length; i++) {
+            arrCookie.push(checkedValue[i].id)
+        }
+        setCookie("name",arrCookie);
+        arrCookie=[];
+    }
+
+    function setNameID(id,checked){
+        var sgworld = CreateSGObj();
+        for (var i = 0; i < dataNameCode.length; i++) {
+            var tempdata = dataNameCode[i].split(':');
+            if (tempdata[1].substring(0,id.length)==id) { //0表示名称，1表示ID
+                var ItemID = sgworld.ProjectTree.FindItem(tempdata[0]);
+                if (ItemID != 0) {
+                    sgworld.ProjectTree.SetVisibility(ItemID, checked);
+                }
+            }
+        }
+    }
+    //JS操作cookies方法!
+    //写cookies
+    function setCookie(name,value)
+    {
+        var Days = 30;
+        var exp = new Date();
+        exp.setTime(exp.getTime() + Days*24*60*60*1000);
+        document.cookie = name + "="+ escape (value) + ";expires=" + exp.toGMTString();
+    }
+    //读取cookies
+    function getCookie(name)
+    {
+        var arr,reg=new RegExp("(^| )"+name+"=([^;]*)(;|$)");
+        if(arr=document.cookie.match(reg)) return unescape(arr[2]);
+        else return null;
+    }
+    //删除cookies
+    function delCookie(name)
+    {
+        var exp = new Date();
+        exp.setTime(exp.getTime() - 1);
+        var cval=getCookie(name);
+        if(cval!=null) document.cookie= name + "="+cval+";expires="+exp.toGMTString();
+    }
+    //使用示例
+    //setCookie("name",checkedValue);
+    //alert(getCookie("name"));
+
+    //删除Cookie
+    function removeCookie() {
+        if(document.cookie != '') {
+            var arrCookie = document.cookie.split('; ');
+            var arrLength = arrCookie.length;
+            var expireDate = new Date();
+            expireDate.setDate(expireDate.getDate()-1);
+            for(var i=0; i<arrLength; i++) {
+                var str = arrCookie[i].split('=')[0];
+                document.cookie = str+ '=' + ';expires=' + expireDate.toGMTString();
+            }
+        }
+    }
+    //根据cookie里面的id值，控制图层节点状态checked
+    function initCookie(){
+        var TreeData1= @Html.Raw(@ViewBag.TreeDataChe);
+        //JSon转化成字符串
+        var TreeData2 = JSON.stringify(TreeData1).replace('{"id":"010115","text":"火情档案","children":[]}',
+            '{"id": "010115", "text": "火情档案", "state": "closed", "children": [' + arr + ']}');
+
+        //字符串转化成Json
+        TreeData = eval(TreeData2);
+        var idCookieStr=getCookie("name");
+        if (idCookieStr!=null) {
+            var idCookieArr=idCookieStr.split(',');
+            var root = TreeData[0].children;
+            for (var i = 0; i < root.length; i++) {
+                var rootArr = root[i].children;
+                for (var tt = 0; tt < idCookieArr.length; tt++) {
+                    for (var j = 0; j < rootArr.length; j++) {
+                        if (rootArr[j].id==idCookieArr[tt]) {
+                            rootArr[j].checked=true;
+                        }
+                        if (JSON.stringify(rootArr[j]).indexOf("children") != -1){
+                            var Children1 = rootArr[j].children;
+                            for (var k = 0; k < Children1.length; k++) {
+                                if (Children1[k].id==idCookieArr[tt]) {
+                                    Children1[k].checked=true;
+                                }
+                                if (JSON.stringify(Children1[k]).indexOf("children") != -1){
+                                    var Children2 = Children1[k].children;
+                                    for (var l = 0; l < Children2.length; l++) {
+                                        if (Children2[l].id==idCookieArr[tt]) {
+                                            Children2[l].checked=true;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else {
+            initTreeData();//第一次加载时，cookeie为空，执行initTreeData()初始化
+        }
+    }
+
+    //初始化三维图层
+    function initTreeData() {
+        var sgworld = CreateSGObj();
+        var root = TreeData[0].children;
+        for (var tt = 0; tt < root.length; tt++) {
+            var rootArr = root[tt].children;
+            for (var i = 0; i < rootArr.length; i++) {
+                var arrRes = JSLINQ(rootArr).Where(function (item) { return item.text == rootArr[i].text; }).ToArray();//图层第一级
+                var name = arrRes[0].text;
+                var ItemID = sgworld.ProjectTree.FindItem(name);
+                if (ItemID != 0) {
+                    var flag = sgworld.ProjectTree.GetVisibility(ItemID);
+                    rootArr[i].checked = flag;
+                }
+                rootArr[i].children = arrRes[0].children;
+                if (JSON.stringify(rootArr[i]).indexOf("children") != -1) {
+                    var Children1 = rootArr[i].children;
+                    for (var j = 0; j < Children1.length; j++) {
+                        var arrRes1 = JSLINQ(Children1).Where(function (item) { return item.text == Children1[j].text; }).ToArray();//图层第二级
+                        var name = arrRes1[0].text;
+                        var ItemID = sgworld.ProjectTree.FindItem(name);
+                        if (ItemID != 0) {
+                            var flag = sgworld.ProjectTree.GetVisibility(ItemID);
+                            Children1[j].checked = flag;
+                        }
+                        Children1[j].children = arrRes1[0].children;
+                        if (JSON.stringify(Children1[j]).indexOf("children") != -1) {
+                            var Children2 = Children1[j].children;
+                            for (var m = 0; m < Children2.length; m++) {
+                                var arrRes2 = JSLINQ(Children2).Where(function (item) { return item.text == Children2[m].text; }).ToArray();//图层第三级(目前有防火通道)
+                                var name = arrRes2[0].text;
+                                var ItemID = sgworld.ProjectTree.FindItem(name);
+                                if (ItemID != 0) {
+                                    var flag = sgworld.ProjectTree.GetVisibility(ItemID);
+                                    Children2[m].checked = flag;
+                                }
+                                Children2[m].children = arrRes2[0].children;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+</script>
+<html>
+<body id="body" style="height:100%;">
+    <div class="easyui-panel" style="border: 1px solid #03b046">
+        <ul id="ttckz" class="easyui-tree" style="font-size:14px;color:#337ab7"></ul>
+    </div>
+    <object id="SGWorld" classid="CLSID:3a4f91b1-65a8-11d5-85c1-0001023952c1" style="visibility:hidden;height:0 "></object>
+</body>
+</html>

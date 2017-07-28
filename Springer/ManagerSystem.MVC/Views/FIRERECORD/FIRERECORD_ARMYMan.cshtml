@@ -1,0 +1,163 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+}
+@model ManagerSystemModel.FIRERECORD_ARMY_Model
+
+@section Header{
+    <script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+}
+<style>
+    table tr td {
+        color: #3c7915;
+        padding-left: 10px;
+    }
+</style>
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'center'" title="" style=" border: none; ">
+        <input id="dic315Value" type="hidden" value="@ViewBag.dic315Value" />
+        <input id="dic315Count" type="hidden" value="@ViewBag.dic315Count" />
+        <div class="divTable">
+            <input id="tbxFIRERECORD_ARMY" name="tbxFIRERECORD_ARMY" type="hidden" value="@ViewBag.FIRERECORD_ARMY" style="width:95%;" />
+            <table cellpadding="0" cellspacing="0" style="text-align :left;">
+                <tr style="width:95%;">
+                    <td style="width:150px;"> 年份：</td>
+                    <td><input id="tbxREPORTYEAR" type="text" class="Wdate" value="@ViewBag.REPORTYEAR" onclick="WdatePicker({ dateFmt: 'yyyy'})" /></td>
+                    <td style="width:150px;"> 单位：</td>
+                    <td><select id="tbxBYORGNO">@Html.Raw(@ViewBag.vdOrg)</select>&nbsp;&nbsp;&nbsp;</td>
+                </tr>
+                <tr>
+                    <td colspan="4">本年新建队伍（支）</td>
+                </tr>
+                <tr style="width:95%;">
+                    <td>已建成：</td>
+                    <td><input id="tbx0" type="text" value="0" style="width: 70%;" />(支)</td>
+                    <td>正在建：</td>
+                    <td><input id="tbx1" type="text" value="0" style="width: 70%;" />(支)</td>
+                </tr>
+                <tr>
+                    <td colspan="4">本年新建基地（个）</td>
+                </tr>
+                <tr style="width:95%;">
+                    <td> 已建成：</td>
+                    <td><input id="tbx2" type="text" value="0" style="width: 70%;" />(个)</td>
+                    <td> 正在建：</td>
+                    <td><input id="tbx3" type="text" value="0" style="width: 70%;" />(个)</td>
+                </tr>
+                <tr>
+                    <td colspan="4">目前全省共有队伍数（支）</td>
+                </tr>
+                <tr style="width:95%;"> 
+                    <td> 合计 ：</td>
+                    <td><input id="tbx4" type="text" value="0" style="width: 70%;" />(支)</td>
+                    <td> 其中已有效益：</td>
+                    <td><input id="tbx5" type="text" value="0" style="width: 70%;" />(支)</td>
+                </tr>
+                <tr>
+                    <td colspan="4">全省各类基地数量（个）</td>
+                </tr>
+                <tr style="width:95%;">
+                    
+                    <td>种植基地：</td>
+                    <td><input id="tbx6" type="text" value="0" style="width: 70%;" /></td>
+                    <td>养殖基地：</td>
+                    <td><input id="tbx7" type="text" value="0" style="width: 70%;" /></td>
+                </tr>
+                <tr style="width:95%;">
+                    <td> 加工基地：</td>
+                    <td><input id="tbx8" type="text" value="0" style="width: 70%;" /></td>
+                    <td> 第三产业：</td>
+                    <td><input id="tbx9" type="text" value="0" style="width: 70%;" /></td>
+                </tr>
+                <tr style="width:95%;">
+                    <td> 其他 ：</td>
+                    <td><input id="tbx10" type="text" value="0" style="width: 70%;" /></td>
+                    <td colspan="2"> </td>
+
+                </tr>
+                <tr>
+                    <td colspan="4">全省各类基地产值（万元）</td>
+                </tr>
+                <tr style="width:95%;">
+                    <td>种植基地：</td>
+                    <td><input id="tbx11" type="text" value="0" style="width: 70%;" /></td>
+                    <td>养殖基地：</td>
+                    <td><input id="tbx12" type="text" value="0" style="width: 70%;" /></td>
+                </tr>
+                <tr style="width:95%;">
+                    <td> 加工基地：</td>
+                    <td><input id="tbx13" type="text" value="0" style="width: 70%;" /></td>
+                    <td> 第三产业：</td>
+                    <td><input id="tbx14" type="text" value="0" style="width: 70%;" /></td>
+                </tr>
+                <tr style="width:95%;">
+                    <td> 其他 ：</td>
+                    <td><input id="tbx15" type="text" value="0" style="width: 70%;" /></td>
+                    <td colspan="2"> </td>
+                </tr>
+            </table>
+        </div>
+        <p style="text-align:center;margin-bottom:10px;">
+            <input type="button" class="btnSaveCss" value="保存" onclick="Manager()" id="Save" />
+        </p>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function Manager() {
+        var dic315Value = $('#dic315Value').val().split(',');
+        var dic315Count = $('#dic315Count').val();
+        if (dic315Count != "") {
+            dic315Count = parseInt(dic315Count);
+        }
+        var strREPORTCODE = "";
+        var strREPORTVALUE = "";
+        for (var x = 0; x < dic315Count; x++) {
+            var temp = x.toString();
+            var s = $('#tbx' + temp + '').val();
+            if ($.trim(s) != "") {
+                if (!CheckNUM2(s)) {
+                    layer.msg('请输入整数!', { icon: 5 });
+                    $('#tbx' + temp + '').focus();
+                    return;
+                }
+                else {
+                    if (s == "0" || s == "") {
+                        continue;
+                    }
+                    else {
+                        strREPORTCODE = strREPORTCODE + dic315Value[x] + ",";
+                        strREPORTVALUE = strREPORTVALUE + $('#tbx' + temp + '').val() + ",";
+                    }
+                }
+            }
+        }
+        $.ajax({
+            url: '/FIRERECORD/FIRERECORD_ARMYManager',
+            type: 'post',
+            cache: false,
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: {
+                REPORTYEAR: $("#tbxREPORTYEAR").val(),
+                BYORGNO: $("#tbxBYORGNO").val(),
+                REPORTCODE: strREPORTCODE,
+                REPORTVALUE: strREPORTVALUE,
+                Method: '@ViewBag.Method',
+            },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    if (confirm(ar.Msg + ' 请返回?')) {
+                        var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                        parent.layer.close(index);
+                    }
+                }
+                else {
+                    layer.msg(ar.Msg, { icon: 5 });
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('系统异常!', { icon: 5 });
+            }
+        });
+    }
+</script>

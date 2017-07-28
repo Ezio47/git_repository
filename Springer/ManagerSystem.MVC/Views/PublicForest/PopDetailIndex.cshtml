@@ -1,0 +1,172 @@
+﻿@using ManagerSystemModel;
+@{
+    ViewBag.Title = "PopDetailIndex";
+    Layout = null;
+}
+@model  ManagerSystemModel.SDEModel.SDE_GONGYILIN_Model
+<style type="text/css">
+    body, table, th, tr, td {
+        margin: 0;
+        padding: 0;
+    }
+
+    .xbsx {
+        width: 96%;
+        font-family: 微软雅黑;
+        background-color: #4d951e;
+        padding: 1% 2%;
+        color: #0c2501;
+        margin: 1% auto;
+    }
+
+        .xbsx h1 {
+            text-align: left;
+            margin-left: 2%;
+            font-size: 15px;
+            color: #fff;
+        }
+
+        .xbsx table {
+            width: 100%;
+            height: auto;
+            border-collapse: collapse;
+            border: 1px solid #b8d3b3;
+            background-color: #fff;
+        }
+
+            .xbsx table tr {
+                border: 1px solid #b8d3b3;
+                text-align: left;
+                height: 28px;
+            }
+
+                .xbsx table tr th {
+                    border: 1px solid #b8d3b3;
+                    padding-left: 2%;
+                    font-size: 13px;
+                }
+
+                .xbsx table tr td {
+                    border: 1px solid #b8d3b3;
+                    padding-left: 2%;
+                    font-size: 12px;
+                }
+
+                .xbsx table tr:hover {
+                    background-color: #ffe5cc;
+                }
+</style>
+
+
+<div class="xbsx">
+    @*<h1>小班属性</h1>*@
+    <table cellpadding="0" cellspacing="0">
+        @*<thead>
+            <tr class="zd">
+                <th>字段名</th>
+                <th>值</th>
+            </tr>
+        </thead>*@
+        <tbody>
+            @if (Model != null)
+            {
+                @*<tr>
+                    <td>OBJECTID</td>
+                    <td>@Model.OBJECTID</td>
+                </tr>*@
+                <tr>
+                    <td>地类</td>
+                    <td>@Model.EARTHCLASS</td>
+                </tr>
+                <tr>
+                    <td>亚林种</td>
+                    <td>@Model.ASIAFOREST</td>
+                </tr>
+                <tr>
+                    <td>优势树种</td>
+                    <td>@Model.DOMINANTTREE</td>
+                </tr>
+                <tr>
+                    <td>工程区</td>
+                    <td>@Model.PROJECTAREA</td>
+                </tr>
+                <tr>
+                    <td>生态区</td>
+                    <td>@Model.ECOLOGICALAREA</td>
+                </tr>
+                <tr>
+                    <td>事权等级</td>
+                    <td>@Model.PROJECT</td>
+                </tr>
+                <tr>
+                    <td>管理级别</td>
+                    <td>@Model.MANAGEMENTLEVEL</td>
+                </tr>
+                <tr>
+                    <td>保护级别</td>
+                    <td>@Model.PROJECT</td>
+                </tr>
+                <tr>
+                    <td>小班面积</td>
+                    <td>@Model.SMALLFACE</td>
+                </tr>
+                <tr>
+                    <td>扣除面积</td>
+                    <td>@Model.DEDUCTFACE</td>
+                </tr>
+                <tr>
+                    <td>补偿面积</td>
+                    <td>@Model.COMPENSATIONFACE</td>
+                </tr>
+                <tr>
+                    <td>起源</td>
+                    <td>@Model.SOURCE</td>
+                </tr>
+                <tr>
+                    <td>郁闭度</td>
+                    <td>@Model.CANOPY</td>
+                </tr>
+                <tr>
+                    <td>年龄</td>
+                    <td>@Model.AGE</td>
+                </tr>
+                <tr>
+                    <td>龄级</td>
+                    <td>@Model.AGELEVEL</td>
+                </tr>
+                <tr>
+                    <td>龄组</td>
+                    <td>@Model.AGEGROUP</td>
+                </tr>
+                <tr>
+                    <td>流域</td>
+                    <td>@Model.RIVER</td>
+                </tr>
+                <tr>
+                    <td>地貌</td>
+                    <td>@Model.EARTH</td>
+                </tr>
+
+                <tr>
+                    <td>坡向</td>
+                    <td>@Model.SLOPEXIANG</td>
+                </tr>
+                <tr>
+                    <td>坡度</td>
+                    <td>@Model.SLOPEDU</td>
+                </tr>
+                <tr>
+                    <td>坡位</td>
+                    <td>@Model.SLOPEPOSITION</td>
+                </tr>
+            }
+            else
+            {
+                <tr>
+                    <td colspan="2"><em>无信息</em></td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+</div>

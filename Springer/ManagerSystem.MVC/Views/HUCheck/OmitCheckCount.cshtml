@@ -1,0 +1,71 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+}
+@section Header{
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        单位：<select id="tbxBYORGNO">
+                            @Html.Raw(@ViewBag.vdOrg)
+                        </select>
+                        开始时间：<input class="easyui-datebox" id="tbxTIMEBegin" type="text" style="width:90px;height:28px;" value="@ViewBag.TIMEBegin" />
+                        结束时间<input class="easyui-datebox" id="tbxTIMEEnd" type="text" value="@ViewBag.TIMEEnd" style="width:90px;height:28px;" />
+
+                        <input type="button" value="查询" onclick="query()" class="btnSearchCss" />
+                        <input type="button" value="导出" onclick="exportExcel()" class="btnOutputCss" />
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; ">
+
+                <div class="divTable" id="tableContainer">
+                    @Html.Raw(@ViewBag.pageList)
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script type="text/javascript">
+
+    function exportExcel() {
+        var url = '/HUCheck/OmitCheckCountExportExcel?TIMEBegin=' + $('#tbxTIMEBegin').datebox('getValue') + '&TIMEEnd=' + $('#tbxTIMEEnd').datebox('getValue') + '&BYORGNO=' + document.getElementById("tbxBYORGNO").value ;
+        window.location = url;
+
+    }
+    function query() {
+        $.ajax({
+            url: '/HUCheck/getOmitCheckCountJson',
+            cache: false,
+            data: {
+                BYORGNO: document.getElementById("tbxBYORGNO").value,
+                TIMEBegin: $('#tbxTIMEBegin').datebox('getValue'),
+                TIMEEnd: $('#tbxTIMEEnd').datebox('getValue')
+            },
+            type: 'post',
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#tableContainer').html(ar.Msg);
+                }
+                else {
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('系统错误!', { icon: 5 });
+            }
+        });
+    }
+</script>

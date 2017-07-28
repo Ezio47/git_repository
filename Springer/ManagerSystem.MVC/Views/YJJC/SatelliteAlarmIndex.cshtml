@@ -1,0 +1,408 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+}
+<script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="" class="LayoutCenterBG">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+
+                    <div class="homeUL">
+                        <input id="tbxPERALARMID" type="hidden" value="" style="width:90%;" />
+                        <input id="tbxMANUSERID" type="hidden" value="" style="width:90%;" />
+                        <input type="button" class="btnSaveCss" value="保存" onclick="Save()">
+                        @*<input type="button" value="返回" onclick="javascript: history.go(-1);">*@
+                    </div>
+
+                </div>
+            </div>
+
+            <div data-options="region:'center'" title="" class="LayoutCenterBG">
+                <div class="divMan">
+                    <table cellpadding="0" cellspacing="0">
+
+                        <tr class="row1">
+                            <td style="width:80px;"><span style="color:red">*</span>卫星编号：</td>
+                            <td style="width:500px;"><input id="tbxWXBH" type="text" value="" style="width:90%;" /></td>
+                            <td style="width:80px;"><span style="color:red">*</span>热点编号：</td>
+                            <td><input id="tbxRDBH" type="text" value="" style="width:90%;" /></td>
+                        </tr>
+                        <tr>
+                            <td>区域：</td>
+                            <td><select id="tbxBYORGNO" style="width:90%;"> @Html.Raw(@ViewBag.vdOrg)</select></td>
+                            <td>像素：</td>
+                            <td><input id="tbxXS" type="text" value="" style="width:90%;" /></td>
+                        </tr>
+                        <tr class="row1">
+                            <td colspan="4">
+                                <input type="radio" value="1" name="typeRadio" id="dfmid" checked /><label for="dfmid">度分秒</label><input type="radio" value="0" name="typeRadio" id="sjzid" /><label for="sjzid">十进制</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span style="color:red">*</span>经度： </td>
+                            <td>
+                                <input id="tbxJD" type="text" value="" style="width:90%;display:none" " />
+                                @*<input id="jd" type="text" value="0" style="width:100px;display:none" onblur="validate('jd','2')" />*@
+                                <input id="jd_d" type="text" value="" style="width:60px" /><font id="fontDiv1">度</font>
+                                <input id="jd_f" type="text" value="" style="width:60px" /><font id="fontDiv2">分</font>
+                                <input id="jd_m" type="text" value="" style="width:60px" /><font id="fontDiv6">秒</font>
+                            </td>
+                            <td><span style="color:red">*</span>纬度： </td>
+                            <td>
+                                <input id="tbxWD" type="text" value="" style="width:70%;display:none" />
+                                <input id="location" type="button" class="btnMapLoaclCss" style="display:none" value=" 地图定位" onclick="setPoint()" />
+                                @*<input id="wd" type="text" value="0" style="width:100px;display:none" onblur="validate('wd','2')" />*@
+                                <input id="wd_d" type="text" value="" style="width:60px" /><font id="fontDiv3">度</font>
+                                <input id="wd_f" type="text" value="" style="width:60px" /><font id="fontDiv4">分</font>
+                                <input id="wd_m" type="text" value="" style="width:60px" /><font id="fontDiv5">秒</font>
+                            </td>
+                        </tr>
+                        <tr class="row1"></tr>
+                        <tr class="row1">
+                            <td>火情发生时间：</td>
+                            <td colspan="3">
+                                <input class="Wdate" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss', maxDate: '%y-%M-%d %H:%m:%s' })" id="tbxALARMTIME" type="text" value="" style="width:16%;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>备注： </td>
+                            <td colspan="3">
+                                <textarea id="tbxMARK" style="width:95%;height:50px; margin-top:10px; OVERFLOW:visible"></textarea>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    @*$(function () {
+        $('#tbxBYORGNO').combobox({
+            url: '/YJJC/PERALARMCheckOrgJson',
+            required: true,
+            editable: false,
+            multiple: false,
+            multiline: false,
+            valueField: 'id',
+            textField: 'text'
+        });
+        //document.getElementById("tbxALARMTIME").value = '@ViewBag.AlarmTime';
+        //document.getElementById("tbxALARMTIME").disabled = true;
+    });*@
+    //地图定位
+    function setPoint() {
+        layer.open({
+            type: 2,
+            title: '地图位置设置',
+            btn: ['保存', '关闭'],
+            area: ['800px', '530px'],
+            fix: false, //不固定
+            maxmin: true,
+            content: '/MapCommon/GetMapPontIndex',
+            yes: function (index, layero) { //或者使用btn1
+                //按钮【按钮一】的回调
+                var ptxt = layer.getChildFrame("p", index);
+                var arr = ptxt.html().split(',');
+                var jd = parseFloat(arr[0]).toFixed(6);
+                var wd = parseFloat(arr[1]).toFixed(6);
+                $('#tbxJD').val(jd);
+                $('#tbxWD').val(wd);
+                layer.close(index);
+            }, cancel: function (index) {
+                layer.close(index);
+            }
+        });
+    }
+
+    function Save() {
+        var str = $('#tbxBYORGNO').val();//orgno
+        var reg = new RegExp("-", "g");
+        var text = $("#tbxBYORGNO").find("option:selected").text().replace(reg, '');//orgname
+
+        var t1 = $('#tbxWXBH').val();
+        var t2 = $('#tbxRDBH').val();
+        var t3 = $('#tbxXS').val();
+
+        if ($.trim(t1) == "") {
+            layer.msg('卫星编号不可为空！', { icon: 5 });
+            $('#tbxWXBH').focus();
+            return;
+        }
+        if ($.trim(t2) == "") {
+            layer.msg('热点编号不可为空！', { icon: 5 });
+            $('#tbxRDBH').focus();
+            return;
+        }
+        if ($.trim(t3) != "") {
+            var reg = new RegExp("^[0-9]*[1-9][0-9]*$");
+            if (!reg.test(t3)) {
+                layer.msg('像素请输入数字！', { icon: 5 });
+                $('#tbxXS').focus();
+                return;
+            }
+        }
+
+        if ($("input[name=typeRadio]:checked").val() == 1) {//度分秒
+            var jd_d = $("#jd_d").val();
+            var jd_f = $("#jd_f").val();
+            var jd_m = $("#jd_m").val();
+
+
+            if ($.trim(jd_d) == "") {
+                layer.msg('经度度数不可为空！', { icon: 5 });
+                $('#jd_d').focus();
+                return;
+            } else {
+                var reg = new RegExp("^[0-9]*$");//数字
+                if (!reg.test(jd_d)) {
+                    layer.msg('输入不正确，请输入数字!！', { icon: 5 });
+                    return;
+                }
+            }
+
+            if ($.trim(jd_f) == "") {
+                layer.msg('经度分数不可为空！', { icon: 5 });
+                $('#jd_f').focus();
+                return;
+            } else {
+                var reg = new RegExp("^[0-9]*$");//数字
+                if (!reg.test(jd_f)) {
+                    layer.msg('输入不正确，请输入数字!！', { icon: 5 });
+                    return;
+                }
+            }
+
+            if ($.trim(jd_m) == "") {
+                layer.msg('经度秒数不可为空！', { icon: 5 });
+                $('#jd_m').focus();
+                return;
+            } else {
+                var reg = new RegExp("^(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*))$");//小数
+                if (!reg.test(jd_m)) {
+                    layer.msg('输入不正确，请输入正确小数!！', { icon: 5 });
+                    return;
+                }
+            }
+
+            var wd_d = $("#wd_d").val();
+            var wd_f = $("#wd_f").val();
+            var wd_m = $("#wd_m").val();
+
+            if ($.trim(wd_d) == "") {
+                layer.msg('纬度度数不可为空！', { icon: 5 });
+                $('#wd_d').focus();
+                return;
+            } else {
+                var reg = new RegExp("^[0-9]*$");//数字
+                if (!reg.test(wd_d)) {
+                    layer.msg('输入不正确，请输入数字!！', { icon: 5 });
+                    return;
+                }
+            }
+
+            if ($.trim(wd_f) == "") {
+                layer.msg('纬度分数不可为空！', { icon: 5 });
+                $('#wd_f').focus();
+                return;
+            } else {
+                var reg = new RegExp("^[0-9]*$");//数字
+                if (!reg.test(wd_f)) {
+                    layer.msg('输入不正确，请输入数字!！', { icon: 5 });
+                    return;
+                }
+            }
+
+            if ($.trim(wd_m) == "") {
+                layer.msg('纬度秒数不可为空！', { icon: 5 });
+                $('#wd_m').focus();
+                return;
+            } else {
+                var reg = new RegExp("^(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*))$");//小数
+                if (!reg.test(wd_m)) {
+                    layer.msg('输入不正确，请输入正确小数!！', { icon: 5 });
+                    return;
+                }
+            }
+
+        } else {//十进制
+            var t4 = $('#tbxJD').val();
+            var t5 = $('#tbxWD').val();
+
+            if ($.trim(t4) == "") {
+                layer.msg('经度不可为空！', { icon: 5 });
+                $('#tbxJD').focus();
+                return;
+            } else {
+                reg = /^-?\d+\.\d{1,6}$/;
+                if (!reg.test(t4)) {
+                    layer.msg('经度格式不正确！', { icon: 5 });
+                    $('#tbxJD').focus();
+                    return;
+                }
+            }
+            if ($.trim(t5) == "") {
+                layer.msg('纬度不可为空！', { icon: 5 });
+                $('#tbxWD').focus();
+                return;
+            } else {
+                reg = /^-?\d+\.\d{1,6}$/;
+                if (!reg.test(t5)) {
+                    layer.msg('纬度格式不正确！', { icon: 5 });
+                    $('#tbxWD').focus();
+                    return;
+                }
+            }
+        }
+
+        if (text == "") {
+            layer.msg('请选择区域！', { icon: 5 });
+            $('#tbxBYORGNO').focus();
+            return;
+        }
+
+
+        //var str = $('#tbxBYORGNO').combobox('getValue');
+        var JD_DFM = $("#jd_d").val() + '°' + $("#jd_f").val() + '′' + $("#jd_m").val() + '″';
+        var WD_DFM = $("#wd_d").val() + '°' + $("#wd_f").val() + '′' + $("#wd_m").val() + '″';
+
+        $.ajax({
+            url: '/YJJC/SatelliteAlarmSave',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: {
+
+                WXBH: document.getElementById("tbxWXBH").value,
+                RDBH: document.getElementById("tbxRDBH").value,
+                XS: document.getElementById("tbxXS").value,
+                BYORGNO: str,
+                //BYORGNAME: $('#tbxBYORGNO').combobox('getText'), //地名
+                BYORGNAME: text,
+                ALARMTIME: document.getElementById("tbxALARMTIME").value,
+                //MANRESULT: document.getElementById("tbxMANRESULT").value,
+                JD: document.getElementById("tbxJD").value,
+                WD: document.getElementById("tbxWD").value,
+                JD_DFM: JD_DFM,
+                WD_DFM: WD_DFM,
+                MARK: document.getElementById("tbxMARK").value,
+
+                @*ID: '@ViewBag.T_ID',
+                Method: '@ViewBag.Method',
+                returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)',*@
+            },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    //layer.msg('保存成功！', { icon: 6, time: 5000 });
+                    layer.alert("保存成功!", { icon: 6 }, function (index) {
+                        setTimeout(window.location.assign(ar.Url), 10000);
+                    });
+                }
+                else {
+                    layer.msg(ar.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("保存异常！");
+            }
+        });
+        //}
+    }
+
+    function validate(id, type) {
+        if (type == "1") {
+            var reg = new RegExp("^[0-9]*$");//数字
+            if (!reg.test($.trim($("#" + id + "").val()))) {
+                alert("输入不正确，请输入数字!");
+                //  $("#"+id+"").focus();
+                return false;
+            }
+            return true;
+        }
+        else {
+            var reg = new RegExp("^(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*))$");//小数
+            if (!reg.test($.trim($("#" + id + "").val()))) {
+                alert("输入不正确，请输入正确小数!");
+                // $("#" + id + "").focus();
+                return false;
+            }
+            return true;
+        }
+    }
+
+    //经纬度
+    $("input[name=typeRadio]").click(function () {
+        if ($("input[name=typeRadio]:checked").val() == 1) {
+            $("#tbxJD").hide();
+            $("#tbxWD").hide();
+            $("#tbxJD").val("");//清空
+            $("#tbxWD").val("");
+            $("#location").hide();
+            $("#jd_d").show();
+            $("#jd_f").show();
+            $("#jd_m").show();
+            $("#wd_d").show();
+            $("#wd_f").show();
+            $("#wd_m").show();
+            $("#fontDiv1").show();
+            $("#fontDiv2").show();
+            $("#fontDiv3").show();
+            $("#fontDiv4").show();
+            $("#fontDiv5").show();
+            $("#fontDiv6").show();
+            //var jd = jsw2tojsw1($("#tbxJD").val());
+            //var wd = jsw2tojsw1($("#tbxWD").val());
+            //$("#jd_d").val(jd.d);
+            //$("#jd_f").val(jd.f);
+            //$("#jd_m").val(jd.m.toFixed(4));
+            //$("#wd_d").val(wd.d);
+            //$("#wd_f").val(wd.f);
+            //$("#wd_m").val(wd.m.toFixed(4));
+
+        }
+        else {
+            $("#tbxJD").show();
+            $("#tbxWD").show();
+            $("#location").show();
+            $("#jd_d").hide();
+            $("#jd_f").hide();
+            $("#jd_m").hide();
+            $("#wd_d").hide();
+            $("#wd_f").hide();
+            $("#wd_m").hide();
+
+            $("#jd_d").val("");
+            $("#jd_f").val("");
+            $("#jd_m").val("");
+            $("#wd_d").val("");
+            $("#wd_f").val("");
+            $("#wd_m").val("");
+
+            $("#fontDiv1").hide();
+            $("#fontDiv2").hide();
+            $("#fontDiv3").hide();
+            $("#fontDiv4").hide();
+            $("#fontDiv5").hide();
+            $("#fontDiv6").hide();
+            //var obj = new Object();
+            //obj.d = $("#jd_d").val();
+            //obj.f = $("#jd_f").val();
+            //obj.m = $("#jd_m").val();
+            //jd = jsw1tojsw2(obj);
+            //$("#tbxJD").val(jd.toFixed(8));
+            //obj.d = $("#wd_d").val();
+            //obj.f = $("#wd_f").val();
+            //obj.m = $("#wd_m").val();
+            //wd = jsw1tojsw2(obj);
+            //$("#tbxWD").val(wd.toFixed(8));
+        }
+    });
+
+</script>

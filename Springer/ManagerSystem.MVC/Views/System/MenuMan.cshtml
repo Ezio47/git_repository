@@ -1,0 +1,125 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+}
+@model ManagerSystemModel.T_SYS_MENU_Model
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'center'" title="" style=" border: none; ">
+        <div class="divTable">
+            <table cellpadding="0" cellspacing="0">
+                <tr>
+                    <td style="width:110px">菜单编码：</td>
+                    <td><input id="tbxMENUCODE" name="tbxMENUCODE" type="text" value="@Model.MENUCODE" style="width:95%;" /></td>
+                    <td style="width:110px">菜单名称：</td>
+                    <td><input id="tbxMENUNAME" name="tbxMENUNAME" type="text" value="@Model.MENUNAME" style="width: 95%;" /> </td>
+                </tr>
+                <tr>
+                    <td style="width:110px">菜单URL：</td>
+                    <td><input id="tbxMENUURL" name="tbxMENUURL" type="text" value="@Model.MENUURL" style="width: 95%;" /></td>
+                    <td style="width:110px">菜单图标：</td>
+                    <td><input id="tbxMENUICO" name="tbxMENUICO" type="text" value="@Model.MENUICO" style="width: 95%;" /></td>
+                </tr>
+                <tr>
+                    <td style="width:110px">菜单显示样式：</td>
+                    <td><input id="tbxLICLASS" name="tbxLICLASS" type="text" value="@Model.LICLASS" style="width: 95%;" /></td>
+                    <td style="width:110px">排序号：</td>
+                    <td><input id="tbxORDERBY" name="tbxORDERBY" type="text" value="@Model.ORDERBY" style="width: 95%;" /></td>
+                   
+                </tr>
+                <tr>
+                    <td style="width:110px">菜单所属权限标识：</td>
+                    <td><input id="tbxMENURIGHTFLAG" name="tbxMENURIGHTFLAG" type="text" value="@Model.MENURIGHTFLAG" style="width: 95%;" /></td>
+                    <td style="width:110px">所属系统标识：</td>
+                    <td><input id="tbxSYSFLAG" name="tbxSYSFLAG" type="text" value="@Model.SYSFLAG" style="width: 95%;" /></td>
+                    
+                </tr>
+                <tr>
+                    <td style="width:110px">菜单关联子模块：</td>
+                    <td><input id="tbxMENULINKMODE" name="tbxMENULINKMODE" type="text" value="@Model.MENULINKMODE" style="width: 95%;" /></td>
+                    <td style="width:110px">菜单打开方式：</td>
+                    <td>
+                        <select style="width: 95%;" id="tbxMENUOPENMETHOD">
+                            @Html.Raw(@ViewBag.MENUOPENMETHOD)
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:110px">菜单下拉方式：</td>
+                    <td>
+                        <select style="width: 95%;" id="tbxMENUDROWMTHOD" >
+                            @Html.Raw(@ViewBag.MENUDROWMTHOD)
+                        </select>
+                    </td>
+                    <td style="width:110px">是否为顶部菜单：</td>
+                    <td>
+                        <select style="width: 95%;" id="tbxISTOPMENU" >                    
+                            @Html.Raw(@ViewBag.ISTOPMENU)
+                        </select>
+                </tr>
+            </table>
+        </div>
+        <p style="text-align:center">
+            <input id="hidCODELength" name="hidCODELength" type="hidden" value="@ViewBag.CODELength" />
+            <input type="button" class="btnSaveCss" value="保存" onclick="Manager()" />
+        </p>
+    </div>
+</div>
+
+<script type="text/javascript">
+    if ('@ViewBag.Method' == 'Mdy') {
+        $('#tbxMENUCODE').attr("disabled", true);
+    }
+    else if ('@ViewBag.Method' == 'Add') {
+        $('#tbxMENUCODE').attr("disabled", false);
+    }
+    function Manager() {
+        var MENUCODE = $("#tbxMENUCODE").val();
+        var MENUNAME = $("#tbxMENUNAME").val();
+        var MENUURL = $("#tbxMENUURL").val();
+        var MENUICO = $("#tbxMENUICO").val();
+        var LICLASS = $("#tbxLICLASS").val();
+        var ORDERBY = $("#tbxORDERBY").val();
+        var MENURIGHTFLAG = $("#tbxMENURIGHTFLAG").val();
+        var SYSFLAG = $("#tbxSYSFLAG").val();
+        var MENUOPENMETHOD = $("#tbxMENUOPENMETHOD").val();
+        var MENULINKMODE = $("#tbxMENULINKMODE").val();
+        var MENUDROWMTHOD = $("#tbxMENUDROWMTHOD").val();
+        var ISTOPMENU = $("#tbxISTOPMENU").val();
+        $.ajax({
+            url: '/System/MenuManager',
+            type: 'post',
+            cache: false,
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: {
+                MENUCODE: MENUCODE,
+                MENUNAME: MENUNAME,
+                MENUURL: MENUURL,
+                MENUICO: MENUICO,
+                LICLASS: LICLASS,
+                ORDERBY: ORDERBY,
+                MENURIGHTFLAG: MENURIGHTFLAG,
+                SYSFLAG: SYSFLAG,
+                MENUOPENMETHOD:MENUOPENMETHOD,
+                MENULINKMODE: MENULINKMODE,
+                MENUDROWMTHOD: MENUDROWMTHOD,
+                ISTOPMENU: ISTOPMENU,
+                Method: '@ViewBag.Method',
+            },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    if (confirm(ar.Msg)) {
+                        var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                        parent.layer.close(index);
+                    }
+                }
+                else {
+                    layer.msg(ar.Msg, { icon: 5 });
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("系统异常!", { icon: 5 });
+            }
+        });
+    }
+</script>

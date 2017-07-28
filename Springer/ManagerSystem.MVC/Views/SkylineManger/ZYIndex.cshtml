@@ -1,0 +1,381 @@
+﻿@using ManagerSystemClassLibrary;
+@{
+    ViewBag.Title = "转为资源";
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+
+    var curorgno = SystemCls.getCurUserOrgNo();
+    if (curorgno.Substring(6, 3) == "000" && curorgno.Substring(4, 2) != "00")
+    {
+        curorgno = curorgno.Substring(0, 6) + "xxx";
+    }
+    else
+    {
+        curorgno = SystemCls.getCurUserOrgNo();
+    }
+
+}
+<script src="~/js/init.js"></script>
+
+<div class="divMan" id="tableadd" style="margin-left:5px;margin-top:8px">
+    <table cellpadding="0" cellspacing="0">
+        <tr>
+            <td style="width:80px;">
+                单位名称：
+            </td>
+            <td>
+                <select id="ORGNOS" class="easyui-combotree" style="width:200px;"></select>
+            </td>
+            <td style="width:80px;">
+                资源类型：
+            </td>
+            <td>
+                <select id="RESOURCETYPE">
+                    @Html.Raw(@ViewBag.resourcetypeadd)
+                </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td style="width:80px;">
+                <span style="color:red;">*</span>
+                名称：
+            </td>
+            <td>
+                <input type="text" id="NAME" class="input-small" value="" />
+            </td>
+            <td style="width:80px;">
+                <span style="color:red;">*</span>
+                编号：
+            </td>
+            <td>
+                <input id="NUMBER" type="text" class="input-small" value="" />
+            </td>
+        </tr>
+
+        <tr>
+            <td style="width:80px;">
+                林龄类型：
+            </td>
+            <td>
+                <select id="AGETYPE">
+                    @Html.Raw(@ViewBag.agetypeadd)
+                </select>
+            </td>
+            <td style="width:80px;">
+                起源类型：
+            </td>
+            <td>
+                <select id="ORIGINTYPE">
+                    @Html.Raw(@ViewBag.originttypeadd)
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td style="width:80px;">
+                可燃类型：
+            </td>
+            <td>
+                <select id="BURNTYPE">
+                    @Html.Raw(@ViewBag.burntypeadd)
+                </select>
+            </td>
+            <td style="width:80px;">
+                林木类型：
+            </td>
+            <td>
+                <select id="TREETYPE">
+                    @Html.Raw(@ViewBag.treetypeadd)
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td style="width:160px;">
+                <span style="color:red;">*</span>
+                经纬度点：
+            </td>
+            <td colspan="3">
+                <input id="JWDLIST" type="text" style="width:97%" value="" readonly />
+            </td>
+        </tr>
+        <tr>
+            <td style="width:80px;">
+                树种：
+            </td>
+            <td>
+                <input id="KINDTYPE" type="text" class="input-small" value="" />
+            </td>
+            <td style="width:80px;">
+                面积：
+            </td>
+            <td>
+                <input id="AREA" type="text" class="input-small" value="" />公顷
+            </td>
+        </tr>
+        <tr>
+            <td style="width:80px;">
+                坡向：
+            </td>
+            <td>
+                <input id="ASPECT" type="text" class="input-small" value="" />
+            </td>
+            <td style="width:80px;">
+                坡度：
+            </td>
+            <td>
+                <input id="ANGLE" type="text" class="input-small" value="" />
+            </td>
+        </tr>
+        <tr>
+            <td style="width:80px;">
+                挂钩领导：
+            </td>
+            <td>
+                <input id="POTHOOKLEADER" type="text" class="input-small" value="" />
+            </td>
+            <td style="width:80px;">
+                职务：
+            </td>
+            <td>
+                <input id="POTHOOKLEADERJOB" type="text" class="input-small" value="" />
+            </td>
+        </tr>
+        <tr>
+            <td style="width:80px;">
+                领导电话：
+            </td>
+            <td colspan="3">
+                <input id="POTHOOKLEADERTLEE" type="text" class="input-small" value="" />
+            </td>
+        </tr>
+        <tr>
+            <td style="width:80px;">
+                责任人：
+            </td>
+            <td>
+                <input id="DUTYPERSON" type="text" class="input-small" value="" />
+            </td>
+            <td style="width:80px;">
+                责任人电话：
+            </td>
+            <td>
+                <input id="DUTYPERSONTELL" type="text" class="input-small" value="" />
+            </td>
+        </tr>
+        <tr>
+            <td style="width:80px;">
+                备注：
+            </td>
+            <td colspan="3">
+                <input id="MARK" type="text" class="input-small" value="" />
+            </td>
+        </tr>
+        <tr>
+            <td colspan="4" style="text-align:center;">
+                <input type="button" id="savebtn" value="保存" onclick="Manager()" class="btnAddCss" />
+            </td>
+        </tr>
+    </table>
+</div>
+
+<script type="text/javascript">
+    var LinePolyonType = "2";//1 线 2面
+    $(function () {
+        $('#ORGNOS').combotree({
+            url: '/DataCenter/OnlyOrgTreeget',
+            editable: false,
+            required: true,
+            panelHeight: 'auto',
+            onLoadSuccess: function (node, data) {
+                var t = $("#ORGNOS").combotree('tree');//获取tree
+                t.tree("collapseAll");
+                node = t.tree("find", data[0].id);
+                t.tree("expand", node.target);//展开节点 expandTo
+            }
+        });
+        $('#ORGNOS').combotree('setValue', "@curorgno");
+        detailPoints();//获取详细点经纬度
+        //计算长度和面积 1 表示线 2 表示面积
+        var area = getLocaCollectLine(2);
+        $('#AREA ').val(area);
+    });
+
+
+
+    var ID = "";
+    var Method = "Add";
+    //保存
+    function Manager() {
+        var t1 = $('#AREA ').val();
+        var t2 = $('#NAME ').val();
+        var t3 = $('#NUMBER ').val();
+        var t4 = $('#KINDTYPE ').val();
+        if ($.trim(t1) != "") {
+            if (CheckNUM($.trim(t1)) == false) {
+                layer.msg('面积请填写数字！', { icon: 5 });
+                $('#AREA').focus();
+                return false;
+            }
+        }
+        if ($.trim(t2) == "") {
+            layer.msg('请填写名称！', { icon: 5 });
+            $('#NAME').focus();
+            return false;
+        }
+        if ($.trim(t3) == "") {
+            layer.msg('请填写编号！', { icon: 5 });
+            $('#NUMBER').focus();
+            return false;
+        }
+        if ($.trim(t4) != "") {
+            if (checkStr($.trim(t4)) == false) {
+                layer.msg('林种字数不得超过50！', { icon: 5 });
+                $('#KINDTYPE').focus();
+                return false;
+            }
+        }
+        var tt = document.getElementById("JWDLIST").value;
+        if ($.trim(tt) == "") {
+            layer.msg('经纬度点为空！', { icon: 5 });
+            return false;
+        }
+        $.ajax({
+            type: "Post",
+            url: "/DataCenter/RESOURCE_NEWManager",
+            data: {
+                DC_RESOURCE_NEW_ID: ID,
+                Method: Method,
+                RESOURCETYPE: document.getElementById("RESOURCETYPE").value,
+                NUMBER: document.getElementById("NUMBER").value,
+                NAME: document.getElementById("NAME").value,
+                //ORGNOS: document.getElementById("ORGNOS").value,
+                ORGNOS: $('#ORGNOS').combotree('getValue'),
+                KINDTYPE: document.getElementById("KINDTYPE").value,
+                AGETYPE: document.getElementById("AGETYPE").value,
+                ORIGINTYPE: document.getElementById("ORIGINTYPE").value,
+                AREA: document.getElementById("AREA").value,
+                BURNTYPE: document.getElementById("BURNTYPE").value,
+                TREETYPE: document.getElementById("TREETYPE").value,
+                ASPECT: document.getElementById("ASPECT").value,
+                ANGLE: document.getElementById("ANGLE").value,
+                MARK: document.getElementById("MARK").value,
+                JWDLIST: document.getElementById("JWDLIST").value,
+                //JD: document.getElementById("JD").value,
+                //WD: document.getElementById("WD").value,
+                POTHOOKLEADER: document.getElementById("POTHOOKLEADER").value,
+                POTHOOKLEADERJOB: document.getElementById("POTHOOKLEADERJOB").value,
+                POTHOOKLEADERTLEE: document.getElementById("POTHOOKLEADERTLEE").value,
+                DUTYPERSON: document.getElementById("DUTYPERSON").value,
+                DUTYPERSONTELL: document.getElementById("DUTYPERSONTELL").value,
+            },
+            dataType: "json",
+            error: function () {
+                ID = "";
+                Method = "Add";
+                alert('错误:异常!', 'error');
+            },
+            success: function (re) {
+                if (re.Success) {
+                    layer.msg('操作成功', { icon: 6 });
+                    ID = re.Url; 
+                    Method = "Mdy"; 
+                }
+                else {
+                    ID = "";
+                    Method = "Add";
+                    layer.msg(re.Msg, { icon: 5 });
+                }
+            }
+        });
+    }
+
+    //详细点--线集合
+    function detailPoints() {
+        var detailcid = getQueryString("detailid");
+        $.ajax({
+            type: "Post",
+            url: "/SkylineManger/DataCollectDetailList",
+            data: { cid: detailcid },
+            dataType: "json",
+            async: false,
+            success: function (obj) {
+                //console.info(obj);
+                var html = "";
+                if (obj != null) {
+                    for (var i = obj.length - 1; i >= 0; i--) {
+                        //  $('#JD').val(parseFloat(obj[i].LONGITUDE).toFixed(6));
+                        //  $('#WD').val(parseFloat(obj[i].LATITUDE).toFixed(6));
+                        html += obj[i].LONGITUDE + "," + obj[i].LATITUDE + "|";
+                    }
+                    if (LinePolyonType == "2") {
+                        html += obj[obj.length - 1].LONGITUDE + "," + obj[obj.length - 1].LATITUDE + "|";
+                    }
+                    $('#JWDLIST').val(html);
+                }
+                else {
+                    layer.alert('获取采集点失败！', { icon: 5 });
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                //通常情况下textStatus和errorThrown只有其中一个包含信息
+                // this;   //调用本次ajax请求时传递的options参数
+                layer.msg('ajax出错！' + textStatus);
+            }
+        });
+    }
+
+    //根据点集合计算线长度
+    var calcValue = "";
+    function getLocaCollectLine(type) {
+        var ring = [];
+        var pl = $('#JWDLIST').val();
+        if ($.trim(pl) != "") {
+            var ss = pl.split('|');
+            if (ss.length > 0) {
+                for (var i = 0; i < ss.length; i++) {
+                    var lng = ss[i].split(',')[0];
+                    var lat = ss[i].split(',')[1];
+                    if (!isNaN(lng) && !isNaN(lat)) {
+                        var latlng = new esri.geometry.Point(parseFloat(lng), parseFloat(lat));
+                        ring.push(latlng);
+                    }
+                }
+                if (type == "1") {
+                    var lineSymbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([255, 0, 0]), 5);
+                    //获取线的点
+                    var polyline = new esri.geometry.Polyline(new esri.SpatialReference({ wkid: 4326 }));
+                    polyline.addPath(ring);
+                    //计算线的长度
+                    calcValue = GetLenthorArea(polyline);
+                }
+                else if (type == "2") {
+                    var polygonSymbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID, new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_DASHDOTDOT, new dojo.Color([255, 0, 0]), 3), new dojo.Color([255, 255, 0, 0.25]));
+                    //获取面的点
+                    var polygon = new esri.geometry.Polygon(new esri.SpatialReference({ wkid: 4326 }));
+                    polygon.addRing(ring);
+                    //计算面积
+                    calcValue = GetLenthorArea(polygon);
+                }
+            }
+            return calcValue;
+        }
+    }
+
+    function GetLenthorArea(geometry) {//画图完毕后计算距离或者面积
+        var unit = "";
+        var str = "";
+        var geo = geometry;
+        if (geometry.type == "polyline") {
+            var Length = new esri.geometry.geodesicLengths([geo], esri.Units.METERS);
+            unit = "米";
+            str = parseFloat(Length).toFixed(2);
+        }
+        else if (geometry.type == "polygon") {
+            var Area = new esri.geometry.geodesicAreas([geo], esri.Units.SQUARE_METERS);
+            unit = "公顷";
+            str = parseFloat(Area / 10000).toFixed(2);
+        }
+
+        return str;
+    }
+
+</script>

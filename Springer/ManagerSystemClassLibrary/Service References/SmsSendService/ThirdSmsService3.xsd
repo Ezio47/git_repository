@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://tempuri.org/" elementFormDefault="qualified" targetNamespace="http://tempuri.org/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://192.168.8.168:8100/ThirdSmsService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/TLW.Project.SmsMessageWcfService.Model" />
+  <xs:element name="SendMsg">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="content" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="mobile" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SendMsgResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/TLW.Project.SmsMessageWcfService.Model" minOccurs="0" name="SendMsgResult" nillable="true" type="q1:SmsMessage" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SmsTemplateModify">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="content" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="tid" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="type" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SmsTemplateModifyResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/TLW.Project.SmsMessageWcfService.Model" minOccurs="0" name="SmsTemplateModifyResult" nillable="true" type="q2:SmsMessage" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetSign">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="SignName" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetSignResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetSignResult" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetSmsTotal">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetSmsTotalResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q3="http://schemas.datacontract.org/2004/07/TLW.Project.SmsMessageWcfService.Model" minOccurs="0" name="GetSmsTotalResult" nillable="true" type="q3:SmsMessage" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetMsgTest">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="text" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetMsgTestResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q4="http://schemas.datacontract.org/2004/07/TLW.Project.SmsMessageWcfService.Model" minOccurs="0" name="GetMsgTestResult" nillable="true" type="q4:SmsMessage" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetStrTest">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="text" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetStrTestResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetStrTestResult" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

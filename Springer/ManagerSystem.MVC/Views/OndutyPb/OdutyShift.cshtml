@@ -1,0 +1,123 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+}
+@section Header{
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        查询日期：<input class="easyui-datebox" id="tbxTIMEBegin" value="@ViewBag.Date" type="text" style="width:90px;height:28px;" />
+                        <input type="button" value="查 询" onclick="query()" class="btnSearchCss">
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" class="LayoutCenterBG">
+
+                <div id="msg" class="divTable">
+                </div>
+                <br /><br />
+                <div class="divMan" id="jbDiv">
+                    <table cellpadding="0" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>
+                                    交班人：<span id="ondutyJb"></span>
+                                </th>
+                                <th>
+                                    接班人：<span id="ondutyHb"></span>
+                                </th>
+                                <th>
+                                    交接班时间：<span id="ondutyTm"></span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="left" colspan="4">
+                                    交班主要事项：<br />
+                                    <span id="ondutySh">
+                                        暂无<br />
+                                        <br />
+                                        <br />
+                                        <br />
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="left" colspan="4">
+                                    领导意见：<br />
+                                    <span id="ondutyLd">
+                                            暂无<br />
+                                            <br />
+                                            <br />
+                                            <br />
+                                        </span>
+</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+        <script type="text/javascript">
+
+            $(function () {
+                query();
+            });
+
+            function query() {
+                $.ajax({
+                    url: '/OndutyPb/OndutyShiftQuery',
+                    timeout: 10000, //10秒后超时，如果为0则永不超时
+
+                    data: {
+                        TTBH: $('#tbxTIMEBegin').datebox('getValue'),//开始日期
+                    },
+                    success: function (data, ioArgs) {
+                        var ar = eval('(' + data + ')');
+                        if (ar.Success) {
+                            $('#msg').html('').removeAttr("style");
+                            $('#msg').html(ar.Msg);
+                        }
+                        else {
+                            $('#msg').html('');
+                            $('#msg').html(ar.Msg).css("color", "red");
+                        }
+                    },
+                    error: function (err, ioArgs) {
+                        $('#msg').html("系统异常，请重试或与管理员联系").css("color", "red");
+                    }
+                });
+                document.getElementById("jbDiv").style.display = "none";
+            } 
+            
+            function changeTD(obj) {
+                document.getElementById("jbDiv").style.display = "";
+                if ($(obj).children("td").get(0).innerHTML != null || $(obj).children("td").get(0).innerHTML != "") {
+                    $("#jbDiv").css("display", "block");
+                    var ss = $(obj).children("td").get(5).innerHTML;
+                    $("#ondutySh").html($(obj).children("td").get(4).innerHTML);
+                    $("#ondutyTm").html($(obj).children("td").get(0).innerHTML);
+                    $("#ondutyJb").html($(obj).children("td").get(1).innerHTML);
+                    $("#ondutyHb").html($(obj).children("td").get(2).innerHTML);
+                    $("#ondutyLd").html($(obj).children("td").get(5).innerHTML);
+                }
+                return false;
+            }
+
+
+        </script>

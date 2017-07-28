@@ -1,0 +1,141 @@
+﻿@using ManagerSystem.MVC.HelpCom
+@{
+    ViewBag.Title = "大数据展示";
+    Layout = null;
+    //Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+}
+
+<html xmlns:wb="http://open.weibo.com/wb">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>@ViewBag.Title</title>
+    <script src="~/Scripts/jquery-1.9.1.min.js"></script>
+    <script src="~/Scripts/Chart/chartCom.js"></script>
+    <script src="~/Scripts/layer/layer.js"></script>
+    <!-- 引入 ECharts 文件 -->
+    <script src="~/Scripts/Chart/echarts.js"></script>
+    <!--WB.JS-->
+    <script src="http://tjs.sjs.sinajs.cn/open/api/js/wb.js?appkey=3807264703" type="text/javascript" charset="utf-8"></script>
+
+    @*<script src="~/Scripts/Chart/echarts.min.js"></script>*@
+</head>
+<body>
+
+    <h2 style="text-align:center;">红河州生态保护系统大数据实时监控</h2>
+    <div>
+        今天是：<b id="showtime"></b>
+        <table border="1" cellpadding="0" cellspacing="0" style="width:100%;">
+            <tr>
+                <td style="vertical-align:top">
+                    当前系统人员：<b id="totalcount" style="color:blue"></b>人；登陆人员：<b id="incount" style="color:green"></b>；
+                    未登录人员：<b id="outcount" style="color:red;"></b>。当前剩余短信数：<b id="totalmsg" style="color:red"></b>条。更新时间：
+                    <em style="font-size:12px;"> <b id="updatetime"></b></em>
+                    <hr />
+                    <p>
+                        红河哈尼族彝族自治州位于中国云南省东南部，北连昆明，东接文山，西邻玉溪，南与越南社会主义共和国接壤，北回归线横贯东西。红河是云南省第四大经济体，经济总量和部分社会经济指标居全国30个少数民族自治州之首。
+                        红河州国土面积3.293万平方公里，下辖4市9县，总人口456.1万人（2012年），是一个多民族聚居的边疆少数民族自治州，有10个世居民族，有241万少数民族人口。
+                        红河州有滇南政治、经济、军事、文化中心蒙自，有世界锡都个旧，有国家历史文化名城建水；文献名邦石屏；有河口和金水河两个国家级口岸；有的锡文化、陶瓷文化和梯田文化。红河是云南经济社会和人文自然的缩影，是云南近代工业的发祥地，也是中国走向东盟的陆路通道和桥头堡。[1]
+                        红河州被列为第二批国家新型城镇化综合试点地区。
+                    </p>
+
+                </td>
+                <td style="width:100%">
+                    @*<iframe width="800" scrolling="no" height="120" frameborder="0" allowtransparency="true"
+                                src="http://i.tianqi.com/index.php?c=code&id=19&color=%23&bdc=%23&icon=1&temp=1&num=5&site=14">
+                        </iframe>*@
+                    <iframe style="width:100%" scrolling="no" height="120" frameborder="0" allowtransparency="true" src="http://i.tianqi.com/index.php?c=code&id=19&icon=1&py=hefei&temp=1&num=5&site=12"></iframe>
+
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div id="mainfiredistribute" style="width: 100%;height:500px;"></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+                    <div id="mainhly" style="width: 600px;height:400px; "></div>
+                </td>
+                <td>
+                    <div id="mainfire" style="width: 600px;height:400px;"></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div id="mainfirelevel" style="width: 600px;height:700px; "></div>
+                </td>
+                <td>
+                    <div style="text-align:center;width: 600px;height:700px;">
+
+                        <wb:topic column="n" border="n"
+                                  title="%E5%BE%AE%E5%8D%9A%E4%BF%A1%E6%81%AF" width="100%"
+                                  height="100%" tags="%E5%A5%BD%E7%94%A8%E5%90%97"
+                                  color="333333%2Cffffff%2C0078b6%2Ccccccc%2C333333%2Cfafeff%2C0078b6%2Ccccccc%2Ccccccc%2Ce9f4fb"
+                                  language="zh_cn" version="base" appkey="68utSD" footbar="y" url="%23" filter="y">
+                        </wb:topic>
+                    </div>
+                </td>
+            </tr>
+
+        </table>
+
+    </div>
+    <!--引入百度地图的jssdk，这里需要使用你在百度地图开发者平台申请的 ak-->
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=wYCjPb9rxUueQP8xcNwqGLFw"></script>
+    <!-- 引入百度地图扩展 -->
+    <script src="~/Scripts/Chart/bmap.js"></script>
+    <script src="~/Scripts/Chart/SpringChart/dynamicBarChart.js"></script>
+    <script src="~/Scripts/Chart/SpringChart/fireDataSourceChart.js"></script>
+    <script src="~/Scripts/Chart/honghe.js"></script>
+    <script src="~/Scripts/Chart/SpringChart/fireLevelChart.js"></script>
+    <script src="~/Scripts/Chart/SpringChart/fireDisTributionChart.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            showTime();
+            showSysInfo();
+        });
+
+        function showTime() {
+            var now_time = new Date().Format("yyyy年MM月dd日 星期W");
+            $('#showtime').text(now_time);
+        }
+
+        ///获取系统相关信息
+        function showSysInfo() {
+
+            $.ajax({
+                type: "Post",
+                url: "/BIgDataShow/ShowSysInfoData",
+                data: {},
+                dataType: "json",
+                success: function (obj) {
+                    if (obj != null) {
+                        var updatetime = new Date().Format("yyyy年MM月dd日 HH:mm:ss");
+                        var incount = obj.inCount;//在线人数
+                        var outcount = obj.outCount;//离线人数
+                        var totalcount = obj.totalCount;//总数
+                        var totalmsg = obj.msgcount;//短信数量
+                        $('#incount').text(incount);
+                        $('#outcount').text(outcount);
+                        $('#totalcount').text(totalcount);
+                        $('#totalmsg').text(30000);
+                        $('#updatetime').text(updatetime);
+                        $('#totalmsg').text(totalmsg);
+                    }
+                    else {
+                        layer.msg("未获取到系统信息！", { icon: 5 });
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    layer.msg("处理出现错误!状态码：" + textStatus, { icon: 5 });
+                }
+            })
+        }
+
+
+        var interval = window.setInterval(showSysInfo, 5 * 60 * 1000);
+    </script>
+</body>
+</html>

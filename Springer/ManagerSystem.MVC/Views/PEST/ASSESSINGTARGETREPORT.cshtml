@@ -1,0 +1,137 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+}
+@section Header{
+    <script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        单位：<select id="tbxORGNO" onchange="Query()">@Html.Raw(@ViewBag.vdOrg)</select>&nbsp;&nbsp;&nbsp;
+                        年份：<input id="tbxYEAR" type="text" class="Wdate" style="width:100px" value="@ViewBag.YEAR" onclick="WdatePicker({ dateFmt: 'yyyy'})" />
+                        <input type="button" value="查询" onclick="Query()" class="btnSearchCss" />
+                        <input type="button" value="保存" onclick="Manager()" id="btnSave" class="btnSaveCss" style="display:none;">
+                        <input type="button" value="导出" onclick="Export()" id="btnExport" class="btnOutputCss" style="display:none;">
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <input id="dic109Value" type="hidden" value="@ViewBag.dic109Value" />
+                <input id="dic109Count" type="hidden" value="@ViewBag.dic109Count" />
+                <div id="divTable" class="divTable">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var blnSave = '@ViewBag.Save';
+    if (blnSave == "1") {
+        document.getElementById('btnSave').style.display = "";
+    }
+    var blnExport = '@ViewBag.Export';
+    if (blnExport == "1") {
+        document.getElementById('btnExport').style.display = "";
+    }
+    Query();
+    function Query() {
+        var year = $('#tbxYEAR').val();
+        if (year == "") {
+            layer.msg("请选择查询年份!", { icon: 5 });
+            return;
+        }
+        $.ajax({
+            type: 'get',
+            url: '/PEST/ASSESSINGTARGETREPORTQuery',
+            dataType: 'json',
+            data: { ORGNO: $('#tbxORGNO').val(), YEAR: year },
+            success: function (data, ioArgs) {
+                if (data.Success) {
+                    $('#divTable').html("");
+                    $('#divTable').html(data.Msg);
+                }
+                else {
+                    $('#divTable').html("");
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("查询异常!", { icon: 5 });
+            }
+        });
+    }
+
+    function Manager() {
+        var _len = $('#ASSESSINGTARGETTable tr').length - 1;//行数
+        if (_len > 0) {
+            var dic109Value = $('#dic109Value').val().split(',');
+            var dic109Count = $('#dic109Count').val();
+            if (dic109Count != "") {
+                dic109Count = parseInt(dic109Count);
+            }
+            var strBYORGNO = "";
+            var strASSESSINGTARGETTYPECODE = "";
+            var strASSESSINGTARGETVALUE = "";
+            for (var i = 0; i < _len; i++) {
+                for (var x = 0; x < dic109Count; x++) {
+                    var temp = i.toString() + x.toString();
+                    var ASSESSINGTARGETVALUE = $('#txt' + temp + '').val().replace('%', '');
+                    if ($.trim(ASSESSINGTARGETVALUE) != "") {
+                        if (!CheckNUM2(ASSESSINGTARGETVALUE)) {
+                            layer.msg('考核数据请输入正数,且最多保留2位有效小数!', { icon: 5 });
+                            $('#txt' + temp + '').focus();
+                            return;
+                        }
+                        else {
+                            strBYORGNO = strBYORGNO + $('#txtORGNO' + i + '').val() + ",";
+                            strASSESSINGTARGETTYPECODE = strASSESSINGTARGETTYPECODE + dic109Value[x] + ",";
+                            strASSESSINGTARGETVALUE = strASSESSINGTARGETVALUE + ASSESSINGTARGETVALUE + ",";
+                        }
+                    }
+                }
+            }
+            $.ajax({
+                url: '/PEST/ASSESSINGTARGETREPORTManager',
+                type:'post',
+                timeout: 10000, //10秒后超时，如果为0则永不超时
+                dataType: 'json',
+                data: {
+                    TopORGNO: $('#tbxORGNO').val(),
+                    BYORGNO: strBYORGNO,
+                    RCWYEAR: $('#tbxYEAR').val(),
+                    ASSESSINGTARGETTYPECODE: strASSESSINGTARGETTYPECODE,
+                    ASSESSINGTARGETVALUE: strASSESSINGTARGETVALUE
+                },
+                success: function (data, ioArgs) {
+                    if (data.Success) {
+                        layer.msg(data.Msg, { icon: 6 });
+                        Query();
+                    }
+                    else {
+                        layer.msg(data.Msg, { icon: 5 });
+                    }
+                },
+                error: function (err, ioArgs) {
+                    layer.msg("保存异常!", { icon: 5 });
+                }
+            });
+        }
+    }
+
+    function Export() {
+        var ORGNO = $('#tbxORGNO').val();
+        var YEAR = $('#tbxYEAR').val();
+        var url = '/PEST/ASSESSINGTARGETREPORTExportExcel?ORGNO=' + ORGNO + '&YEAR=' + YEAR;
+        window.location = url;
+    }
+</script>
+

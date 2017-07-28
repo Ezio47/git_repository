@@ -1,0 +1,94 @@
+﻿@using ManagerSystemModel;
+@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+}
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="">
+
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="homeUL">
+                        <input id="tbxPARAMID" type="hidden" value="" />
+
+                        参数值：<input type="text" id="tbxPARAMVALUE" value="" style="width:350px" />
+                        <input type="hidden" id="tbxParamaterFlag" />
+                        <input type="button" value="修 改" onclick="Manager('Mdy')" class="btnDelCss">
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; " class="LayoutCenterBG">
+
+                <div class="divTable">
+                    @Html.Raw(@ViewBag.PARAMETERlist)
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script type="text/javascript">
+
+    function showValue(ID) {
+        $.ajax({
+            url: '/SystemConfig/getPARAMETERJson',
+            cache: false,
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+
+            data: {
+                ID: ID
+            },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.PARAMID != null) {
+                    document.getElementById("tbxPARAMVALUE").value = ar.PARAMVALUE;
+                    document.getElementById("tbxPARAMID").value = ID;
+                    document.getElementById("tbxParamaterFlag").value = ar.PARAMFLAG;
+                }
+                else {
+                    alert('no value');
+                }
+            },
+            error: function (err, ioArgs) {
+                alert('登录异常');
+            }
+        });
+    }
+
+
+    function Manager(Method) {
+        $.ajax({
+            url: '/SystemConfig/PARAMETERManager',
+            cache: false,
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: {
+                PARAMVALUE: document.getElementById("tbxPARAMVALUE").value,
+                PARAMID: document.getElementById("tbxPARAMID").value,
+                PARAMFLAG: document.getElementById("tbxParamaterFlag").value,
+                Method: Method,
+            },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    if (confirm(ar.Msg + ' 请返回！'))
+                        window.location.assign(ar.Url);
+                }
+                else {
+                    alert(ar.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                alert('保存异常');
+            }
+        });
+    }
+</script>

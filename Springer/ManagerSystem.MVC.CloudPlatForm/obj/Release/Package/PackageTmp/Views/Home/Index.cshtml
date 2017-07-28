@@ -1,0 +1,487 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOut.cshtml";
+}
+
+@section Header{
+    <script src="~/Scirpts/jquery-1.8.3.min.js"></script>
+    <script src="~/Scirpts/layer/layer.js"></script>
+    <script src="~/Scirpts/Chart/echarts.js"></script>
+    <script src="~/Scirpts/jquery.jsonp.js"></script>
+}
+<style type="text/css">
+    body {
+        overflow: hidden;
+    }
+
+    li [class^="selectindex_"], li [class*=" selectindex_"] {
+        display: inline-block;
+        text-align: center;
+    }
+
+    .gray {
+        -webkit-filter: grayscale(100%);
+        -moz-filter: grayscale(100%);
+        -ms-filter: grayscale(100%);
+        -o-filter: grayscale(100%);
+        filter: grayscale(100%);
+        filter: gray;
+    }
+
+    .maindiv {
+        margin-left: 3%;
+        padding: 1px;
+        float:left;
+    }
+
+    .childdiv {
+        margin: 10px;
+    }
+
+
+    /*.systemWrap {
+        background: #f6f4f7 url('../../Images/Index/select_bodybg.png') no-repeat top center;
+        width: 100%;
+        overflow: hidden;
+    }*/
+
+    #tabs1 {
+        text-align: left;
+        width: 100%;
+    }
+
+    .menu1box {
+        position: relative;
+        height: 38px;
+        width: 1000px;
+        text-align: left;
+        margin: 0 auto;
+    }
+
+    #menu1 {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+        height: 38px;
+        line-height: 38px;
+        width: 100%;
+    }
+
+        #menu1 li {
+            font-size: 16px;
+            float: left;
+            display: block;
+            cursor: pointer;
+            line-height: 38px;
+            height: 38px;
+            padding: 0 12px;
+            margin-right: 5px;
+            background-color: #009600; /*#45a0fc;*/
+            border-radius: 3px 3px 0 0;
+            -moz-border-radius: 3px 3px 0 0;
+            -webkit-border-radius: 3px 3px 0 0;
+        }
+
+            #menu1 li:last-child {
+                margin-right: 0;
+            }
+
+            #menu1 li.hover {
+                background-color: #f4f4f4;
+            }
+
+                #menu1 li.hover a {
+                    color: #136a00; /*#056fdb;*/
+                }
+
+            #menu1 li a {
+                color: #fff;
+            }
+
+    .menuWrap {
+        width: 100%;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    .main1box {
+        clear: both;
+        width: 1000px;
+        margin: 0 auto;
+        overflow: hidden;
+        padding: 30px 0 10px 0;
+    }
+
+    #main1 ul {
+        display: none;
+    }
+
+        #main1 ul.block {
+            display: block;
+        }
+
+        #main1 ul li {
+            width: 230px;
+            height: 140px;
+            float: left;
+            display: inline-block;
+            margin: 0 20px 20px 0;
+            cursor: pointer;
+        }
+
+            #main1 ul li a {
+                display: block;
+                width: 210px;
+                height: 115px;
+                border-radius: 4px;
+                -moz-border-radius: 4px;
+                -webkit-border-radius: 4px;
+                padding: 15px 10px 10px 10px;
+            }
+
+            #main1 ul li .systemName {
+                font-size: 16px;
+                line-height: 22px;
+                margin-top: 10px;
+                color: #fff;
+            }
+
+    .yjfk_pic {
+        position: fixed;
+        right: 25px;
+        bottom: 0;
+        margin-bottom: 80px;
+    }
+
+        .yjfk_pic a {
+            display: block;
+            width: 77px;
+            height: 61px;
+            margin-bottom: 20px;
+        }
+</style>
+
+<div class="systemWrap">
+    <form>
+        <div class="selectall">
+            <div class="selc_top">
+                <div class="selectlogo">
+                    <img src="~/Images/Index/sys_log_tt.png" />
+                </div>
+                <div class="selc_right">
+                    <span>
+                        sys_admin
+                        欢迎访问
+                    </span> <span class="top_line">| </span>@*<span class="change_skin">
+                            <a href="javascript:void(0);"
+                               id="changeskin">换肤</a>风格切换内容开始
+                            <div id="UpdatePanel1">
+
+                                <div class="skin_main" style="display: none;">
+                                    <div class="skin_title">
+                                        <p class="skin_ppp">
+                                            风格切换
+                                        </p>
+                                        <div class="close">
+                                        </div>
+                                    </div>
+                                    <div class="skin_list">
+                                        <div class="skin_select" id="selmr">
+                                            <span class="skin_name">蓝色主题</span>
+                                            <img class="img_selected" src="images/skin2.png" sel="imgsel" />
+                                        </div>
+                                        <div class="skin_select" id="selfg2">
+                                            <span class="skin_name">绿色主题</span>
+                                            <img src="images/skin1.png" sel="imgsel" />
+                                        </div>
+                                    </div>
+                                    <div class="skin_bottom">
+                                        <input type="submit" name="btnsave" value="保存" id="btnsave" class="confirm" />
+                                        <input type="button" class="cancle" value="关闭" />
+                                    </div>
+                                </div>
+
+                            </div>
+                        </span>*@
+                    <a id="LoginOut_btn" style="cursor:pointer;" onclick="LoginOut()">退出登录</a>
+                </div>
+            </div>
+        </div>
+        <div id="tabs1">
+            <div class="menu1box">
+                <ul id="menu1">
+                    <li class="hover" onclick="setTab(1,0)"><a href="javascript:;">首页</a></li>
+                    <li onclick="setTab(1,1)"><a href="javascript:;">林业灾害应急平台</a></li>
+                    <li onclick="setTab(1,2)"><a href="javascript:;">林业综合应用平台</a></li>
+                    <li onclick="setTab(1,3)"><a href="javascript:;">林业政务服务平台</a></li>
+                    <li onclick="setTab(1,4)"><a href="javascript:;">林业警务服务平台</a></li>
+                    <li onclick="setTab(1,5)"><a href="javascript:;">林业基础感知平台</a></li>
+                    <li onclick="setTab(1,6)"><a href="javascript:;">林业基础支撑平台</a></li>
+                </ul>
+            </div>
+            <div class="menuWrap">
+                <div class="main1box">
+                    <div class="main" id="main1">
+                        <ul class="block">
+                            @*
+                                <img src="~/Images/Index/1.png" style="width:60%;height:195px" />
+                                <img src="~/Images/Index/3.png" style="width:40%;height:195px;display:inline;float:right;" />
+                                <img src="~/Images/Index/2.png" style="width:60%;height:170px;" />
+                                <img src="~/Images/Index/4.png" style="width:40%;height:170px;display:inline;float:right;" />*@
+                            <div class="maindiv">
+                                <div><h2>林业要闻</h2></div>
+                                <div class="childdiv">世界银行来我省进行项目认定</div>
+                                <div class="childdiv">林园长“叶子” 脱贫摘“帽子” 林业产业</div>
+                                <div class="childdiv">林业信息化创新“互联网+”发展模式</div>
+                                <div class="childdiv">省林业厅召开2017年第7次厅长办公会议</div>
+                                <div class="childdiv">省林业厅召开2017年第6次厅长办公会议</div>
+                            </div>
+                            <div id="mainfire" style="width: 600px;height:180px;float:right;"></div>
+                            
+                            <div class="maindiv">
+                                <div><h2>政府公文</h2></div>
+                                <div class="childdiv">关于开展林业高级工程师资格评审的通知</div>
+                                <div class="childdiv">关于报送林业脱贫攻坚典型案例的通知</div>
+                                <div class="childdiv">关于开展“百日除患铸安”专项行动的通知</div>
+                                <div class="childdiv">关于防火视频监控接入政府平台的通知</div>
+                                <div class="childdiv">关于举办全省林木良种培训班的通知</div>
+                            </div>
+                            <div id="mainhly" style="width: 600px;height:190px;float:right;"></div>
+
+
+                        </ul>
+                        <ul>
+                            <li><a onclick="login('4489')" class="sel_06" target="_blank" datap='1'><div class="icon-sty_06"></div><div class="systemName">森林火险监测预警系统</div></a></li>
+                            <li><a onclick="login('4490')" class="sel_11" target="_blank" datap='2'><div class="selectindex_icon07"></div><div class="systemName">护林员巡护监管系统</div></a></li>
+                            <li><a onclick="login('4491')" class="sel_09" target="_blank" datap='3'><div class="selectindex_icon09"></div><div class="systemName">森林火灾应急指挥系统</div></a></li>
+                            <li><a onclick="login('4492')" class="sel_02" target="_blank" datap='4'><div class="selectindex_icon08"></div><div class="systemName">灾后评估管理系统</div></a></li>
+                            <li><a onclick="login('4494')" class="sel_08" target="_blank" datap='9'><div class="selectindex_icon03"></div><div class="systemName">有害生物防治监测系统</div></a></li>
+                            @*
+                                <li><a href="#" class="sel_01" target="_blank" datap='10'><div class="selectindex_icon04"></div><div class="systemName">林业行政执法管理系统</div></a></li>
+                                <li><a href="#" class="sel_06" target="_blank" datap='14'><div class="selectindex_icon07"></div><div class="systemName">林业巡护管理系统</div></a></li>
+                                <li> <a href="#" class="sel_07" target="_blank" datap='18'><div class="icon-sty_02"></div><div class="systemName">生物多样性管理系统</div></a></li>
+                                <li><a href="#" class="sel_08" target="_blank" datap='20'><div class="icon-sty_04"></div><div class="systemName">森林生态监测管理系统</div></a></li>
+                                <li><a href="#" class="sel_03" target="_blank" datap='21'><div class="icon-sty_05"></div><div class="systemName">湿地资源管理系统</div></a></li>
+                                <li><a href="#" class="sel_10" target="_blank" datap='24'><div class="icon-sty_08"></div><div class="systemName">古树名木信息管理系统</div></a></li>*@
+                        </ul>
+                        <ul>
+                            <li><a class="sel_13" target="_blank" datap='15'><div class="selectindex_icon21"></div><div class="systemName">林业一张图系统</div></a></li>
+                            <li><a href="http://220.160.59.10:7003/tlwFrmis/login_indo.do?username=zyjg_admin&userpw=000000" class="sel_06" target="_blank" datap='19'><div class="selectindex_icon13"></div><div class="systemName">林业资源监管系统</div></a></li>
+                            <li><a href="http://220.160.59.10:7003/tlwFrmis/login_indo.do?username=gyl_admin&userpw=000000" class="sel_08" target="_blank" datap='30'><div class="selectindex_icon01"></div><div class="systemName">公益林管理系统</div></a></li>
+                            <li><a href="http://220.160.59.10:7003/tlwFrmis/login_indo.do?username=yzl_admin&userpw=000000" class="sel_03" target="_blank" datap='31'><div class="selectindex_icon14"></div><div class="systemName">营造林管理系统</div></a></li>
+                            <li><a href="http://220.160.59.10:7003/tlwFrmis/login_indo.do?username=gsmm_admin&userpw=000000" class="sel_05" target="_blank" datap='301'><div class="selectindex_icon03"></div><div class="systemName">古树名木管理系统</div></a></li>
+                            <li><a class="sel_13" target="_blank" datap='301'><div class="selectindex_icon19"></div><div class="systemName">生物多样性管理系统</div></a></li>
+                        </ul>
+                        <ul>
+                            <li><a href="http://36.7.68.79:9005/ynhhzweb/Portal/AutoLogin/Login/login.aspx?userid=10001&menuid=66666666" class="sel_06" target="_blank" datap='5'><div class="selectindex_icon22"></div><div class="systemName">林业智能办公系统</div></a></li>
+                            <li><a class="sel_13" target="_blank" datap='23'><div class="selectindex_icon06"></div><div class="systemName">林权信息管理系统</div></a></li>
+                            <li><a class="sel_13" target="_blank" datap='25'><div class="selectindex_icon22"></div><div class="systemName">林业行政审批系统</div></a></li>
+                            <li><a class="sel_13" target="_blank" datap='5'><div class="selectindex_icon12"></div><div class="systemName">木材经营管理系统</div></a></li>
+                            <li><a class="sel_13" target="_blank" datap='23'><div class="selectindex_icon06"></div><div class="systemName">林木种苗管理系统</div></a></li>
+                            <li><a class="sel_13" target="_blank" datap='25'><div class="selectindex_icon11"></div><div class="systemName">林木采伐管理系统</div></a></li>
+                            <li><a class="sel_13" target="_blank" datap='5'><div class="selectindex_icon04"></div><div class="systemName">林政执法管理系统</div></a></li>
+                            <li><a class="sel_13" target="_blank" datap='23'><div class="selectindex_icon14"></div><div class="systemName">林业局门户管理系统</div></a></li>
+                        </ul>
+                        <ul>
+                            <li><a class="sel_13" target="_blank" datap='16'><div class="selectindex_icon19"></div><div class="systemName">森林公安警务综合管理系统</div></a></li>
+                            <li><a class="sel_13" target="_blank" datap='22'><div class="selectindex_icon13"></div><div class="systemName">森林公安行政案件管理系统</div></a></li>
+                            <li><a class="sel_13" target="_blank" datap='22'><div class="selectindex_icon22"></div><div class="systemName">森林公安刑事案件管理系统</div></a></li>
+                        </ul>
+                        <ul>
+                            <li><a onclick="login('4495')" class="sel_08" target="_blank" datap='7'><div class="selectindex_icon19"></div><div class="systemName">无人机监测</div></a></li>
+                            <li><a onclick="login('4496')" class="sel_06" target="_blank" datap='26'><div class="selectindex_icon20"></div><div class="systemName">林业视频监控 </div></a></li>
+                            <li><a class="sel_13" target="_blank" datap='28'><div class="selectindex_icon01"></div><div class="systemName">北斗/GPS卫星导航</div></a></li>
+                            <li><a onclick="login('4494')" class="sel_04" target="_blank" datap='29'><div class="selectindex_icon21"></div><div class="systemName">有害生物监测</div></a></li>
+                            <li><a class="sel_13" target="_blank" datap='100'><div class="selectindex_icon22"></div><div class="systemName">野生动植物监测</div></a></li>
+                            @*
+                                <li><a href="#" class="sel_03" target="_blank" datap='302'><div class="icon-sty_05"></div><div class="systemName">湿地公园三维展示系统</div></a></li>
+                                <li><a href="#" class="sel_08" target="_blank" datap='303'><div class="icon-sty_06"></div><div class="systemName">森林公园三维展示系统</div></a></li>
+                                <li><a href="#" class="sel_08" target="_blank" datap='304'><div class="icon-sty_06"></div><div class="systemName">国有林场三维展示系统</div></a></li>
+                                <li><a href="#" class="sel_08" target="_blank" datap='305'><div class="icon-sty_06"></div><div class="systemName">自然保护区三维展示系统</div></a></li>
+                                <li><a href="#" class="sel_08" target="_blank" datap='306'><div class="icon-sty_06"></div><div class="systemName">黔灵山公园三维展示系统</div></a></li>*@
+                        </ul>
+                        <ul>
+                            <li><a onclick="login('4497')" class="sel_08" target="_blank" datap='7'><div class="selectindex_icon13"></div><div class="systemName">林业数据中心平台</div></a></li>
+                            <li><a class="sel_13" target="_blank" datap='26'><div class="selectindex_icon19"></div><div class="systemName">业务流程管理平台 </div></a></li>
+                            <li><a class="sel_13" target="_blank" datap='28'><div class="selectindex_icon01"></div><div class="systemName">林业大数据支撑平台</div></a></li>
+                            <li><a class="sel_13" target="_blank" datap='29'><div class="selectindex_icon20"></div><div class="systemName">林业共享服务平台</div></a></li>
+                            <li><a class="sel_13" target="_blank" datap='100'><div class="selectindex_icon22"></div><div class="systemName">林业三维电子沙盘展示平台</div></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input name="UserIDhid" type="hidden" id="UserIDhid" value="sys_admin" />
+        <input type="hidden" name="hfselSty" id="hfselSty" value="Default" />
+    </form>
+    <div class="select-footer">
+        技术支持：福建特力惠信息科技股份有限公司<br /> Copyright © 2015-2018 特力惠智慧林业云平台 All Rights Reserved.
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var myChart = echarts.init(document.getElementById('mainhly'));
+
+    var myChart1 = echarts.init(document.getElementById('mainfire'));
+
+    // 指定图表的配置项和数据
+    var option = {
+        title: {
+            text: '护林员人数统计',
+            textStyle: {
+                fontSize: 16
+            }
+        },
+        tooltip: {},
+        legend: {
+            data: ['人数']
+        },
+        xAxis: {
+            data: ["蒙自", "河口", "弥勒", "红河", "屏边", "石屏","元阳"]
+        },
+        yAxis: {},
+        series: [{
+            name: '人数',
+            type: 'bar',
+            data: [10, 20, 36, 10, 10, 20,18]
+        }]
+    };
+
+    var option1 = {
+        title: {
+            text: '未来一周气温变化',
+            textStyle: {
+                fontSize:16
+            }
+        },
+        tooltip: {
+            trigger: 'axis'
+        },
+        legend: {
+            data: ['最高气温', '最低气温']
+        },
+        toolbox: {
+            show: true,
+            feature: {
+                dataZoom: {
+                    yAxisIndex: 'none'
+                },
+                dataView: { readOnly: false },
+                magicType: { type: ['line', 'bar'] },
+                restore: {},
+                saveAsImage: {}
+            }
+        },
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+        },
+        yAxis: {
+            type: 'value',
+            axisLabel: {
+                formatter: '{value} °C'
+            }
+        },
+        series: [
+            {
+                name: '最高气温',
+                type: 'line',
+                data: [11, 11, 15, 13, 12, 13, 10],
+                markPoint: {
+                    data: [
+                        { type: 'max', name: '最大值' },
+                        { type: 'min', name: '最小值' }
+                    ]
+                },
+                markLine: {
+                    data: [
+                        { type: 'average', name: '平均值' }
+                    ]
+                }
+            },
+            {
+                name: '最低气温',
+                type: 'line',
+                data: [1, -2, 2, 5, 3, 2, 0],
+                markPoint: {
+                    data: [
+                        { name: '周最低', value: -2, xAxis: 1, yAxis: -1.5 }
+                    ]
+                },
+                markLine: {
+                    data: [
+                        { type: 'average', name: '平均值' },
+                        [{
+                            symbol: 'none',
+                            x: '90%',
+                            yAxis: 'max'
+                        }, {
+                            symbol: 'circle',
+                            label: {
+                                normal: {
+                                    position: 'start',
+                                    formatter: '最大值'
+                                }
+                            },
+                            type: 'max',
+                            name: '最高点'
+                        }]
+                    ]
+                }
+            }
+        ]
+    };
+
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+    myChart1.setOption(option1);
+
+    /*第一种形式 第二种形式 更换显示样式*/
+    function setTab(m, n) {
+        var tli = document.getElementById("menu" + m).getElementsByTagName("li");
+        var mli = document.getElementById("main" + m).getElementsByTagName("ul");
+        for (i = 0; i < tli.length; i++) {
+            tli[i].className = i == n ? "hover" : "";
+            mli[i].style.display = i == n ? "block" : "none";
+        }
+    }
+
+    function login(uid) {
+        //window.location.href = "http://" + window.location.host + "/Interface/SystemRedirect?uid=" + uid; //'http://' + window.location.host + '/Interface/SystemRedirect?uid=4489'
+        window.open("http://localhost:33844/Interface/SystemRedirect?uid=" + uid, '_blank');
+    }
+
+    function adjust() {
+        var maxli = 0;
+        for (var i = 0; i < 5; i++) {
+            var temli = $(".main ul:eq(" + i + ") li").length;
+            if (parseInt(temli) >= parseInt(maxli)) {
+                maxli = temli;
+            }
+        }
+        //var screenHeight = document.documentElement.clientHeight;
+        var screenHeight = $(window).height();
+        $(".systemWrap").css({ "height": screenHeight + "px" });
+        var conHeight = screenHeight - 205;
+        $(".menuWrap").css({ "height": conHeight + "px" });
+        var menuHeight = $('.main1box').height() + 40;
+
+        $(".main1box").css({ "margin-top": 20 + "px" });
+        $(".main1box").css({ "margin-bottom": 0 + "px" });
+    };
+
+    function LoginOut() {
+        window.location.href = "@Url.Action("Login","System")";
+    }
+
+    $(function () {
+        adjust();
+        setTimeout(function () {
+            window.onresize = function () {
+                adjust();
+            }
+        })
+    })
+</script>

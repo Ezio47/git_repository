@@ -1,0 +1,72 @@
+﻿@{
+    //ViewBag.Title =  "首页";
+    Layout = null;
+}
+<script src="~/Scripts/jquery-easyui-1.4/jquery.min.js"></script>
+<script src="~/Scripts/jquery-easyui-1.4/jquery.easyui.min.js"></script>
+<script src="~/Scripts/skyline/3DMapTotal.js"></script>
+<link href="~/Content/themes/easyui/easyui.css" rel="stylesheet" />
+<link href="~/Content/themes/easyui/color.css" rel="stylesheet" />
+<link href="~/Content/themes/easyui/icon.css" rel="stylesheet" />
+<link href="~/Content/themes/easyui/Default.css" rel="stylesheet" />
+<script type="text/javascript">
+    $(document).ready(function () {
+        var sgworld = document.getElementById('SGWorld');
+        sgworld.AttachEvent("OnFrame", OnFrame);
+    });
+</script>
+<html>
+<body>
+    <table>
+        <tr>
+            <td>
+                <img id="ThreeD" src="~/Images/huadian.png" style="float: left; cursor:pointer" title="画点" onclick="createImagesHUO1('location.png')" />
+            </td>
+            <td>
+                <img id="ThreeD" src="~/Images/huaxian.png" style="float: left; cursor:pointer" title="画线" onclick="d_CreateLine(0xFF0000, '#FF0000', 10)" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img id="ThreeD" src="~/Images/huamian.png" style="float: left; cursor:pointer" title="画面" onclick="d_CreatePolygon()" />
+            </td>
+            <td>
+                <img id="ThreeD" src="~/Images/wenzi.png" style="float: left; cursor:pointer" title="文字" onclick="excCommand(1012, 0)" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img id="ThreeD" src="~/Images/putongjiantou.png" style="float: left; cursor:pointer" title="普通箭头" onclick="d_CreateArrow(0)" />
+            </td>
+            <td>
+                <img id="ThreeD" src="~/Images/xianxingjiantou.png" style="float: left; cursor:pointer" title="线形箭头" onclick="d_CreateArrow(1)" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img id="ThreeD" src="~/Images/juxingjiantou.png" style="float: left; cursor:pointer" title="矩形箭头" onclick="d_CreateArrow(3)" />
+            </td>
+            <td>
+                <img id="ThreeD" src="~/Images/yanxingjiantou.png" style="float: left; cursor:pointer" title="燕形箭头" onclick="d_CreateArrow(4)" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img id="ThreeD" src="~/Images/huayuan.png" style="float: left; cursor:pointer" title="圆" onclick="d_CreateCircle()" />
+            </td>
+            <td>
+                <img id="ThreeD" src="~/Images/juxing.png" style="float: left; cursor:pointer" title="矩形" onclick="d_CreateRectangle()" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img id="ThreeD" src="~/Images/qingchu.png" style="float: left; cursor:pointer" title="清除" onclick="delDraw()" />
+            </td>
+            <td>
+                <img id="ThreeD" src="~/Images/chutu.png" style="float: left; cursor:pointer" title="出图" onclick="qrueyHTML_Image()" />
+            </td>
+        </tr>
+    </table>   
+<object id="SGWorld" classid="CLSID:3a4f91b1-65a8-11d5-85c1-0001023952c1" style="visibility:hidden;height:0 "></object>
+</body>
+</html>

@@ -1,0 +1,76 @@
+﻿@{
+    ViewBag.Title = "详细信息--上报信息";
+    Layout = "~/Views/Shared/_LayoutIndexNoMenu.cshtml";
+}
+@model ManagerSystemModel.T_IPSRPT_REPORT_Model
+
+@section Header{
+
+
+}
+<div class="cxjg_info">
+    <div class="info_tex">
+        <table border="0" cellspacing="0" cellpadding="0" align="center" style="width:100%;height:100%">
+            <tbody>
+                <tr>
+                    <td class="bg1">上报人：</td>
+                    <td class="text_01">@Model.HName</td>
+                    <td class="bg1">手机号：</td>
+                    <td class="text_01">@Model.PHONE</td>
+                </tr>
+                <tr>
+                    <td class="bg1">发生地：</td>
+                    <td colspan="3" class="text_01"><input type="text" value="@Model.ADDRESS" readonly style="height:36px;width:100%" /> </td>
+                </tr>
+                <tr>
+                    <td class="bg1">上报描述：</td>
+                    <td colspan="3">
+                        <textarea style="height:50px;width:100%" readonly>@Model.UPLOADDESCRIBE</textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="bg1">上传文件：</td>
+                    @if (@Model.UPLOADURL != "" && @Model.UPLOADURL != null)
+                    {
+                        if (@Model.UPLOADTYPE == "1")
+                        {
+                            <td colspan="3" style="text-align: center">
+                                <img src="@Model.UPLOADURL" style="width:200px;height:250px;" />
+                                &nbsp;&nbsp;
+                                <a href="@Model.UPLOADURL" target="_blank">原图查看</a>
+                            </td>
+                        }
+                        else if (@Model.UPLOADTYPE == "2")
+                        {
+                            <td colspan="3">
+                                <video width="350" height="200" controls autoplay>
+                                    <source src="@Model.UPLOADURL" type="video/mp4">
+                                </video>
+                            </td>
+                        }
+                        else if (@Model.UPLOADTYPE == "3")
+                        {
+                            <td colspan="3">
+                                <audio style="width:230px;" controls>
+                                    <source src="@Model.UPLOADURL" type="audio/mpeg">
+                                </audio>"
+                            </td>
+                        }
+
+                    }
+                    else
+                    {
+                        <td colspan="3" style="text-align: center">
+                            <img src="~/Images/photo.png" style="width:200px;height:200px;" />
+                        </td>
+                    }
+                </tr>
+                <tr>
+                    <td class="bg1">上报时间：</td>
+                    <td colspan="3" class="text_01">@Model.SBTIME </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>

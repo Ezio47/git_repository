@@ -1,0 +1,221 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+}
+@section Header{
+    <script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        单位：<select id="tbxORGNO" onchange="Query()">@Html.Raw(@ViewBag.vdOrg)</select>&nbsp;&nbsp;&nbsp;
+                        年份：<input id="tbxYEAR" type="text" class="Wdate" style="width:100px" value="@ViewBag.YEAR" onclick="WdatePicker({ dateFmt: 'yyyy'})" />
+                        <input type="button" value="查询" onclick="Query()" class="btnSearchCss" />
+                        <input type="button" value="保存" onclick="Manager()" id="btnSave" class="btnSaveCss" style="display:none;">
+                        <input type="button" value="导出" onclick="Export()" id="btnExport" class="btnOutputCss" style="display:none;">
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <input id="DICTTYPEID" name="DICTTYPEID" type="hidden" value="@ViewBag.DICTTYPEID" />
+                <input id="DICTTValue" name="DICTTValue" type="hidden" value="@ViewBag.DICTTValue" />
+                <div id="divTable" class="divTable">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var blnSave = '@ViewBag.Save';
+    if (blnSave == "1") {
+        document.getElementById('btnSave').style.display = "";
+    }
+    var blnExport = '@ViewBag.Export';
+    if (blnExport == "1") {
+        document.getElementById('btnExport').style.display = "";
+    }
+
+    Query();
+    function Query() {
+        var year = $('#tbxYEAR').val();
+        if (year == "") {
+            layer.msg("请选择查询年份!", { icon: 5 });
+            return;
+        }
+        $.ajax({
+            type: 'get',
+            url: '/PEST/SCXCBFZREPORTQuery',
+            dataType: 'json',
+            data: { ORGNO: $('#tbxORGNO').val(), YEAR: year },
+            success: function (data, ioArgs) {
+                if (data.Success) {
+                    $('#divTable').html("");
+                    $('#divTable').html(data.Msg);
+                }
+                else {
+                    $('#divTable').html("");
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("查询异常!", { icon: 5 });
+            }
+        });
+    }
+
+    function Manager() {
+        var _len = $('#SCXCBFZTable tr').length - 2;//行数
+        if (_len > 0) {
+            var BYORGNO = "";
+            var SCXCBFZAREA = "";
+            var SCXCBFZPLANAREA = "";
+            var SCXCBFZFINISHAREA = "";
+            for (var i = 0; i < _len; i++) {
+                var AREA = $('#tbxAREA' + i + '').val();
+                var PLANAREA = $('#tbxPLANAREA' + i + '').val();
+                var FINISHAREA = $('#tbxFINISHAREA' + i + '').val();
+                if ($.trim(AREA) != "") {
+                    if (!CheckNUM2(AREA)) {
+                        layer.msg('面积请输入正数,且最多保留2位有效小数!', { icon: 5 });
+                        $('#tbxAREA' + i + '').focus();
+                        return;
+                    }
+                }
+                if ($.trim(PLANAREA) != "") {
+                    if (!CheckNUM2(PLANAREA)) {
+                        layer.msg('面积请输入正数,且最多保留2位有效小数!', { icon: 5 });
+                        $('#tbxPLANAREA' + i + '').focus();
+                        return;
+                    }
+                }
+                if ($.trim(FINISHAREA) != "") {
+                    if (!CheckNUM2(FINISHAREA)) {
+                        layer.msg('面积请输入正数,且最多保留2位有效小数!', { icon: 5 });
+                        $('#tbxFINISHAREA' + i + '').focus();
+                        return;
+                    }
+                }
+                if (AREA != "" || PLANAREA != "" || FINISHAREA != "") {
+                    BYORGNO = BYORGNO + $('#txtORGNO' + i + '').val() + ",";
+                    SCXCBFZAREA = SCXCBFZAREA + AREA + ",";
+                    SCXCBFZPLANAREA = SCXCBFZPLANAREA + PLANAREA + ",";
+                    SCXCBFZFINISHAREA = SCXCBFZFINISHAREA + FINISHAREA + ",";
+                }
+            }
+            $.ajax({
+                url: '/PEST/SCXCBFZREPORTManager',
+                type: 'post',
+                timeout: 10000, //10秒后超时，如果为0则永不超时
+                data: {
+                    TopORGNO: $('#tbxORGNO').val(),
+                    BYORGNO: BYORGNO,
+                    SCXCBFZYEAR: $('#tbxYEAR').val(),
+                    SCXCBFZAREA: SCXCBFZAREA,
+                    SCXCBFZPLANAREA: SCXCBFZPLANAREA,
+                    SCXCBFZFINISHAREA: SCXCBFZFINISHAREA
+                },
+                dataType: 'json',
+                success: function (data, ioArgs) {
+                    if (data.Success) {
+                        layer.msg(data.Msg, { icon: 6 });
+                        ManagerMX()
+                    }
+                    else {
+                        layer.msg(data.Msg, { icon: 5 });
+                    }
+                },
+                error: function (err, ioArgs) {
+                    layer.msg("系统异常!", { icon: 5 });
+                }
+            });
+        }
+    }
+
+    function ManagerMX() {
+        var _len = $('#SCXCBFZTable tr').length - 2;//行数
+        if (_len > 0) {
+            var ArrDICTTYPEID = $('#DICTTYPEID').val().split(',');
+            var ArrDICTTValue = $('#DICTTValue').val().split(';');
+            for (var t = 0; t < ArrDICTTYPEID.length; t++) {
+                var typeid = ArrDICTTYPEID[t];
+                var dictvalue = ArrDICTTValue[t];
+                var arrdict = dictvalue.split(',');
+                var ORGNO = "";
+                var TYPEID = "";
+                var TYPEVALUE = "";
+                var VARCHAR = "";
+                for (var i = 0; i < _len; i++) {
+                    for (var j = 0; j < arrdict.length; j++) {
+                        var temp = i.toString() + typeid + arrdict[j];
+                        var tempchar = $('#tbx' + temp + '').val();
+                        if (tempchar != "") {
+                            if (arrdict[j] == "1") {
+                                ORGNO += $('#txtORGNO' + i + '').val() + ',';
+                                TYPEID += typeid + ',';
+                                TYPEVALUE += arrdict[j] + ',';
+                                VARCHAR += tempchar + ',';
+                            }
+                            else {
+                                if (!CheckNUM2(tempchar)) {
+                                    layer.msg("数据输入非法,只能输入正数,且最多保留2位有效数字!", { icon: 5 });
+                                    $('#tbx' + temp + '').focus();
+                                    return;
+                                }
+                                else {
+                                    ORGNO += $('#txtORGNO' + i + '').val() + ',';
+                                    TYPEID += typeid + ',';
+                                    TYPEVALUE += arrdict[j] + ',';
+                                    VARCHAR += tempchar + ',';
+                                }
+                            }
+                        }
+                    }
+                }
+                SaveFZMX(ORGNO, $('#tbxYEAR').val(), TYPEID, TYPEVALUE, VARCHAR)
+            }          
+        }
+    }
+
+    function SaveFZMX(ORGNO, YEAR, TYPEID, TYPEVALUE, VARCHAR) {
+        $.ajax({
+            url: '/PEST/SCXCBFZMXREPORTManager',
+            type: 'post',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            dataType: 'json',
+            data: {
+                ORGNO: ORGNO,
+                YEAR: YEAR,
+                SCXCBFZMXTYPEID: TYPEID,
+                SCXCBFZMXTYPEVALUE: TYPEVALUE,
+                SCXCBFZMXVARCHAR: VARCHAR
+            },
+            success: function (data, ioArgs) {
+                if (data.Success) {
+                    Query();
+                }
+                else {
+                    layer.msg(data.Msg, { icon: 5 });
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("系统异常!", { icon: 5 });
+            }
+        });
+    }
+
+    function Export() {
+        var ORGNO = $('#tbxORGNO').val();
+        var YEAR = $('#tbxYEAR').val();
+        var url = '/PEST/SCXCBFZREPORTExportExcel?ORGNO=' + ORGNO + '&YEAR=' + YEAR;
+        window.location = url;
+    }
+</script>
+

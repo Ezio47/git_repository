@@ -1,0 +1,283 @@
+﻿@{
+    ViewBag.Title = "视频监控--海威";
+    Layout = null;
+}
+<script src="~/Scripts/VideoJs/jquery-2.2.2.js"></script>
+
+<script src="~/Scripts/jquery-1.8.2.js"></script>
+<script src="~/Scripts/layer/layer.js"></script>
+<link href="~/Content/themes/default/Public.css" rel="stylesheet" />
+<link href="~/Content/videocontrol.css" rel="stylesheet" />
+<link href="~/Content/videoHW.css" rel="stylesheet" />
+<link href="~/Content/themes/easyui/easyui.css" rel="stylesheet" />
+<link href="~/Content/themes/easyui/icon.css" rel="stylesheet" />
+<link href="~/Content/themes/easyui/color.css" rel="stylesheet" />
+@*<script src="~/Scripts/jquery-easyui-1.4/jquery.min.js"></script>*@
+<script src="~/Scripts/jquery-easyui-1.4/jquery.easyui.min.js"></script>
+<script src="~/Scripts/jquery-easyui-1.4/locale/easyui-lang-zh_CN.js"></script>
+
+<script src="~/Scripts/VideoJs/videohw/webVideoCtrl.js"></script>
+<script src="~/Scripts/VideoJs/videohw/VideoHWShow.js"></script>
+
+<script src="~/Scripts/VideoJs/md5.js"></script>
+<script src="~/Scripts/VideoJs/loginService.js"></script>
+<script src="~/Scripts/VideoJs/ckplayer/ckplayer.js" charset="utf-8"></script>
+<script src="~/Scripts/VideoJs/serverInfoService.js"></script>
+<script src="~/Scripts/VideoJs/cacheService.js"></script>
+<script src="~/Scripts/VideoJs/businessService.js"></script>
+<script src="~/Scripts/VideoJs/WebSocket.js"></script>
+
+<script src="~/Scripts/VideoJs/common.js"></script>
+<script src="~/Scripts/VideoJs/VideoShow.js"></script>
+
+<script type="text/javascript">
+    var deviceType;
+    var id = "@ViewBag.id";
+    var eid = "@ViewBag.eid";
+    var type = "@ViewBag.type";
+
+    var $j = jQuery.noConflict(); //自定义一个比较短快捷方式
+    $j(function () {
+
+        $j('#devTree').tree({
+            url: "/BaseCommon/GetVideoTree?id=" + id + "&eid=" + eid,
+
+            onDblClick: function (node) {
+                if ($j('#devTree').tree('isLeaf', node.target)) {//判断是否是叶子节点
+                    //0 海威 1 森林眼
+                    deviceType = node.type;
+                    SwitchCommand();
+                    if (node.type == 0) {
+                        clickLogin(node);//登录视频点
+                    } else {
+                        //  login(node);
+                        clickLogin(node);//登录视频点
+                    }
+                }
+                //else {
+                //    alert("父节点" + node.text);
+                //}
+            },
+            onLoadSuccess: function (node, data) {
+                var node = $j('#devTree').tree('find', eid);
+                if (node != null) {
+                    if (node.type == 0) {
+                        clickLogin(node);//登录视频点
+                    } else {
+                        //  login(node);
+                        clickLogin(node);//登录视频点
+                    }
+                }
+            }
+        });
+    })
+
+    //切换命令
+    // 上 0 下 1 左 2 右 3 右上 4 右下 5 左下 6 左上 7 自动 8
+    function SwitchCommand(flag) {
+        //海威
+        if (deviceType == 0) {
+            if (flag == 0) {
+                mouseDownPTZControl(1);
+            }
+            if (flag == 1) {
+                mouseDownPTZControl(2);
+            }
+            if (flag == 2) {
+                mouseDownPTZControl(3);
+            }
+            if (flag == 3) {
+                mouseDownPTZControl(4);
+            }
+            if (flag == 4) {
+                mouseDownPTZControl(7);
+            }
+            if (flag == 5) {
+                mouseDownPTZControl(8);
+            }
+            if (flag == 6) {
+                mouseDownPTZControl(6);
+            }
+            if (flag == 7) {
+                mouseDownPTZControl(5);
+            }
+            if (flag == 8) {
+                mouseDownPTZControl(9);
+            }
+        }
+        else {//森林眼
+            if (flag == 0) {
+                moveVideo(0, 1);
+            }
+            if (flag == 1) {
+                moveVideo(0, -1);
+            }
+            if (flag == 2) {
+                moveVideo(-1, 0);
+            }
+            if (flag == 3) {
+                moveVideo(1, 0);
+            }
+            if (flag == 4) {
+                moveVideo(1, 1);
+            }
+            if (flag == 5) {
+                moveVideo(1, -1);
+            }
+            if (flag == 6) {
+                moveVideo(-1, -1);
+            }
+            if (flag == 7) {
+                moveVideo(-1, 1);
+            }
+            if (flag == 8) {
+
+            }
+        }
+
+    }
+
+    //取消切换
+    function SwitchCancelComand() {
+        //海威
+        if (deviceType == 0) {
+            mouseUpPTZControl();
+        }
+        else {
+            moveVideoStop();
+        }
+    }
+</script>
+
+<div>
+    <div class="easyui-layout" style="width:100%;height:100%;" data-options="fit:true">
+        @*<div data-options="region:'north',split:true" title="" style="height:50px;text-align:center"><h3 style="margin-top:1%;">视频监控云操作界面</h3></div>*@
+        <div data-options="region:'east',split:true" title="" style="width:350px;height:100%">
+            <fieldset class="ptz">
+                <legend>云台控制</legend>
+                <div style="float:left">
+                    <div id="controlgraphdiv">
+                        <div class="arrow-up" id="up" title="向上" onmousedown="SwitchCommand(0);" onmouseup="SwitchCancelComand();"></div>
+                        <div class="arrow-down" id="down" title="向下" onmousedown="SwitchCommand(1);" onmouseup="SwitchCancelComand();"></div>
+                        <div class="arrow-left" id="left" title="向左" onmousedown="SwitchCommand(2);" onmouseup="SwitchCancelComand();"></div>
+                        <div class="arrow-right" id="right" title="向右" onmousedown="SwitchCommand(3);" onmouseup="SwitchCancelComand();"></div>
+                        <div class="arrow-right-up" id="right_up" title="右上" onmousedown="SwitchCommand(4);" onmouseup="SwitchCancelComand();"></div>
+                        <div class="arrow-right-down" id="right_down" title="右下" onmousedown="SwitchCommand(5);" onmouseup="SwitchCancelComand();"></div>
+                        <div class="arrow-left-down" id="left_down" title="左下" onmousedown="SwitchCommand(6);" onmouseup="SwitchCancelComand();"></div>
+                        <div class="arrow-left-up" id="left_up" title="左上" onmousedown="SwitchCommand(7);" onmouseup="SwitchCancelComand();"></div>
+                        <div class="circle" id="circle"></div>
+                        <div class="insidecircle" id="insidecircle">
+                            <div class="innerCircle" onclick="SwitchCommand(8);"></div>
+                        </div>
+                    </div>
+                </div>
+                <div style="float:left; margin-left:55%">
+                    <table cellpadding="0" cellspacing="3" border="0" class="left">
+                        <tr>
+                            <td class="tt">云台速度</td>
+                            <td>
+                                <select id="ptzspeed" class="sel">
+                                    <option>1</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                    <option selected>4</option>
+                                    <option>5</option>
+                                    <option>6</option>
+                                    <option>7</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tt"><input type="button" class="btn2" value="变倍+" onmousedown="PTZZoomIn()" onmouseup="PTZZoomStop()"></td>
+                            <td><input type="button" class="btn2" value="变倍-" onmousedown="PTZZoomout()" onmouseup="PTZZoomStop()"></td>
+                        </tr>
+                        <tr>
+                            <td class="tt"><input type="button" class="btn2" value="变焦+" onmousedown="PTZFocusIn()" onmouseup="PTZFoucusStop()"></td>
+                            <td><input type="button" class="btn2" value="变焦-" onmousedown="PTZFoucusOut()" onmouseup="PTZFoucusStop()"></td>
+                        </tr>
+                        <tr>
+                            <td class="tt"><input type="button" class="btn2" value="光圈+" onmousedown="PTZIrisIn()" onmouseup="PTZIrisStop()"></td>
+                            <td><input type="button" class="btn2" value="光圈-" onmousedown="PTZIrisOut()" onmouseup="PTZIrisStop()"></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="button" class="btn2" value="开始预览" onclick="clickStartRealPlay();" />
+                                </td>
+                            <td>
+                                <input type="button" class="btn2" value="停止预览" onclick="clickStopRealPlay();" />
+                            </td>
+
+                        </tr>
+                    </table>
+                </div>
+
+            </fieldset>
+
+            <fieldset class="preview">
+                <legend>预览</legend>
+                <table cellpadding="0" cellspacing="4" border="0">
+                    <tr>
+                        <td class="tt">登录设备</td>
+                        <td>
+                            <select id="ip" class="sel" onchange="getChannelInfo();"></select>
+                        </td>
+                        <td class="tt">通道列表</td>
+                        <td>
+                            <select id="channels" class="sel"></select>
+                        </td>
+                    </tr>
+                    <tr>
+
+                        <td class="tt">音量</td>
+                        <td>
+                            <input type="text" id="volume" class="txt" value="50" maxlength="3" />[0-100]
+                        </td>
+                        <td>
+                            <input type="button" class="btn" value="设置" onclick="clickSetVolume();" />
+                        </td>
+                        <td>
+                            <input type="button" class="btn" value="打开声音" onclick="clickOpenSound();" />
+
+                            <input type="button" class="btn" value="关闭声音" onclick="clickCloseSound();" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4">
+                            <input type="button" class="btn2" value="启用电子放大" onclick="clickEnableEZoom();" />
+                            <input type="button" class="btn2" value="禁用电子放大" onclick="clickDisableEZoom();" />
+                            <input type="button" class="btn" value="全屏" onclick="clickFullScreen();" />
+                        </td>
+                    </tr>
+                </table>
+            </fieldset>
+
+            <fieldset class="preview">
+                <legend>下载插件</legend>
+                <table cellpadding="0" cellspacing="4" border="0">
+                <tr>
+                    <td ><a href="~/UploadFile/DownLoad/WebComponents.rar">视频监控插件下载</a></td>
+                </tr>
+                </table>
+            </fieldset>
+        </div>
+        <div data-options="region:'west',split:true" title="" style="width:200px;height:100%">
+            <div class="easyui-layout" style="width:100%;height:100%;" data-options="fit:true">
+                <div data-options="region:'center',title:'',iconCls:'icon-video'">
+                    <ul id="devTree" class="easyui-tree" data-options="animate:true,lines:true" style="height:100%"></ul>
+                </div>
+                <div data-options="region:'north',split:false" title="" style="height:50px;text-align:center">
+                    <ul class="page-menu">
+                        <li>
+                            <span><h1><span>视频列表</span></h1></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div data-options="region:'center',title:'',iconCls:'icon-video'">
+            <div id="videoScreen" style="width:100%;height:100%;">
+
+            </div>
+        </div>
+    </div>
+</div>

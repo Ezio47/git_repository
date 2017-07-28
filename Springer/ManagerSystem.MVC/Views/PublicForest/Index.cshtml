@@ -1,0 +1,343 @@
+﻿@{
+    //ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+}
+
+@section Header{
+    <link href="~/Content/MapStyle.css" rel="stylesheet" />
+    <script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+    <script src="~/Scripts/skyline/3dMapTest.js"></script>
+    <style type="text/css">
+        td {
+            text-align: center;
+        }
+
+        .divPager .pagination > li {
+            float: left;
+            margin: 20px 0 0 5px;
+        }
+    </style>
+}
+
+<div id="divpanel" class="easyui-layout" style="width:100%;height:100%;" data-options="fit:true">
+
+    <div id="menuediv" data-options="region:'west',split:true,hideCollapsedContent:false" title="" style="width:330px;overflow-x:hidden;">
+        <ul class="ulhlytree" style="overflow-x:hidden">
+            <li id="li1" style="overflow:hidden">
+                <label><h1><span>空间查询</span></h1></label>
+                <ul class="warnPanel1"style="height:220px;text-align:center">
+                    <li style="text-align:center">
+                        <div id="divFloatToolsView" style=" height: 100%;">
+                            <div>
+                                <div style="font-size:14px;font-weight:800">
+                                    市&nbsp;&nbsp;&nbsp;县：
+                                    <input type="text" id="argxian" style="width:180px;height:24px;" placeholder="" />
+                                </div>
+                                <div style="font-size:14px;font-weight:800">
+                                    乡&nbsp;&nbsp;&nbsp;镇：
+                                    <input type="text" id="argxiang" style="width: 180px; height: 24px;" placeholder="" />
+                                </div>
+                                <div style="font-size:14px;font-weight:800">
+                                    村&nbsp;&nbsp;&nbsp;名：
+                                    <input type="text" id="argcun" style="width: 180px; height: 24px;" placeholder="" />
+                                </div>
+                                <div style="font-size:14px;font-weight:800">
+                                    林班号：
+                                    <input type="text" id="arglin" style="width: 180px; height: 24px;" placeholder="" />
+                                </div>
+                                <div style="font-size:14px;font-weight:800">
+                                    小班号：
+                                    <input type="text" id="argxiao" style="width: 180px; height: 24px;" placeholder="" />
+                                </div>
+                                <div >
+                                    <input type="button" value="查询" onclick="searchUser()" class="btnSearchCss" />
+                                </div>
+                                @*<input type="button" value="市县" />
+                                <input type="text" id="argxian" style="width:80px;height:24px;" placeholder="" />
+                                <input type="button" value="乡镇" />
+                                <input type="text" id="argxiang" style="width:80px;height:24px;" placeholder="" />
+                                <input type="button" value="村名" />
+                                <input type="text" id="argcun" style="width:80px;height:24px;" placeholder="" />
+                                <input type="button" value="林班" />
+                                <input type="text" id="arglin" style="width:80px;height:24px;" placeholder="" />
+                                <input type="button" value="小班" />
+                                <input type="text" id="argxiao" style="width:80px;height:24px;" placeholder="" />*@
+                                <select name="arg0" id="arg0" style="width:80px;display:none" onchange="show_arg1();">
+                                    <option value=""></option>
+                                    <option value="县">县</option>
+                                    <option value="乡">乡</option>
+                                    <option value="村">村</option>
+                                    <option value="林班">林班</option>
+                                    <option value="小班">小班</option>
+                                    <option value="工程区">工程区</option>
+                                    <option value="生态区">生态区位</option>
+                                    <option value="小班面">小班面积</option>
+                                    <option value="扣除面">扣除面积</option>
+                                    <option value="补偿面">补偿面积</option>
+                                    <option value="优势树">优势树种</option>
+                                </select>
+                                <select name="arg1" id="arg1" style="width: 80px; display: none">
+                                    <option value=""></option>
+                                    <option value="=">等于</option>
+                                    <option value="<>">不等于</option>
+                                    <option value="like">包括</option>
+                                </select>
+                                <br />
+                                <input type="text" id="arg2" style="width: 80px; height: 24px; display: none" placeholder="" />
+                                <select name="arg3" id="arg3" style="width: 80px; display: none">
+                                    <option value=""></option>
+                                    <option value="AND">AND</option>
+                                    <option value="OR">OR</option>
+                                    <option value="NOT">NOT</option>
+                                </select>
+                                <br />
+                                <input type="button" value="添加条件" onclick="addArg()" class="btnAddCss" style="width: 75px; margin: -3px; display: none" />
+                                @*<input type="button" value="查询" onclick="searchUser()" class="btnSearchCss" />*@
+                                <input type="button" value="重置" onclick="resetArg()" class="btnCancelCss" style="display:none" />
+                            </div>
+                            <hr />
+                            @*<div style="width:98%; padding:5px 1%; ">
+                                <textarea id="arg" style="width:97%;border:1px solid #a0c98a; background-color:#f4fef6; color:#146b01;padding:5px 1%;height:80px;overflow:hidden;"></textarea>
+
+                            </div>*@
+                        </div>
+                    </li>
+                </ul>
+            </li>
+            <li id="li2">
+                <label><h1><span>查询结果</span></h1></label>
+                <ul class="skyLineLeftMenu">
+                    <li>
+                        <div class="divTable" id="divSupplies">
+                        </div>
+                    </li>
+                    <li>
+                        <div class="divPager" id="divPager">
+                        </div>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div data-options="region:'east',title:''" style="width:50px; display:none;">
+        @*<a style="float:left" href="@ViewBag.HomeUrl"><img src="~/Images/skyline/ioc/sy.png" /></a>*@
+        <div class="hhz_r_xf">
+            <ul class="xf_butt">
+                <li><a onclick="excCommand(1057,0)"><img src="~/Images/skyline/ioc/r_icon_xz.png" style="height:42px;width:40px" title="旋转" /></a></li>
+                <li><a onclick="excCommand(1035, 0)"><img src="~/Images/skyline/ioc/r_icon_cj.png" style="height:42px;width:40px" title="测距" /></a></li>
+                <li><a onclick="excCommand(1165, 0)"><img src="~/Images/skyline/ioc/r_icon_cm.png" style="height:42px;width:40px" title="测面" /></a></li>
+                <li><a onclick="excCommand(2217, 0)"><img src="~/Images/skyline/ioc/r_icon_pd.png" style="height:42px;width:40px" title="坡度分析" /></a></li>
+                <li><a onclick="excCommand(2216, 0)"><img src="~/Images/skyline/ioc/r_icon_dx.png" style="height:42px;width:40px" title="地行分析" /></a></li>
+                <li><a onclick="excCommand(1067,0)"><img src="~/Images/skyline/ioc/r_icon_kz.png" style="height:42px;width:40px" title="快照" /></a></li>
+                @*<li><a onclick="selectMove(1)"><img src="~/Images/skyline/ioc/r_icon_xzh.png" style="height:40px;width:40px" title="选中" /></a></li>*@
+                <li><a onclick="qrueyHTML_tckz()"><img src="~/Images/skyline/ioc/r_icon_tc.png" style="height:42px;width:40px" title="图层控制" /></a></li>
+                <li><a onclick="qrueyHTML_qr()"><img src="~/Images/skyline/ioc/r_icon_cx.png" style="height:42px;width:40px" title="图层查询" /></a></li>
+                <li><a onclick="qrueyHTML_dw()"><img src="~/Images/skyline/ioc/r_icon_dw.png" style="height:42px;width:40px" title="定位" /></a></li>
+            </ul>
+        </div>
+
+    </div>
+
+    <div data-options="region:'center'" title="" style=" border: none; background:#f5f5f5; padding:0px 0px 0px 0px;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'south'" style="height:20px;">
+                <div id="sbxx" style="padding-left:290px;text-align:center;float:left">坐标信息暂未获得</div>
+                <img id="ThreeD" src="~/Images/tools.png" style="float: right; height:18px" onclick="MapToolsPopUrl('http://localhost:33844/EmergencyHand/MapToolsIndex')" />
+            </div>
+            @*//map*@
+            <div id="sgmap" data-options="region:'center'" title="" style="background:#ddceee;overflow:hidden">
+                <object id="TerraExplorer3DWindow" style="float:left;width:100%;height:100%;border:0px solid black;" classid="CLSID:3a4f9192-65a8-11d5-85c1-0001023952c1" />
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script type="text/javascript">
+    var strsql = "";//检索条件
+
+    $(function () {
+        menuEvent('0');
+        // menuOclick('0');
+        type = 1;//公益林
+        CreateSGWord("http://36.7.68.79:9000/SkylineFly/index.FLY");
+        MapToolsPopUrl("http://localhost:33844/EmergencyHand/MapToolsIndex");
+    })
+
+    function MapToolsPopUrl(url) {
+        var popurl = url;
+        //$('#ThreeD').hide();
+        //$('#CloseThreeD').show();
+        var swidth = document.documentElement.clientWidth - 450;
+        showPopuopByUrl(" ", popurl, swidth, 20, 65, 500);
+    }
+    //function removeMapToolsPopUrl(url) {
+    //    var popurl = url;
+    //    $('#ThreeD').show();
+    //    $('#CloseThreeD').hide();
+    //    var swidth = document.documentElement.clientWidth - 450;
+    //    removePopuopByUrl(" ", popurl, swidth, 20, 65, 500);
+    //}
+
+    ////关闭工具栏
+    //function removePopuopByUrl(title, url, x, y, width, height) {
+    //    var sgworld = CreateSGObj();
+    //    var Message = sgworld.Creator.CreatePopupMessage(title, url, x, y, width, height);
+    //    var popup = sgworld.Window.RemovePopup(Message);
+    //}
+
+    function menuOclick(id) {
+        $(".ulhlytree>li:eq(" + id + ")>label").click();
+    }
+    function menuEvent(id) {
+        var $parent_li, $ul, $span;
+        $(".ulhlytree li>label").click(function () {
+            $span = $(this);
+            $parent_li = $span.parent();
+            $parent_li.siblings().children("ul").slideUp();
+            $ul = $span.next("ul");
+            $ul.slideToggle();
+        });
+        $(".ulhlytree>li:eq(" + id + ")>label").click();
+    }
+    function show_arg1() {
+        var arg0 = $("#arg0").val();
+        $("#arg1 option").remove();
+        if (arg0.indexOf("面") > 0) {
+            $("#arg1").append("<option value='='>等于</option>");
+            $("#arg1").append("<option value='>'>大于</option>");
+            $("#arg1").append("<option value='<'>小于</option>");
+            $("#arg1").append("<option value='<>'>不等于</option>");
+            $("#arg1").append("<option value='>='>大于等于</option>");
+            $("#arg1").append("<option value='<='>小于等于</option>");
+        }
+        else {
+            $("#arg1").append("<option value='='>等于</option>");
+            $("#arg1").append("<option value='<>'>不等于</option>");
+            $("#arg1").append("<option value='like'>包括</option>");
+        }
+    }
+    function addArg() {
+        //
+        var arg0 = $("#arg0").val();
+        var arg1 = $("#arg1").val();
+        var arg2 = $("#arg2").val();
+        var arg3 = $("#arg3").val();
+        if ($.trim(arg3) == "") {
+            $("#arg").val('');
+        }
+        if (arg0 == "" || arg1 == "" || arg2 == "") {
+            alert("请输入完整的查询条件!");
+            return;
+        }
+        var str = $("#arg").val();
+        if (arg1 == "like") {
+            arg2 = "%" + arg2 + "%";
+        }
+        if (arg0.indexOf("面") > 0) {
+            str = str + " " + arg0 + "　" + arg1 + "　" + arg2 + " " + arg3;
+        }
+        else {
+            str = str + " " + arg0 + "　" + arg1 + "　'" + arg2 + "' " + arg3;
+        } 
+    
+        $("#arg").val(str);
+
+    }
+    //重置
+    function resetArg() {
+        $("#arg").val('');
+    }
+    //空间数据检索方法
+    function query(page) {
+        var pagesize = '10';
+        if (document.getElementById("selPageSize") != null) {
+            pagesize = document.getElementById("selPageSize").value;
+        }
+        $('#divPager').html('');
+        $('#divSupplies').html('');
+        var index = layer.load(0, { offset: ['350px', '80px'], shade: 0.4 });
+        $.ajax({
+            url: '/PublicForest/GetGYLAjax',
+            data: {
+                strSql: strsql,
+                PageSize: pagesize,
+                Page: page
+            },
+            type: 'post',
+            success: function (data) {
+                if (data.Success) {
+                    //关闭
+                    layer.close(index);
+                    var str = data.pagerInfo.replace("<ul ", "<ol ").replace("</ul>", "</ol>");
+                    $('#divPager').html(str);
+                    $('#divSupplies').html(data.tableInfo);
+                }
+                else {
+                    //关闭
+                    layer.close(index);
+                    alert('登录异常');
+                }
+            },
+            error: function (err, ioArgs) {
+                //关闭
+                layer.close(index);
+                menuOclick('0');
+                alert('查询条件有误');
+            }
+        });
+    }
+    //空间数据查询
+    function searchUser() {
+        var argxian = $('#argxian').val();
+        var argxiang = $('#argxiang').val();
+        var argcun = $('#argcun').val();
+        var arglin = $('#arglin').val();
+        var argxiao = $('#argxiao').val();
+        var argtxt = $('#arg').val();
+        //strsql=$("#arg").val();
+        //if ($.trim(argtxt) == "") {
+        //    alert('请先添加条件');
+        //    return false;
+        //}
+        //strsql = argtxt;
+        //strsql = escape(argtxt);
+        //alert(strsql);
+       
+        var strsql0 = "县 LIKE" + "'%" + argxian + "%'";
+        var or0 = " AND "
+        var strsql1 = "乡 LIKE" + "'%" + argxiang + "%'";
+        var or1 = " AND "
+        var strsql2 = "村 LIKE" + "'%" + argcun + "%'";
+        var or2 = " AND "
+        var strsql3 = "林班 LIKE" + "'" + arglin + "'";
+        var or3 = " AND "
+        var strsql4 = "小班 LIKE" + "'" + argxiao + "'";
+        if (argxian == "") {
+            alert("请先填写县市名称！")
+            return false;
+        }
+        if (argxiang == "") {
+            strsql1 = "";
+            or0 = "";
+        }
+        if (argcun == "") {
+            strsql2 = "";
+            or1 = "";
+        }
+        if (arglin == "") {
+            strsql3 = "";
+            or2 = "";
+        }
+        if (argxiao == "") {
+            strsql4 = "";
+            or3 = "";
+        }
+        strsql = strsql0 + or0 + strsql1 + or1 + strsql2 + or2 + strsql3 + or3 + strsql4;
+        query('1');//默认第一页
+        menuOclick('1');
+    }
+
+</script>

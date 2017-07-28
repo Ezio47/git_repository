@@ -1,0 +1,150 @@
+﻿@{
+    ViewBag.Title = "经纬度定位";
+    Layout = null;
+}
+
+<script src="~/Scripts/jquery-easyui-1.4/jquery.min.js"></script>
+<link href="~/Content/themes/easyui/easyui.css" rel="stylesheet" />
+<link href="~/Content/themes/easyui/color.css" rel="stylesheet" />
+<link href="~/Content/themes/easyui/icon.css" rel="stylesheet" />
+<link href="~/Content/themes/easyui/Default.css" rel="stylesheet" />
+
+<script>
+    $(document).ready(function () {
+        $("input[name=typeRadio]").click(function () {
+            if ($("input[name=typeRadio]:checked").val() == 1) {
+                $("#jd").attr("type", "hidden");
+                $("#wd").attr("type", "hidden");
+                $("#jd_d").attr("type", "text");
+                $("#jd_f").attr("type", "text");
+                $("#jd_m").attr("type", "text");
+                $("#wd_d").attr("type", "text");
+                $("#wd_f").attr("type", "text");
+                $("#wd_m").attr("type", "text");
+                $("#fontDiv1").css("visibility", "");
+                $("#fontDiv2").css("visibility", "");
+                $("#fontDiv3").css("visibility", "");
+                $("#fontDiv4").css("visibility", "");
+                $("#fontDiv5").css("visibility", "");
+                $("#fontDiv6").css("visibility", "");
+                var jd = jsw2tojsw1($("#jd").val());
+                var wd = jsw2tojsw1($("#wd").val());
+                $("#jd_d").val(jd.d);
+                $("#jd_f").val(jd.f);
+                $("#jd_m").val(jd.m.toFixed(4));
+                $("#wd_d").val(wd.d);
+                $("#wd_f").val(wd.f);
+                $("#wd_m").val(wd.m.toFixed(4));
+
+            }
+            else {
+                $("#jd").attr("type", "text");
+                $("#wd").attr("type", "text");
+                $("#jd_d").attr("type", "hidden");
+                $("#jd_f").attr("type", "hidden");
+                $("#jd_m").attr("type", "hidden");
+                $("#wd_d").attr("type", "hidden");
+                $("#wd_f").attr("type", "hidden");
+                $("#wd_m").attr("type", "hidden");
+                $("#fontDiv1").css("visibility", "hidden");
+                $("#fontDiv2").css("visibility", "hidden");
+                $("#fontDiv3").css("visibility", "hidden");
+                $("#fontDiv4").css("visibility", "hidden");
+                $("#fontDiv5").css("visibility", "hidden");
+                $("#fontDiv6").css("visibility", "hidden");
+                var obj = new Object();
+                obj.d = $("#jd_d").val();
+                obj.f = $("#jd_f").val();
+                obj.m = $("#jd_m").val();
+                jd = jsw1tojsw2(obj);
+                $("#jd").val(jd.toFixed(8));
+                obj.d = $("#wd_d").val();
+                obj.f = $("#wd_f").val();
+                obj.m = $("#wd_m").val();
+                wd = jsw1tojsw2(obj);
+                $("#wd").val(wd.toFixed(8));
+            }
+
+        });
+    });
+    //经纬度转换，经纬度转数字
+    function jsw1tojsw2(obj) {
+        return parseFloat(obj.d) + parseFloat(obj.f / 60) + parseFloat(obj.m / 60 / 60);
+    }
+    //经纬度转换，数字转经纬度
+    function jsw2tojsw1(x) {
+        var obj = new Object();
+        var d = parseInt(x);
+        var df = x - d;
+        var f = parseInt(df * 60);
+        var m = (df * 60 - f) * 60;
+        obj.d = d;
+        obj.f = f;
+        obj.m = m;
+        return obj;
+    }
+
+    //图层定位
+    function dingwei() {
+        var jd, wd;
+        if ($("input[name=typeRadio]:checked").val() == 0) {
+            jd = $("#jd").val();
+            wd = $("#wd").val();
+        }
+        else {
+            var obj = new Object();
+            obj.d = $("#jd_d").val();
+            obj.f = $("#jd_f").val();
+            obj.m = $("#jd_m").val();
+            jd = jsw1tojsw2(obj);
+            obj.d = $("#wd_d").val();
+            obj.f = $("#wd_f").val();
+            obj.m = $("#wd_m").val();
+            wd = jsw1tojsw2(obj);
+        }
+        alert(jd + "===" + wd);
+        ptPosition(jd, wd);
+    }
+
+
+</script>
+
+
+<html>
+<body>
+    <div>
+        <div style="width:223px;padding-left:3px;padding-top:3px">
+            <table style="width:100%;border:1px solid #03b046; border-collapse:collapse;">
+                <tr style="border:1px solid #03b046">
+                    <td style="border:1px solid #03b046" colspan="2">
+                        <input type="radio" value="1" name="typeRadio" id="dfmid" checked /><label for="dfmid">度分秒</label><input type="radio" value="0" name="typeRadio" id="sjzid" /><label for="sjzid">十进制</label>
+                    </td>
+                </tr>
+                <tr style="border:1px solid #03b046">
+                    <td style="border:1px solid #03b046">经度： </td>
+                    <td style="border:1px solid #03b046">
+                        <input id="jd" class="easyui-numberbox" type="hidden" value="0" data-options="required:true" style="width:100px" />
+                        <input id="jd_d" class="easyui-numberbox" type="text" value="0" data-options="required:true" style="width:30px" /><font id="fontDiv1">度</font>
+                        <input id="jd_f" class="easyui-numberbox" type="text" value="0" data-options="required:true" style="width:30px" /><font id="fontDiv2">分</font>
+                        <input id="jd_m" class="easyui-numberbox" type="text" value="0" data-options="required:true" style="width:60px" /><font id="fontDiv6">秒</font>
+                    </td>
+                </tr>
+                <tr style="border:1px solid #03b046">
+                    <td style="border:1px solid #03b046">纬度： </td>
+                    <td style="border:1px solid #03b046">
+                        <input id="wd" class="easyui-numberbox" type="hidden" value="0" data-options="required:true" style="width:100px" />
+                        <input id="wd_d" class="easyui-numberbox" type="text" value="0" data-options="required:true" style="width:30px" /><font id="fontDiv3">度</font>
+                        <input id="wd_f" class="easyui-numberbox" type="text" value="0" data-options="required:true" style="width:30px" /><font id="fontDiv4">分</font>
+                        <input id="wd_m" class="easyui-numberbox" type="text" value="0" data-options="required:true" style="width:60px" /><font id="fontDiv5">秒</font>
+                    </td>
+                </tr>
+                <tr style="border:1px solid #03b046">
+                    <td style="border:1px solid #03b046;text-align:center" colspan="2">
+                        <input type="button" onclick="dingwei()" value="定位" style="background-color:#A6A600;" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

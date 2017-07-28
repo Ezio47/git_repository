@@ -1,0 +1,108 @@
+﻿@{
+    //ViewBag.Title = "火险等级";
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+}
+
+@model IEnumerable<ManagerSystem.MVC.Models.YJJCFireLevelModel>
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'center'" title="" style=" border: none; ">
+
+                <div class="divTable" id="divTable">
+                    <table cellpadding="0">
+                        <thead>
+                            <tr>
+                                <th>区域</th>
+                                <th>等级</th>
+                                <th>时间</th>
+                                <th>来源</th>
+                                <th>短信状态</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.Any())
+                            {
+                                foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>@item.AreaName</td>
+                                        @if (Convert.ToInt32(@item.FireLevel) >= 3)
+                                        {
+                                            <td>
+                                                @item.FireLevel
+                                                @*<span class="label label-warning">
+                                                    <i class="icon-warning-sign bigger-120"></i>
+                                                    危险
+                                                </span>*@
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td>@item.FireLevel</td>
+                                        }
+                                        <td>@item.LevelDate</td>
+                                        <td>@item.SourceForm</td>
+                                        <td>@item.MessageStatus</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+@*<div style="margin:40px">
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered table-hover no-margin-bottom no-border-top">
+                <thead>
+                    <tr>
+                        <th>区域</th>
+                        <th>等级</th>
+                        <th>时间</th>
+                        <th>来源</th>
+                        <th>短信状态</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.AreaName</td>
+                                @if (Convert.ToInt32(@item.FireLevel) >= 3)
+                                {
+                                    <td>
+                                        @item.FireLevel
+                                        <span class="label label-warning">
+                                            <i class="icon-warning-sign bigger-120"></i>
+                                            危险
+                                        </span>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>@item.FireLevel</td>
+                                }
+                                <td>@item.LevelDate</td>
+                                <td>@item.SourceForm</td>
+                                <td>@item.MessageStatus</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>*@

@@ -1,0 +1,107 @@
+﻿@{
+    ViewBag.Title = "图片展示";
+    Layout = null;
+}
+
+<link href="@Url.Content("~/Content/Showcss/reset.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/Showcss/default_skin.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/Showcss/case-style.css")" rel="stylesheet" />
+@*<script src="@Url.Content("~/Scripts/jquery-1.8.2.min.js")"></script>*@
+<script src="@Url.Content("~/Scripts/Showjs/jquery-1.11.2.min.js")"></script>
+<script src="@Url.Content("~/Scripts/Showjs/jquery.cycle2.min.js")"></script>
+<script src="@Url.Content("~/Scripts/Showjs/jquery.sky.carousel-1.0.2.min.js")"></script>
+<script src="@Url.Content("~/Scripts/Showjs/lib.js")"></script>
+<script src="@Url.Content("~/Scripts/Showjs/scripts.js")"></script>
+<meta http-equiv="refresh" content="3000"> 
+
+<style type="text/css">
+    /*.sc-image {
+        width: 480px;
+        height: 660px;
+    }*/
+</style>
+<script type="text/javascript">
+
+    $(function () {
+        buildSideNav();
+        skyCarousel = $('#character-slider').carousel({
+            itemWidth: 450,
+            itemHeight: 540,
+            enableMouseWheel: false,
+            gradientOverlayVisible: true,
+            gradientOverlayColor: '#F0F3EE',
+            gradientOverlaySize: 300,
+            distance: 130,
+            selectedItemDistance: 80,
+            selectByClick: true,
+            selectedItemZoomFactor: 0.8,
+            unselectedItemZoomFactor: 0.4,
+            navigationButtonsVisible: false,
+            showPreloader: false,
+            autoSlideshow: true
+        });
+
+    })
+    @*var html = "";
+    function AjaxShow() {
+        $.ajax({
+            type: 'post',
+            url: "@Url.Action("ShowAjaxImageIndex", "JCCamera")",
+            dataType: "json",
+            success: function (obj) {
+                if (obj != null && obj.Success) {
+                    var datalist = obj.DataList;
+                    html += " <ul class=\"sky-carousel-container\" style=\"margin-top: -21.2px; left: -1552.4px; transition: left 0.45s ease-out; -webkit-transition: left 0.45s ease-out;\">";
+                    for (var i = 0; i < datalist.length; i++) {
+                        html += "<li  style=\"transform-origin: center 256px 0px; transform: translate(0 px, 0 px) scale(0.4) translateZ(0px); opacity: 0.6; z-index: 8;\">";
+                        html += "<img src=.." + datalist[i].filename + " class=\"sc-image\">";
+                        html += "  <div class=\"sc-content\">";
+                        html += "<h2>设备: " + datalist[i].BasicInfoModel.INFRAREDCAMERANAME + "</h2>";
+                        html += "<p>所属单位：【" + datalist[i].BasicInfoModel.ORGNAME + "】  手机号码：【" + datalist[i].tpa + "】  拍摄地点：【" + datalist[i].BasicInfoModel.ADDRESS + "】  接收时间：【" + datalist[i].recvdatetime + "】 </p>";
+                        html += " </div>";
+                        html += " </li>";
+                    }
+                    html += " </ul>";
+                    $('#photoshow').html('');
+                    $('#photoshow').html(html);
+                }
+            }
+
+        });
+    }*@
+
+</script>
+
+
+<div id="site-wrapper">
+    <section id="section-header" data-coloroverlap="dark"></section>
+    <section id="second-phase" class="phase-row" data-title="Illustrations" data-coloroverlap="light">
+        <div class="shell">
+            <div class="second-row">
+                <article>
+                    <div id="character-slider" class="sky-carousel sc-no-select" style="visibility: visible; width:95%;height:90%">
+                        <div id="photoshow" class="sky-carousel-wrapper" style="visibility: visible; opacity: 1;">
+                            <ul class="sky-carousel-container" style="margin-top: -21.2px; left: -1552.4px; transition: left 0.45s ease-out; -webkit-transition: left 0.45s ease-out;">
+                                @if (ViewBag.imagelist != null)
+                                {
+                                    foreach (var item in ViewBag.imagelist)
+                                    {
+                                        <li style="transform-origin: center 256px 0px; transform: translate(0 px, 0 px) scale(0.4) translateZ(0px); opacity: 0.6; z-index: 8;">
+                                            <img src="@Url.Content(item.filename)" alt="" class="sc-image">
+                                            <div class="sc-content">
+                                                <h2>设备: @item.BasicInfoModel.INFRAREDCAMERANAME</h2>
+                                                <p>所属单位：【@item.BasicInfoModel.ORGNAME】  手机号码：【@item.tpa】  拍摄地点：【@item.BasicInfoModel.ADDRESS】  接收时间：【@item.recvdatetime】 </p>
+                                            </div>
+                                        </li>
+                                    }
+                                }
+                            </ul>
+                        </div>
+                        @*class="sc-selected"*@
+                    </div>
+                </article>
+
+            </div>
+        </div>
+    </section>
+</div>

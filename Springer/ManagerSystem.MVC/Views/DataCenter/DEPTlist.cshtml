@@ -1,0 +1,577 @@
+﻿@using ManagerSystemClassLibrary;
+@{
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+    var curorgno = SystemCls.getCurUserOrgNo();
+    if (curorgno.Substring(6, 3) == "000" && curorgno.Substring(4, 2) != "00")
+    {
+        curorgno = curorgno.Substring(0, 6) + "xxx";
+    }
+    else
+    {
+        curorgno = SystemCls.getCurUserOrgNo();
+    }
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'west'" title="" style=" width:180px; border: none;">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="" style=" border: none;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'center'" title="" style=" border: none;">
+                <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+                    <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                        <div class="divOP">
+                            <div class="home">
+                                单位：<div id="tbxBYORGNO" class="easyui-tree"></div>
+                                名称：<input id="tbxNAME" type="text" class="input-small" style="width:120px" value="" />
+                                <input type="button" value="查询" onclick="query('1')" class="btnSearchCss" />
+                                <input type="button" value="添加" id="btnAdd" onclick="Manager('Add','','')" class="btnAddCss" />
+                            </div>
+                        </div>
+                    </div>
+                    <div data-options="region:'center'" title="" class="LayoutCenterBG">
+                        <div class="divTable" id="divREPOSITORY">
+
+                        </div>
+                    </div>
+                    <div data-options="region:'south'" title="" style=" height:40px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
+                        <div class="divPager" id="divPager">
+
+                        </div>
+                    </div>
+                    <div data-options="region:'center'" title="" class="LayoutCenterBG">
+                        <div class="divTable" id="divSupplies">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="divMan" id="SuppliesManger" style="display:none;margin-left:5px;margin-top:8px">
+
+</div>
+
+<div class="divMan" id="supliespropadd" style="display:none;margin-left:5px;margin-top:8px">
+
+</div>
+<div class="divMan" id="tableadd" style="display:none;margin-left:5px;margin-top:8px">
+    <table cellpadding="0" cellspacing="0">
+        <tr>
+            <td style="width:80px;">单位名称：</td>
+            <td><select id="BYORGNO" class="easyui-combotree" style="width:200px;"></select></td>
+            <td style="width:80px;"> <span style="color:red;">*</span>名称：</td>
+            <td><input type="text" id="NAME" class="input-small" value="" /></td>
+        </tr>
+        <tr>
+            <td style="width:80px;"> <span style="color:red;">*</span> 责任人：</td>
+            <td><input type="text" id="RESPONSIBLEMAN" class="input-small" value="" /></td>
+            <td style="width:80px;"> <span style="color:red;">*</span> 联系方式：</td>
+            <td><input id="LINKWAY" type="text" class="input-small" value="" /></td>
+        </tr>
+        <tr>
+            <td style="width:80px;"><span style="color:red;">*</span>经度：</td>
+            <td><input id="JD" type="text" class="input-small" value="" /> </td>
+            <td style="width:80px;"><span style="color:red;">*</span>纬度：</td>
+            <td>
+                <input id="WD" type="text" class="input-small" value="" />
+                <input type="button" value="地图定位" onclick="setPoint()" class="btnMapLoaclCss" />
+            </td>
+        </tr>
+        <tr>
+            <td style="width:80px;">地址：</td>
+            <td colspan="3"><input id="ADDRESS" type="text" class="input-small" value="" /></td>
+        </tr>
+    </table>
+</div>
+
+<div class="divMan" id="supinport" style="display:none;margin-left:5px;margin-top:8px">
+    <input id="JD" type="hidden" class="input-small" value="" />
+    <input id="WD" type="hidden" class="input-small" value="" />
+    <table cellpadding="0" cellspacing="0">
+        <thead>
+            <tr>
+                <th>物资名称</th>
+                <th>厂家</th>
+                <th>单价</th>
+                <th>数量</th>
+                <th>单位</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 1; i <= 6; i++)
+            {
+                <tr>
+                    <td style="width:20%"><input id="rktbxDCSUPPROPNAME_@i.ToString()" name="DCSUPPROPNAME" style="width:180px;height:30px;" /></td>
+                    <td style="width:35%"><input id="rktbxDCSUPPROPFACTORY_@i.ToString()" type="text" value="" style="width:90%;" readonly /></td>
+                    <td style="width:15%"><input id="rktbxPRICE_@i.ToString()" type="text" value="" style="width:90%;" /></td>
+                    <td style="width:15%"><input id="rktbxDCREPSUPCOUNT_@i.ToString()" type="text" value="" style="width:90%;" /></td>
+                    <td style="width:15%"><input id="rktbxDCSUPPROPUNIT_@i.ToString()" type="text" value="" style="width:90%;" readonly /></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script type="text/javascript">
+    var bln = '@ViewBag.isAdd';
+    if (bln == "1") {
+        document.getElementById('btnAdd').style.display = "";
+    }
+    $(function () {
+        $('#tbxBYORGNO').combotree({
+            url: '/DataCenter/OrgTreeget',
+            editable: false,
+            required: true,
+            panelHeight: 300,
+            onLoadSuccess: function (node, data) {
+                var t = $("#tbxBYORGNO").combotree('tree');//获取tree
+                t.tree("collapseAll");
+                node = t.tree("find", data[0].id);
+                t.tree("expand", node.target);//展开节点 expandTo
+            }
+        });
+        $('#tbxBYORGNO').combotree('setValue', "@curorgno");
+        query('1');
+    });
+
+    $(function () {
+        $('#BYORGNO').combotree({
+            url: '/DataCenter/OnlyOrgTreeget',
+            editable: false,
+            required: true,
+            panelHeight: 300,
+            onLoadSuccess: function (node, data) {
+                var t = $("#BYORGNO").combotree('tree');//获取tree
+                t.tree("collapseAll");
+                node = t.tree("find", data[0].id);
+                t.tree("expand", node.target);//展开节点 expandTo
+            }
+        });
+        $('#BYORGNO').combotree('setValue', "@curorgno");
+    });
+
+    function query(Page) {
+        var pagesize = '0';
+        if (document.getElementById("selPageSize") != null) {
+            pagesize = document.getElementById("selPageSize").value;
+        }
+        var ORGNOS = $('#tbxBYORGNO').combotree('getValue');
+        $.ajax({
+            url: '/DataCenter/getREPOSITORYlist',
+            data: {
+                BYORGNO: ORGNOS,
+                NAME: document.getElementById("tbxNAME").value,
+                PageSize: pagesize,
+                Page: Page,
+            },
+            type: 'post',
+            success: function (data) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#divREPOSITORY').html(ar.tableInfo);
+                    $('#divPager').html(ar.pagerInfo);
+                }
+                else {
+                    layer.msg('登录异常');
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('登录异常');
+            }
+        });
+    }
+    @*var bln1 = '@ViewBag.isexport';
+    var bln2 = '@ViewBag.isinport';
+    if (bln1 == "1") {
+        document.getElementById('btnExport').style.display = "";
+    }
+    else {
+        document.getElementById('btnExport').style.display = "none";
+    }
+    if (bln2 == "1") {
+        document.getElementById('btnInport').style.display = "";
+    }
+    else {
+        document.getElementById('btnInport').style.display = "none";
+    }*@
+    function showSupplie(ID, NAME) {
+        $.ajax({
+            url: '/DataCenter/getSuppliesCount',
+            data: { ID: ID, },
+            type: 'post',
+            success: function (data) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#divSupplies').html(ar.Msg);
+                }
+                else {
+                }
+            },
+            error: function (err, ioArgs) {
+            }
+        });
+    }
+
+    function showSupplie(ID, NAME) {
+        $.ajax({
+            url: '/DataCenter/getSuppliesCount',
+            data: { ID: ID, },
+            type: 'post',
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#divSupplies').html(ar.Msg);
+                    layer.open({
+                        type: 1,
+                        title: NAME + '物资统计',
+                        area: ['75%', '65%'],
+                        shade: 0,
+                        maxmin: true,
+                        content: $('#divSupplies')
+                    });
+                }
+                else {
+                    alert(ar.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('获取异常，请刷新重试');
+            }
+        });
+    }
+
+    function Detail(ID, NAME) {
+        var newmame = escape(NAME);
+        layer.open({
+            type: 2,
+            title: NAME + '出入库明细',
+            area: ['100%', '100%'],
+            fix: false,
+            maxmin: false,
+            content: '/DataCenter/DetailIndex?REPID=' + ID + "&NAME=" + newmame
+        })
+    }
+
+    function Manager(Method, ID, page) {
+        if (Method == 'Del') {
+            if (confirm('确实要删除该内容吗?')) {
+                $.ajax({
+                    type: "Post",
+                    url: "/DataCenter/DEPTManager",
+                    data: { DCREPOSITORYID: ID, Method: Method, },
+                    dataType: "json",
+                    error: function () {
+                        alert('错误:异常!', 'error');
+                    },
+                    success: function (re) {
+                        if (re.Success) {
+                            layer.msg('删除成功', { icon: 6 });
+                            query(page);
+                        }
+                        else {
+                            layer.msg('删除失败', { icon: 5 });
+                        }
+                    }
+                });
+            }
+        }
+        else {
+            if (Method == 'Mdy' || Method == 'See') {
+                $.ajax({
+                    type: "Post",
+                    url: "/DataCenter/GetREPOSITORYjson",
+                    data: { DCREPOSITORYID: ID, },
+                    dataType: "json",
+                    error: function () {
+                        layer.msg('错误:异常!', 'error');
+                    },
+                    success: function (data) {
+                        if (data.DCREPOSITORYID != '') {
+                            //document.getElementById("BYORGNO").value = data.BYORGNO,
+                            $('#BYORGNO').combotree('setValue', data.BYORGNO),
+                            document.getElementById("ADDRESS").value = data.ADDRESS,
+                            document.getElementById("NAME").value = data.NAME,
+                            document.getElementById("RESPONSIBLEMAN").value = data.RESPONSIBLEMAN,
+                            document.getElementById("LINKWAY").value = data.LINKWAY,
+                            document.getElementById("JD").value = data.JD,
+                            document.getElementById("WD").value = data.WD
+                        }
+                    }
+                });
+            }
+            if (Method == 'Add') {
+                document.getElementById("NAME").value = "",
+                document.getElementById("ADDRESS").value = "",
+                //document.getElementById("BYORGNO").value="",
+                $('#BYORGNO').combotree('setValue', "@curorgno"),
+                document.getElementById("RESPONSIBLEMAN").value = "",
+                document.getElementById("LINKWAY").value = "",
+                document.getElementById("JD").value = "",
+                document.getElementById("WD").value = ""
+            }
+            var btnInfo = ['保存', '取消'];
+            if (Method == "See")
+                btnInfo = [];
+            var str = "仓库添加";
+            if (Method == "Mdy")
+                str = "仓库修改";
+            if (Method == "See")
+                str = "仓库查看";
+            layer.open({
+                type: 1,
+                title: str,
+                area: ['50%', '48%'],
+                btn: btnInfo,
+                shade: 0,
+                maxmin: true,
+                content: $('#tableadd'),
+                yes: function (index, layero) {
+                    var t1 = $('#JD').val();
+                    var t2 = $('#WD').val();
+                    var t3 = $('#LINKWAY').val();
+                    var t4 = $('#NAME').val();
+                    var t5 = $('#RESPONSIBLEMAN').val();
+                    if ($.trim(t1) != "") {
+                        reg = /^-?\d+\.\d{1,6}$/;
+                        if (!reg.test(t1)) {
+                            layer.msg('经度格式不正确！', { icon: 5 });
+                            $('#JD').focus();
+                            return;
+                        }
+                    }
+                    if ($.trim(t2) != "") {
+                        reg = /^-?\d+\.\d{1,6}$/;
+                        if (!reg.test(t2)) {
+                            layer.msg('纬度格式不正确！', { icon: 5 });
+                            $('#WD').focus();
+                            return;
+                        }
+                    }
+                    if ($.trim(t3) != "") {
+                        if (checkPhone(t3) == false && checkTel(t3) == false) {
+                            layer.msg('联系方式格式不正确！', { icon: 5 });
+                            $('#CONTACTS').focus();
+                            return;
+                        }
+                    }
+                    if ($.trim(t4) == "") {
+                        layer.msg('请填写名称！', { icon: 5 });
+                        $('#NAME').focus();
+                        return;
+                    }
+                    if ($.trim(t5) == "") {
+                        layer.msg('请填写责任人！', { icon: 5 });
+                        $('#RESPONSIBLEMAN').focus();
+                        return;
+                    }
+                    if ($.trim(t3) == "") {
+                        layer.msg('请填写联系方式！', { icon: 5 });
+                        $('#LINKWAY').focus();
+                        return;
+                    }
+                    if ($.trim(t1) == "" || $.trim(t2) == "") {
+                        layer.msg('请在地图标注仓库的位置！', { icon: 5 });
+                        $('#JD').focus();
+                        return;
+                    }
+                    $.ajax({
+                        type: "Post",
+                        url: "/DataCenter/DEPTManager",
+                        data: {
+                            DCREPOSITORYID: ID,
+                            Method: Method,
+                            NAME: document.getElementById("NAME").value,
+                            ADDRESS: document.getElementById("ADDRESS").value,
+                            //BYORGNO: document.getElementById("BYORGNO").value,
+                            BYORGNO: $('#BYORGNO').combotree('getValue'),
+                            RESPONSIBLEMAN: document.getElementById("RESPONSIBLEMAN").value,
+                            LINKWAY: document.getElementById("LINKWAY").value,
+                            JD: document.getElementById("JD").value,
+                            WD: document.getElementById("WD").value,
+
+                        },
+                        dataType: "json",
+                        error: function () {
+                            alert('错误:异常!', 'error');
+                        },
+                        success: function (re) {
+                            if (re.Success) {
+                                layer.close(index);
+                                layer.msg('操作成功', { icon: 6 });
+                                query('1');
+                            }
+                            else {
+                                layer.msg(re.Msg, { icon: 5 });
+                            }
+                        }
+                    });
+
+                }, cancel: function (index) {
+                    layer.close(index);
+                }
+            })
+        }
+    }
+
+    //function getsupliesprop() {
+    //    $.ajax({
+    //        url: '/DataCenter/Suppliesproplist',
+    //        data: {
+    //        },
+    //        type: 'post',
+    //        success: function (data, ioArgs) {
+    //            var ar = eval('(' + data + ')');
+    //            if (ar.Success) {
+    //                $('#supliespropadd').html(ar.tableInfo);
+    //                layer.open({
+    //                    type: 1,
+    //                    title: '物资管理',
+    //                    area: ['60%', '80%'],
+    //                    shade: 0,
+    //                    content: $('#supliespropadd')
+    //                });
+    //            }
+    //            else {
+    //                alert(ar.Msg);
+    //            }
+    //        },
+    //        error: function (err, ioArgs) {
+    //            layer.msg('获取异常，请刷新重试');
+    //        }
+    //    });
+    //}
+    //function SUPOnclik(ID, NAME, MODEL, UNIT, FACTORY, MARK) {
+    //    document.getElementById("DC_SUPPLIESPROP_ID").value = ID;
+    //    document.getElementById("DCSUPPROPNAME").value = NAME;
+    //    document.getElementById("DCSUPPROPMODEL").value = MODEL;
+    //    document.getElementById("DCSUPPROPUNIT").value = UNIT;
+    //    document.getElementById("DCSUPPROPFACTORY").value = FACTORY;
+    //    document.getElementById("MARK").value = MARK;
+    //    document.getElementById('btnPROPMdy').style.display = "";
+    //    document.getElementById('btnPROPDel').style.display = "";
+    //}
+    function SUPPLIESPROPManager(Method) {
+        var bln = false;
+        if (Method == 'Del') {
+            if (confirm('确实要删除该内容吗?')) {
+                bln = true;
+            }
+        } else {
+            bln = true;
+        }
+        if (bln == true) {
+            $.ajax({
+                type: "Post",
+                url: "/DataCenter/SUPPLIESPROPManager",
+                data: {
+                    Method: Method,
+                    DC_SUPPLIESPROP_ID: document.getElementById("DC_SUPPLIESPROP_ID").value,
+                    DCSUPPROPNAME: document.getElementById("DCSUPPROPNAME").value,
+                    DCSUPPROPMODEL: document.getElementById("DCSUPPROPMODEL").value,
+                    DCSUPPROPUNIT: document.getElementById("DCSUPPROPUNIT").value,
+                    DCSUPPROPFACTORY: document.getElementById("DCSUPPROPFACTORY").value,
+                    MARK: document.getElementById("MARK").value,
+                },
+                success: function (data) {
+                    var ar = eval('(' + data + ')');
+                    if (ar.Success) {
+                        layer.msg(ar.Msg);
+                        deptul();
+                        getsupliesprop();
+                    }
+                    else {
+                        layer.msg(ar.Msg);
+                    }
+                },
+                error: function (err, ioArgs) {
+                    layer.msg('操作异常，请重试');
+                }
+            });
+        }
+    }
+    //地图定位
+    function setPoint() {
+        var jd = document.getElementById("JD").value;
+        var wd = document.getElementById("WD").value;
+        var name = document.getElementById("NAME").value;
+        layer.open({
+            type: 2,
+            title: name + '地图位置设置',
+            btn: ['保存', '关闭'],
+            area: ['70%', '80%'],
+            fix: false, //不固定
+            maxmin: true,
+            content: '/MapCommon/GetMapPontIndex?jd=' + jd + "&wd=" + wd,
+            yes: function (index, layero) { //或者使用btn1
+                //按钮【按钮一】的回调
+                var ptxt = layer.getChildFrame("p", index);
+                var arr = ptxt.html().split(',');
+                if ($.trim(arr) != "") {
+                    var jd = parseFloat(arr[0]).toFixed(6);
+                    var wd = parseFloat(arr[1]).toFixed(6);
+                    $('#JD').val(jd);
+                    $('#WD').val(wd);
+                }
+                layer.close(index);
+            }, cancel: function (index) {
+                layer.close(index);
+            }
+        });
+
+    }
+    function Position(tablename, id, name) {
+        layer.open({
+            type: 2,
+            title: name + '地图定位',
+            area: ['80%', '90%'],
+            //shade: 0,
+            fix: true,
+            maxmin: true,
+            content: '/MapCommon/MapPostionCommonIndex?tablename=' + tablename + "&id=" + id
+        })
+    }
+    //入库
+    function getSupplies(ID, NAME) {
+        var newmame = escape(NAME);
+        layer.open({
+            type: 2,
+            title: NAME + '入库',
+            area: ['70%', '80%'],
+            fix: false,
+            maxmin: true,
+            content: '/DataCenter/InportIndex?REPID=' + ID + "&Name=" + newmame
+        })
+    }
+    //出库
+    function getSupplie(ID, NAME) {
+        var newmame = escape(NAME);
+        layer.open({
+            type: 2,
+            title: NAME + '出库',
+            area: ['70%', '80%'],
+            fix: false,
+            maxmin: true,
+            content: '/DataCenter/ExportIndex?REPID=' + ID + "&Name=" + newmame
+        })
+
+    }
+    //查看通用
+    function See(ID, tablename) {
+        layer.open({
+            type: 2,
+            title: '仓库查看',
+            area: ['48%', '40%'],
+            fix: true,
+            maxmin: true,
+            content: '/DataCenter/SeeIndex?tablename=' + tablename + "&ID=" + ID
+        })
+    }
+    function setColor(obj) {
+        $(obj).css("background-color", "#FFDAB9");
+        $("tr").not($(obj)).css("background-color", "");
+    }
+</script>

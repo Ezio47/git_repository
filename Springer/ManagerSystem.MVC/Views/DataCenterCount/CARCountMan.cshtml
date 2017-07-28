@@ -1,0 +1,45 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutIndexNoMenu.cshtml";
+}
+@*<script src="~/Scripts/Chart/echarts.min.js"></script>*@
+<script src="~/Scripts/Chart/echarts.js"></script>
+<script src="~/Scripts/Chart/DataCenterChart/CarCount.js"></script>
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+    <div data-options="region:'center'" title="" style=" border: none;">
+
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home">
+                        单位:<select id="ORGNO">
+                            @Html.Raw(@ViewBag.vdOrg)
+                        </select>
+                        <input type="checkbox" name="cl" value="1" checked="checked" />指挥车
+                        <input type="checkbox" name="cl" value="2" checked="checked" />运兵车
+                       <input type="checkbox" name="cl" value="3" checked="checked" />供水车
+                        <input type="checkbox" name="cl" value="4" checked="checked" />通讯车
+                        <input type="checkbox" name="cl" value="5" checked="checked" />宣传车
+                       <input type="button" value="查询" onclick="query()" class="btnSearchCss" />
+                    </div>
+                </div>
+            </div>
+
+            <div data-options="region:'center'" title="" class="LayoutCenterBG" style="width:100%;">
+                <div id="CarChart" style="width:100%;height:500px;">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+        <script type="text/javascript">
+            var CarChart = echarts.init(document.getElementById('CarChart'));//车辆数量展示
+            function query() {
+                var TopEchart = $('#ORGNO').val();
+                var DictValue = $("input:checkbox[name='cl']:checked").map(function (index, elem) {
+                    return $(elem).val();
+                }).get().join(',');
+                getCarCount(TopEchart, DictValue);
+            }
+        </script>

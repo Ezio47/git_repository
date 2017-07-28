@@ -1,0 +1,118 @@
+﻿@using ManagerSystem.MVC.Models;
+@{
+    ViewBag.Title = "PopViewIndex";
+    Layout = null;
+    var dic = ViewBag.data as Dictionary<string, DataModel>;
+}
+<style type="text/css">
+    body, table, th, tr, td {
+        margin: 0;
+        padding: 0;
+    }
+
+    .xbsx {
+        width: 96%;
+        font-family: 微软雅黑;
+        background-color: #4d951e;
+        padding: 1% 2%;
+        color: #0c2501;
+        margin: 1% auto;
+    }
+
+        .xbsx h1 {
+            text-align: left;
+            margin-left: 2%;
+            font-size: 15px;
+            color: #fff;
+        }
+
+        .xbsx table {
+            width: 100%;
+            height: auto;
+            border-collapse: collapse;
+            border: 1px solid #b8d3b3;
+            background-color: #fff;
+        }
+
+            .xbsx table tr {
+                border: 1px solid #b8d3b3;
+                text-align: left;
+                height: 28px;
+            }
+
+                .xbsx table tr th {
+                    border: 1px solid #b8d3b3;
+                    padding-left: 2%;
+                    font-size: 13px;
+                }
+
+                .xbsx table tr td {
+                    border: 1px solid #b8d3b3;
+                    padding-left: 2%;
+                    font-size: 12px;
+                }
+
+                .xbsx table tr:hover {
+                    background-color: #ffe5cc;
+                }
+</style>
+
+<div class="xbsx">
+    @*<h1>详细信息</h1>*@
+    <table cellpadding="0" cellspacing="0">
+        @*<thead>
+            <tr class="zd">
+                <th>字段名</th>
+                <th>值</th>
+            </tr>
+        </thead>*@
+        <tbody>
+            @if (dic.Any())
+            {
+                foreach (var item in dic)
+                {
+                    <tr>
+                        <td>@item.Value.Name</td>
+                        <td>@item.Value.Value</td>
+                    </tr>
+                }
+                if (@ViewBag.Select=="1")
+                {
+                <tr>
+                    <td>装备</td>
+                    <td><a href="/MapCommon/@ViewBag.type1?@ViewBag.id=@ViewBag.CommonID">查看详细信息</a></td>
+                </tr>
+                <tr>
+                    <td>人员</td>
+                    <td><a href="/MapCommon/@ViewBag.type2?@ViewBag.id=@ViewBag.CommonID">查看详细信息</a></td>
+                </tr>
+                <tr>
+                    <td>照片</td>
+                    <td><a href="/MapCommon/@ViewBag.type3?@ViewBag.id=@ViewBag.CommonID&PHOTOTYPE=@ViewBag.PhotoType">查看详细信息</a></td>
+                </tr>
+                }
+                else if( @ViewBag.Select == "2")
+                {
+                <tr>
+                    <td>照片</td>
+                    <td><a href="/MapCommon/@ViewBag.type3?@ViewBag.id=@ViewBag.CommonID&PHOTOTYPE=@ViewBag.PhotoType">查看详细信息</a></td>
+                </tr>
+                }
+                else if (@ViewBag.Select == "3")
+                {
+                    <tr>
+                        <td>物资统计</td>
+                        <td><a href="/MapCommon/@ViewBag.type1?id=@ViewBag.CommonID">查看详细信息</a></td>
+                    </tr>
+                }
+                else if (@ViewBag.Select == "4")
+                {
+                    <tr>
+                        <td>照片</td>
+                        <td><a href="/MapCommon/@ViewBag.type3?@ViewBag.id=@ViewBag.CommonID">查看详细信息</a></td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>

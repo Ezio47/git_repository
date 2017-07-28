@@ -1,0 +1,15 @@
+﻿@{
+    ViewBag.Title = "TestIndex";
+    Layout = null;
+}
+<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
+<script type="text/javascript">
+    var uri = '/api/Videos?txt=1254';
+    $(function () {
+        $.get(uri, function (data) {
+            alert(data);
+        });
+    });
+</script>
+<h2>TestIndex</h2>
+

@@ -1,0 +1,245 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutIndexNoMenu.cshtml";
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'center'" title="" style=" border: none;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home">
+                        <input type="button" value="出库" onclick="Manager()" class="btnExportCss" />
+                        <input type="hidden" id="tbxDCREPOSITORYID" value="">
+                    </div>
+                </div>;
+            </div>
+            <div data-options="region:'center'" title="" class="LayoutCenterBG">
+                <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+                    <div class="divMan" id="supexport" margin-left:5px;margin-top:8px">
+                        <table cellpadding="0" cellspacing="0" id="cktable1">
+                            <tr>
+                                <td class="center" style="width:25%">日期:</td>
+                                <td class="center" style="width:25%"><input class="easyui-datebox" id="tbxDCREPTIME" type="text" style="width:70%;height:28px;" value="@ViewBag.DCREPTIME" /></td>
+                                <td class="center" style="width:25%"> 编号:</td>
+                                <td class="center" style="width:25%"><input id="tbxnumber" type="text" value="@ViewBag.number" style="width:90%;" readonly /></td>
+                            </tr>
+                            <tr>
+                                <td class="center" style="width:25%">调出单位:</td>
+                                <td class="center" style="width:25%"> <label id="tbxinorg"></label></td>
+                                <td class="center" style="width:25%">调入单位:</td>
+                                <td class="center" style="width:25%"><input id="tbxDCUSERORG" type="text" value="" style="width:90%;" /></td>
+                            </tr>
+                        </table>
+                        <table cellpadding="0" cellspacing="0" id="cktable2">
+                            <thead>
+                                <tr>
+                                    <th>物资名称</th>
+                                    <th>型号</th>
+                                    <th>库存量</th>
+                                    <th>单位</th>
+                                    <th>数量</th>
+                                    <th>单价</th>
+                                    <th>金额</th>
+                                    <th>备注</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 1; i <= 6; i++)
+                                {
+                                    <tr>
+                                        <td class="center" style="width:20%"> <input id="tbxDCSUPPROPNAME_@i.ToString()" name="DCSUPPROPNAME" style="width:180px;height:30px;" /></td>
+                                        <td class="center" style="width:20%"> </td>
+                                        <td class="center" style="width:10%" id="kcnum_@i.ToString()"> </td>
+                                        <td class="center" style="width:5%"></td>
+                                        <td class="center" style="width:10%"> <input id="tbxDCREPSUPCOUNT_@i.ToString()" type="text" value="" style="width:90%;" onblur="jsfunc(this)" /></td>
+                                        <td class="center" style="width:10%" id="price_@i.ToString()"></td>
+                                        <td class="center" style="width:10%" id="sumprice_@i.ToString()"></td>
+                                        @if (i == 1)
+                                        {
+                                            <td class="center" style="width:15%" rowspan="6"><textarea id="tbxMARK" cols=40 rows=9></textarea></td>
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <table cellpadding="0" cellspacing="0" id="cktable3">
+                            <tr>
+                                <td class="center" style="width:20%">主管：<input id="tbxRESPONSIBLEMAN" type="text" value="@ViewBag.depotman" style="width:70%;" readonly /> </td>
+                                <td class="center" style="width:20%">制单人：<input id="tbxDCZHIBIAOREN" type="text" value="" style="width:70%;" /></td>
+                                <td class="center" style="width:20%">发放人：<input id="tbxDCFAFANGREN" type="text" value="" style="width:70%;" /></td>
+                                <td style="width:20%">调入单位经办人：<input id="tbxDCUSERID" type="text" value="" style="width:50%;" /></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var repid = "@ViewBag.repid";
+    var name = "@ViewBag.name";
+    $(function () {
+        //repid = getQueryString("REPID");
+        //name = getQueryString("Name");
+        $('#tbxinorg').text(name);
+    })
+    $(function () {
+        $("input[id^='tbxDCSUPPROPNAME']").combobox({
+            url: '/DataCenter/SupCKCheckJson?REPID=' + repid + "&type=2",
+            method: 'post',
+            valueField: 'id',
+            textField: 'text',
+            onSelect: function (record) {
+                strid = this.id;///物资id
+                $.ajax({
+                    url: '/DataCenter/getrkFac',
+                    data: {
+                        id: record.id,
+                    },
+                    type: 'post',
+                    success: function (data) {
+                        var ar = eval('(' + data + ')');
+                        console.info(ar)
+                        strid = strid.substr(17);//索引
+                        document.all("cktable2").rows[strid].cells[1].innerText = ar.DCSUPPROPMODEL;
+                        document.all("cktable2").rows[strid].cells[2].innerText = ar.REPERTORYCOUNT;
+                        document.all("cktable2").rows[strid].cells[3].innerText = ar.DCSUPPROPUNIT;
+                        document.all("cktable2").rows[strid].cells[5].innerText = ar.PRICE;
+                    }
+                });
+            },
+            //onChange: function (newValue, oldValue) {
+            //    alert('newValue==' + newValue);
+            //    alert('oldValue==' + oldValue);
+            //}
+        });
+
+    })
+    //function getQueryString(name) {
+    //    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+    //    var r = window.location.search.substr(1).match(reg);
+    //    if (r != null) return unescape(r[2]); return null;
+    //}
+    var strvalues = "";
+    function Manager() {
+        var bo = CheckExport();
+        if (bo == "true") {
+            if ($.trim(strvalues) != "") {
+                $.ajax({
+                    type: "Post",
+                    url: "/DataCenter/DETAILSManger",
+                    data: {
+                        REPID: repid,
+                        CountID: strvalues,
+                        Method: 'EXPORT',
+                        DCUSERID: document.getElementById("tbxDCUSERID").value,
+                        DCUSERORG: document.getElementById("tbxDCUSERORG").value,
+                        MARK: document.getElementById("tbxMARK").value,
+                        DCZHIBIAOREN: document.getElementById("tbxDCZHIBIAOREN").value,
+                        DCFAFANGREN: document.getElementById("tbxDCFAFANGREN").value,
+                        //NUMBER: document.getElementById("tbxnumber").value,
+                        DCREPTIME: $('#tbxDCREPTIME').datebox('getValue'),
+                    },
+                    error: function () {
+                        alert('错误:异常!', 'error');
+                    },
+                    success: function (re) {
+                        var ar = eval('(' + re + ')');
+                        if (ar.Success) {
+                            //layer.msg(ar.Msg, { icon: 6 });
+                            document.getElementById("tbxnumber").value = ar.Url;
+                            if (confirm(ar.Msg + '！是否选择打印')) {
+                                Print();
+                            }
+                            else {
+                                layer.msg(ar.Msg, { icon: 6 });
+                                layer.close(index);
+                            }
+                        }
+                        else {
+                            layer.msg(ar.Msg, { icon: 5 });
+                        }
+                    }
+                });
+            }
+            else {
+                layer.msg('请选择出库物资', { icon: 5 });
+            }
+        }
+
+    }
+    //出库合法性检查
+    function CheckExport() {
+        strvalues = "";
+        var flag = "true";
+        $("input[id^='tbxDCSUPPROPNAME']").each(function (i) {
+            var strid = this.id;
+            var strindex = strid.substr(17);//索引
+            var value = $('#' + strid).combobox("getValue");//出入库id
+            if ($.trim(value) != "") {
+                var num = 0;
+                num = parseFloat($('#tbxDCREPSUPCOUNT_' + strindex).val());//物资数量
+                var recount = 0;
+                recount = parseFloat(document.all("cktable2").rows[strindex].cells[2].innerText);//库存量
+                if (recount < num) {
+                    $('#tbxDCREPSUPCOUNT_' + strindex).focus();
+                    layer.msg("出库数量不可超过库存量！", { icon: 5 });
+                    strvalues = "";
+                    flag = "false";
+                    return false;
+                }
+                if ($.trim(num) == "") {
+                    $('#tbxDCREPSUPCOUNT_' + strindex).focus();
+                    layer.msg("数量不可为空！", { icon: 5 });
+                    strvalues = "";
+                    flag = "false";
+                    return false;
+                }
+                if (isNaN(num)) {
+                    $('#tbxDCREPSUPCOUNT_' + strindex).focus();
+                    layer.msg("请填写数字！", { icon: 5 });
+                    strvalues = "";
+                    flag = "false";
+                    return false;
+                }
+                else {
+                    strvalues += value + "," + num + "|";
+                    flag = "true";
+                    //    alert("strvalues====" + strvalues + "flag==" + flag);
+                    return true;
+                }
+            }
+        });
+        return flag;
+    }
+    //计算 单价X数量=金额
+    function jsfunc(obj) {
+        var strid = obj.id;
+        var strindex = strid.substr(17);//索引
+        var value = $('#tbxDCSUPPROPNAME_' + strindex).combobox("getValue");//出入库id
+        if ($.trim(value) == "") {
+            $('#' + obj.id).val('');
+            $('#sumprice_' + strindex).text('');
+            return false;
+        }
+        if ($.trim(obj.value) == "") {
+            $('#sumprice_' + strindex).text('');
+            return false;
+        }
+        var isPrice = $('#price_' + strindex).text();//单价
+        var kcNum = $('#kcnum_' + strindex).text();//库存
+        var currency = (Number(isPrice) * Number($.trim(obj.value))).toFixed(2);//总金额
+        var str = currency;
+        if (Number($.trim(obj.value)) > Number($.trim(kcNum))) {
+            str = "<font color='red'>" + currency + "</font>";
+        }
+        $('#sumprice_' + strindex).html(str);
+
+    }
+    function Print() {
+        var num = document.getElementById("tbxnumber").value;
+        window.open("/DataCenter/Print?number=" + num + "", "newwindow", "height=200, width=400, toolbar =no, menubar=no, scrollbars=no, resizable=no, location=no, status=no")
+    }
+</script>

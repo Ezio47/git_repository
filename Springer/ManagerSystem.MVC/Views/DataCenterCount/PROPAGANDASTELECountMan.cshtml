@@ -1,0 +1,123 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutIndexNoMenu.cshtml";
+}
+<script src="~/Scripts/Chart/echarts.js"></script>
+<script src="~/Scripts/Chart/DataCenterChart/PropagandasteleCount.js"></script>
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+    <div data-options="region:'center'" title="" style=" border: none;">
+
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home">
+                        <div style="float:left">
+                            单位:<select id="ORGNO">
+                                @Html.Raw(@ViewBag.vdOrg)
+                            </select>
+                            类型:<select id="type" onchange="TypeChange()">
+                                <option value="1">宣传碑类型</option>
+                                <option value="2">使用现状</option>
+                                <option value="3">维护类型</option>
+                                <option value="4">结构类型</option>
+                            </select>
+                        </div>
+                        <div id="propagandasteletype" style="float:left;display:none;">
+                            @Html.Raw(@ViewBag.propagandasteletype)
+                        </div>
+                        <div id="usestate" style="float:left;display:none;">
+                            @Html.Raw(@ViewBag.usestate)
+                        </div>
+                        <div id="managerstate" style="float:left;display:none;">
+                            @Html.Raw(@ViewBag.managerstate)
+                        </div>
+                        <div id="structure" style="float:left;display:none;">
+                            @Html.Raw(@ViewBag.structure)
+                        </div>
+                            <input type="button" value="查询" onclick="query()" class="btnSearchCss" />
+                        </div>
+                </div>
+            </div>
+
+            <div data-options="region:'center'" title="" class="LayoutCenterBG" style="width:100%;">
+                <div id="PropagandasteleChart" style="width:100%;height:500px;float:left;">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var PropagandasteleChart = echarts.init(document.getElementById('PropagandasteleChart'));//个数展示
+
+    var Propagandasteletype = '';
+    var Usestate = '';
+    var Managerstate = '';
+    var Structure = '';
+    var Type = '';
+    TypeChange()
+    function TypeChange() {
+        Type = $('#type').val()
+        if (Type == "1" || Type == '') {
+            document.getElementById('propagandasteletype').style.display = "";
+            document.getElementById('usestate').style.display = "none";
+            document.getElementById('managerstate').style.display = "none";
+            document.getElementById('structure').style.display = "none";
+        }
+        if (Type == "2") {
+            document.getElementById('usestate').style.display = "";
+            document.getElementById('propagandasteletype').style.display = "none";
+            document.getElementById('managerstate').style.display = "none";
+            document.getElementById('structure').style.display = "none";
+        }
+        if (Type == "3") {
+            document.getElementById('managerstate').style.display = "";
+            document.getElementById('propagandasteletype').style.display = "none";
+            document.getElementById('usestate').style.display = "none";
+            document.getElementById('structure').style.display = "none";
+        }
+        if (Type == "4") {
+            document.getElementById('structure').style.display = "";
+            document.getElementById('propagandasteletype').style.display = "none";
+            document.getElementById('managerstate').style.display = "none";
+            document.getElementById('usestate').style.display = "none";
+        }
+    }
+    function query() {
+        var TopEchart = $('#ORGNO').val();
+        Type = $('#type').val()
+        if (Type == "1" || Type == '') {
+            Propagandasteletype = $("input:checkbox[name='chk1']:checked").map(function (index, elem) {
+                return $(elem).val();
+            }).get().join(',');
+             Usestate = '';
+             Managerstate = '';
+             Structure = '';
+        }
+        if (Type == "2") {
+            Usestate = $("input:checkbox[name='chk2']:checked").map(function (index, elem) {
+                return $(elem).val();
+            }).get().join(',');
+            Propagandasteletype = '';
+            Managerstate = '';
+            Structure = '';
+        }
+        if (Type == "3") {
+            Managerstate = $("input:checkbox[name='chk4']:checked").map(function (index, elem) {
+                return $(elem).val();
+            }).get().join(',');
+            Propagandasteletype = '';
+            Usestate = '';
+            Structure = '';
+        }
+        if (Type == "4") {
+            Structure = $("input:checkbox[name='chk3']:checked").map(function (index, elem) {
+                return $(elem).val();
+            }).get().join(',');
+            Propagandasteletype = '';
+            Usestate = '';
+            Managerstate = '';
+        }
+        getPropagandasteleCount(TopEchart, Propagandasteletype, Usestate, Managerstate, Structure);
+    }
+</script>

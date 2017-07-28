@@ -1,0 +1,98 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutIndexNoMenu.cshtml";
+}
+<script src="~/Scripts/Chart/echarts.js"></script>
+<script src="~/Scripts/Chart/DataCenterChart/ArchivalCount.js"></script>
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+    <div data-options="region:'center'" title="" style=" border: none;">
+
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home">
+                        <div style="float:left">
+                            单位:<select id="ORGNO">
+                                @Html.Raw(@ViewBag.vdOrg)
+                            </select>
+                            类型:<select id="type" onchange="TypeChange()">
+                                <option value="1">热点类别</option>
+                                <option value="2">火险等级</option>
+                                <option value="3">火情来源</option>
+                            </select>
+                        </div>
+                        <div id="hotetype" style="float:left;display:none;">
+                            @Html.Raw(@ViewBag.hotetype)
+                        </div>
+                        <div id="firelevel" style="float:left;display:none;">
+                            @Html.Raw(@ViewBag.firelevel)
+                        </div>
+                        <div id="firefrom" style="float:left;display:none;">
+                            @Html.Raw(@ViewBag.firefrom)
+                        </div>
+                        <input type="button" value="查询" onclick="query()" class="btnSearchCss" />
+                    </div>
+                </div>
+            </div>
+
+            <div data-options="region:'center'" title="" class="LayoutCenterBG" style="width:100%;">
+                <div id="ArchivalChart" style="width:100%;height:500px;">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var ArchivalChart = echarts.init(document.getElementById('ArchivalChart'));//个数展示
+    var Hotetype = '';
+    var Firelevel = '';
+    var Firefrom = '';
+    var Type = '';
+    TypeChange()
+    function TypeChange() {
+        Type = $('#type').val()
+        if (Type == "1" || Type == '') {
+            document.getElementById('hotetype').style.display = "";
+            document.getElementById('firelevel').style.display = "none";
+            document.getElementById('firefrom').style.display = "none";
+        }
+        if (Type == "2") {
+            document.getElementById('firelevel').style.display = "";
+            document.getElementById('hotetype').style.display = "none";
+            document.getElementById('firefrom').style.display = "none";
+        }
+        if (Type == "3") {
+            document.getElementById('firefrom').style.display = "";
+            document.getElementById('firelevel').style.display = "none";
+            document.getElementById('hotetype').style.display = "none";
+        }
+    }
+    function query() {
+        var TopEchart = $('#ORGNO').val();
+        Type = $('#type').val()
+        if (Type == "1" || Type == '') {
+            Hotetype = $("input:checkbox[name='chk1']:checked").map(function (index, elem) {
+                return $(elem).val();
+            }).get().join(',');
+            Firelevel = '';
+            Firefrom = '';
+        }
+        if (Type == "2") {
+            Firelevel = $("input:checkbox[name='chk2']:checked").map(function (index, elem) {
+                return $(elem).val();
+            }).get().join(',');
+            Hotetype = '';
+            Firefrom = '';
+        }
+        if (Type == "3") {
+            Firefrom = $("input:checkbox[name='chk3']:checked").map(function (index, elem) {
+                return $(elem).val();
+            }).get().join(',');
+            Firelevel = '';
+            Hotetype = '';
+        }
+
+        getArchivalCount(TopEchart, Hotetype, Firelevel, Firefrom);
+    }
+</script>

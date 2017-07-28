@@ -1,0 +1,300 @@
+﻿@{
+    // Layout = null;
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+    //配置文件经纬度读取
+    var lon = System.Configuration.ConfigurationManager.AppSettings["Longitude"];
+    var lat = System.Configuration.ConfigurationManager.AppSettings["Latitude"];
+    var maptype = System.Configuration.ConfigurationManager.AppSettings["mapType"];//地图类型
+    var lonlatchange = System.Configuration.ConfigurationManager.AppSettings["lonLatChange"];//经纬度转换
+    var lonlattype = System.Configuration.ConfigurationManager.AppSettings["lonLatType"];//经纬度转换--度分秒
+    var ZoomLayer = System.Configuration.ConfigurationManager.AppSettings["ZoomLayer"];//默认放大级别
+}@section Header{
+    <link rel="stylesheet" href="~/js/esri/css/esri.css" />
+    <script src="~/js/init.js"></script>
+
+    <link href="~/Content/MapStyle.css" rel="stylesheet" />
+    <script src="~/Scripts/Springer/SpringerMapCommon.js"></script>
+
+    <script src="~/Scripts/laydate/laydate.js"></script>
+    <script src="~/Scripts/Springer/SpringerMapFireInfo.js"></script>
+    <script src="~/Scripts/Springer/SpringerMainYYJC.js"></script>
+    <script src="~/Scripts/Springer/SpringerMapShow.js"></script>
+}
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+<link href="~/Content/MapStyle.css" rel="stylesheet" />
+<link rel="stylesheet" href="~/js/esri/css/esri.css" />
+<link rel="stylesheet" href="~/Content/themes/dijit/themes/tundra/tundra.css" />
+@*<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.8.2.min.js")"></script>*@
+<script src="~/js/init.js"></script>
+<style type="text/css">
+    html, body, #map {
+        height: 100%;
+        width: auto;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        background-color: #FFF;
+        overflow: hidden;
+        font-family: "Microsoft YaHei";
+    }
+</style>
+
+<script>
+    //MAP
+    var nav;
+    dojoConfig = {
+        parseOnLoad: true,
+        packages: [{
+            name: 'bdlib',
+            location: this.location.pathname.replace(/\/[^/]+$/, "") + "/js/bdlib"
+        }]
+    };
+    var map, toolbar, graphicLayer;
+    var datalist ;//获取最新天气list
+    bevent = require("dojo/_base/event");
+    require(["esri/map",
+    "bdlib/GoogleLayer",
+    "bdlib/TDTLayer",
+    "bdlib/TDTAnnoLayer",
+    "esri/layers/FeatureLayer",
+    "esri/geometry/Point",
+    "esri/symbols/SimpleFillSymbol",
+    "esri/symbols/SimpleLineSymbol",
+    "dojo/_base/Color", "dojo/parser", "esri/toolbars/draw", "esri/symbols/SimpleMarkerSymbol", "esri/graphic", "esri/dijit/Scalebar", "esri/dijit/OverviewMap",
+    "esri/toolbars/navigation", "dijit/registry", "esri/symbols/TextSymbol", "esri/dijit/HomeButton", "esri/toolbars/edit",
+    "esri/tasks/GeometryService","esri/dijit/Measurement",
+    "dojo/domReady!"],
+    function (Map, GoogleLayer, TDTLayer, TDTAnnoLayer, FeatureLayer, Point, SimpleFillSymbol, SimpleLineSymbol, Color, parser, Draw, SimpleMarkerSymbol, Graphic, Scalebar, OverviewMap, Navigation
+        , registry, TextSymbol, HomeButton, Edit,GeometryService,Measurement) {
+        // parser.parse();
+        map = new Map("map", { logo: false, sliderStyle: "large" });
+        //autoResize: false
+        //var MapServer = "http://192.168.5.244:6080/arcgis/rest/services/HHZ/MapHHZ/MapServer";
+        var MapServer = "@ViewBag.url";
+        //36.7.68.79  ArcGISDynamicMapServiceLayer
+        dynamicMapServiceLayer = new esri.layers.ArcGISTiledMapServiceLayer(MapServer);
+        ////添加图层载入后监听方法loadLayerList
+        //dojo.connect(dynamicMapServiceLayer, "onLoad", loadLayerList);
+        map.addLayer(dynamicMapServiceLayer);
+
+        //var smap="http://222.220.230.178:6080/arcgis/rest/services/Server_local_Background_X_DGX/MapServer";
+        //var dynamicLayer = new esri.layers.ArcGISDynamicMapServiceLayer(smap);
+        //map.addLayer(dynamicLayer);
+        loadXSWeather();//县市天气
+        loadXZWeather();//乡镇天气
+
+        var pt = new Point(parseFloat(@lon), parseFloat(@lat));
+        //var pt = new Point(117.18182, 31.8448);//合肥
+        // var pt=new Point(103.354065,23.367718);//红河州
+        map.centerAndZoom(pt, @ZoomLayer);
+
+        nav = new esri.toolbars.Navigation(map);
+
+        graphicLayer = new esri.layers.GraphicsLayer();
+        map.addLayer(graphicLayer);
+
+        //比例尺
+        var scalebar = new Scalebar({
+            map: map,
+            attachTo: "bottom-center"
+        });
+        //在地图初始化的时候添加监听画图的事件：
+        // toolbar = new esri.toolbars.Draw(map);
+        // dojo.connect(toolbar, "onDrawEnd", doMeasure);
+    });
+
+    //量算面积和长度方法：
+    function GetLenthorArea(geometry) {
+        //画图完毕后计算距离或者面积
+        if (geometry.type == "polyline") {
+            var geo = esri.geometry.webMercatorToGeographic(geometry);
+            if (@maptype=="2") {
+                geo=geometry;
+            }
+            var Length = esri.geometry.geodesicLengths([geo], esri.Units.METERS);
+            map.infoWindow.setTitle("距离测量");
+            if (parseFloat(Length)<1000) {
+                map.infoWindow.setContent("距离： <strong>" + parseFloat(Length).toFixed(2)+ "米 </strong>");
+            }
+            else
+            {
+                map.infoWindow.setContent("距离： <strong>" +  parseFloat(Length/1000).toFixed(2)+ "千米 </strong>");
+            }
+            map.infoWindow.show();
+        }
+        else if(geometry.type == "polygon") {
+            var geo = esri.geometry.webMercatorToGeographic(geometry);
+            if (@maptype=="2") {
+                geo=geometry;
+            }
+            var Area = esri.geometry.geodesicAreas([geo], esri.Units.SQUARE_METERS);
+            map.infoWindow.setTitle("面积测量");
+            if (parseFloat(Area)<1000000) {
+                map.infoWindow.setContent("面积： <strong>" + parseFloat(Area).toFixed(2) + "平方米 </strong>");
+            }
+            else
+            {
+                map.infoWindow.setContent("面积： <strong>" +  parseFloat(Area/1000000).toFixed(2) + "平方公里 </strong>");
+            }
+            map.infoWindow.show();
+        }
+    }
+
+    //量算
+    function doMeasure(geometry) {
+        //更加类型设置显示样式
+        // measuregeometry = geometry;
+        toolbar.deactivate();
+        switch (geometry.type) {
+            case "polyline":
+                var symbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([255,0,0]), 2);
+                break;
+            case "polygon":
+                var symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID, new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_DASHDOT, new dojo.Color([255, 0, 0]), 2), new dojo.Color([255, 255, 0, 0.25]));
+                break;
+        }
+        //设置样式
+        var graphic = new esri.Graphic(geometry,symbol);
+        //清除上一次的画图内容
+        map.graphics.clear();
+        map.graphics.add(graphic);
+        GetLenthorArea(geometry);
+    }
+
+
+    //载入气象信息（18 县与地级市）
+    function loadXSWeather()
+    {
+        var url = "@ViewBag.url"+"2";
+        var QueryTask = new esri.tasks.QueryTask(url);
+        var  query = new esri.tasks.Query();
+        var whereStr=" 1=1 ";
+        query.where = whereStr;
+        query.outFields = ["*"];
+        query.returnGeometry = true;
+        QueryTask.execute(query, ShowQueryResult);
+    }
+    //载入气象信息（17 乡镇）
+    function loadXZWeather()
+    {
+        var url = "@ViewBag.url"+"3";
+        var QueryTask = new esri.tasks.QueryTask(url);
+        var  query = new esri.tasks.Query();
+        var whereStr=" 1=1 ";
+        query.where = whereStr;
+        query.outFields = ["*"];
+        query.returnGeometry = true;
+        QueryTask.execute(query, ShowQueryResult);
+    }
+
+    ///结果地图展示
+    function ShowQueryResult(queryResult) {
+
+        getNewWeatherInfo();//同步ajax
+        var SimpleSymbol ;
+
+        if (queryResult.features.length == 0) {
+            layer.msg('未查询到图层属性！');
+            return;
+        }
+        if (queryResult.features.length > 0) {
+            for (var i = 0; i < queryResult.features.length; i++) {
+
+                var graphic = queryResult.features[i];
+                var geometry = graphic.geometry;
+                var name=graphic.attributes.NAME;
+                for (var j = 0; j < datalist.length; j++) {
+                    if ($.trim(datalist[j].TOWNNAME)==$.trim(name)) {
+                        SimpleSymbol = new esri.symbol.PictureMarkerSymbol("../Images/weather/yd.png", 10, 10);
+
+                        var html="<p>当前时间："+new Date(Date.parse(datalist[j].WEATHERDATE.replace('-','/'))).format('yyyy年MM月dd日 hh:mm:ss')+"&nbsp;&nbsp;实时雨量："+datalist[j].P+"毫升&nbsp;&nbsp;当前温度："+
+                            datalist[j].TCUR+ "℃&nbsp;&nbsp;最高温度："+datalist[j].THIGH+"℃&nbsp;&nbsp;最低温度："+ datalist[j].TLOWER +"℃</p>";
+                        var infoTemplate = new esri.InfoTemplate();
+                        infoTemplate.setTitle("区域:${NAME}");
+                        infoTemplate.setContent(html);
+                        var graphic = new esri.Graphic(geometry, SimpleSymbol, graphic.attributes, infoTemplate);
+                        graphicLayer.add(graphic);
+
+                        var font = new esri.symbol.Font("12px", esri.symbol.Font.STYLE_NORMAL, esri.symbol.Font.VARIANT_NORMAL, esri.symbol.Font.WEIGHT_BOLD, "微软雅黑");
+                        var textSymbol = new esri.symbol.TextSymbol("雨量："+datalist[j].P +","+ "温度："+datalist[j].TCUR);
+                        textSymbol.setColor(new dojo.Color("#f58220"));
+                        textSymbol.setFont(font);
+                        textSymbol.setOffset(0, 10);
+                        var graphicText = esri.Graphic(geometry, textSymbol);
+                        map.graphics.add(graphicText);
+                    }
+                    else {
+                        continue;
+                    }
+                }
+            }
+        }
+    }
+    //Ajax 获取最新天气
+    function getNewWeatherInfo()
+    {
+        $.ajax({
+            type: "Post",
+            url: "/EarlyMonitor/GetWeatherList",
+            dataType: "json",
+            async:false,//同步
+            success: function (obj) {
+                if (obj != null && obj.Success) {
+                    datalist = obj.DataList;
+                }
+                else {
+                    layer.msg('获取最新天气情况出错', {icon: 2});
+                }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown){
+                layer.msg('获取最新天气AJAX出错', {icon: 2});
+            }
+        });
+    }
+
+    //查看
+    function PopWeatherLevel() {
+        //iframe层-父子操作
+        layer.open({
+            type: 2,
+            title: '天气情况查看',
+            area: ['850px', '450px'],
+            fix: false, //不固定
+            maxmin: true,
+            content: '@Url.Action("PopWeatherInfoIndex", "BaseCommon")'
+        });
+        // layer.full(index);
+    }
+</script>
+
+<div class="easyui-layout" data-options="fit:true">
+
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="" style=" border: none;overflow:hidden;">
+        <div class="easyui-layout" data-options="fit:true">
+            <div data-options="region:'south'" title="" style=" height:40px; overflow:hidden;">
+                <div class="divOP">
+                    <input type="button" id="firelevelshow" value="查看天气情况表格" style="width:120px;" onclick="PopWeatherLevel()" />
+                </div>
+            </div>
+            @*<div data-options="region:'center'" title="" style=" border: none; overflow:hidden;">
+
+                    <iframe id="mapframe" src="@Url.Action("FireLeverIndex","MainDefault", new { level="" })" allowtransparency="true" frameborder="0" style="width:100%;height:100%"></iframe>
+                </div>*@
+
+            <div data-options="region:'center'" title="" style=" border: none;overflow:hidden;" class="tundra">
+                <div id="map">
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>

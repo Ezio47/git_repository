@@ -1,0 +1,370 @@
+﻿@{
+    ViewBag.Title = "FireSXIndex";
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+}
+@model ManagerSystem.MVC.Models.YAFireLevelInfoModel
+
+<form id="sxfm" class="divMan">
+    <table cellpadding="0" cellspacing="0">
+        <tr>
+            <td>火灾编号</td>
+            <td colspan="2"><input type="text" id="firecode" name="firecode" style="width:200px" value="@Model.FIRECODE" /></td>
+            <td>开始时间</td>
+            <td colspan="2"><label id="startime">@Model.FIRETIME</label></td>
+        </tr>
+        <tr>
+            <td>过火面积</td>
+            <td><input type="text" id="ghmj" name="ghmj" value="@Model.GHMJ" />公顷</td>
+            <td>过火林地面积</td>
+            <td><input type="text" id="ghldmj" name="ghldmj" value="@Model.GHLDMJ" />公顷</td>
+            <td>受害林地面积</td>
+            <td><input type="text" id="shslmj" name="shslmj" value="@Model.SHSLMJ" onblur="setXyLevel()" />公顷</td>
+        </tr>
+        <tr>
+            <td>死亡人数</td>
+            <td colspan="2"><input type="text" id="ryw" name="ryw" value="@Model.RYW" onblur="setXyLevel()" /> </td>
+            <td>重伤人数</td>
+            <td colspan="2"><input type="text" id="rys" name="rys" value="@Model.RYS" onblur="setXyLevel()" /> </td>
+        </tr>
+        <tr>
+            <td>是否敏感</td>
+            <td>
+                <select name="mg" id="mg" onchange="setXyLevel()" style="width:80px">
+                    <option value="0">否</option>
+                    <option value="1">是</option>
+                </select>
+            </td>
+            <td>是否重点</td>
+            <td>
+                <select name="zd" id="zd" style="width:80px">
+                    <option value="0">否</option>
+                    <option value="1">是</option>
+                </select>
+            </td>
+            <td>国界距离</td>
+            <td><input type="text" id="gjjl" name="gjjl" value="@Model.GJJL" onblur="setXyLevel()" />公里</td>
+        </tr>
+        <tr>
+            <td colspan="2"><input type="checkbox" id="zzh" name="zzh" value="1" onclick="GetCheckBox()" /><label for="zzh">州防火指挥部是否扑救和处置</label> </td>
+            <td colspan="2">
+                <input type="checkbox" id="qhs" name="qhs" value="1" onclick="GetCheckBox()" /><label for="qhs">同一地区同时发生3起火灾</label>
+            </td>
+            @*<td>州指挥级别</td>
+                <td>
+                    <select id="zzh" name="zzh" style="width:80px">
+                        <option value="-1">请选择</option>
+                        <option value="1">一级</option>
+                        <option value="2">二级</option>
+                        <option value="3">三级</option>
+                        <option value="4">四级</option>
+                    </select>
+                </td>*@
+            @*<td>起火级别</td>
+                <td>
+                    <select id="qhs" name="qhs" style="width:80px">
+                        <option value="-1">请选择</option>
+                        <option value="1">一级</option>
+                        <option value="2">二级</option>
+                        <option value="3">三级</option>
+                        <option value="4">四级</option>
+                    </select>
+                </td>*@
+            <td colspan="2">
+                <input type="checkbox" id="ssjb" name="ssjb" value="1" onclick="GetCheckBox()" /><label for="ssjb">国土安全和社会稳定是否受到严重威胁</label>
+            </td>
+            @*<td>损失级别</td>
+                <td>
+                    <select id="ssjb" name="ssjb" style="width:80px">
+                        <option value="-1">请选择</option>
+                        <option value="1">一级</option>
+                        <option value="2">二级</option>
+                        <option value="3">三级</option>
+                        <option value="4">四级</option>
+                    </select>
+                </td>*@
+        </tr>
+        <tr>
+            <td>响应级别<input type="hidden" id="jcfid" name="jcfid" value="@Model.JCFID" /><input type="hidden" id="propid" name="propid" value="@Model.JC_FIRE_PROPID" /></td>
+            <td colspan="3">
+                <select name="firelevel" id="firelevel" onchange="getXyInfo()" style="width:80px">
+                    <option value="0">无</option>
+                    <option value="1">Ⅰ级</option>
+                    <option value="2">Ⅱ级</option>
+                    <option value="3">Ⅲ级</option>
+                    <option value="4">Ⅳ级</option>
+                </select>
+            </td>
+            <td colspan="3"><input type="button" class="btnSaveCss" name="save" value="保存" id="Save" /></td>
+        </tr>
+    </table>
+    <p style="color:red">（注意）面积为整数或小数（位数为4位之内）</p>
+
+    <hr />
+    <fieldset>
+        <legend>触发条件</legend>
+        <p id="cfmsg"></p>
+    </fieldset>
+</form>
+
+@Scripts.Render("~/bundles/jquery")
+<script src="~/Scripts/layer/layer.js"></script>
+<script type="text/javascript">
+
+    //$.fn.extend({
+    //    "fixedSerialize": function () {
+    //        var $f = $(this);
+    //        var data = $(this).serialize();
+    //        var $chks = $(this).find(":checkbox:checked");    //取得所有选中的checkbox
+
+    //        if ($chks.length == 0) {
+    //            return data;
+    //        }
+    //        var nameArr = [];
+    //        var tempStr = "";
+    //        $chks.each(function () {
+    //            var chkName = $(this).attr("name");
+    //            if ($.inArray(chkName, nameArr) == -1 && $f.find(":checkbox[name='" + chkName + "']:checked").length == 0) {
+    //                nameArr.push(chkName);
+    //                tempStr += "&" + chkName + "=";
+    //            }
+    //        });
+    //        data += tempStr;
+    //        return data;
+    //    }
+    //});
+
+    $(function () {
+        var mg=@ViewBag.mg;
+        var zd=@ViewBag.zd;
+        var zzh=@ViewBag.zzh;
+        var qhs=@ViewBag.qhs;
+        var ssjb=@ViewBag.ssjb;
+        var level=@ViewBag.level;
+        $("#mg").val(mg);
+        $("#zd").val(zd);
+        if (zzh=="1") {
+            $("#zzh").attr("checked",true);
+        }else
+        {
+            $("#zzh").attr("checked",false);
+        }
+
+        if (qhs=="1") {
+            $("#qhs").attr("checked",true);
+        }else
+        {
+            $("#qhs").attr("checked",false);
+        }
+        if (ssjb=="1") {
+            $("#ssjb").attr("checked",true);
+        }else
+        {
+            $("#ssjb").attr("checked",false);
+        }
+        $("#firelevel").val(level);
+        document.getElementById("firelevel").onchange();
+    });
+
+    //保存
+    $('#Save').click(function () {
+        var  bo=sxCheck() ;
+        if (bo) {
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("SaveFireLevelSX")",
+                data: $('#sxfm').serialize(),// 你的formids
+                success: function (data) {
+                    if (data != null && data.Success) {
+                        layer.msg("保存成功");
+                    }
+                    else {
+                        layer.msg("保存出错");
+                    }
+                },
+                error: function (request) {
+                    layer.msg("保存出错");
+                }
+            });
+        }
+
+    });
+
+    //属性检查
+    function sxCheck() {
+        var refloat = /^\d+\.?\d{0,4}$/;
+        var renum  =/^-?\d+$/;　　//正整数
+        var ghmj=$('#ghmj').val();//过火面积
+        var ghldmj=$('#ghldmj').val();//过火林地面积
+        var shslmj=$('#shslmj').val();//受害林地面积
+        var rys=$('#rys').val();//人员伤
+        var ryw=$('#ryw').val();//人员亡
+        var gjjl=$('#gjjl').val();//国界距离
+        //var zzh=$('#zzh').val();//州指挥级别
+        //var qhs=$('#qhs').val();//起火级别
+        //var ssjb=$('#ssjb').val();//损失级别
+        var firelevel=$('#firelevel').val();//火灾等级
+        if ( shslmj!=null && ghldmj!=null && parseFloat(shslmj)>parseFloat(ghldmj)) {
+            layer.msg("受害林地面积不可超过过火林地面积");
+            $('#shslmj').focus();
+            return false;
+        }
+        if ($.trim(ghldmj)=="" && $.trim(shslmj) !="") {
+            layer.msg("过火林地面积不可为空");
+            $('#ghldmj').focus();
+            return false;
+        }
+        if (!refloat.test(ghmj)&&ghmj!="") {
+            layer.msg("过火面积格式错误");
+            $('#ghmj').focus();
+            return false;
+        }
+        if (!refloat.test(ghldmj)&&ghldmj!="") {
+            layer.msg("过火林地面积格式错误");
+            $('#ghldmj').focus();
+            return false;
+        }
+        if (!refloat.test(shslmj)&&shslmj!="") {
+            layer.msg("受害林地面积格式错误");
+            $('#shslmj').focus();
+            return false;
+        }
+        if (!renum.test(rys)&&rys!="") {
+            layer.msg("重伤人数格式错误");
+            $('#rys').focus();
+            return false;
+        }
+        if (!renum.test(ryw)&&ryw!="") {
+            layer.msg("死亡人数格式错误");
+            $('#ryw').focus();
+            return false;
+        }
+        if (!refloat.test(gjjl)&&gjjl!="") {
+            layer.msg("国界距离格式错误");
+            $('#gjjl').focus();
+            return false;
+        }
+        if (firelevel=="-1") {
+            layer.msg("火灾等级必选");
+            $('#firelevel').focus();
+            return false;
+        }
+        return true;
+    }
+
+    //设定响应级别
+    function setXyLevel()
+    {
+        var ghmj=$('#ghmj').val();//过火面积
+        var ghldmj=$('#ghldmj').val();//过火林地面积
+        var shslmj=$('#shslmj').val();//受害林地面积
+        var rys=$('#rys').val();//人员伤
+        var ryw=$('#ryw').val();//人员亡
+        var gjjl=$('#gjjl').val();//国界距离
+        var mg=$('#mg').val();//是否敏感
+        //var zzh=$('#zzh').val();//州指挥级别
+        //var qhs=$('#qhs').val();//起火级别
+        //var ssjb=$('#ssjb').val();//损失级别
+        //一级预案
+        if (mg=="1") {
+            GetTimeSpanAjax();
+        }else  if (parseInt(rys)>=50||parseInt(ryw)>=30||parseFloat(shslmj)>=500||(parseFloat(gjjl)<=1&&parseFloat(gjjl)>0)) {
+            $('#firelevel').val("1");
+            document.getElementById("firelevel").onchange();
+        }else  if ((parseInt(rys)>=30 && parseInt(rys)<50)||(parseInt(ryw)>=10 && parseInt(ryw)<30)||(parseFloat(shslmj)>=100&&parseFloat(shslmj)<500)||(parseFloat(gjjl)<=2&&parseFloat(gjjl)>1)) {
+            $('#firelevel').val("2");
+            document.getElementById("firelevel").onchange();
+        }else if ((parseInt(rys)>=10 && parseInt(rys)<30)||(parseInt(ryw)>=3 && parseInt(ryw)<10)||(parseFloat(shslmj)>=10&&parseFloat(shslmj)<50)||(parseFloat(gjjl)<=4&&parseFloat(gjjl)>2)) {
+            $('#firelevel').val("3");
+            document.getElementById("firelevel").onchange();
+        }else if ((parseInt(rys)>=3 && parseInt(rys)<10)||(parseInt(ryw)>=1 && parseInt(ryw)<3)||(parseFloat(shslmj)>=50&&parseFloat(shslmj)<100)||(parseFloat(gjjl)<=6&&parseFloat(gjjl)>4)) {
+            $('#firelevel').val("4");
+            document.getElementById("firelevel").onchange();
+        }
+        else
+        {
+            $('#firelevel').val("0");
+            document.getElementById("firelevel").onchange();
+        }
+
+    }
+
+    //敏感时间段火情持续时间
+    function GetTimeSpanAjax()
+    {
+        $.ajax({
+            type: "Post",
+            url: "/BaseCommon/GetSysTime",
+            data: { startime: $('#startime').text() },
+            dataType: "json",
+            success: function (data) {
+                if (data != null&&data.Success) {
+                    if (parseFloat(data.Msg)>=48) {
+                        $('#firelevel').val("1");
+                        document.getElementById("firelevel").onchange();
+                    }
+                    else if (parseFloat(data.Msg)<48&&parseFloat(data.Msg)>36) {
+                        $('#firelevel').val("2");
+                        document.getElementById("firelevel").onchange();
+                    }
+                    else if (parseFloat(data.Msg)<=36&&parseFloat(data.Msg)>18) {
+                        $('#firelevel').val("3");
+                        document.getElementById("firelevel").onchange();
+                    }
+                    else if (parseFloat(data.Msg)<=18&&parseFloat(data.Msg)>=6) {
+                        $('#firelevel').val("4");
+                        document.getElementById("firelevel").onchange();
+                    }
+                    else
+                    {
+                        $('#firelevel').val("0");
+                        document.getElementById("firelevel").onchange();
+                    }
+
+                }
+            }
+        });
+    }
+    //checkbox 筛选
+    function GetCheckBox()
+    {
+        //国土安全和社会稳定是否受到严重威胁
+        if ($('#ssjb').is(':checked')==true) {
+            $('#firelevel').val("1");
+            document.getElementById("firelevel").onchange();
+        } else if ($('#zzh').is(':checked')==true) {//州防火指挥部是否扑救和处置
+            $('#firelevel').val("2");
+            document.getElementById("firelevel").onchange();
+        }else if ($('#qhs').is(':checked')==true) {//同一地区同时发生3起火灾
+            $('#firelevel').val("3");
+            document.getElementById("firelevel").onchange();
+        }
+        else{
+            $('#firelevel').val("0");
+            document.getElementById("firelevel").onchange();
+        }
+
+    }
+
+    //获取响应信息
+    function getXyInfo()
+    {
+        var value=$('#firelevel').val();
+        if (value=="4") {
+            var html="（1）发生造成1人以上死亡，或者重伤3人以上的森林火灾；<br/>（2）初判受害面积超过10公顷以上50公顷以下的森林火灾；<br/>（3）发生在州党政机关附近和国家、省、州党代会、人代会、政协会及重大节日期间等敏感时段6小时，尚未得到有效控制的森林火灾；<br/>（4）发生在森林公园、风景名胜区、自然保护区6小时，尚未得到有效控制的森林火灾；<br/>（5）发生在距国界两侧6公里以内，并对我国或邻国森林资源构成威胁的森林火灾；<br/>（6）发生连续燃烧时间超过12小时，尚未得到有效控制的森林火灾。";
+            $('#cfmsg').html(html);
+        } else if (value=="3") {
+            var html="（1）发生造成3人以上死亡，或重伤10人以上的森林火灾；<br/>（2）初判受害面积超过50公顷以上100公顷以下的森林火灾；<br/>（3）发生在州党政机关附近和国家、省、州党代会、人代会、政协会及重大节日期间等敏感时段18小时，尚未得到有效控制的森林火灾；<br/>（4）发生在森林公园、风景名胜区、自然保护区18小时，尚未得到有效控制的森林火灾；<br/>（5）发生在距国界两侧4公里以内，并对我国或邻国森林资源构成严重威胁的森林火灾；<br/>（6）发生连续燃烧时间超过24小时，尚未得到有效控制的森林火灾；<br/>（7）同一地区同时发生3起火灾，尚未得到有效控制的森林火灾。" ;
+            $('#cfmsg').html(html);
+        }
+        else if (value=="2") {
+            var html="（1）发生造成10人以上死亡的，或重伤30人以上的森林火灾；<br/>（2）发生受害面积超过100公顷以上500公顷以下的，持续燃烧时间超过36小时，尚未得到有效控制的森林火灾；<br/>（3）发生在州党政机关附近和国家、州党代会、人代会、政协会及重大节日期间等敏感时段36小时，尚未得到有效控制的森林火灾；<br/>（4）发生在森林公园、风景名胜区、自然保护区36小时，尚未得到有效控制的森林火灾；<br/>（5）发生在距国界两侧2公里以内，并对我国或邻国森林资源构成严重威胁的森林火灾；<br/>（6）同一地区同时发生3起失去控制的森林火灾；<br/>（7）地方要求或指挥部领导要求州森林防火指挥部直接参与协调组织指挥扑救和紧急处置的森林火灾。" ;
+            $('#cfmsg').html(html);
+        }
+        else if (value=="1") {
+            var html="（1）发生死亡30人以上的，或者重伤50人以上的森林火灾；<br/>（2）初判受害森林面积达500公顷以上，火势持续蔓延的森林火灾；<br/>（3）发生在国家、省、州党代会、人代会、政协会及重大节日期间等敏感时段48小时，尚未得到有效控制的森林火灾；<br/>（4）发生在森林公园、风景名胜区、自然保护区持续燃烧48小时，尚未得到有效控制的森林火灾；<br/>（5）发生在距国界两侧1公里以内，并对我国或邻国森林资源构成严重威胁的森林火灾；<br/>（6）发生在州（市）交界处重点地区或者持续燃烧时间超过48小时，火势仍未得到有效控制的森林火灾；<br/>（7）国土安全和社会稳定受到严重威胁，有关行业遭受重创，损失特别巨大的森林火灾。" ;
+            $('#cfmsg').html(html);
+        }else   {
+            $('#cfmsg').html('');
+        }
+    }
+</script>

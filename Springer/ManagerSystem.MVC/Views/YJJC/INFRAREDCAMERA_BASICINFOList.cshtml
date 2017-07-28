@@ -1,0 +1,206 @@
+﻿@{
+
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+}
+@model IEnumerable<ManagerSystemModel.JC_INFRAREDCAMERA_BASICINFO_Model>
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        单位名称：<select id="tbxORGNO">
+                            @Html.Raw(@ViewBag.vdOrg)
+                        </select>
+                        手机号码：
+                        <input id="tbxUserName" type="text" value="@ViewBag.PHONE" />
+
+                        <input type="button" value="查询" onclick="query()" class="btnSearchCss" />
+                        <input type="button" value="添加" id="btnAdd" style="display:none;" onclick="Add()" class="btnAddCss" />
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <div class="divTable" id="divTable">
+                    @Html.Raw(ViewBag.INFRAREDCAMERA_BASICINFOList)
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+@*<div class="divMan" id="divMan" >
+    @if (Model.Any())
+    {
+        foreach (var item in Model)
+        {
+            <table cellpadding="0" cellspacing="0">
+                <tr class='row1'>
+                    <td style="width:100px;">单位名称:</td>
+                    <td>@item.ORGNAME</td>
+                    <td>
+                        相机名:
+                    </td>
+                    <td>@item.INFRAREDCAMERANAME</td>
+                </tr>
+                <tr>
+                    <td style="width:100px;">
+                        手机号码:
+                    </td>
+                    <td>@item.PHONE</td>
+                    <td>
+                        高程:
+                    </td>
+                    <td>@item.GC</td>
+                </tr>
+                <tr>
+                    <td> 经度:</td>
+                    <td>@item.JD</td>
+                    <td>纬度:</td>
+                    <td>@item.WD</td>
+                </tr>
+                <tr>
+                    <td> 地址:</td>
+                    <td colspan="3">@item.ADDRESS</td>
+                </tr>
+            </table>
+        }
+
+    }
+</div>*@
+
+
+
+<script type="text/javascript">
+
+    $(function () {
+        var bln = '@ViewBag.isAdd';
+        if (bln == "1") {
+            document.getElementById('btnAdd').style.display = "";
+        }
+    })
+
+    function Manager(id) {
+        if (confirm('确实要删除该内容吗?')) {
+            $.ajax({
+                url: '/YJJC/INFRAREDCAMERA_BASICINFOManger',
+                cache: false,
+                data: {
+                    INFRAREDCAMERAID: id
+                    , Method: 'Del'
+                    , returnUrl: ''
+                },
+                type: 'post',
+                error: function () {
+                    alert('错误:异常!', 'error');
+                },
+                success: function (re) {
+
+                    var ar = eval('(' + re + ')');
+                    if (ar.Success) {
+                        if (confirm(ar.Msg)) {
+                            query();
+                        }
+                    }
+                    else {
+                        alert(ar.Msg, "Error");
+                    }
+                }
+            });
+        }
+    }
+
+    function Add() {
+        layer.open({
+            type: 2,
+            title: '添加',
+            fix: false, //不固定
+            area: ['50%', '45%'],
+            maxmin: true,
+            content: '/YJJC/INFRAREDCAMERAMan',
+            end: function () {
+                query();
+            }
+        });
+        //window.location.assign('/YJJC/INFRAREDCAMERAMan');
+    }
+
+    function Photo(id) {
+        layer.open({
+            type: 2,
+            title: '照片',
+            fix: false, //不固定
+            area: ['50%', '45%'],
+            maxmin: true,
+            content: '/YJJC/INFRAREDCAMERPhoto?ID=' + id,
+            //content: $("#divPhoto"),
+        });
+    }
+
+    function Mdy(ID, Method) {
+        layer.open({
+            type: 2,
+            title: '修改',
+            fix: false, //不固定
+            area: ['50%', '45%'],
+            maxmin: true,
+            content: '/YJJC/INFRAREDCAMERAMan?ID=' + ID + '&Method=Mdy',
+            end: function () {
+                query();
+            }
+        });
+    }
+
+    query();
+    function query() {
+        $.ajax({
+            url: '/YJJC/getINFRAREDCAMERA_BASICINFOList',
+            cache: false,
+            type: "post",
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: {
+                PHONE: $("#tbxUserName").val(),
+                BYORGNO: $("#tbxORGNO").val()
+            },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#divTable').html(ar.tableInfo);
+                }
+                else {
+                    alert(ar.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                alert('登录异常');
+            }
+        });
+    }
+
+    function See(ID) {
+        layer.open({
+            type: 2,
+            title: '查看',
+            area: ['50%', '40%'],
+            content: '/YJJC/ViewINFRAREDCAMERA?ID=' + ID,
+        });
+    }
+
+    //地图定位展示
+    function Position(tablename, id, name) {
+        layer.open({
+            type: 2,
+            title: name + '地图定位',
+            area: ['1000px', '500px'],
+            //shade: 0,
+            fix: true,
+            maxmin: true,
+            content: '/MapCommon/MapPostionCommonIndex?tablename=' + tablename + "&id=" + id
+        })
+    }
+</script>

@@ -1,0 +1,140 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+}
+@section Header{
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        单位名称：<select id="tbxORGNO"> @Html.Raw(@ViewBag.vdOrg)  </select>
+                        科室： <select id="tbxDEPARTMENT">@Html.Raw(@ViewBag.depart) </select>
+                        登录名：<input id="tbxLoginUserName" type="text" value="" />
+                        姓名： <input id="tbxUserName" type="text" value="" />
+                        <input type="button" value="查询" onclick="query(1)" class="btnSearchCss" />
+                        <input type="button" value="添加" onclick="Add()" class="btnAddCss" />
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <div class="divTable" id="divTable">
+
+                </div>
+            </div>
+            <div data-options="region:'south'" title="" style=" height:40px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
+                <div class="divPager" id="divPager"> 
+                                       
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        query('1');
+    });
+    function Manager(id) {
+        if (confirm('确实要删除该内容吗?')) {
+            $.ajax({
+                url: '/System/UserManager',
+                cache: false,
+                data: {USERID: id,Method: 'Del', returnUrl: '' },
+                type: 'post',
+                error: function () {
+                    alert('错误:异常!', 'error');
+                },
+                success: function (re) {
+                    var ar = eval('(' + re + ')');
+                    if (ar.Success) {
+                        layer.msg('删除成功', { icon: 6 });
+                        query(page);
+                    }
+                    else {
+                        alert(ar.Msg, "Error");
+                    }
+                }
+            });
+        }
+    }
+
+    function Add() {
+        layer.open({
+            type: 2,
+            title: '添加',
+            fix: false, //不固定
+            area: ['60%', '60%'],
+            maxmin: true,
+            content: '/System/UserMan',
+            end: function () {
+                //layer.msg('添加成功', { icon: 6 });
+                query(1);
+            }
+        });
+    }
+
+    function Mdy(USERID, Method) {
+        layer.open({
+            type: 2,
+            title: '修改',
+            fix: false, //不固定
+            area: ['60%', '60%'],
+            maxmin: true,
+            content: '/System/UserMan?USERID=' + USERID + "&Method=" + Method,
+            end: function () {
+                query(page);
+            }
+        });
+    }
+
+    function See(USERID, Method) {
+        layer.open({
+            type: 2,
+            title: '查看',
+            fix: false, //不固定
+            area: ['60%', '60%'],
+            maxmin: true,
+            content: '/System/UserMan?USERID=' + USERID + "&Method=" + Method,
+        });
+    }
+
+    var page = 1;//当前默认页面为1
+    function query(Page) {
+        page = Page;
+        var pagesize = '0';
+        if (document.getElementById("selPageSize") != null) {
+            pagesize = document.getElementById("selPageSize").value;
+        }
+        $.ajax({
+            url: '/System/getUserListAjax',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: {
+                PageSize: pagesize,
+                ORGNO: document.getElementById("tbxORGNO").value,
+                DEPARTMENT: document.getElementById("tbxDEPARTMENT").value,
+                LoginUserName: document.getElementById("tbxLoginUserName").value,
+                UserName: document.getElementById("tbxUserName").value,
+                Page: Page,
+            },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#divTable').html(ar.tableInfo);
+                    $('#divPager').html(ar.pagerInfo);
+                }
+                else {
+                    layer.msg('登录异常');
+                }
+            },
+            error: function (err, ioArgs) {
+                alert('登录异常');
+            }
+        });
+    } 
+</script>

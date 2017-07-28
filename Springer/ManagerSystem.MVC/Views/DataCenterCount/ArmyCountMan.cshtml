@@ -1,0 +1,59 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutIndexNoMenu.cshtml";
+}
+@*<script src="~/Scripts/Chart/echarts.min.js"></script>*@
+<script src="~/Scripts/Chart/echarts.js"></script>
+<script src="~/Scripts/Chart/DataCenterChart/ArmyCount.js"></script>
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+    <div data-options="region:'center'" title="" style=" border: none;">
+
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home">
+                        <div style="float:left">
+                            单位:<select id="ORGNO">
+                                @Html.Raw(@ViewBag.vdOrg)
+                            </select>
+                            类型:<select id="type" >
+                                <option value="1">队伍人数</option>
+                                <option value="2">队伍个数</option>
+                            </select>
+                        </div>
+                        <div id="armytype" style="float:left;">
+                            @Html.Raw(@ViewBag.armytype)
+                        </div>
+                        &nbsp;&nbsp;<input type="button" value="查询" onclick="query()" class="btnSearchCss" checked="checked" />
+                    </div>
+                </div>
+            </div>
+
+            <div data-options="region:'center'" title="" class="LayoutCenterBG" style="width:100%;">
+
+                <div id="armyChart" style="width:100%;height:500px;float:left;">
+                </div>
+                @*<div id="armyChart1" style="width:50%;height:600px;float:left;">
+                </div>*@
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var armyChart = echarts.init(document.getElementById('armyChart'));//人数展示
+    //var armyChart1 = echarts.init(document.getElementById('armyChart1'));//队伍数量展示
+    function query() {
+        var TopEchart = $('#ORGNO').val();
+        var DictValue = $("input:checkbox[name='chk1']:checked").map(function (index, elem) {
+            return $(elem).val();
+        }).get().join(',');
+        var Type = $('#type').val();
+        if (Type=="1") {
+            getArmyCount(TopEchart, DictValue);
+        }
+        if (Type=="2") {
+            getArmyCount1(TopEchart, DictValue);
+        }
+    }
+</script>

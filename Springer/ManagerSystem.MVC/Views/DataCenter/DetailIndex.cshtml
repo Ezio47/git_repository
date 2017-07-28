@@ -1,0 +1,118 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutIndexNoMenu.cshtml";
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+    <div data-options="region:'center'" title="" style=" border: none;">
+
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home">
+                        物资名称:<select id="tbxsupplieid">
+                            @Html.Raw(@ViewBag.suppliename)
+                        </select>
+                        出入库:<select id="tbxDCREPFLAG">
+                            <option value="">出入库</option>
+                            <option value="1">出库</option>
+                            <option value="0">入库</option>
+                        </select>
+                        时间：
+                        <input class="easyui-datebox" id="tbxDateBegin" type="text" value="" style="width:80px;height:28px;" />
+                        至
+                        <input class="easyui-datebox" id="tbxDateEnd" type="text" value="" style="width:80px;height:28px;" />
+                        <input type="button" value="查询" onclick="query('1')" class="btnSearchCss" />
+                    </div>
+                </div>
+            </div>
+
+            <div data-options="region:'center'" title="" class="LayoutCenterBG">
+
+                <div class="divTable" id="divTable">
+
+                </div>
+            </div>
+            <div data-options="region:'south'" title="" style=" height:40px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
+                <div class="divPager" id="divPager">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    //出入库明细查询
+    var repid = "@ViewBag.repid";
+    var NAME = "@ViewBag.NAME";
+    $(function () {
+        query('1')
+    });
+    function query(Page) {
+        var pagesize = '0';
+        if (document.getElementById("selPageSize") != null) {
+            pagesize = document.getElementById("selPageSize").value;
+        }
+            $.ajax({
+                url: '/DataCenter/DEPTdetaillist',
+                data: {
+                    REPID: repid,
+                    SUPID: document.getElementById("tbxsupplieid").value,
+                    DCREPFLAG: document.getElementById("tbxDCREPFLAG").value,
+                    PageSize: pagesize,
+                    Page: Page,
+                    DateBegin: $('#tbxDateBegin').datebox('getValue'),
+                    DateEnd: $('#tbxDateEnd').datebox('getValue')
+                },
+                type: 'post',
+                success: function (data) {
+                    var ar = eval('(' + data + ')');
+                    if (ar.Success) {
+                        $('#divTable').html(ar.tableInfo);
+                        $('#divPager').html(ar.pagerInfo);
+                    }
+                    else {
+                        alert('登录异常');
+                    }
+                },
+                error: function (err, ioArgs) {
+                    alert('登录异常');
+                }
+            });       
+    }
+    ///查看页面
+    function See(ID, tablename) {
+        layer.open({
+            type: 2,
+            title: '明细查看',
+            area: ['500px', '300px'],
+            fix: true,
+            maxmin: true,
+            content: '/DataCenter/SeeIndex?tablename=' + tablename + "&ID=" + ID
+        })
+    }
+    ///明细查询入库打印
+    function INPrint(number, dpname) {
+        layer.open({
+            type: 2,
+            title: dpname + '入库打印',
+            area: ['1050px', '550px'],
+            fix: false,
+            maxmin: true,
+            content: '/DataCenter/INPrint?number=' + number
+        })
+    }
+    ///明细查询出库打印
+    function EXPrint(number, dpname) {
+        layer.open({
+            type: 2,
+            title: dpname + '出库打印',
+            area: ['1050px', '580px'],
+            fix: false,
+            maxmin: true,
+            content: '/DataCenter/Print?number=' + number
+        })
+    }
+</script>

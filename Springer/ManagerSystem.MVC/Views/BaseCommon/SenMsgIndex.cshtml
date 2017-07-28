@@ -1,0 +1,243 @@
+﻿@{
+    ViewBag.Title = "短信发送";
+    Layout = null;
+}
+@Scripts.Render("~/bundles/jquery")
+<script src="~/Scripts/jquery-easyui-1.4/jquery.easyui.min.js"></script>
+<script src="~/Scripts/jquery-easyui-1.4/locale/easyui-lang-zh_CN.js"></script>
+<script src="~/Scripts/jquery-easyui-1.4/validateHelper.js"></script>
+<script src="~/Scripts/jquery-easyui-1.4/jquery.SuperSlide.2.1.1.js"></script>
+<link href="~/Content/themes/easyui/easyui.css" rel="stylesheet" />
+<link href="~/Content/themes/easyui/color.css" rel="stylesheet" />
+<link href="~/Content/themes/easyui/icon.css" rel="stylesheet" />
+
+<style type="text/css">
+    body, table, th, tr, td {
+        margin: 0;
+        padding: 0;
+    }
+
+    input.btnMsgCss {
+    }
+
+    .xbsx {
+        width: 97%;
+        font-family: 微软雅黑;
+        background-color: #4d951e;
+        padding: 10px 1%;
+        color: #0c2501;
+        /*margin:0 10px;*/
+    }
+
+        .xbsx h1 {
+            /*text-align: center;
+           margin-left: 2%;*/
+            font-size: 15px;
+            color: #fff;
+        }
+
+        .xbsx table {
+            width: 100%;
+            height: auto;
+            border-collapse: collapse;
+            border: 1px solid #b8d3b3;
+            background-color: #fff;
+        }
+
+            .xbsx table tr {
+                border: 1px solid #b8d3b3;
+                text-align: center;
+                height: 28px;
+            }
+
+                .xbsx table tr th {
+                    border: 1px solid #b8d3b3;
+                    padding-left: 2%;
+                    font-size: 13px;
+                }
+
+                .xbsx table tr td {
+                    border: 1px solid #b8d3b3;
+                    padding-left: 2%;
+                    font-size: 12px;
+                }
+
+                .xbsx table tr:hover {
+                    background-color: #ffe5cc;
+                }
+</style>
+
+
+<div class="xbsx">
+    @*<h1>火情基本信息</h1>*@
+    <table cellpadding="0" cellspacing="0">
+        <tbody>
+            <tr>
+                <td>发送号码：</td>
+                <td><p id="fsPhoneNO" style="text-align:left;"></p></td>
+            </tr>
+            <tr>
+                <td>短信内容</td>
+                <td>
+                    <textarea id="msgContext" style="width:50%;height:50px;"></textarea>
+                    <input type="button" value="短信模板" onclick="openscmb()" class="btnMsgCss" />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align:center;">
+                    <input type="button" value="发送" onclick="Send()" class="btnSendCss" />&nbsp;&nbsp;
+                    <input type="button" value="收藏" onclick="Add()" class="btnAddCss" />&nbsp;&nbsp;
+                    <input type="button" value="返回" onclick="javascript:history.go(-1)" class="btnReturnCss" />
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div id="dd" class="easyui-dialog" title="短信模板" style="width: 550px; height: 400px; display: none; top: 50px" data-options="closed:true,resizable:true,modal:true">
+    <div id="scmbgrid"></div>
+</div>
+
+
+<script type="text/javascript">
+    //获取url中的参数
+    function getUrlParam(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+        var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+        if (r != null) return unescape(r[2]); return null; //返回参数值
+    }
+
+    $(function () {
+        var phone = getUrlParam("phoneno");
+        $('#fsPhoneNO').text(phone);
+    });
+    var scmbgrid;
+    function openscmb() {
+        //短信模板
+        scmbgrid = $('#scmbgrid').datagrid({
+            url: '@Url.Action("GetScSmsContentData","Email")',
+            idField: 'EM_MESSAGEID',
+            pageSize: 10,
+            striped: true, //奇偶行是否区分
+            columns: [[
+              { field: 'EM_MESSAGEID', title: '自定义短信模板编码', width: 40, sortable: true, hidden: true },
+            { field: 'MessageContent', title: '短信内容', width: 250, sortable: true }]],
+            fit: true,
+            remoteSort: false,
+            pagination: true,//显示分页栏。
+            rownumbers: true,
+            fitColumns: true,
+            singleSelect: true,
+            toolbar: [{
+                iconCls: 'icon-remove',
+                text: "删除",
+                handler: function () {
+                    var arr = scmbgrid.datagrid('getSelections');
+                    if (arr.length == 0) {
+                        $.messager.alert('提示', '请选择要删除的记录！');
+                    }
+                    else if (arr.length > 1) {
+                        $.messager.alert('提示', '请选择一条要删除的记录！');
+                    } else {
+                        $.messager.confirm('确认', '是否要删除这条记录?', function (r) {
+                            if (r) {
+                                $.ajax({
+                                    url: '/Email/MessageManger',
+                                    data: {
+                                        EM_MESSAGEID: arr[0].EM_MESSAGEID,
+                                        Method: 'Del'
+                                        @*returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)'*@
+                                    },
+                                    type: 'post',
+                                    dataType: 'json',
+                                    success: function (data) {
+                                        if (data && data.Success) {
+                                            scmbgrid.datagrid('clearSelections');
+                                            scmbgrid.datagrid('reload');
+                                            $.messager.alert('提示', data.Msg);
+                                        }
+                                        else {
+                                            $.messager.alert('提示', data.Msg, 'error');
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    }
+                }
+            }, '-', {
+                iconCls: 'icon-help',
+                text: "关闭",
+                handler: function () {
+                    $('#dd').dialog('close');
+                }
+            }],
+            onDblClickRow: function (rowIndex, rowData) {
+                $('#msgContext').val(rowData.MessageContent);
+                $('#dd').dialog('close');
+            }
+
+        });
+        $('#dd').css("display", "block");
+        $('#dd').dialog('open');
+    }
+
+    //收藏
+    function Add() {
+        $.ajax({
+            url: '/Email/MessageManger',
+            data: {
+                MessageContent: $('#msgContext').val(),
+                Method: 'Add'
+            },
+            type: 'post',
+            dataType: "json",
+            error: function () {
+                $.messager.alert('错误:异常!');
+            },
+            success: function (data) {
+                if (data.Success) {
+                    scmbgrid.datagrid('load');
+                    $.messager.alert('提示', data.Msg);
+                }
+                else {
+                    $.messager.alert('提示', data.Msg, 'error');
+                }
+            }
+        });
+    }
+
+    //发送短信
+    function Send() {
+        var content = $('#msgContext').val();
+        var phone = $('#fsPhoneNO').text();
+        if ($.trim(content) == "") {
+            $.messager.alert('提示', '没有短信内容', 'warning');
+            return;
+        }
+        if ($.trim(phone) == "") {
+            $.messager.alert('提示', '没有发送号码', 'warning');
+            return;
+        }
+        $.ajax({
+            url: '/Email/MessageSend',
+            data: {
+                MessageContent: content,
+                PHONE: phone
+            },
+            type: 'post',
+            timeout: 15000, //超时时间设置，单位毫秒
+            dataType: "json",
+            error: function () {
+                $.messager.alert('提示', '错误:异常!', 'error');
+            },
+            success: function (re) {
+                if (re.Success) {
+                    $.messager.alert('提示', re.Msg, 'info');
+                }
+                else {
+                    $.messager.alert('提示', re.Msg, 'error');
+                }
+            }
+        });
+    }
+</script>

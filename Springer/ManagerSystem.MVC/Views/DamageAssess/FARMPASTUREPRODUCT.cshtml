@@ -1,0 +1,326 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        农牧产品名称： <input id="PRODUCNAME" type="text" value="" />&nbsp;&nbsp;&nbsp;
+                        损失类别： <select id="PRODUCCODE" onchange="query()" style="width:100px;">@Html.Raw(@ViewBag.PRODUCCODE)</select>
+                        <input type="button" value="查询" onclick="query()" class="btnSearchCss" />
+                        <input type="button" value="添加" onclick="Manager('Add','','')" class="btnAddCss" />
+                    </div>
+                </div>
+            </div>
+
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <input id="hidFIREINFOID" type="hidden" value="@ViewBag.FIREINFOID" />
+                <div class="divTable" id="divTable">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="divMan" id="tableAdd" style="display:none;margin-left:5px;margin-top:8px">
+    <input id="HidID" name="HidID" type="hidden" value="" />
+    <table cellpadding="0" cellspacing="0">
+        <tr>
+            <td style="width:100px;">农牧产品名称: </td>
+            <td><input id="tbxPRODUCNAME" type="text" value="" style="width:99%;" /></td>
+            <td style="width:100px;">损失类别: </td>
+            <td><select id="tbxPRODUCCODE" style="width: 99%;" onchange="codeChange(null)">@Html.Raw(@ViewBag.PRODUCCODEAdd)</select></td>
+        </tr>
+        <tr>
+            <td id="td1">损失数量:</td>
+            <td>
+                <input id="tbxLOSECOUNT" type="text" value="" style="width:70%;" />
+                <span style="color: gray;" id="span1">kg</span>
+            </td>
+            <td id="td2">市场平均现价:</td>
+            <td>
+                <input id="tbxBASEPRICE" type="text" value="" style="width:62%;" />
+                <span style="color: gray;" id="span2">元/kg</span>
+            </td>
+        </tr>
+        <tr>
+            <td>备注:</td>
+            <td colspan="3"><input id="tbxMARK" type="text" value="" style="width:99%;" /></td>
+        </tr>
+    </table>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        query();
+        codeChange();
+    });
+
+    //查询
+    function query() {
+        $.ajax({
+            url: '/DamageAssess/GetFARMPASTUREPRODUCTList',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: { FIREINFOID: $("#hidFIREINFOID").val(), PRODUCNAME: $("#PRODUCNAME").val(), PRODUCCODE: $("#PRODUCCODE").val() },
+            dataType: 'json',
+            success: function (data) {
+                if (data.Success) {
+                    $('#divTable').html('');
+                    $('#divTable').html(data.Msg);
+                }
+                else {
+                    $('#divTable').html('');
+                }
+            },
+            error: function (error) {
+                layer.msg('查询异常!', { icon: 5 });
+            }
+        });
+    }
+
+    //选中改变颜色
+    function setColor(obj) {
+        $(obj).css("background-color", "#FFDAB9");
+        $("tr").not($(obj)).css("background-color", "");
+    }
+
+    //损失类别改变
+    function codeChange(code) {
+        if (code == null) {
+            code = $('#tbxPRODUCCODE').val();
+        }
+        if (code == "1") {
+            $('#td1').html('损失数量');
+            $('#span1').html('kg');
+            $('#td2').html('市场平均价格');
+            $('#span2').html('元/kg');
+            $("#tbxLOSECOUNT").val('');
+            $("#tbxBASEPRICE").val('');
+        }
+        if (code == "2") {
+            $('#td1').html('损失面积');
+            $('#span1').html('hm³');
+            $('#td2').html('生产成本');
+            $('#span2').html('元/hm³');
+            $("#tbxLOSECOUNT").val('');
+            $("#tbxBASEPRICE").val('');
+        }
+        if (code == "3") {
+            $('#td1').html('损失数量');
+            $('#span1').html('头或只');
+            $('#td2').html('市场价格');
+            $('#span2').html('元/头或只');
+            $("#tbxLOSECOUNT").val('');
+            $("#tbxBASEPRICE").val('');
+        }
+    }
+
+    //数据增、删、改、查看
+    function Manager(Method, ID) {
+        if (Method == 'Del') {
+            layer.confirm('确实要删除吗?', { icon: 3, title: '提示' }, function (index) {
+                $.ajax({
+                    type: "post",
+                    url: "/DamageAssess/FARMPASTUREPRODUCTManager",
+                    data: { PRODUCTID: ID, Method: Method },
+                    dataType: "json",
+                    success: function (re) {
+                        if (re.Success) {
+                            layer.msg(re.Msg, { icon: 6 });
+                            query();
+                        }
+                        else {
+                            layer.msg(re.Msg, { icon: 5 });
+                        }
+                    },
+                    error: function () {
+                        layer.msg('系统异常!', { icon: 5 });
+                    }
+                });
+            });
+        }
+        else if (Method == 'See') {
+            layer.open({
+                type: 2,
+                title: '查看农牧产品损失',
+                area: ['70%', '70%'],
+                fix: true,
+                maxmin: true,
+                content: '/DamageAssess/FARMPASTUREPRODUCTDataSee?PRODUCTID=' + ID,
+            })
+        }
+        else {
+            if (Method == 'Add') {
+                codeChange('1');
+                $("#HidID").val('');
+                $("#tbxPRODUCNAME").val('');
+                $("#tbxLOSECOUNT").val('');
+                $("#tbxPRODUCCODE").val('1');
+                $("#tbxBASEPRICE").val('');
+                $("#tbxMARK").val('');
+            }
+            if (Method == 'Mdy') {
+                $.ajax({
+                    type: "post",
+                    url: "/DamageAssess/GetFARMPASTUREPRODUCTJson",
+                    data: { PRODUCTID: ID, },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.FIRELOST_LOSTTYPE_FARMPASTUREPRODUCTID != '') {
+                            codeChange(data.FARMPASTUREPRODUCCODE);
+                            $('#HidID').val(data.FIRELOST_LOSTTYPE_FARMPASTUREPRODUCTID);
+                            $("#tbxPRODUCNAME").val(data.FARMPASTUREPRODUCNAME);
+                            $("#tbxPRODUCCODE").val(data.FARMPASTUREPRODUCCODE);
+                            $("#tbxLOSECOUNT").val(data.LOSECOUNT);
+                            $("#tbxBASEPRICE").val(data.BASEPRICE);
+                            $("#tbxMARK").val(data.MARK);
+                        }
+                    },
+                    error: function () {
+                        layer.msg('系统异常!', { icon: 5 });
+                    }
+                });
+            }
+            var btnInfo = ['保存', '取消'];
+            var str = "添加农牧产品损失";
+            if (Method == "Mdy") {
+                str = "修改农牧产品损失";
+            }
+            layer.open({
+                type: 1,
+                title: str,
+                area: ['70%', '65%'],
+                btn: btnInfo,
+                shade: 0,
+                maxmin: true,
+                content: $('#tableAdd'),
+                yes: function (index, layero) {
+                    var HID = $('#HidID').val();
+                    if (HID != "") {
+                        ID = HID;
+                        Method = 'Mdy';
+                    }
+                    var procutName = $("#tbxPRODUCNAME").val();
+                    if ($.trim(procutName) == "") {
+                        layer.msg('农牧产品名称!', { icon: 5 });
+                        $("#tbxPRODUCNAME").focus();
+                        return;
+                    }
+
+                    var procutCode = $("#tbxPRODUCCODE").val();
+                    var lostCount = $("#tbxLOSECOUNT").val();
+                    if ($.trim(lostCount) == "") {
+                        if (procutCode == "1" || procutCode == "3") {
+                            layer.msg('请输入损失数量!', { icon: 5 });
+                            $('#tbxLOSECOUNT').focus();
+                            return;
+                        }
+                        if (procutCode == "2") {
+                            layer.msg('请输入损失面积!', { icon: 5 });
+                            $('#tbxLOSECOUNT').focus();
+                            return;
+                        }
+                    }
+                    else {
+                        if (procutCode == "1") {
+                            if (CheckNUM2(lostCount) == false) {
+                                layer.msg('损失数量请输入数字,且最多保留2位有效数字!', { icon: 5 });
+                                $('#tbxLOSECOUNT').focus();
+                                return;
+                            }
+                        }
+                        if (procutCode == "2") {
+                            if (CheckNUM2(lostCount) == false) {
+                                layer.msg('损失面积请输入数字,且最多保留2位有效数字!', { icon: 5 });
+                                $('#tbxLOSECOUNT').focus();
+                                return;
+                            }
+                        }
+                        if (procutCode == "3") {
+                            if (CheckINT(lostCount) == false) {
+                                layer.msg('损失数量请输入正整数!', { icon: 5 });
+                                $('#tbxLOSECOUNT').focus();
+                                return;
+                            }
+                        }
+                    }
+
+                    var basePrice = $("#tbxBASEPRICE").val();
+                    if ($.trim(basePrice) == "") {
+                        if (procutCode == "1") {
+                            layer.msg("请输入市场平均价格!", { icon: 5 });
+                            $("#tbxBASEPRICE").focus();
+                            return;
+                        }
+                        if (procutCode == "2") {
+                            layer.msg("请输入生产成本!", { icon: 5 });
+                            $("#tbxBASEPRICE").focus();
+                            return;
+                        }
+                        if (procutCode == "3") {
+                            layer.msg("请输入市场价格!", { icon: 5 });
+                            $("#tbxBASEPRICE").focus();
+                            return;
+                        }
+                    }
+                    else {
+                        if (CheckNUM2(basePrice) == false) {
+                            if (procutCode == "1") {
+                                layer.msg("市场平均价格请输入数字,且最多保留2位有效数字!", { icon: 5 });
+                                $('#tbxBASEPRICE').focus();
+                                return;
+                            }
+                            if (procutCode == "2") {
+                                layer.msg("生产成本请输入数字,且最多保留2位有效数字!", { icon: 5 });
+                                $('#tbxBASEPRICE').focus();
+                                return;
+                            }
+                            if (procutCode == "3") {
+                                layer.msg("市场价格请输入数字,且最多保留2位有效数字!", { icon: 5 });
+                                $('#tbxBASEPRICE').focus();
+                                return;
+                            }
+                        }
+                    }
+                    $.ajax({
+                        type: "post",
+                        url: "/DamageAssess/FARMPASTUREPRODUCTManager",
+                        data: {
+                            PRODUCTID: ID,
+                            FIREINFOID: $('#hidFIREINFOID').val(),
+                            PRODUCNAME: procutName,
+                            PRODUCCODE: procutCode,
+                            LOSECOUNT: lostCount,
+                            BASEPRICE: basePrice,
+                            MARK: $('#tbxMARK').val(),
+                            Method: Method
+                        },
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.Success) {
+                                $('#HidID').val(data.Url);
+                                layer.confirm(data.Msg + ' 请返回?', { icon: 3, title: '提示' }, function (index2) {
+                                    layer.close(index2);
+                                    layer.close(index);
+                                });
+                                query();
+                            }
+                            else {
+                                layer.msg(data.Msg, { icon: 5 });
+                            }
+                        },
+                        error: function () {
+                            layer.msg('系统异常!', { icon: 5 });
+                        }
+                    });
+                },
+                cancel: function (index) {
+                    layer.close(index);
+                }
+            })
+        }
+    }
+</script>

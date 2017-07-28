@@ -1,0 +1,45 @@
+﻿@{
+    ViewBag.Title = "天气情况";
+    Layout = null;
+}
+@using ManagerSystem.MVC.Models
+@model IEnumerable<ManagerSystem.MVC.Models.WeatherInfoModel>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+<link href="~/Content/themes/default/Public.css" rel="stylesheet" />
+<link href="~/Content/themes/default/Default.css" rel="stylesheet" />
+
+<div class="page-content">
+    <div style="margin:3px">
+        <div class="divTable">
+            <table>
+                <thead>
+                    <tr>
+                        <th>区域</th>
+                        <th>雨量</th>
+                        <th>温度</th>
+                        <th>最低温度--最高温度</th>
+                        <th>日期</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Any())
+                    {
+                        foreach (WeatherInfoModel item in Model)
+                        {
+                            <tr>
+                                <td style="font-size:9pt;font-weight:900;">@item.AreaName</td>
+                                <td style="font-size:9pt;font-weight:900;">@item.Hum</td>
+                                <td style="font-size:9pt;font-weight:900;">@item.TCur</td>
+                                <td style="font-size:9pt;font-weight:900;">@item.HighAndLow</td>
+                                <td style="font-size:9pt;font-weight:900;">@item.WeatherDate</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>

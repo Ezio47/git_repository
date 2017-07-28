@@ -1,0 +1,737 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        名称：<input id="PNAME" type="text" value="" />&nbsp;&nbsp;&nbsp;
+                        费用类别：<select id="ATTACKTYPE" onchange="query()" style="width:100px;">@Html.Raw(@ViewBag.ATTACKTYPE)</select>
+                        <input type="button" value="查询" onclick="query()" class="btnSearchCss" />
+                        <input type="button" value="添加" onclick="Manager('Add', '', '', '')" class="btnAddCss" />
+                    </div>
+                </div>
+            </div>
+
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <input id="hidFIREINFOID" type="hidden" value="@ViewBag.FIREINFOID" />
+                <div class="divTable" id="divTable">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="divMan" id="tableAdd" style="display:none;margin-left:5px;margin-top:8px">
+    <input id="HidID" name="HidID" type="hidden" value="" />
+    <input id="HidPNAME" name="HidPNAME" type="hidden" value="" />
+    <input id="HidAttackType" name="HidAttackType" type="hidden" value="" />
+    <table cellpadding="0" cellspacing="0">
+        <tbody>
+            <tr>
+                <td style="width:100px;">名称: </td>
+                <td><input id="tbxPNAME" type="text" value="" style="width:98%;" /></td>
+                <td style="width:100px;">费用类别: </td>
+                <td><select id="tbxAttackType" style="width: 99%;" onchange="loadAttackType()">@Html.Raw(@ViewBag.ATTACKTYPEAdd)</select></td>
+            </tr>
+        </tbody>
+        <tbody id="attackType">
+            <tr>
+                <td>交通工具:</td>
+                <td><select id="tbxP1CODE" style="width: 98%;" onchange="p1codeChange()">@Html.Raw(@ViewBag.P1CodeAdd)</select></td>
+                <td>单位:</td>
+                <td><input id="P1UNIT" type="text" value="架" style="width:99%;" /></td>
+            </tr>
+            <tr>
+                <td id="td1">飞行时间:</td>
+                <td>
+                    <input id="tbxP1COUNT" type="text" value="" style="width:80%;" />
+                    <span style="color: gray;" id="span1">h</span>
+                </td>
+                <td id="td2">飞行费:</td>
+                <td>
+                    <input id="tbxP1PRICE" type="text" value="" style="width:80%;" />
+                    <span style="color: gray;" id="span2">元/h</span>
+                </td>
+            </tr>
+            <tr>
+                <td>备注:</td>
+                <td colspan="3"><input id="tbxMARK" type="text" value="" style="width:99%;" /></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        query();
+        loadAttackType();
+    });
+
+    //查询
+    function query() {
+        $.ajax({
+            url: '/DamageAssess/GetATTACKList',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: { FIREINFOID: $("#hidFIREINFOID").val(), NAME: $("#PNAME").val(), ATTACKTYPE: $("#ATTACKTYPE").val() },
+            dataType: 'json',
+            success: function (data) {
+                if (data.Success) {
+                    $('#divTable').html('');
+                    $('#divTable').html(data.Msg);
+                }
+                else {
+                    $('#divTable').html('');
+                }
+            },
+            error: function (error) {
+                layer.msg('查询异常!', { icon: 5 });
+            }
+        });
+    }
+
+    //加载火灾扑救费用列表
+    function loadAttackType(AttackType) {
+        var id = $("#HidID").val();
+        var method = "";
+        if (id == "") {
+            method = "Add";
+        }
+        else {
+            method = "Mdy";
+        }
+        var attackType = "";
+        if (method == "Add") {
+            attackType = $('#tbxAttackType').val();
+        }
+        else {
+            attackType = AttackType;
+            if (attackType == undefined) {
+                attackType = $('#tbxAttackType').val();
+                if (attackType == $('#HidAttackType').val()) {
+                    method = "Mdy";
+                    $('#tbxPNAME').val($('#HidPNAME').val());
+                }
+                else {
+                    method = "Add";
+                }
+            }
+        }
+        $.ajax({
+            url: '/DamageAssess/GetATTACKTYPE',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: { ID: id, AttackType: attackType, Method: method },
+            dataType: 'json',
+            success: function (data) {
+                if (data.Success) {
+                    if (method == 'Add') {
+                        $('#tbxPNAME').val('');
+                    }
+                    $('#attackType').html('');
+                    $('#attackType').html(data.Msg);
+                    $('#tbxAttackType').val(data.Url);
+                }
+                else {
+                    $('#attackType').html('attackType');
+                }
+            },
+            error: function (error) {
+                $('#attackType').html('');
+            }
+        });
+    }
+
+    //车马船类别改变
+    function p1codeChange() {
+        var p1code = $('#tbxP1CODE').val();
+        $('#tbxP1COUNT').val('');
+        $('#tbxP1PRICE').val('');
+        $('#tbxMARK').val('');
+        if (p1code == "101") {
+            $('#P1UNIT').val('架');
+            $('#td1').html('飞行时间:');
+            $('#td2').html('飞行费:');
+            $('#span1').html('h');
+            $('#span2').html('元/h');
+        }
+        if (p1code == "102") {
+            $('#P1UNIT').val('艘');
+            $('#td1').html('船舶租用时间:');
+            $('#td2').html('租赁费:');
+            $('#span1').html('h');
+            $('#span2').html('元/h');
+        }
+        if (p1code == "103") {
+            $('#P1UNIT').val('辆');
+            $('#td1').html('行车时间:');
+            $('#td2').html('租赁费:');
+            $('#span1').html('d');
+            $('#span2').html('元/d');
+        }
+        if (p1code == "104") {
+            $('#P1UNIT').val('匹');
+            $('#td1').html('马租用时间:');
+            $('#td2').html('租赁费:');
+            $('#span1').html('d');
+            $('#span2').html('元/d');
+        }
+    }
+
+    //材料费类别改变
+    function p2codeChange() {
+        $('#tbxP2COUNT').val('');
+        $('#tbxNOWPRICE').val('');
+        $('#tbxMARK').val('');
+    }
+
+    //材料费类别改变
+    function p3codeChange() {
+        $('#tbxATTACKNUMBERS').val('');
+        $('#tbxATTACKDAYS').val('');
+        $('#tbxMARK').val('');
+        var p3code = $('#tbxP3CODE').val();
+        if (p3code == "301") {
+            $('#td1').html('工资标准');
+        }
+        if (p3code == "302") {
+            $('#td1').html('伙食标准');
+        }
+    }
+
+    //器材类别改变
+    function p4codeChange() {
+        $('#tbxNOWPRICE').val('');
+        $('#tbxP4COUNT').val('');
+        $('#tbxELSEMONEY').val();
+        $('#tbxELSEMONEY').val();
+    }
+
+    //管理费类别改变
+    function p5codeChange() {
+
+    }
+
+    //选中改变颜色
+    function setColor(obj) {
+        $(obj).css("background-color", "#FFDAB9");
+        $("tr").not($(obj)).css("background-color", "");
+    }
+
+    //数据增、删、改、查看
+    function Manager(Method, ID, Name, AttackType) {
+        if (Method == 'Del') {
+            layer.confirm('确实要删除吗?', { icon: 3, title: '提示' }, function (index) {
+                $.ajax({
+                    type: "post",
+                    url: "/DamageAssess/ATTACKManager",
+                    data: { PID: ID, AttackType: AttackType, Method: Method },
+                    dataType: "json",
+                    success: function (re) {
+                        if (re.Success) {
+                            layer.msg(re.Msg, { icon: 6 });
+                            query();
+                        }
+                        else {
+                            layer.msg(re.Msg, { icon: 5 });
+                        }
+                    },
+                    error: function () {
+                        layer.msg('系统异常!', { icon: 5 });
+                    }
+                });
+            });
+        }
+        else if (Method == 'See') {
+            layer.open({
+                type: 2,
+                title: '查看火灾扑救费用',
+                area: ['80%', '75%'],
+                fix: true,
+                maxmin: true,
+                content: '/DamageAssess/ATTACKDataSee?PID=' + ID + '&ATTACKTYPE=' + AttackType,
+            })
+        }
+        else {
+            if (Method == 'Add') {
+                $('#HidID').val('');
+                $('#HidPNAME').val();
+                $('#HidAttackType').val('');
+                $('#tbxPNAME').val('');
+                $('#tbxAttackType').val('513');
+                loadAttackType('513');
+                $('#tbxP1CODE').val('');
+                $('#tbxP1UNIT').val('');
+                $('#tbxP1COUNT').val('');
+                $('#tbxP1PRICE').val('');
+                $("#tbxMARK").val('');
+            }
+            if (Method == 'Mdy') {
+                $("#HidID").val(ID);
+                $('#HidPNAME').val(Name);
+                $('#HidAttackType').val(AttackType);
+                $('#tbxPNAME').val(Name);
+                loadAttackType(AttackType);
+            }
+            var btnInfo = ['保存', '取消'];
+            var str = "添加火灾扑救费用";
+            if (Method == "Mdy") {
+                str = "修改火灾扑救费用";
+            }
+            layer.open({
+                type: 1,
+                title: str,
+                area: ['80%', '75%'],
+                btn: btnInfo,
+                shade: 0,
+                maxmin: true,
+                content: $('#tableAdd'),
+                yes: function (index, layero) {
+                    var HID = $('#HidID').val();
+                    if (HID != "") {
+                        ID = HID;
+                        Method = 'Mdy';
+                    }
+                    var pName = $('#tbxPNAME').val();
+                    if (pName == "") {
+                        layer.msg("请输入名称!", { icon: 5 });
+                        $('#tbxPNAME').focus();
+                        return;
+                    }
+                    if (AttackType == "") {
+                        AttackType = $('#tbxAttackType').val();
+                    }
+                    if (AttackType == "513") {
+                        var p1Count = $('#tbxP1COUNT').val();
+                        var p1Price = $('#tbxP1PRICE').val();
+                        if ($.trim(p1Count) == "") {
+                            layer.msg("请输入时间!", { icon: 5 });
+                            $('#tbxP1COUNT').focus();
+                            return;
+                        }
+                        else {
+                            if (CheckNUM2(p1Count) == false) {
+                                layer.msg('时间请输入数字,且最多保留2位有效数字!', { icon: 5 });
+                                $('#tbxP1COUNT').focus();
+                                return;
+                            }
+                        }
+                        if ($.trim(p1Price) == "") {
+                            layer.msg("请输入费用!", { icon: 5 });
+                            $('#tbxP1PRICE').focus();
+                            return;
+                        }
+                        else {
+                            if (CheckNUM2(p1Price) == false) {
+                                layer.msg('费用请输入数字,且最多保留2位有效数字!', { icon: 5 });
+                                $('#tbxP1PRICE').focus();
+                                return;
+                            }
+                        }
+                        $.ajax({
+                            type: "post",
+                            url: "/DamageAssess/ATTACKManager",
+                            data: {
+                                AttackType: AttackType,
+                                PID: ID,
+                                PNAME: pName,
+                                FIREINFOID: $('#hidFIREINFOID').val(),
+                                P1CODE: $('#tbxP1CODE').val(),
+                                P1UNIT: $('#P1UNIT').val(),
+                                P1COUNT: p1Count,
+                                P1PRICE: p1Price,
+                                MARK: $('#tbxMARK').val(),
+                                Method: Method
+                            },
+                            dataType: "json",
+                            success: function (data) {
+                                if (data.Success) {
+                                    $('#HidID').val(data.Url);
+                                    layer.confirm(data.Msg + ' 请返回?', { icon: 3, title: '提示' }, function (index2) {
+                                        layer.close(index2);
+                                        layer.close(index);
+                                    });
+                                    query();
+                                }
+                                else {
+                                    layer.msg(data.Msg, { icon: 5 });
+                                }
+                            },
+                            error: function () {
+                                layer.msg('系统异常!', { icon: 5 });
+                            }
+                        });
+                    }
+                    if (AttackType == "514") {
+                        var p2Count = $('#tbxP2COUNT').val();
+                        var nowPrice = $('#tbxNOWPRICE').val();
+                        if ($.trim(p2Count) == "") {
+                            layer.msg("请输入消耗量!", { icon: 5 });
+                            $('#tbxP2COUNT').focus();
+                            return;
+                        }
+                        else {
+                            if (CheckNUM2(p2Count) == false) {
+                                layer.msg('消耗量请输入数字,且最多保留2位有效数字!', { icon: 5 });
+                                $('#tbxP2COUNT').focus();
+                                return;
+                            }
+                        }
+                        if ($.trim(nowPrice) == "") {
+                            layer.msg("请输入现行价格!", { icon: 5 });
+                            $('#tbxNOWPRICE').focus();
+                            return;
+                        }
+                        else {
+                            if (CheckNUM2(nowPrice) == false) {
+                                layer.msg('现行价格请输入数字,且最多保留2位有效数字!', { icon: 5 });
+                                $('#tbxNOWPRICE').focus();
+                                return;
+                            }
+                        }
+                        $.ajax({
+                            type: "post",
+                            url: "/DamageAssess/ATTACKManager",
+                            data: {
+                                AttackType: AttackType,
+                                PID: ID,
+                                PNAME: pName,
+                                FIREINFOID: $('#hidFIREINFOID').val(),
+                                P2CODE: $('#tbxP2CODE').val(),
+                                P2UNIT: $('#P2UNIT').val(),
+                                P2COUNT: p2Count,
+                                NOWPRICE: nowPrice,
+                                MARK: $('#tbxMARK').val(),
+                                Method: Method
+                            },
+                            dataType: "json",
+                            success: function (data) {
+                                if (data.Success) {
+                                    $('#HidID').val(data.Url);
+                                    layer.confirm(data.Msg + ' 请返回?', { icon: 3, title: '提示' }, function (index2) {
+                                        layer.close(index2);
+                                        layer.close(index);
+                                    });
+                                    query();
+                                }
+                                else {
+                                    layer.msg(data.Msg, { icon: 5 });
+                                }
+                            },
+                            error: function () {
+                                layer.msg('系统异常!', { icon: 5 });
+                            }
+                        });
+                    }
+                    if (AttackType == "515") {
+                        var p3Code = $('#tbxP3CODE').val();
+                        var p3Money = $('#tbxP3MONEY').val();
+                        var attackNumbers = $('#tbxATTACKNUMBERS').val();
+                        var attackDays = $('#tbxATTACKDAYS').val();
+                        if ($.trim(p3Money) == "") {
+                            if (p3Code == "301") {
+                                layer.msg("请输入工资标准!", { icon: 5 });
+                                $('#tbxP3MONEY').focus();
+                                return;
+                            }
+                            if (p3Code == "302") {
+                                layer.msg("请输入伙食标准!", { icon: 5 });
+                                $('#tbxP3MONEY').focus();
+                                return;
+                            }
+                        }
+                        else {
+                            if (CheckNUM2(p3Money) == false) {
+                                if (p3Code == "301") {
+                                    layer.msg('工资标准请输入数字,且最多保留2位有效数字!', { icon: 5 });
+                                    $('#tbxP3MONEY').focus();
+                                    return;
+                                }
+                                if (p3Code == "302") {
+                                    layer.msg('伙食标准请输入数字,且最多保留2位有效数字!', { icon: 5 });
+                                    $('#tbxP3MONEY').focus();
+                                    return;
+                                }
+                            }
+                        }
+                        if ($.trim(attackNumbers) == "") {
+                            layer.msg("请输入扑救人数!", { icon: 5 });
+                            $('#tbxATTACKNUMBERS').focus();
+                            return;
+                        }
+                        else {
+                            if (CheckINT(attackNumbers) == false) {
+                                layer.msg('扑救人数请输入正整数!', { icon: 5 });
+                                $('#tbxATTACKNUMBERS').focus();
+                                return;
+                            }
+                        }
+                        if ($.trim(attackDays) == "") {
+                            layer.msg("请输入扑救天数!", { icon: 5 });
+                            $('#tbxATTACKDAYS').focus();
+                            return;
+                        }
+                        else {
+                            if (CheckINT(attackDays) == false) {
+                                layer.msg('扑救天数请输入正整数!', { icon: 5 });
+                                $('#tbxATTACKDAYS').focus();
+                                return;
+                            }
+                        }
+                        $.ajax({
+                            type: "post",
+                            url: "/DamageAssess/ATTACKManager",
+                            data: {
+                                AttackType: AttackType,
+                                PID: ID,
+                                PNAME: pName,
+                                FIREINFOID: $('#hidFIREINFOID').val(),
+                                P3CODE: p3Code,
+                                P3MONEY: p3Money,
+                                ATTACKNUMBERS: attackNumbers,
+                                ATTACKDAYS: attackDays,
+                                MARK: $('#tbxMARK').val(),
+                                Method: Method
+                            },
+                            dataType: "json",
+                            success: function (data) {
+                                if (data.Success) {
+                                    $('#HidID').val(data.Url);
+                                    layer.confirm(data.Msg + ' 请返回?', { icon: 3, title: '提示' }, function (index2) {
+                                        layer.close(index2);
+                                        layer.close(index);
+                                    });
+                                    query();
+                                }
+                                else {
+                                    layer.msg(data.Msg, { icon: 5 });
+                                }
+                            },
+                            error: function () {
+                                layer.msg('系统异常!', { icon: 5 });
+                            }
+                        });
+                    }
+                    if (AttackType == "516") {
+                        var nowPrice = $('#tbxNOWPRICE').val();
+                        var p4Count = $('#tbxP4COUNT').val();
+                        var depreciationRate = $('#tbxDEPRECIATIONRATE').val();
+                        var haveuseYear = $('#tbxHAVEUSEYEAR').val();
+                        if ($.trim(nowPrice) == "") {
+                            layer.msg("请输入现行价格!", { icon: 5 });
+                            $('#tbxNOWPRICE').focus();
+                            return;
+                        }
+                        else {
+                            if (CheckNUM2(nowPrice) == false) {
+                                layer.msg('现行价格请输入数字,且最多保留2位有效数字!', { icon: 5 });
+                                $('#tbxNOWPRICE').focus();
+                                return;
+                            }
+                        }
+                        if ($.trim(p4Count) == "") {
+                            layer.msg("请输入数量!", { icon: 5 });
+                            $('#tbxP4COUNT').focus();
+                            return;
+                        }
+                        else {
+                            if (CheckINT(p4Count) == false) {
+                                layer.msg('数量请输入正整数!', { icon: 5 });
+                                $('#tbxP4COUNT').focus();
+                                return;
+                            }
+                        }
+                        if ($.trim(depreciationRate) == "") {
+                            layer.msg("请输入年平均折旧率!", { icon: 5 });
+                            $('#tbxDEPRECIATIONRATE').focus();
+                            return;
+                        }
+                        else {
+                            if (CheckNUM2(depreciationRate) == false) {
+                                layer.msg('年平均折旧率请输入数字,且最多保留2位有效数字!', { icon: 5 });
+                                $('#tbxDEPRECIATIONRATE').focus();
+                                return;
+                            }
+                        }
+                        if ($.trim(haveuseYear) == "") {
+                            layer.msg("请输入已使用年限!", { icon: 5 });
+                            $('#tbxHAVEUSEYEAR').focus();
+                            return;
+                        }
+                        else {
+                            if (CheckINT(haveuseYear) == false) {
+                                layer.msg('已使用年限请输入正整数!', { icon: 5 });
+                                $('#tbxHAVEUSEYEAR').focus();
+                                return;
+                            }
+                        }
+                        $.ajax({
+                            type: "post",
+                            url: "/DamageAssess/ATTACKManager",
+                            data: {
+                                AttackType: AttackType,
+                                PID: ID,
+                                PNAME: pName,
+                                FIREINFOID: $('#hidFIREINFOID').val(),
+                                P4CODE: $('#tbxP4CODE').val(),
+                                P4UNIT: $('#P4UNIT').val(),
+                                P4COUNT: p4Count,
+                                NOWPRICE: nowPrice,
+                                DEPRECIATIONRAT: depreciationRate,
+                                HAVEUSEYEAR: haveuseYear,
+                                MARK: $('#tbxMARK').val(),
+                                Method: Method
+                            },
+                            dataType: "json",
+                            success: function (data) {
+                                if (data.Success) {
+                                    $('#HidID').val(data.Url);
+                                    layer.confirm(data.Msg + ' 请返回?', { icon: 3, title: '提示' }, function (index2) {
+                                        layer.close(index2);
+                                        layer.close(index);
+                                    });
+                                    query();
+                                }
+                                else {
+                                    layer.msg(data.Msg, { icon: 5 });
+                                }
+                            },
+                            error: function () {
+                                layer.msg('系统异常!', { icon: 5 });
+                            }
+                        });
+                    }
+                    if (AttackType == "517") {
+                        var p5Code = $('#tbxP5CODE').val();
+                        var p5Money = $('#tbxP5MONEY').val();
+                        var attackDays = $('#tbxATTACKDAYS').val();
+                        var elseMoney = $('#tbxELSEMONEY').val();
+                        if ($.trim(p5Money) == "") {
+                            if (p5Code == "501") {
+                                layer.msg("请输入费用!", { icon: 5 });
+                                $('#tbxP5MONEY').focus();
+                                return;
+                            }
+                        }
+                        else {
+                            if (CheckNUM2(p5Money) == false) {
+                                if (p5Code == "501") {
+                                    layer.msg('费用请输入数字,且最多保留2位有效数字!', { icon: 5 });
+                                    $('#tbxP5MONEY').focus();
+                                    return;
+                                }
+                            }
+                        }
+                        if ($.trim(attackDays) == "") {
+                            layer.msg("请输入扑救天数!", { icon: 5 });
+                            $('#tbxATTACKDAYS').focus();
+                            return;
+                        }
+                        else {
+                            if (CheckINT(attackDays) == false) {
+                                layer.msg('扑救天数请输入正整数!', { icon: 5 });
+                                $('#tbxATTACKDAYS').focus();
+                                return;
+                            }
+                        }
+                        if ($.trim(elseMoney) == "") {
+                            layer.msg("请输入其他费用!", { icon: 5 });
+                            $('#tbxELSEMONEY').focus();
+                            return;
+                        }
+                        else {
+                            if (CheckNUM2(elseMoney) == false) {
+                                layer.msg('其他费用请输入数字,且最多保留2位有效数字!', { icon: 5 });
+                                $('#tbxELSEMONEY').focus();
+                                return;
+                            }
+                        }
+                        $.ajax({
+                            type: "post",
+                            url: "/DamageAssess/ATTACKManager",
+                            data: {
+                                AttackType: AttackType,
+                                PID: ID,
+                                PNAME: pName,
+                                FIREINFOID: $('#hidFIREINFOID').val(),
+                                P5CODE: p5Code,
+                                P5MONEY: p5Money,
+                                ATTACKDAYS: attackDays,
+                                ELSEMONEY: elseMoney,
+                                MARK: $('#tbxMARK').val(),
+                                Method: Method
+                            },
+                            dataType: "json",
+                            success: function (data) {
+                                if (data.Success) {
+                                    $('#HidID').val(data.Url);
+                                    layer.confirm(data.Msg + ' 请返回?', { icon: 3, title: '提示' }, function (index2) {
+                                        layer.close(index2);
+                                        layer.close(index);
+                                    });
+                                    query();
+                                }
+                                else {
+                                    layer.msg(data.Msg, { icon: 5 });
+                                }
+                            },
+                            error: function () {
+                                layer.msg('系统异常!', { icon: 5 });
+                            }
+                        });
+                    }
+                    if (AttackType == "518") {
+                        var loseMoney = $('#tbxLOSEMONEY').val();
+                        if ($.trim(loseMoney) == "") {
+                            layer.msg("请输入损失金额!", { icon: 5 });
+                            $('#tbxLOSEMONEY').focus();
+                            return;
+                        }
+                        else {
+                            if (CheckNUM2(loseMoney) == false) {
+                                layer.msg('损失金额请输入数字,且最多保留2位有效数字!', { icon: 5 });
+                                $('#tbxLOSEMONEY').focus();
+                                return;
+                            }
+                        }
+                        $.ajax({
+                            type: "post",
+                            url: "/DamageAssess/ATTACKManager",
+                            data: {
+                                AttackType: AttackType,
+                                PID: ID,
+                                PNAME: pName,
+                                FIREINFOID: $('#hidFIREINFOID').val(),
+                                LOSEMONEYCOUNT: loseMoney,
+                                MARK: $('#tbxMARK').val(),
+                                Method: Method
+                            },
+                            dataType: "json",
+                            success: function (data) {
+                                if (data.Success) {
+                                    $('#HidID').val(data.Url);
+                                    layer.confirm(data.Msg + ' 请返回?', { icon: 3, title: '提示' }, function (index2) {
+                                        layer.close(index2);
+                                        layer.close(index);
+                                    });
+                                    query();
+                                }
+                                else {
+                                    layer.msg(data.Msg, { icon: 5 });
+                                }
+                            },
+                            error: function () {
+                                layer.msg('系统异常!', { icon: 5 });
+                            }
+                        });
+                    }
+                },
+                cancel: function (index) {
+                    layer.close(index);
+                }
+            })
+        }
+    }
+</script>

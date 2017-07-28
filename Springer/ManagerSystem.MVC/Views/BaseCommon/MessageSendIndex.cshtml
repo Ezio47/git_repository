@@ -1,0 +1,384 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+    ViewBag.Title = "MessageSendIndex";
+}
+@model IEnumerable<ManagerSystemModel.YJ_DCSMS_TMP_Model>
+@section Header{
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; overflow:hidden;">
+        <ul class="page-menu">
+            <li>
+                <span><h1><span>预警响应</span></h1></span>
+                <ul>
+                    <li class="title" onclick="addliCur(this);loadSmsTmpMsg(3);" id="li-3"style="color:yellow"><label class=" fkqk"></label>黄色预警【三级】</li>
+                    <li class="title" onclick="addliCur(this); loadSmsTmpMsg(4);" id="li-4" style="color:orange"><label class=" fkqk"></label>橙色预警【四级】</li>
+                    <li class="title liCur" onclick="addliCur(this); loadSmsTmpMsg(5);" id="li-5" style="color:red"><label class=" fkqk"></label>红色预警【五级】</li>
+                </ul>
+            </li>
+
+        </ul>
+
+    </div>
+    <div data-options="region:'east'" title="" style=" width:25%; border: none; ">
+        <div id="tt" style="overflow:hidden; width: 250px;padding-left:0" class="easyui-tree">
+
+        </div>
+    </div>
+    <div data-options="region:'center'" title="" style="width:45%;overflow:hidden">
+        <div id="msgdiv" style="margin:3% 2%;">
+            <table id="msgtb" style="width:100%;height:100%" cellpadding="0" cellspacing="0">
+                @if (Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr style="height:80px;">
+                            <td style="width:20%">
+                                @item.SMSGROUPNAME<br />
+                                <input type="checkbox" name="selected" onclick="watchkeeper(@item.YJ_DCSMS_TMPID,@item.SMSGROUPTYPE)" value="@item.YJ_DCSMS_TMPID" id="chk_@item.YJ_DCSMS_TMPID" /> 发送短信
+                            </td>
+                            <td>
+                                <input type="hidden"  id="hid_@item.YJ_DCSMS_TMPID" value="@item.SMSSENDUSERLIST">
+                                <textarea id="txt_@item.YJ_DCSMS_TMPID" onfocus="reset(@item.YJ_DCSMS_TMPID,@item.SMSGROUPTYPE)" style="height:60px;width:95%" readonly>@item.TMPCONTENT</textarea>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="2"><em>没有模板短信</em></td></tr>
+                }
+                <tr><td colspan="2"><input type="checkbox" id="checkedAll" onclick="selectAll()" /> 全选</td></tr>
+            </table>
+
+        </div>
+        <p style="color:red"> 注意：参数说明：[num]为个数；[cityconty]为市县；值班员和护林员由系统自动获取发送人员</p>
+        <p style="text-align:center"><input type="button" class="btnMsgCss" value="短信发送" onclick="SendMsg()" /></p>
+    </div>
+</div>
+
+<script type="text/javascript">
+    //增加选中状态
+    function addliCur(obj) {
+        $(obj).siblings("li").removeClass("liCur");
+        $(obj).removeClass("title").addClass("title liCur");
+    }
+    function menuEvent() {
+        var $parent_li, $ul, $span;
+        $(".page-menu li>span").click(function () {
+            $span = $(this);
+            $parent_li = $span.parent();
+            $parent_li.siblings().children("ul").slideUp();
+            $ul = $span.next("ul");
+            $ul.slideToggle();
+        });
+        $(".page-menu>li:eq(0)>span").click();
+    }
+
+    $(function () {
+        menuEvent();
+    })
+</script>
+
+<script type="text/javascript">
+    var _phone = "";
+    var _type = "0";
+    $(function () {
+        $('#tt').tree({
+            // url: '/BaseCommon/TreeTXLUSERGet',
+            url: '/Email/MessageTreeGet?type=1',
+            checked: false,
+            animate: true,
+            lines: true,
+            checkbox: true,
+            cache: false,
+            onCheck: function (node, checked) {
+                // alert("_id" + _id + "checked" + checked);
+                if (_phone != "") {
+                    var ss = getChecked();
+                    $("#hid_" + _phone).val(ss);
+                }
+                else {
+                    layer.msg('请先勾选发送短信和选择发送的内容', { icon: 2 });
+                }
+            }
+        });
+    });
+    //获取选中
+    function getChecked() {
+        var nodes = $('#tt').tree('getChecked');
+        var s = '';
+        var d = '';
+        var phone = '';
+        var name = '';
+        if (nodes.length > 0) {
+            for (var i = 0; i < nodes.length; i++) {
+                if ($('#tt').tree('isLeaf', nodes[i].target)) {
+                    if (s != '') s += ',';
+                    if (d != '') d += ',';
+                    s += nodes[i].phone;
+                    d += nodes[i].flag;
+                }
+                else {
+                    var par = $('#tt').tree('getParent', nodes[i].target)
+                    if (nodes[i].state == 'open') {
+                        var cnodes = $('#tt').tree('getChildren', nodes[i].target)
+                        for (var i = 0; i < cnodes.length; i++) {
+                            if ($('#tt').tree('isLeaf', cnodes[i].target)) {
+                                if (s != '') s += ',';
+                                if (d != '') d += ',';
+                                s += cnodes[i].phone;
+                                d += cnodes[i].flag;
+                            }
+                            else {
+                                var ss = cnodes[i].id.split('|');
+                                $.ajax({
+                                    url: '/Email/GetMessagejson',
+                                    data: {
+                                        ID: ss[0],
+                                        TYPE: ss[1],
+                                    },
+                                    type: 'post',
+                                    async: false,
+                                    dataType: "json",
+                                    error: function () {
+                                        layer.msg('错误:异常!');
+                                    },
+                                    success: function (re) {
+                                        if (phone != '') phone += ',';
+                                        if (name != '') name += ',';
+                                        phone += re.PHONELIST;
+                                        name += re.NAMELIST;
+                                    }
+                                });
+                            }
+                        }
+                    }
+                    if (nodes[i].state == 'closed' && par.checked == false) {
+                        var ss = nodes[i].id.split('|');
+                        $.ajax({
+                            url: '/Email/GetMessagejson',
+                            data: {
+                                ID: ss[0],
+                                TYPE: ss[1],
+                            },
+                            type: 'post',
+                            async: false,
+                            dataType: "json",
+                            error: function () {
+                                layer.msg('错误:异常!');
+                            },
+                            success: function (re) {
+                                if (phone != '') phone += ',';
+                                if (name != '') name += ',';
+                                phone += re.PHONELIST;
+                                name += re.NAMELIST;
+                            }
+                        });
+                    }
+                }
+            }
+            if ($.trim(s) != '' && $.trim(phone) != '') {
+                phonelist = s + "," + phone;
+            }
+            if ($.trim(s) != '' && $.trim(phone) == '') {
+                phonelist = s;
+            }
+            if ($.trim(s) == '' && $.trim(phone) != '') {
+                phonelist = phone;
+            }
+         
+            return phonelist; //+ "|" + namlist;
+        }
+        else {
+            return "";
+        }
+    }
+ 
+
+    //初始化人员
+    function reset(obj, type) {
+        _phone = obj;
+        _type = type;
+        if (type == "1" || type == "2") {
+            $("#tt").css('display', 'none');
+        }
+        else {
+            $("#tt").css('display', 'block');
+            var person = $("#hid_" + obj).val();//发送人
+            if ($.trim(person) == "") {
+                $('#tt').tree('reload');
+            }
+            else {
+                var ss = getChecked();
+                if (ss != "") {
+                    var str1 = ss.split(',');
+                    for (var i = 0; i < str1.length ; i++) {
+                        var node = $('#tt').tree('find', str1[i]);
+                        $('#tt').tree('uncheck', node.target);
+                    }
+                }
+                var str = person.split(',');
+                for (var i = 0; i < str.length ; i++) {
+                    var node = $('#tt').tree('find', str[i]);
+                    $('#tt').tree('check', node.target);
+                }
+            }
+        }
+    }
+    //发送短信
+    function SendMsg(){
+        var personstr = "";
+        var count = $("input[name='selected']:checked").length;//判断选中checkbox个数
+        if (count > 0) {
+            //遍历所有checkbox
+            $("input[name='selected']").each(function () {
+                if ($(this).attr("checked")) {
+                    var sid = $(this).attr('value');
+                    var ss = $('#hid_' + sid).val();
+                    var sstext = $('#txt_' + sid).val();
+                    //personstr += sid + ";" + getChecked() + ";" + sstext;
+                    var person = $("#hid_" + sid).val();
+                    personstr += sid + ";" + person + ";" + sstext;
+                }
+            })
+          //alert(personstr);
+           AjaxSendMsg(personstr);//手动发送短信ajax
+        }
+        else {
+            layer.msg('未选择发送短信', { icon: 2 });
+        }
+    }
+    //ajax 发送 其中obj 参数格式为 模板主键1；发送人员1，发送人员2；发送内容1|模板主键2；发送人员1，发送人员2；发送内容1|
+    function AjaxSendMsg(obj) {
+        var index = layer.load();
+        $.ajax({
+            type: "post",
+            url: "@Url.Action("SendMsg", "BaseCommon")",
+            data: { SubjectPerson: obj },
+            dataType: "json",
+            success: function (data) {
+                if (data != null) {
+                    if (data.Success) {
+                        layer.msg('短信发送成功', { icon: 1 });
+                    }
+                    else {
+                        layer.msg(data.Msg, { icon: 2 });
+                    }
+                    //关闭
+                    layer.close(index);
+                }
+                else {
+                    layer.msg('没有需要发送的短信或者未选择发送的人', { icon: 1 });
+                    //关闭
+                    layer.close(index);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                //关闭
+                layer.close(index);
+                layer.msg('发送短信出错', { icon: 2 });
+            }
+        })
+    }
+    ///载入等级短信模板
+    function loadSmsTmpMsg(level) {
+        $.ajax({
+            type: "post",
+            url: "@Url.Action("GetSmsTmpModel", "BaseCommon")",
+            data: { level: level },
+            dataType: "json",
+            success: function (data) {
+                $("#tt").css('display', 'block');//将tree显示
+                $('#tt').tree('reload');
+                $('#msgdiv').empty();   //清空resText里面的所有内容
+                var html = '';
+                if (data.Success) {
+                    var datalist = data.DataList;
+                    html += ' <table id="msgtb">';
+                    if (datalist.length > 0) {
+                        for (var i = 0; i < datalist.length; i++) {
+                            html += '   <tr style="height:78px;"> ';
+                            html += '   <td style="width:20%">' + datalist[i].SMSGROUPNAME + '<br/> <input type="checkbox" name="selected"onclick="watchkeeper(' + datalist[i].YJ_DCSMS_TMPID + ',' + datalist[i].SMSGROUPTYPE + ')"  value="' + datalist[i].YJ_DCSMS_TMPID + '" id="chk_' + datalist[i].YJ_DCSMS_TMPID + '" /> 发送短信</td>   ';
+                            html += '<td>  <input type="hidden" id="hid_' + datalist[i].YJ_DCSMS_TMPID + '" value="' + datalist[i].SMSSENDUSERLIST + '"> <textarea id="txt_' + datalist[i].YJ_DCSMS_TMPID + '"style="height:60px;width:95%" readonly onfocus="reset(' + datalist[i].YJ_DCSMS_TMPID + ',' + datalist[i].SMSGROUPTYPE + ')">' + datalist[i].TMPCONTENT
+                                    + '</textarea> </td> ';
+                            html += '</tr> ';
+                        }
+                    }
+                    else {
+                        html += '   <tr> ';
+                        html += ' <td colspan="2"><em>没有模板短信</em></td> ';
+                        html += '</tr> ';
+                    }
+                    html += '<tr><td colspan="2"><input type="checkbox"  id="checkedAll"onclick="selectAll()"/> 全选</td></tr> ';
+                    html += ' </table>';
+                }
+                $('#msgdiv').html(html);
+            }
+        });
+    }
+</script>
+<script>
+    //设置全选复选框
+    function selectAll() {
+        var checklist = $("input[name='selected']");
+        if (document.getElementById("checkedAll").checked) {
+            for (var i = 0; i < checklist.length; i++) {
+                checklist[i].checked = true;
+            }
+        } else {
+            for (var j = 0; j < checklist.length; j++) {
+                checklist[j].checked = false;
+            }
+        }
+    }
+</script>
+<script>
+    //选择值班人员和护林员复选框将隐藏tree
+    function watchkeeper(obj, type) {
+        var count = $("input[name='selected']:checked").length;
+        if (count == 5) {
+            document.getElementById("checkedAll").checked = true;
+        }
+        else {
+            document.getElementById("checkedAll").checked = false;
+            _phone = obj;
+            _type = type;
+            if (type == "1" || type == "2") {
+             // $("#tt").show();
+              if (document.getElementById("chk_" + _phone).checked) {
+                    $("#tt").hide();
+                }
+            }
+            else {
+                   $("#tt").show();
+                   if (document.getElementById("chk_" + _phone).checked) {
+                           var person = $("#hid_" + obj).val();//发送人
+                           //alert("======" + person);
+                           //if ($.trim(person) == "") {
+                           //    $('#tt').tree('reload');
+                           //}
+                           //else {
+                           //    //var ss = getChecked();
+                           //    //if (ss != "") {
+                           //    //    var str1 = ss.split(',');
+                           //    //    for (var i = 0; i < str1.length ; i++) {
+                           //    //        var node = $('#tt').tree('find', str1[i]);
+                           //    //        $('#tt').tree('uncheck', node.target);
+                           //    //    }
+                           //    //}
+                           //    var str = person.split(',');
+                           //    for (var i = 0; i < str.length ; i++) {
+                           //        var node = $('#tt').tree('find', str[i]);
+                           //        $('#tt').tree('check', node.target);
+                           //    }
+                           // }
+                    }
+                else {
+                    $('#tt').tree('reload');
+                }
+            }
+        }
+    }
+</script>

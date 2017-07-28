@@ -1,0 +1,79 @@
+.fullHtml, .fullHtml > body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+}
+
+ul {
+    margin: 0;
+    padding: 0;
+}
+
+li {
+    list-style: none;
+}
+
+.imgSwitchDiv {
+    width: 100%;
+    height: 100%;
+}
+
+    .imgSwitchDiv .prevPage, .imgSwitchDiv .nextPage {
+        width: 30px;
+        height: 40px;
+        line-height: 40px;
+        position: absolute;
+        top: 50%;
+        margin-top: -20px;
+        text-align: center;
+        font-size: 30px;
+        font-weight: bold;
+        cursor: pointer;
+        background: url(../Images/arrows.png) no-repeat;
+    }
+
+    .imgSwitchDiv .prevPage {
+        left: 20px;
+        background-position: center 4px;
+    }
+
+    .imgSwitchDiv .nextPage {
+        right: 20px;
+        background-position: center -70px;
+    }
+
+        .imgSwitchDiv .prevPage:hover, .imgSwitchDiv .nextPage:hover {
+        }
+
+    .imgSwitchDiv .imgsUl {
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .imgSwitchDiv .imgsUl li {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+            display: table;
+            vertical-align: middle;
+        }
+
+        .imgSwitchDiv .imgsUl img {
+            *position: relative;
+            *top: -50%;
+            *left: -50%;
+        }
+
+    .imgSwitchDiv .imgDiv {
+        display: table-cell;
+        vertical-align: middle;
+        text-align: center;
+        *position: absolute;
+        *left: 50%;
+        *top: 50%;
+    }

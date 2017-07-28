@@ -1,0 +1,257 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="" class="LayoutCenterBG">
+        <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+            <div class="divOP">
+                <div class="homeUL">
+                    <input id="tbxPERALARMID" type="hidden" value="" style="width:90%;" />
+                    <input id="tbxMANUSERID" type="hidden" value="" style="width:90%;" />
+                    <input type="button" value="保存" onclick="Manager()" id="btnSave" class="btnSaveCss">
+                    <input type="button" value="返回" onclick="javascript: history.go(-1);" class="btnReturnCss">
+                </div>
+            </div>
+        </div>
+        <div data-options="region:'center'" title="" class="LayoutCenterBG">
+            <div class="divMan">
+                <table cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td style="width:80px;">报警人： </td>
+                        <td> <input id="tbxPERALARMNAME" type="text" value="" style="width:90%;" /> </td>
+                        <td style="width:80px;">报警电话号码:</td>
+                        <td><input id="tbxPERALARMPHONE" type="text" value="" style="width:90%;" />  </td>
+                    </tr>
+                    <tr class="row1">
+                        <td>区域： </td>
+                        <td><input id="tbxBYORGNO" name="BYORGNO" style="width:400px;height:40px;" /></td>
+                        <td>详细地址：</td>
+                        <td><input id="tbxPERALARMADDRESS" type="text" value="" style="width:90%;" /></td>
+                    </tr>
+                    <tr class="row1">
+                        <td>经度 </td>
+                        <td><input id="tbxJD" type="text" value="" style="width:70%;" /></td>
+                        <td>纬度：</td>
+                        <td><input id="tbxWD" type="text" value="" style="width:70%;" /> <input type="button" value="地图定位" onclick="setPoint()" class="btnMapLoaclCss" /></td>
+                    </tr>
+                    <tr class="row1">
+                        <td>火情标题：</td>
+                        <td> <input id="tbxFIRENAME" type="text" value="" style="width:90%;" /></td>
+                        <td>报警时间：</td>
+                        <td> <input id="tbxPERALARMTIME" type="text" value="" style="width:90%;" /></td>
+                    </tr>
+                    <tr>
+                        <td>报警摘要：</td>
+                        <td colspan="3"> <input id="tbxPEARLARMPRE" type="text" value="" style="width:95%;" /> </td>
+                    </tr>
+                    <tr>
+                        <td>报警内容：</td>
+                        <td colspan="3"><textarea id="tbxPERALARMCONTENT" style="width:95%;height:50px; margin-top:10px; OVERFLOW:visible"></textarea> </td>
+                    </tr>
+                    <tr class="row1">
+                        <td>处理时间： </td>
+                        <td><input id="tbxMANTIME" type="text" value="" style="width:90%;" /> </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $('#tbxBYORGNO').combobox({
+            url: '/YJJC/PERALARMCheckOrgJson',
+            required: true,
+            editable: false,
+            multiple: true,
+            multiline: true,
+            valueField: 'id',
+            textField: 'text'
+        });
+    });
+    //地图定位
+    function setPoint() {
+        layer.open({
+            type: 2,
+            title: '地图位置设置',
+            btn: ['保存', '关闭'],
+            area: ['800px', '530px'],
+            fix: false, //不固定
+            maxmin: true,
+            content: '/MapCommon/GetMapPontIndex',
+            yes: function (index, layero) { //或者使用btn1
+                //按钮【按钮一】的回调
+                var ptxt = layer.getChildFrame("p", index);
+                var arr = ptxt.html().split(',');
+                var jd = parseFloat(arr[0]).toFixed(6);
+                var wd = parseFloat(arr[1]).toFixed(6);
+                $('#tbxJD').val(jd);
+                $('#tbxWD').val(wd);
+                layer.close(index);
+            },
+            cancel: function (index) {
+                layer.close(index);
+            }
+        });
+    }
+    $.ajax({
+        url: '/YJJC/getPERALARMJson',
+        cache: false,
+        timeout: 10000, //10秒后超时，如果为0则永不超时
+        data: { ID: '@ViewBag.T_ID' },
+        success: function (data, ioArgs) {
+            var ar = eval('(' + data + ')');
+            if (ar.PERALARMID != null) {
+                document.getElementById("tbxPERALARMID").value = ar.PERALARMID;
+                document.getElementById("tbxPERALARMNAME").value = ar.PERALARMNAME;
+                document.getElementById("tbxPERALARMPHONE").value = ar.PERALARMPHONE;
+                document.getElementById("tbxPERALARMTIME").value = ar.PERALARMTIME;
+                document.getElementById("tbxPERALARMADDRESS").value = ar.PERALARMADDRESS;
+                document.getElementById("tbxPERALARMCONTENT").value = ar.PERALARMCONTENT;
+                document.getElementById("tbxFIRENAME").value = ar.FIRENAME;
+                document.getElementById("tbxMANUSERID").value = ar.MANUSERID;
+                $('#tbxBYORGNO').combobox('setValue', ar.BYORGNO);
+                document.getElementById("tbxMANTIME").value = ar.MANTIME;
+                document.getElementById("tbxMANTIME").disabled = 'true';
+                document.getElementById("tbxPERALARMTIME").disabled = 'true';
+                document.getElementById("tbxJD").value = ar.JD;
+                document.getElementById("tbxWD").value = ar.WD;
+                document.getElementById("tbxPEARLARMPRE").value = ar.PEARLARMPRE;
+                if ('@ViewBag.Method' == "See") {
+                    document.getElementById('btnSave').style.display = 'none';
+                }
+                if ('@ViewBag.Method' == "Del") {
+                    Manager();
+                }
+            }
+            else {
+                document.getElementById("tbxMANTIME").disabled = 'true';
+            }
+            document.getElementById("tbxPERALARMTIME").disabled = 'true';
+            document.getElementById("tbxMANTIME").value = ar.MANTIME;
+            document.getElementById("tbxMANUSERID").value = ar.MANUSERID;
+            document.getElementById("tbxPERALARMTIME").value = ar.PERALARMTIME; //CurentTime();
+        },
+        error: function (err, ioArgs) {
+            alert('登录异常');
+        }
+    });
+    function Manager() {
+        var bo = ManCheck();
+        if (!bo) { return; }
+        var str = $('#tbxBYORGNO').combobox('getValues').join(',');
+        $.ajax({
+            url: '/YJJC/PERALARMManger',
+            cache: false,
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: {
+                PERALARMID: document.getElementById("tbxPERALARMID").value,
+                PERALARMNAME: document.getElementById("tbxPERALARMNAME").value,
+                PERALARMPHONE: document.getElementById("tbxPERALARMPHONE").value,
+                PERALARMTIME: document.getElementById("tbxPERALARMTIME").value,
+                PERALARMADDRESS: document.getElementById("tbxPERALARMADDRESS").value,
+                PERALARMCONTENT: document.getElementById("tbxPERALARMCONTENT").value,
+                FIRENAME: document.getElementById("tbxFIRENAME").value,
+                MANUSERID: document.getElementById("tbxMANUSERID").value,
+                BYORGNOLIST: str,
+                MANTIME: document.getElementById("tbxMANTIME").value,
+                JD: document.getElementById("tbxJD").value,
+                WD: document.getElementById("tbxWD").value,
+                PEARLARMPRE: document.getElementById("tbxPEARLARMPRE").value,
+                ID: '@ViewBag.T_ID',
+                Method: '@ViewBag.Method',
+                returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)',
+            },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    if (confirm(ar.Msg + ' 请返回！')) {
+                        window.location.assign(ar.Url);
+                    }
+                }
+                else {
+                    alert(ar.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                alert('保存异常');
+            }
+        });
+    }
+
+    function ManCheck() {
+        var t1 = $('#tbxPERALARMNAME').val();
+        var t2 = $('#tbxPERALARMPHONE').val().trim();
+        var t3 = $('#tbxPERALARMADDRESS').val();
+        var t4 = $('#tbxJD').val().trim();
+        var t5 = $('#tbxWD').val().trim();
+        var t6 = $('#tbxFIRENAME').val();
+        var t7 = $('#tbxPERALARMCONTENT').val();
+        if ($.trim(t1) == "") {
+            layer.msg('报警人不可为空！', { icon: 5 });
+            $('#tbxPERALARMNAME').focus();
+            return false;
+        }
+        if ($.trim(t2) == "") {
+            layer.msg('报警人电话不可为空！', { icon: 5 });
+            $('#tbxPERALARMPHONE').focus();
+            return false;
+        } else {
+            reg = /^((0\d{2,3}-\d{7,8})|(1[3584]\d{9}))$/;
+            if (!reg.test(t2)) {
+                layer.msg('请输入正确的电话号码！', { icon: 5 });
+                $('#tbxPERALARMPHONE').focus();
+                return false;
+            }
+        }
+
+        if ($.trim(t3) == "") {
+            layer.msg('详细地址不可为空！', { icon: 5 });
+            $('#tbxPERALARMADDRESS').focus();
+            return false;
+        }
+
+        if ($.trim(t4) == "") {
+            layer.msg('经度不可为空！', { icon: 5 });
+            $('#tbxJD').focus();
+            return false;
+        } else {
+            reg = /^-?\d+\.\d{1,6}$/;
+            if (!reg.test(t4)) {
+                layer.msg('经度格式不正确！', { icon: 5 });
+                $('#tbxJD').focus();
+                return false;
+            }
+        }
+
+        if ($.trim(t5) == "") {
+            layer.msg('纬度不可为空！', { icon: 5 });
+            $('#tbxWD').focus();
+            return false;
+        } else {
+            reg = /^-?\d+\.\d{1,6}$/;
+            if (!reg.test(t5)) {
+                layer.msg('纬度格式不正确！', { icon: 5 });
+                $('#tbxWD').focus();
+                return false;
+            }
+        }
+        if ($.trim(t6) == "") {
+            layer.msg('火情标题不可为空！', { icon: 5 });
+            $('#tbxFIRENAME').focus();
+            return false;
+        }
+        if ($.trim(t7) == "") {
+            layer.msg('报警内容不可为空！', { icon: 5 });
+            $('#tbxPERALARMCONTENT').focus();
+            return false;
+        }
+        return true;
+    }
+</script>

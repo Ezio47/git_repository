@@ -1,0 +1,95 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+}
+@section Header{
+    <script src="~/Scripts/scroll.js"></script>
+    <style type="text/css">
+        table tbody td {
+            word-break: break-all;
+            word-wrap: break-word;
+        }
+    </style>
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        单位：<select id="tbxBYORGNO">
+                            @Html.Raw(@ViewBag.vdOrg)
+                        </select>
+                        开始时间：<input class="easyui-datebox" id="tbxTIMEBegin" type="text" style="width:90px;height:28px;" value="@ViewBag.TIMEBegin" />
+                        结束时间<input class="easyui-datebox" id="tbxTIMEEnd" type="text" value="@ViewBag.TIMEEnd" style="width:90px;height:28px;" />
+
+                        <input type="button" value="查询" onclick="query()" class="btnSearchCss" />
+                        <input type="button" value="导出" onclick="exportExcel()" class="btnOutputCss" />
+                        <input type="button" value="图形展示" onclick="Echarts()" class="btnEchartsCss" />
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <div class="divTable" id="tableContainer" style="height:100%;margin:0 0;">
+                    @*@Html.Raw(@ViewBag.pageList)*@
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    function query() {
+        $.ajax({
+            url: '/HUReport/getCollectCountJson',
+            cache: false,
+            data: {
+                TopORGNO: document.getElementById("tbxBYORGNO").value,
+                DateBegin: $('#tbxTIMEBegin').datebox('getValue'),
+                DateEnd: $('#tbxTIMEEnd').datebox('getValue'),
+            },
+            type: 'post',
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#tableContainer').html(ar.Msg);
+                }
+                else {
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('系统错误!', { icon: 5 });
+            }
+        });
+    }
+
+
+    //$(document).ready(function () {
+    //    $("#tableContainer").FixedHead({ tableLayout: "fixed" });
+    //});
+    function exportExcel() {
+        var url = '/HUReport/CollectCountExportExcel?TIMEBegin=' + $('#tbxTIMEBegin').datebox('getValue') + '&TIMEEnd=' + $('#tbxTIMEEnd').datebox('getValue') + '&BYORGNO=' + document.getElementById("tbxBYORGNO").value + '';
+        //var url = '@Html.Raw(@ViewBag.ExportExcelUrl)';
+        if (url == '') {
+            alert('请先查询!');
+        }
+        else {
+            window.location = url;
+        }
+    }
+    function Echarts() {
+        layer.open({
+            type: 2,
+            title: '图形展示',
+            area: ['70%', '80%'],
+            fix: false, //不固定
+            maxmin: true,
+            content: '/HUReport/CollectCountMan',
+        });
+    }
+</script>

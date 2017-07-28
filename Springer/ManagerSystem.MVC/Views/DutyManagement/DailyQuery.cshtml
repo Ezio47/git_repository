@@ -1,0 +1,60 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+}
+<script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+<div class="easyui-layout" data-options="fit:true" style="border: 0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style="height: 35px; border: none; overflow: hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        查询日期：<input class="Wdate" id="tbxTIMEBegin" value="@ViewBag.Date" type="text" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd'})" />
+                        <input type="button" value="查 询" onclick="query()" class="btnSearchCss">
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" class="LayoutCenterBG">
+
+                <div id="msg" class="divTable">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    $(function () {
+        query();
+    });
+
+    function query() {
+        $.ajax({
+            url: '/DutyManagement/dutyDailyQuery',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            type: 'post',
+            data: {
+                TTBH: $('#tbxTIMEBegin').val()
+            },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#msg').html('').removeAttr("style");
+                    $('#msg').html(ar.Msg);
+                }
+                else {
+                    $('#msg').html('');
+                    $('#msg').html(ar.Msg).css("color", "red");
+                }
+            },
+            error: function (err, ioArgs) {
+                $('#msg').html("系统异常，请重试或与管理员联系").css("color", "red");
+            }
+        });
+    }
+</script>

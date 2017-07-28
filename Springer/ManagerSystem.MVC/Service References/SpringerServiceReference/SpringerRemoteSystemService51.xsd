@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://tempuri.org/" elementFormDefault="qualified" targetNamespace="http://tempuri.org/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://192.168.5.244:8090/SpringerRemoteSystemService.svc?xsd=xsd2" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+  <xs:import schemaLocation="http://192.168.5.244:8090/SpringerRemoteSystemService.svc?xsd=xsd3" namespace="http://schemas.datacontract.org/2004/07/Springer.EntityModel.Entity" />
+  <xs:import schemaLocation="http://192.168.5.244:8090/SpringerRemoteSystemService.svc?xsd=xsd4" namespace="http://schemas.datacontract.org/2004/07/Springer.EntityModel" />
+  <xs:element name="ReturnPhoneStatusWcf">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="sn" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ReturnPhoneStatusWcfResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="ReturnPhoneStatusWcfResult" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RegisterHUserWcf">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="sn" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="phone" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RegisterHUserWcfResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="RegisterHUserWcfResult" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RegisterHUserWcfStr">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="sn" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="phone" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RegisterHUserWcfStrResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="RegisterHUserWcfStrResult" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetDicSysParaments">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="sysflag" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetDicSysParamentsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q1="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="GetDicSysParamentsResult" nillable="true" type="q1:ArrayOfKeyValueOfstringstring" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetJsonSysParaments">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="sysflag" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="paramflag" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetJsonSysParamentsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetJsonSysParamentsResult" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddRealData">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="phone" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="lon" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="lat" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="elec" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="cjtime" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddRealDataResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="AddRealDataResult" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddRealDataTest">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="phone" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="lon" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="lat" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="elec" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="cjtime" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddRealDataTestResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="AddRealDataTestResult" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddAlarmInfo">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="lon" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="lat" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="height" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="phone" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="alarmtime" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddAlarmInfoResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="AddAlarmInfoResult" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddReportData">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/Springer.EntityModel.Entity" minOccurs="0" name="datalist" nillable="true" type="q2:ArrayOfDataInfoModel" />
+        <xs:element minOccurs="0" name="infotype" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="title" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="phone" nillable="true" type="xs:string" />
+        <xs:element xmlns:q3="http://schemas.datacontract.org/2004/07/Springer.EntityModel.Entity" minOccurs="0" name="fileupload" nillable="true" type="q3:FileUploadMessageModel" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddReportDataResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="AddReportDataResult" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddReportDataStr">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="infotype" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="reportdescribe" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="phone" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="lon" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="lat" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="cjtime" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="base64str" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddReportDataStrResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="AddReportDataStrResult" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddCollectData">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q4="http://schemas.datacontract.org/2004/07/Springer.EntityModel.Entity" minOccurs="0" name="datalist" nillable="true" type="q4:ArrayOfDataInfoModel" />
+        <xs:element minOccurs="0" name="infotype" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="title" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="phone" nillable="true" type="xs:string" />
+        <xs:element xmlns:q5="http://schemas.datacontract.org/2004/07/Springer.EntityModel.Entity" minOccurs="0" name="fileupload" nillable="true" type="q5:FileUploadMessageModel" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddCollectDataResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="AddCollectDataResult" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddCollectDataStr">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="datalistJsonstr" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="infotype" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="describe" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="cjtime" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="phone" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="base64str" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddCollectDataStrResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="AddCollectDataStrResult" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetModelList">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="type" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetModelListResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q6="http://schemas.datacontract.org/2004/07/Springer.EntityModel" minOccurs="0" name="GetModelListResult" nillable="true" type="q6:ArrayOfT_SYS_DICTModel" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetModelListDic">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="type" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetModelListDicResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q7="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="GetModelListDicResult" nillable="true" type="q7:ArrayOfKeyValueOfstringstring" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetJsonModelListDic">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="type" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetJsonModelListDicResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetJsonModelListDicResult" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetTxlModelList">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="top" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetTxlModelListResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q8="http://schemas.datacontract.org/2004/07/Springer.EntityModel.Entity" minOccurs="0" name="GetTxlModelListResult" nillable="true" type="q8:ArrayOfTXLModel" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetHLYTXLModelList">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="phone" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetHLYTXLModelListResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q9="http://schemas.datacontract.org/2004/07/Springer.EntityModel.Entity" minOccurs="0" name="GetHLYTXLModelListResult" nillable="true" type="q9:ArrayOfHLYTXLModel" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAddreass">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="lng" type="xs:decimal" />
+        <xs:element minOccurs="0" name="lat" type="xs:decimal" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAddreassResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetAddreassResult" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="FireSpread">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="jd" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="wd" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="dWindDirection" type="xs:double" />
+        <xs:element minOccurs="0" name="dWindSpeed" type="xs:double" />
+        <xs:element minOccurs="0" name="dHumidity" type="xs:double" />
+        <xs:element minOccurs="0" name="dTemperature" type="xs:double" />
+        <xs:element minOccurs="0" name="dW" type="xs:double" />
+        <xs:element minOccurs="0" name="dTime" type="xs:double" />
+        <xs:element minOccurs="0" name="bConvexHull" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="FireSpreadResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q10="http://schemas.datacontract.org/2004/07/Springer.EntityModel.Entity" minOccurs="0" name="FireSpreadResult" nillable="true" type="q10:ArrayOfPoints" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

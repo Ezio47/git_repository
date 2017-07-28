@@ -1,0 +1,100 @@
+﻿@{
+    //ViewBag.Title =  "首页";
+    //Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+    Layout = null;
+}
+@model IEnumerable<ManagerSystem.MVC.Models.MapShowModel>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+<script src="~/Scripts/jquery-easyui-1.4/jquery.min.js"></script>
+<script src="~/Scripts/skyline/from2Dto3d.js"></script>
+<script src="~/Scripts/jquery-easyui-1.4/jquery.easyui.min.js"></script>
+<script src="~/Scripts/jquery-easyui-1.4/locale/easyui-lang-zh_CN.js"></script>
+<script src="~/Scripts/jquery-easyui-1.4/validateHelper.js"></script>
+<script src="~/Scripts/jquery-easyui-1.4/jquery.SuperSlide.2.1.1.js"></script>
+<link href="/Content/themes/default/Default.css" rel="stylesheet" />
+<link href="/Content/themes/default/Public.css" rel="stylesheet" />
+@*<link href="~/Content/themes/easyui/easyui.css" rel="stylesheet" />*@
+<link href="~/Content/themes/easyui/color.css" rel="stylesheet" />
+<link href="~/Content/themes/easyui/icon.css" rel="stylesheet" />
+@*<link href="~/Content/themes/easyui/Default.css" rel="stylesheet" />*@
+<html style="overflow:hidden;">
+<body>
+    <div>
+        <div style="float:left;width:20%;">
+            <input id="hidjcfid" value="@ViewBag.strjcfid" type="hidden" />
+            <div class="divTable" style="height:100%;overflow:auto">
+                <table border="0">
+                    <thead>
+                        <tr>
+                            <th>编号</th>
+                            <th style="width:40%">热点区域</th>
+                            <th style="width:40%">反馈状态</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr onclick="getLocal(@item.JCFID);">
+                                    <td>@item.BH</td>
+                                    <td>@item.AREA</td>
+                                    <td>@item.FKSTATE</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="3">暂无火情记录</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div id="sgmap" style="width:80%;height:100%;z-index:-1; float:left">
+            <object id="TerraExplorer3DWindow" style="float:left;width:100%;height:100%;border:0px solid black;z-index:-1;" classid="CLSID:3a4f9192-65a8-11d5-85c1-0001023952c1" />
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        ///定位
+        function getLocal(value) {
+            //检索点
+            $.ajax({
+                type: "Post",
+                url: "/MapCommon/GetMapDataListInfoAjax",
+                data: { jcfid: value },
+                dataType: "json",
+                success: function (obj) {
+                    if (obj != null && obj.Success) {
+                        var datalist = obj.DataList;
+                        for (var i = 0; i < datalist.length; i++) {
+                            movetoposition(datalist[i].JC_FireData.JD, datalist[i].JC_FireData.WD);
+                        }
+                    }
+                }
+            });
+        }
+
+        //弹出信息
+        //title:标题url
+        //url:地址
+        //Left:弹出框位置Left
+        //Top:弹出框位置Top
+        //width:宽度
+        //height:高度
+        function MapToolsPopUrl(url) {
+            var popurl = url;
+            var swidth = document.documentElement.clientWidth - 460;
+            showPopuopByUrl(" ", popurl, swidth, 20, 65, 500);
+        }
+        $(function () {
+            MapToolsPopUrl("http://localhost:33844/EmergencyHand/MapToolsIndex");
+
+        });
+    </script>
+</body>
+</html>

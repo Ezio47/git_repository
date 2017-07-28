@@ -1,0 +1,989 @@
+﻿@using ManagerSystemClassLibrary;
+@using ManagerSystem.MVC.HelpCom;
+@using ManagerSystemSearchWhereModel;
+@{
+    ViewBag.Title = "采集地图编辑";
+    Layout = null;
+
+    //配置文件经纬度读取
+    var lon = System.Configuration.ConfigurationManager.AppSettings["Longitude"];
+    var lat = System.Configuration.ConfigurationManager.AppSettings["Latitude"];
+    var maptype = System.Configuration.ConfigurationManager.AppSettings["mapType"];//地图类型
+    var lonlatchange = System.Configuration.ConfigurationManager.AppSettings["lonLatChange"];//经纬度转换
+    var curaddress = StateSwitch.GetOrgNameByOrgNO(SystemCls.getCurUserOrgNo());
+    var DGXUrl = System.Configuration.ConfigurationManager.AppSettings["DGXUrl"];
+    var ORGNO = SystemCls.getCurUserOrgNo();//获取当前用户所处市县的
+    var ORGNOSub = "";
+    if (!string.IsNullOrEmpty(ORGNO))
+    {
+        ORGNOSub = ORGNO.Substring(0, 6);
+    }
+    var LAYERNAME = T_SYS_ORG_EXTENDIDCls.getModel(new T_SYS_ORG_EXTENDID_SW { ORGNO = ORGNOSub }).DGXLAYERNAME;
+}
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.8.2.min.js")"></script>
+<script src="~/Scripts/layer/layer.js"></script>
+<link rel="stylesheet" href="~/js/esri/css/esri.css" />
+<link rel="stylesheet" href="~/Content/themes/dijit/themes/tundra/tundra.css" />
+<script src="~/js/init.js"></script>
+<link href="~/Content/MapStyle.css" rel="stylesheet" />
+<script src="~/Scripts/Springer.js"></script>
+<script src="~/Scripts/Springer/SpringerMapCommon.js"></script>
+<script src="~/Scripts/Springer/SpringerMapCollect.js"></script>
+
+<style type="text/css">
+    body, html, #map {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+    }
+
+    td {
+        font-size: 10px;
+    }
+</style>
+
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=wYCjPb9rxUueQP8xcNwqGLFw"></script>
+<script type="text/javascript">
+    dojoConfig = {
+        parseOnLoad: true,
+        packages: [{name: 'bdlib', location: this.location.pathname.replace(/\/[^/]+$/, "") + "/js/bdlib"}]
+    };
+    var tiled;
+    var strxy = "";
+    var LAYERNAME='@LAYERNAME';
+    var DGXUrl='@DGXUrl';
+    var map, graphicLayer,tb;
+    var editToolbar;
+    var configMaptype;//地图展示类型
+    var editid;
+    var graphicLayer = new esri.layers.GraphicsLayer();
+    bevent=require("dojo/_base/event");
+    require(["esri/map",
+      "bdlib/GoogleLayer",
+   "bdlib/TDTLayer",
+   "bdlib/TDTAnnoLayer",
+   "esri/layers/FeatureLayer",
+   "esri/geometry/Point",
+   "esri/symbols/SimpleFillSymbol",
+   "esri/symbols/SimpleLineSymbol",
+   "dojo/_base/Color", "dojo/_base/event","dojo/parser", "esri/toolbars/draw", "esri/symbols/SimpleMarkerSymbol", "esri/graphic", "esri/dijit/Scalebar", "esri/dijit/OverviewMap",
+   "esri/toolbars/navigation", "dijit/registry", "esri/symbols/TextSymbol", "esri/dijit/HomeButton","esri/toolbars/edit",
+   "dojo/domReady!"],
+   function (Map, GoogleLayer,TDTLayer,TDTAnnoLayer, FeatureLayer, Point, SimpleFillSymbol, SimpleLineSymbol, Color,event, parser, Draw, SimpleMarkerSymbol, Graphic, Scalebar, OverviewMap, Navigation
+       , registry, TextSymbol, HomeButton,Edit) {
+       //  parser.parse();
+       map = new Map("map", { logo:false, sliderStyle: "large",autoResize:false });
+       this.map_type="img_yp";
+       configMaptype=@maptype;
+       //2 天地图
+       if (@maptype=="2") {
+           var basemap = new TDTLayer();
+           map.addLayer(basemap);
+           var annolayer = new TDTAnnoLayer();
+           map.addLayer(annolayer);
+       }
+       else
+       {
+           var basemap = new GoogleLayer(this.map_type);
+           map.addLayer(basemap);
+       }
+       var btn = dojo.byId("dakai");
+       var btn1 = dojo.byId("guanbi");
+       dojo.connect(btn, "onclick", openDGX);
+       dojo.connect(btn1, "onclick", closeDGX);
+       var pt = new Point(@lon, @lat);
+       map.centerAndZoom(pt, 14);
+       nav = new esri.toolbars.Navigation(map);
+       graphicLayer = new esri.layers.GraphicsLayer();
+       map.addLayer(graphicLayer);
+       //加载等高线
+       function DGX(LAYERNAME) {
+           tiled = new esri.layers.ArcGISDynamicMapServiceLayer(DGXUrl+LAYERNAME+"/MapServer");
+       }
+       function loadDGX(value) {
+           if (value == "1") {
+               map.addLayer(tiled);
+           } else {
+               map.removeLayer(tiled);
+           }
+       }
+
+       //比例尺
+       var scalebar = new Scalebar({
+           map: map,
+           attachTo: "bottom-center"
+       });
+
+       //取最新经纬度定位
+       @ViewBag.method;
+       ////给地图控件添加视图变化监听事件
+       // dojo.connect(map, "onExtentChange", showExtent);
+       //给地图控件添加载鼠标移动监听事件
+       dojo.connect(map, "onMouseMove", function(evt){
+           showChangeCoordinates(evt,@lonlatchange);
+       });
+       //给地图控件添加载鼠标拖拽监听事件
+       dojo.connect(map, "onMouseDrag",function(evt){
+           showChangeCoordinates(evt,@lonlatchange);
+       });
+       createToolbar(@ViewBag.type);
+       tb = new esri.toolbars.Draw(map);
+       dojo.connect(tb, "onDrawEnd", doDraw);
+       //地图切换
+       $('#switchmap').toggle(function () {
+           this.map_type = "img_p";//地图
+           $('#imgtype').attr('class', 'yxType');
+           $('#imgname').text("影像");
+           if (@maptype=="2") {
+               var basemap = new TDTLayer(this.map_type);
+               var annolayer = new TDTAnnoLayer();
+               map.addLayer(basemap);
+               map.addLayer(annolayer);
+           }
+           else{
+               var basemap = new GoogleLayer(this.map_type);
+               map.addLayer(basemap);
+           }
+           $('#info2').css('color', 'red');
+
+       }, function () {
+           this.map_type = "img_c11";//卫星
+           $('#imgtype').attr('class', 'vecType');
+           $('#imgname').text("地图");
+           if (@maptype=="2") {
+               var basemap = new TDTLayer(this.map_type);
+               var annolayer = new TDTAnnoLayer();
+               map.addLayer(basemap);
+               map.addLayer(annolayer);
+           }
+           else
+           {
+               var basemap = new GoogleLayer(this.map_type);
+               map.addLayer(basemap);
+           }
+           $('#info2').css('color', 'white');
+       });
+       function openDGX() {
+           $('#dakai').hide();
+           $('#guanbi').show();
+           DGX(LAYERNAME);
+           loadDGX("1");
+       }
+       function closeDGX() {
+           $('#guanbi').hide();
+           $('#dakai').show();
+           loadDGX("0");
+       }
+   });
+
+   //定位类型
+   function getLocaEditCollect(cid,type)
+   {
+       editid=cid;
+       if (type=="0") {
+           $('#Line').hide();
+           $('#Polygon').hide();
+           getLocaCollectPont(cid);
+       } else if (type=="2") {
+           $('#Line').hide();
+           $('#Point').hide();
+           getLocaCollectPolygon();
+       }
+       else
+       {
+           $('#Polygon').hide();
+           $('#Point').hide();
+           //  getLocaCollectLine(cid);
+           getLocaCollectLine();
+       }
+   }
+   //(点)定位
+   function getLocaCollectPont(jd,wd) {
+       document.getElementById("Line").style.display="none";//点定位中，线隐藏
+       var st="";
+       map.graphics.clear();
+       graphicLayer.clear();
+       if ($.trim(jd)!=""&& $.trim(wd)!="") {
+           ptPosition(jd,wd);
+           st=jd+","+wd;
+       }
+       $('#editcollecttxt').text(st);
+   }
+
+   //百度地图点(定位)
+   function getLocaCollectPontByBaidu(jd,wd) {
+       var st="";
+       map.graphics.clear();
+       graphicLayer.clear();
+       if ($.trim(jd)!=""&& $.trim(wd)!="") {
+           ptPosition(jd,wd);
+           st=jd+","+wd;
+       }
+       $('#editcollecttxt').text(st);
+   }
+
+
+   //根据地址定位
+   function setLocationByAddress()
+   {
+       document.getElementById("Line").style.display="none";//电话报警、卫星报警页面中隐藏线
+       getPointByAdr('@curaddress');
+
+   }
+   //（线定位）
+   function getLocaCollectLine()
+   {
+       document.getElementById("Point").style.display="none";//线定位中，点隐藏
+       @*var str='@ViewBag.jwdlist';*@
+       var str=$('#editcollecttxt').text();
+       $('#editcollecttxt').text(str);
+       $('#editcollecttxt2').text(str);
+       if ($.trim(str)!="") {
+           if (str.substring(str.length,str.length-1)==";") {
+               var str1=str.split('|;');
+               if (str1.length>0) {
+                   for (var j = 0; j < str1.length-1; j++) {
+                       var ring = [];
+                       var ss=str1[j].split('|');
+                       if (ss.length>0) {
+                           for (var i = 0; i < ss.length; i++) {
+                               var lng=ss[i].split(',')[0];
+                               var lat=ss[i].split(',')[1];
+                               if (!isNaN(lng)&&!isNaN(lat)) {
+                                   var latlng = new esri.geometry.Point(parseFloat(lng), parseFloat(lat));
+                                   ring.push(latlng);
+                               }
+                           }
+                           var lineSymbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([255, 0, 0]), 5);
+                           //获取线的点
+                           var polyline = new esri.geometry.Polyline(new esri.SpatialReference({ wkid: 4326 }));
+                           polyline.addPath(ring);
+                           var graphic = new esri.Graphic(polyline, lineSymbol);
+                           map.graphics.add(graphic);
+                           var point = new esri.geometry.Point(parseFloat(ss[0].split(',')[0]), parseFloat(ss[0].split(',')[1]));
+                           map.centerAndZoom(point, 14);
+                           //计算线面的长度和面积
+                           GetLenthorArea(polyline,"1");
+                       }
+                   }
+               }
+           }
+           else {
+               var ring = [];
+               var ss=str.split('|');
+               if (ss.length>0) {
+                   for (var i = 0; i < ss.length; i++) {
+                       var lng=ss[i].split(',')[0];
+                       var lat=ss[i].split(',')[1];
+                       if (!isNaN(lng)&&!isNaN(lat)) {
+                           var latlng = new esri.geometry.Point(parseFloat(lng), parseFloat(lat));
+                           ring.push(latlng);
+                       }
+                   }
+                   var lineSymbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([255, 0, 0]), 5);
+                   //获取线的点
+                   var polyline = new esri.geometry.Polyline(new esri.SpatialReference({ wkid: 4326 }));
+                   polyline.addPath(ring);
+                   var graphic = new esri.Graphic(polyline, lineSymbol);
+                   map.graphics.add(graphic);
+                   var point = new esri.geometry.Point(parseFloat(ss[0].split(',')[0]), parseFloat(ss[0].split(',')[1]));
+                   map.centerAndZoom(point, 14);
+                   //计算线面的长度和面积
+                   GetLenthorArea(polyline,"1");
+               }
+           }
+       }
+       else {
+           layer.msg('未获取经纬度！');
+       }
+   }
+
+   //（面定位）
+   function getLocaCollectPolygon()
+   {
+       //document.getElementById("Point").style.display="none";//线定位中，点隐藏
+       @*var str='@ViewBag.jwdlist';*@
+       var str=$('#editcollecttxt').text();
+       $('#editcollecttxt').text(str);
+       $('#editcollecttxt2').text(str);
+       if ($.trim(str)!="") {
+           if (str.substring(str.length,str.length-1)==";") {
+               var str1=str.split('|;');
+               if (str1.length>0) {
+                   for (var j = 0; j < str1.length-1; j++) {
+                       var ring = [];
+                       var ss=str1[j].split('|');
+                       for (var i = 0; i < ss.length; i++) {
+                           var lng=ss[i].split(',')[0];
+                           var lat=ss[i].split(',')[1];
+                           if (!isNaN(lng)&&!isNaN(lat)) {
+                               var latlng = new esri.geometry.Point(parseFloat(lng), parseFloat(lat));
+                               ring.push(latlng);
+                           }
+                       }
+                       var polygonSymbol  = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_DASHDOTDOT,new dojo.Color([255, 0, 0]), 3), new dojo.Color([255, 255, 0, 0.25]));
+                       //获取面的点
+                       var polygon = new esri.geometry.Polygon(new esri.SpatialReference({wkid:4326}));
+                       polygon.addRing(ring);
+                       var graphic = new esri.Graphic(polygon,polygonSymbol);
+                       map.graphics.add(graphic);
+                       var point = new esri.geometry.Point(parseFloat(ss[0].split(',')[0]), parseFloat(ss[0].split(',')[1]));
+                       map.centerAndZoom(point, 14);
+                       //计算线面的长度和面积
+                       GetLenthorArea(polygon,"1");
+                   }
+               }
+           }
+           else {
+               var ring = [];
+               var ss=str.split('|');
+               for (var i = 0; i < ss.length; i++) {
+                   var lng=ss[i].split(',')[0];
+                   var lat=ss[i].split(',')[1];
+                   if (!isNaN(lng)&&!isNaN(lat)) {
+                       var latlng = new esri.geometry.Point(parseFloat(lng), parseFloat(lat));
+                       ring.push(latlng);
+                   }
+               }
+               var polygonSymbol  = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_DASHDOTDOT,new dojo.Color([255, 0, 0]), 3), new dojo.Color([255, 255, 0, 0.25]));
+               //获取面的点
+               var polygon = new esri.geometry.Polygon(new esri.SpatialReference({wkid:4326}));
+               polygon.addRing(ring);
+               var graphic = new esri.Graphic(polygon,polygonSymbol);
+               map.graphics.add(graphic);
+               var point = new esri.geometry.Point(parseFloat(ss[0].split(',')[0]), parseFloat(ss[0].split(',')[1]));
+               map.centerAndZoom(point, 14);
+               //计算线面的长度和面积
+               GetLenthorArea(polygon,"1");
+           }
+       }
+       else {
+           layer.msg('未获取经纬度！');
+       }
+   }
+   //function getLocaCollectLine(cid)
+   //{
+   //    var ring = [];
+   //    $.ajax({
+   //        type: "Post",
+   //        url: "/DataCollect/GetCollectInfoAjax",
+   //        data: { cid: cid },
+   //        dataType: "json",
+   //        success: function (obj) {
+   //            if (obj != null && obj.Success) {
+   //                map.graphics.clear();
+   //                graphicLayer.clear();
+   //                var datalsit = obj.DataList;
+   //                for (var i = 0; i < datalsit.length; i++) {
+   //                    var latlng = new esri.geometry.Point(datalsit[i].LONGITUDE, datalsit[i].LATITUDE);
+   //                    ring.push(latlng);
+   //                }
+   //                var lineSymbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SHORTDASHDOTDOT, new dojo.Color([255, 0, 0]), 5);
+   //                //获取线的点
+   //                var polyline = new esri.geometry.Polyline(new esri.SpatialReference({ wkid: 4326 }));
+   //                polyline.addPath(ring);
+   //                var graphic = new esri.Graphic(polyline, lineSymbol);
+   //                map.graphics.add(graphic);
+   //            }
+   //            else {
+   //                layer.alert('获取采集点失败！', { icon: 5 });
+   //            }
+   //        }
+   //    })
+   //}
+
+   //编辑类型
+   function createToolbar(type)
+   {
+       if (type=="0") {
+           $('#Line').hide();
+           $('#Polygon').hide();
+           createToolbarPoint();
+       }
+       else if (type=="2") {
+           $('#Line').hide();
+           $('#Point').hide();
+           createToolbarPolygon();
+       }
+       else
+       {
+           $('#Polygon').hide();
+           $('#Point').hide();
+           createToolbarLine();
+       }
+   }
+
+
+   //编辑(点)
+   function createToolbarPoint() {
+       //禁止双击放大
+       map.disableDoubleClickZoom();
+       editToolbar = new esri.toolbars.Edit(map);
+       // Activate the toolbar when you click on a graphic
+       var editingEnalble=false;
+       var i=0;
+       var options = {
+           allowAddVertices: true,
+           allowDeleteVertices: true
+       };
+       map.graphics.on("click", function(evt) {
+           editToolbar.activate(esri.toolbars.Edit.MOVE ,evt.graphic,options);
+           dojo.connect(map.graphics, "onMouseOut", showInfoWindow);
+
+       });
+
+   }
+
+   var firstzb="";
+   var secondzb="";
+   var zb="";
+   //线编辑
+   function createToolbarLine() {
+       //禁止双击放大
+       map.disableDoubleClickZoom();
+       editToolbar = new esri.toolbars.Edit(map);
+       // Activate the toolbar when you click on a graphic
+       var editingEnalble=false;
+       var i=0;
+       map.graphics.on("click", function(evt) {
+           bevent.stop(evt);
+           if (editingEnalble==false) {
+               editToolbar.activate(esri.toolbars.Edit.EDIT_VERTICES ,evt.graphic);
+               editingEnalble=true;
+               $('#BtnSavePoints').attr("disabled","disabled");
+           }
+           else
+           {
+               editToolbar.deactivate();
+               editingEnalble=false;
+               $('#BtnSavePoints').removeAttr("disabled");
+           }
+           // console.info(evt.graphic.geometry.paths[0]);
+           var strxy="";
+           var paths=evt.graphic.geometry.paths[0];
+           for (var i = 0; i < paths.length; i++) {
+               if (!isNaN(paths[i][0]) && !isNaN(paths[i][1])) {
+                   strxy += parseFloat(paths[i][0]).toFixed(6).toString()+ "," +parseFloat(paths[i][1]).toFixed(6).toString() + "|";
+               }
+           }
+           var tt=$('#editcollecttxt').text();
+           var array=tt.split(';');
+           for (var i in array ) {
+               if (strxy==array[i].toString()) {
+                   zb=strxy;
+               }
+           }
+           if (zb=="") {
+               firstzb=strxy;
+           }
+           else{
+               firstzb=zb;
+           }
+           secondzb=strxy;
+           var jwdstr="";
+           for(var i=0;i<array.length;i++){
+               if (array[i]!=null&&array[i]!="") {
+                   if (array[i].toString()==firstzb.toString()) {
+                       jwdstr+=secondzb+";";
+                       zb=secondzb;
+                   }
+                   else{
+                       jwdstr+=array[i].toString()+";";
+                   }
+               }
+           }
+           $('#editcollecttxt').text(jwdstr);
+           //计算线面的长度和面积
+           GetLenthorAreaMdy(evt.graphic.geometry,"1");
+       });
+   }
+
+
+   //面编辑
+   function createToolbarPolygon() {
+       //禁止双击放大
+       map.disableDoubleClickZoom();
+       //  GetFRRailPoints();
+       editToolbar = new esri.toolbars.Edit(map);
+       // Activate the toolbar when you click on a graphic
+       var editingEnalble=false;
+       var i=0;
+       map.graphics.on("click", function(evt) {
+           bevent.stop(evt);
+           if (editingEnalble==false) {
+               editToolbar.activate(esri.toolbars.Edit.EDIT_VERTICES ,evt.graphic);
+               editingEnalble=true;
+               $('#BtnSavePoints').attr("disabled","disabled");
+           }
+           else
+           {
+               editToolbar.deactivate();
+               editingEnalble=false;
+               $('#BtnSavePoints').removeAttr("disabled");
+           }
+           // console.info(evt.graphic.geometry.rings[0]);
+           var strxy="";
+           var rings=evt.graphic.geometry.rings[0];
+
+           for (var i = 0; i < rings.length; i++) {
+               if ( !isNaN(rings[i][0]) && !isNaN(rings[i][1])) {
+                   strxy += parseFloat(rings[i][0]).toFixed(6).toString() + "," + parseFloat(rings[i][1]).toFixed(6).toString() +"|";//+ ", , |";
+               }
+           }
+           var tt=$('#editcollecttxt').text();
+           var array=tt.split(';');
+           for (var i in array ) {
+               if (strxy==array[i].toString()) {
+                   zb=strxy;
+               }
+           }
+           if (zb=="") {
+               firstzb=strxy;
+           }
+           else{
+               firstzb=zb;
+           }
+           secondzb=strxy;
+           var jwdstr="";
+           for(var i=0;i<array.length;i++){
+               if (array[i]!=null&&array[i]!="") {
+                   if (array[i].toString()==firstzb.toString()) {
+                       jwdstr+=secondzb+";";
+                       zb=secondzb;
+                   }
+                   else{
+                       jwdstr+=array[i].toString()+";";
+                   }
+               }
+           }
+           $('#editcollecttxt').text(jwdstr);
+           //计算线面的长度和面积
+           GetLenthorAreaMdy(evt.graphic.geometry,"1");
+       });
+
+   }
+   function showInfoWindow(evt){
+       evt.stopPropagation();
+       var geoPt = evt.mapPoint;
+       var normalizedVal = new esri.geometry.xyToLngLat(geoPt.x, geoPt.y);
+       var str=normalizedVal[0]+","+normalizedVal[1];
+       $('#editcollecttxt').html(str);
+       // console.info(str);
+       if ($('#editcollecttxt').html()!="") {
+           $('#BtnSavePoints').attr('disabled',false);
+       }
+       // map.infoWindow.setTitle("新标注");
+       //map.infoWindow.setContent("<b>X坐标: </b>" + normalizedVal[0].toFixed(4)
+       // + "<br><b>Y坐标: </b>" + normalizedVal[1].toFixed(4)
+       // + "<table></table>"
+       //     + "<br><input type='button' value='添加广告' onclick='map.infoWindow.hide();add(" + geoPt.x + "," + geoPt.y + ")'>"
+
+       //);
+       //map.infoWindow.show(evt.mapPoint,map.getInfoWindowAnchor(evt.screenPoint));
+   }
+
+   var strxy1="";    //存储多次绘画的总经纬度集合
+   //画图
+   function doDraw(geometry)
+   {
+       var arr=[];       //存多次画线的经纬度集合，arr[0]为第一次，arr[1]为第二次，..........
+       var drawtype="";
+       var strxy="";
+       //根据图形的类型定义显示样式
+       switch (geometry.type)
+       {
+           case "point":
+               drawtype="0";
+               var symbol = new esri.symbol.SimpleMarkerSymbol(esri.symbol.SimpleMarkerSymbol.STYLE_CIRCLE, 10, new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([255,0,0]), 1), new dojo.Color("red"));
+               map.graphics.clear();
+               break;
+           case "polyline":
+               drawtype="1";
+               var symbol=   new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([255,0,0]),3);
+               break;
+           case "polygon":
+               drawtype="2";
+               var symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_DASHDOTDOT,new dojo.Color([255, 0, 0]), 3), new dojo.Color([255, 255, 0, 0.25]));
+               //var symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID, new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([0,0,0]), 1), new dojo.Color([255,0,0,0.25]));
+               break;
+       }
+       //把绘制的图形添加到map.graphics进行显示
+       //map.graphics.clear();
+       var graphic = new esri.Graphic(geometry, symbol);
+       if (drawtype=="0") {//点
+           var normalizedVal = new esri.geometry.xyToLngLat(geometry.x, geometry.y);//google地图转换坐标
+           strxy=normalizedVal[0]+","+normalizedVal[1];
+       }
+       else if (drawtype=="2") {//面
+           //console.info(geometry.rings[0]);
+           var rings=geometry.rings[0];
+           for (var i = 0; i < rings.length; i++) {
+               normalizedVal = new esri.geometry.xyToLngLat(parseFloat(rings[i][0]).toFixed(6).toString(), parseFloat(rings[i][1]).toFixed(6).toString());
+               strxy += parseFloat(normalizedVal[0]).toFixed(6).toString() + "," + parseFloat(normalizedVal[1]).toFixed(6).toString() +"|";
+               //strxy += normalizedVal[0] + "," + normalizedVal[1] + "|";
+           }
+       }
+       else {//线
+           var paths=geometry.paths[0];
+           for (var i = 0; i < paths.length; i++) {
+               var  normalizedVal = new esri.geometry.xyToLngLat(parseFloat(paths[i][0]).toFixed(6).toString(), parseFloat(paths[i][1]).toFixed(6).toString());//google地图转换坐标
+               strxy += parseFloat(normalizedVal[0]).toFixed(6).toString() + "," + parseFloat(normalizedVal[1]).toFixed(6).toString() +"|";
+               //strxy += normalizedVal[0] + "," + normalizedVal[1] + "|";
+           }
+       }
+       //$('#editcollecttxt').text('');
+       //$('#editcollecttxt').text(strxy);
+       map.graphics.add(graphic);
+       arr.push(strxy);    //存多次画线的经纬度集合，arr[0]为第一次，arr[1]为第二次，..........
+       for (var i = 0; i < arr.length; i++) {
+           strxy1 += arr[i] + ";" ;
+       }
+       var str=$('#editcollecttxt2').text();
+       $('#editcollecttxt').text(strxy1+str);//当在修改页面，添加数据时,保留之前的数据
+       //计算线面的长度和面积
+       GetLenthorArea(geometry,"");
+
+   }
+
+   var firstzb1="";
+   var secondzb1="";
+   var zb1="";
+   //修改时量算面积和长度方法：
+   function GetLenthorAreaMdy(geometry,type) {//画图完毕后计算距离或者面积 type 1 为无需转经纬度坐标
+       var unit="";
+       if (geometry.type == "polyline") {
+           var geo = new esri.geometry.webMercatorToGeographic(geometry);//投影坐标转84经纬度
+           if (configMaptype=="2"||type=="1") {//2 为经纬度坐标的地图
+               geo=geometry;
+           }
+           var Length =new esri.geometry.geodesicLengths([geo],esri.Units.METERS);
+
+           var LengthStr=Length.toString();
+           var tt1=LenthorAreaStr;
+           var array1=tt1.split(';');
+           for (var i in array1 ) {
+               if (LengthStr==array1[i].toString()) {
+                   zb1=LengthStr;
+               }
+           }
+           if (zb1=="") {
+               firstzb1=LengthStr;
+           }
+           else{
+               firstzb1=zb1;
+           }
+           secondzb1=LengthStr;
+           var jwdstr1="";
+           var str="0";
+           for(var i=0;i<array1.length;i++){
+               if (array1[i]!=null&&array1[i]!="") {
+                   if (array1[i].toString()==firstzb1.toString()) {
+                       jwdstr1+=secondzb1+";";
+                       zb1=secondzb1;
+                       str=parseFloat(str)+parseFloat(secondzb1);
+                       str=parseFloat(str).toFixed(2);
+                   }
+                   else{
+                       jwdstr1+=array1[i].toString()+";";
+                       str=parseFloat(str)+parseFloat(array1[i].toString());
+                       str=parseFloat(str).toFixed(2);
+                   }
+               }
+           }
+           LenthorAreaStr=jwdstr1;
+           map.infoWindow.setTitle("距离测量");
+           unit="米";
+           //str=parseFloat(parseFloat(str)+parseFloat(Length)).toFixed(2);
+           map.infoWindow.setContent("当前线段长度： <strong>" +  parseFloat(LengthStr).toFixed(2) + unit+"</strong>"+"<br>总长度： <strong>" +  str + unit+"</strong>");
+           map.infoWindow.show();
+       }
+       else if(geometry.type == "polygon") {
+           var geo =new esri.geometry.webMercatorToGeographic(geometry);
+           if (configMaptype=="2"||type=="1") {
+               geo=geometry;
+           }
+           var Area = new esri.geometry.geodesicAreas([geo], esri.Units.SQUARE_METERS);
+           var AreaStr1=parseFloat(Area/10000).toFixed(2);
+           var AreaStr=(Area/10000).toString();
+           var tt1=LenthorAreaStr;
+           var array1=tt1.split(';');
+           for (var i in array1 ) {
+               if (AreaStr==array1[i].toString()) {
+                   zb1=AreaStr;
+               }
+           }
+           if (zb1=="") {
+               firstzb1=AreaStr;
+           }
+           else{
+               firstzb1=zb1;
+           }
+           secondzb1=AreaStr;
+           var jwdstr1="";
+           var str="0";
+           for(var i=0;i<array1.length;i++){
+               if (array1[i]!=null&&array1[i]!="") {
+                   if (array1[i].toString()==firstzb1.toString()) {
+                       jwdstr1+=secondzb1+";";
+                       zb1=secondzb1;
+                       str=parseFloat(str)+parseFloat(secondzb1);
+                       str=parseFloat(str).toFixed(2);
+                   }
+                   else{
+                       jwdstr1+=array1[i].toString()+";";
+                       str=parseFloat(str)+parseFloat(array1[i].toString());
+                       str=parseFloat(str).toFixed(2);
+                   }
+               }
+           }
+           LenthorAreaStr=jwdstr1;
+           map.infoWindow.setTitle("面积测量");
+           unit="公顷";
+           //if (parseFloat(Area)<1000000) {
+           //    map.infoWindow.setContent("面积： <strong>" + parseFloat(Area).toFixed(2) + "平方米 </strong>");
+           //}
+           //else
+           //{
+           //    map.infoWindow.setContent("面积： <strong>" +  parseFloat(Area/1000000).toFixed(2) + "平方公里 </strong>");
+           //}
+           map.infoWindow.setContent("当前所选面积： <strong>" + parseFloat(Area/10000).toFixed(2) + unit+"</strong>"+"<br>总面积： <strong>" + str + unit+"</strong>");
+           map.infoWindow.show();
+       }
+       // create a text symbol
+       $('#MjACdtxt').text(str);//隐藏面积和长度
+       var font = new esri.symbol.Font("20px", esri.symbol.Font.STYLE_NORMAL, esri.symbol.Font.VARIANT_NORMAL, esri.symbol.Font.WEIGHT_BOLDER);
+       var textSymbol = new esri.symbol.TextSymbol("当前所选面积："+AreaStr1 + unit,font, new esri.Color("yellow"));
+       var labelPointGraphic = new  esri.Graphic(geometry, textSymbol);
+       // add the label point graphic to the map
+       graphicLayer.clear();
+       graphicLayer.add(labelPointGraphic);
+       map.addLayer(graphicLayer);
+   }
+
+
+   //量算面积和长度方法：
+   var str="0";
+   var LenthorAreaStr="";
+   function GetLenthorArea(geometry,type) {//画图完毕后计算距离或者面积 type 1 为无需转经纬度坐标
+       var unit="";
+
+       if (geometry.type == "polyline") {
+           var geo = new esri.geometry.webMercatorToGeographic(geometry);//投影坐标转84经纬度
+           if (configMaptype=="2"||type=="1") {//2 为经纬度坐标的地图
+               geo=geometry;
+           }
+           var Length =new esri.geometry.geodesicLengths([geo],esri.Units.METERS);
+           map.infoWindow.setTitle("距离测量");
+           unit="米";
+           str=parseFloat(parseFloat(str)+parseFloat(Length)).toFixed(2);
+           LenthorAreaStr=LenthorAreaStr+";"+Length;
+           //if (parseFloat(Length)<1000) {
+           //    map.infoWindow.setContent("距离： <strong>" + parseFloat(Length).toFixed(2)+ "米 </strong>");
+           //}
+           //else
+           //{
+           //    map.infoWindow.setContent("距离： <strong>" +  parseFloat(Length/1000).toFixed(2)+ "千米 </strong>");
+           //}
+           map.infoWindow.setContent("总长度： <strong>" +  str + unit+"</strong>");
+           map.infoWindow.show();
+       }
+       else if(geometry.type == "polygon") {
+           var geo =new esri.geometry.webMercatorToGeographic(geometry);
+           if (configMaptype=="2"||type=="1") {
+               geo=geometry;
+           }
+           var Area = new esri.geometry.geodesicAreas([geo], esri.Units.SQUARE_METERS);
+           map.infoWindow.setTitle("面积测量");
+           unit="公顷";
+           str=parseFloat(parseFloat(str)+parseFloat(Area/10000)).toFixed(2);
+           LenthorAreaStr=LenthorAreaStr+";"+(Area/10000);
+           var Area1=parseFloat(Area/10000).toFixed(2);
+           //if (parseFloat(Area)<1000000) {
+           //    map.infoWindow.setContent("面积： <strong>" + parseFloat(Area).toFixed(2) + "平方米 </strong>");
+           //}
+           //else
+           //{
+           //    map.infoWindow.setContent("面积： <strong>" +  parseFloat(Area/1000000).toFixed(2) + "平方公里 </strong>");
+           //}
+           map.infoWindow.setContent("总面积： <strong>" + str + unit+"</strong>");
+           map.infoWindow.show();
+           var font = new esri.symbol.Font("20px", esri.symbol.Font.STYLE_NORMAL, esri.symbol.Font.VARIANT_NORMAL, esri.symbol.Font.WEIGHT_BOLDER);
+           var textSymbol = new esri.symbol.TextSymbol("当前所选面积："+Area1 + unit,font, new esri.Color("yellow"));
+       }
+       // create a text symbol
+       $('#MjACdtxt').text(str);//隐藏面积和长度
+       var labelPointGraphic = new  esri.Graphic(geometry, textSymbol);
+       // add the label point graphic to the map
+       graphicLayer.clear();
+       graphicLayer.add(labelPointGraphic);
+       map.addLayer(graphicLayer);
+   }
+
+   //获取点根据区域
+   function getPointByQy()
+   {
+       var item = document.getElementById("location");
+       var text = item.options[item.selectedIndex].text;
+       var addressname=text.replace('--','').replace('--','');
+       $.ajax({
+           type: "Post",
+           url: "/MapCommon/GetLngLatAjax",
+           data: { address: addressname},
+           dataType: "json",
+           success: function (obj) {
+               if (obj != null && obj.Success) {
+                   map.graphics.clear();
+                   graphicLayer.clear();
+                   var lnglat=obj.Msg;
+                   if ( $.trim(lnglat)!="") {
+                       var arr=lnglat.split(',');
+                       if ($.trim(arr[0])!=""&& $.trim(arr[1])!="") {
+                           ptPosition(arr[0],arr[1]);
+                       }
+                       else
+                       {
+                           layer.msg("经纬度有错误");
+                       }
+                   }
+               }
+               else
+               {
+                   layer.msg("未查询到该地经纬度");
+               }
+           }
+       });
+   }
+
+   function getPointByAdr(addressname)
+   {
+       $.ajax({
+           type: "Post",
+           url: "/MapCommon/GetLngLatAjax",
+           data: { address: addressname},
+           dataType: "json",
+           success: function (obj) {
+               if (obj != null && obj.Success) {
+                   map.graphics.clear();
+                   graphicLayer.clear();
+                   var lnglat=obj.Msg;
+                   if ( $.trim(lnglat)!="") {
+                       $('#editcollecttxt').text(lnglat);
+                       var arr=lnglat.split(',');
+                       if ($.trim(arr[0])!=""&& $.trim(arr[1])!="") {
+                           ptPosition(arr[0],arr[1]);
+                       }
+                       else
+                       {
+                           layer.msg("经纬度有错误");
+                       }
+                   }
+               }
+               else
+               {
+                   layer.msg("未查询到该地经纬度");
+               }
+           }
+       });
+   }
+
+   //搜索框 百度地图js调用
+
+   function G(id) {
+       return document.getElementById(id);
+   }
+
+   var BDmap = new BMap.Map("map");
+   //BDmap.centerAndZoom("北京",12);                   // 初始化地图,设置城市和地图级别。
+   var ac = new BMap.Autocomplete(    //建立一个自动完成的对象
+   {"input" : "suggestId"
+   ,"location" : BDmap
+   });
+
+   ac.setLocation('@curaddress');
+   ac.addEventListener("onhighlight", function(e) {  //鼠标放在下拉列表上的事件
+       var str = "";
+       var _value = e.fromitem.value;
+       var value = "";
+       if (e.fromitem.index > -1) {
+           value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+       }
+       str = "FromItem<br />index = " + e.fromitem.index + "<br />value = " + value;
+
+       value = "";
+       if (e.toitem.index > -1) {
+           _value = e.toitem.value;
+           value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+       }
+       str += "<br />ToItem<br />index = " + e.toitem.index + "<br />value = " + value;
+       G("searchResultPanel").innerHTML = str;
+   });
+
+   var myValue;
+   ac.addEventListener("onconfirm", function(e) {    //鼠标点击下拉列表后的事件
+       var _value = e.item.value;
+       myValue = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+       G("searchResultPanel").innerHTML ="onconfirm<br />index = " + e.item.index + "<br />myValue = " + myValue;
+
+       setPlace();
+   });
+
+   function setPlace(){
+       //   map.graphics.clear();
+       function myFun(){
+           var pp = local.getResults().getPoi(0).point;    //获取第一个智能搜索的结果
+           var lng=pp.lng;
+           var lat=pp.lat;
+           if(lng!=""  && lat!=""){
+               getLocaCollectPontByBaidu(lng,lat);   //添加标注
+           }else{
+               layer.msg("未查询到该地经纬度");
+           }
+       }
+       var local = new BMap.LocalSearch(BDmap, { //智能搜索
+           onSearchComplete: myFun
+       });
+       local.search(myValue);
+   }
+</script>
+<div data-dojo-type="dijit.layout.ContentPane" id="map" data-dojo-props="region:'center'">
+    <p id="editcollecttxt" style="display:none"></p>
+    <p id="editcollecttxt1" style="display:none"></p>
+    <p id="editcollecttxt2" style="display:none"></p>
+    <p id="MjACdtxt" style="display:none"></p>
+    <div class="rightNav">
+        @*<input id="BtnSavePoints" type="button" value="保存" disabled="disabled" onclick="SavePoints()" />*@
+        @*<label style="color:yellow">区域：</label><select id="location" onchange="getPointByQy()">
+                @Html.Raw(ViewBag.vdOrg)
+            </select>*@
+
+        <div id="l-map"></div>
+
+        <label style="color:yellow">地名：</label><input type="text" id="suggestId" size="2F0" value="" style="width:230px;" />
+        <div id="searchResultPanel" style="border:1px solid #C0C0C0;width:200px;height:auto; display:none;"></div>
+        <input id="Point" type="button" value=" 点 " onclick="tb.activate(esri.toolbars.Draw.POINT);map.hideZoomSlider();" />
+        <input id="Line" type="button" value=" 线 " onclick="tb.activate(esri.toolbars.Draw.FREEHAND_POLYLINE);map.hideZoomSlider();" />
+        <input id="Polygon" type="button" value="面 " onclick="tb.activate(esri.toolbars.Draw.FREEHAND_POLYGON);map.hideZoomSlider();" />
+        <input id="Button5" type="button" value="清 除" onclick="map.graphics.clear();$('#editcollecttxt').text('');strxy1='';str='0';" />
+        <input id="BtnRefresh" type="button" value="刷新" onclick=" window.location.reload();" />
+        <input id="dakai" type="button" value="打开等高线" style="" />
+        <input id="guanbi" type="button" value="关闭等高线" style="display:none" />
+        @*<input id="BtnReturn" type="button" value="返回" onclick="history.go(-1);" />
+            &nbsp;&nbsp;*@
+    </div>
+
+    <p id="info2" class="bottomNav" style="color:white"></p>
+    @*地图切换*@
+    <div class="pub_path1" id="switchmap" style="position: absolute; bottom: 80px; right: 20px; z-index: 1100;">
+        <div class="hoverType">
+            <div class="map_top">
+                <div class="vecType" id="imgtype"></div>
+            </div>
+            <div class="map_bom" id="imgname">地图</div>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,73 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutIndexNoMenu.cshtml";
+}
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+    <div data-options="region:'center'" title="" style=" border: none;">
+
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home">
+                        <input type="button" value="打印" onclick="Print()" />
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" class="LayoutCenterBG">
+
+                <div class="easyui-layout" id="supexport" data-options="fit:true" style=" border:0;">
+                    <div class="divMan" style="margin-left:5px;margin-top:8px;text-align:center">
+                        @Html.Raw(@ViewBag.printexport)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script language="javascript">
+    //function Print() {
+    //    var newstr = document.all.item("supexport").innerHTML;
+    //    document.body.innerHTML = newstr;
+    //    window.print();
+
+    //    return false;
+    //}
+
+    var hkey_root, hkey_path, hkey_key;
+    hkey_root = "HKEY_CURRENT_USER";
+    hkey_path = "\\Software\\Microsoft\\Internet Explorer\\PageSetup\\";
+
+
+    //网页打印时清空页眉页脚
+    function pagesetup_null() {
+        try {
+            var RegWsh = new ActiveXObject("WScript.Shell")
+            hkey_key = "header"
+            RegWsh.RegWrite(hkey_root + hkey_path + hkey_key, "")
+            hkey_key = "footer"
+            RegWsh.RegWrite(hkey_root + hkey_path + hkey_key, "")
+        } catch (e) { }
+    }
+    function pagesetup_default() {
+        try {
+            var RegWsh = new ActiveXObject("WScript.Shell")
+            hkey_key = "header"
+            RegWsh.RegWrite(hkey_root + hkey_path + hkey_key, "&w&b页码，&p/&P")
+            hkey_key = "footer"
+            RegWsh.RegWrite(hkey_root + hkey_path + hkey_key, "&u&b&d")
+        } catch (e) {
+        }
+    }
+
+    function Print() {
+        try {
+            pagesetup_null();
+            newwin = window.open("", "newwin", "height=" + window.screen.height + ",width=" + window.screen.width + ",toolbar=no,scrollbars=auto,menubar=no");
+            newwin.document.body.innerHTML = document.all.item("supexport").innerHTML;
+            newwin.window.print();
+            //newwin.window.close();
+            pagesetup_default();
+        } catch (e) { }
+    }
+</script>

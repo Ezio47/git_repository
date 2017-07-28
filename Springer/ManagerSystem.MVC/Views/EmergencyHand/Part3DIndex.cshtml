@@ -1,0 +1,46 @@
+﻿@{
+    ViewBag.Title = "Part3DIndex";
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+}
+
+<script src="~/Scripts/skyline/3dMap.js"></script>
+
+<div id="cc" class="easyui-layout" style="width:100%;height:90%;">
+
+    <div data-options="region:'center'" title="" style=" border:none; width:100%;height:100%;">
+        <div class="easyui-layout" data-options="fit:true" style="border:0;">
+            <div data-options="region:'south'" style="height:10px;">
+                <div id="xx" style="padding-left:50px;position:absolute"></div>
+                <div id="sbxx" style="padding-left:50px;text-align:center">坐标信息暂未获得</div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border:none; background:#ddceee;width:100%;height:100%;">
+                <div class="indexIframe" style="overflow:auto;width:100%;height:100%;">
+                    <div style="text-align:left;width:100%;">
+                        <ul>
+                            <li style="float:left" onclick="excCommand(1057,0)"><img src="~/Images/skyline/nav/c2.gif" /></li>
+                            <li style="float:left" onclick="excCommand(1035, 0)"><img src="~/Images/skyline/ioc/测量距离.png" /></li>
+                            <li style="float:left" onclick="excCommand(1165, 0)"><img src="~/Images/skyline/ioc/测量面积.png" /></li>
+                            <li style="float:left" onclick="excCommand(2217, 0)"><img src="~/Images/skyline/ioc/坡度分析.png" /></li>
+                            <li style="float:left" onclick="excCommand(2216, 0)"><img src="~/Images/skyline/ioc/地形分析.png" /></li>
+                            <li style="float:left" onclick="excCommand(1067,0)"><img src="~/Images/skyline/nav/c7.gif" /></li>
+                            <li style="float:left" onclick="selectMove(1)"><img src="~/Images/skyline/ioc/选中.png" /></li>
+                        </ul>
+                    </div>
+                    <div style="text-align:right;padding-right:10px">
+                        <ul>
+
+                            <li style="float:right" onclick="qrueyHTML_tckz()"><img src="~/Images/skyline/ioc/图层控制.png" /></li>
+                            <li style="float:right" onclick="qrueyHTML_qr()"><img src="~/Images/skyline/ioc/图层查询.png" /></li>
+                            <li style="float:right" onclick="qrueyHTML_dw()"><img src="~/Images/skyline/ioc/坐标定位.png" /></li>
+                        </ul>
+                    </div>
+                    <div id="sgmap" style="width:100%;height:100%;z-index:-1;background-color:#EBEFEE;">
+                        <object id="TerraExplorer3DWindow" style="float:left;width:100%;height:100%;border:0px solid black;z-index:-1;" classid="CLSID:3a4f9192-65a8-11d5-85c1-0001023952c1" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>

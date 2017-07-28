@@ -1,0 +1,151 @@
+﻿@using ManagerSystem.MVC.HelpCom;
+@using ManagerSystemClassLibrary;
+@using ManagerSystemSearchWhereModel;
+@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+    //首页
+    var result = T_SYS_MENUCls.getT_SYS_MENUModel(new T_SYS_MENU_SW { UID = SystemCls.getUserID(), SYSFLAG = ConfigCls.getSystemFlag(), MenuCodeList = "008,013" });
+    var msy = result.Where(p => p.MENUCODE == "008").FirstOrDefault();//获取该页面对应的菜单信息
+    //三维护林员
+    var online = ManagerSystemClassLibrary.ConfigCls.getInLineColor();
+    var outline = ManagerSystemClassLibrary.ConfigCls.getOutLineColor();
+    var outrail = ManagerSystemClassLibrary.ConfigCls.getOutRailColor();
+}
+@section Header{
+    <link href="~/Content/MapStyle.css" rel="stylesheet" />
+    <script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+    <script src="~/Scripts/skyline/3DMapTotal.js"></script>
+    <script src="~/Scripts/jquery.snippet.js"></script>
+}
+<div id="divpanel" class="easyui-layout" style="width:100%;height:100%;" data-options="fit:true">
+    <div id="menuediv" data-options="region:'west',split:true,hideCollapsedContent:false" title="" style="width:330px;overflow-x:hidden;">
+        <iframe id="hlyid" src="/Home/HLY3D" scrolling="auto" style="height: 100%; width: 100%; overflow-x: hidden; float: left;"></iframe>
+        <iframe id="syzrid" src="/Home/YJJC3D" scrolling="auto" style="height: 100%; width: 100%; overflow-x: hidden; float: left; display: none; "></iframe>
+        <iframe id="yjczid" src="/Home/YJZH3D" scrolling="auto" style="height: 100%; width: 100%; overflow-x: hidden; float: left; display: none; "></iframe>
+        <iframe id="gylid" src="/Home/GYL3D" scrolling="auto" style="height: 100%; width: 100%; overflow-x: hidden; float: left; display: none; "></iframe>
+    </div>
+    <div data-options="region:'center'" title="" style=" border: none; background:#f5f5f5; padding:0px 0px 0px 0px;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'south'" style="height:20px;">
+                <div style="text-align: center">
+                    <input type="button" id="CenterX" value="" style="display:none">
+                    <input type="button" id="CenterY" value="" style="display:none">
+                    <input type="button" id="CenterZ" value="" style="display:none">
+                    <input type="hidden" id="TreeData" value="">
+                    <input type="hidden" id="AllNAME" value="@ViewBag.AllNAME">
+                    <input type="hidden" id="LAYERNAME" value="@ViewBag.LAYERNAME">
+                    <input type="hidden" id="DEFAULTCH" value="@ViewBag.DEFAULTCH">
+                    <input type="hidden" id="LAYERID" value="@ViewBag.LAYERID">
+                    <input type="button" id="xcenter" value="@ViewBag.xcenter" style="display:none">
+                    <input type="button" id="ycenter" value="@ViewBag.ycenter" style="display:none">
+                    <input type="button" id="scale" value="@ViewBag.scale" style="display:none">
+                    <div id="sbxx" style="padding-left:290px;text-align:center;float:left">坐标信息暂未获得</div>
+                    <img id="ThreeD" src="~/Images/tools.png" style="float: right; height:18px" title="三维工具" onclick="MapToolsPopUrl('http://'+window.location.host+'/EmergencyHand/MapToolsIndex')" />
+                    <img id="ThreeD" src="~/Images/tckz.png" style="float: right; height:18px" title="图层" onclick="qrueyHTML_tckz()" />
+                    <img id="ThreeD" src="~/Images/draw.png" style="float: right; height:18px" title="绘图" onclick="qrueyHTML_draw()" />
+                </div>
+            </div>
+            <div id="sgmap" data-options="region:'center'" title="" style="background:#ddceee;overflow:hidden">
+                <object id="TerraExplorer3DWindow" style="float:left;width:100%;height:100%;border:0px solid black;" classid="CLSID:3a4f9192-65a8-11d5-85c1-0001023952c1" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var type = 0;
+    //转到二维护林员
+    $("#menuTop_030").click(function () {
+        var CenterX = $("#CenterX").val();
+        var CenterY = $("#CenterY").val();
+        var CenterZ = $("#CenterZ").val();
+        window.location.href = "/Home/Total2DIndex?CenterX=" + CenterX + "&CenterY=" + CenterY + "&CenterZ=" + CenterZ;
+    })
+
+    $(function () {
+        setUrl();//设定url
+        MapToolsPopUrl('http://' + window.location.host + "/EmergencyHand/MapToolsIndex");
+    });
+
+    function MapToolsPopUrl(url) {
+        var popurl = url;
+        var swidth = document.documentElement.clientWidth - 450;
+        showPopuopByUrl(" ", popurl, swidth, 20, 72, 485);
+    }
+
+    //显示护林员
+    function showHlyFun() {
+        type = 2;
+        $('#hlyid').show();
+        $('#yjczid').hide();
+        $('#syzrid').hide();
+        $('#gylid').hide();
+        $('#menuTop_018').removeClass("LiCur").addClass("LiDefault");//首页
+        $('#menuTop_020').removeClass("LiDefault").addClass("LiCur");//护林员
+        $('#menuTop_012').removeClass("LiCur").addClass("LiDefault");//应急处置
+        $('#menuTop_017').removeClass("LiCur").addClass("LiDefault");//公益林
+        
+    }
+    //应急处置
+    function showYjczFun() {
+        $('#hlyid').hide();
+        $('#syzrid').hide();
+        $('#yjczid').show();
+        $('#gylid').hide();
+        $('#menuTop_018').removeClass("LiCur").addClass("LiDefault");//首页
+        $('#menuTop_012').removeClass("LiDefault").addClass("LiCur");//应急处置
+        $('#menuTop_020').removeClass("LiCur").addClass("LiDefault");//护林员
+        $('#menuTop_017').removeClass("LiCur").addClass("LiDefault");//公益林
+    }
+    //主首页
+    function showSyzrFun() {
+        $('#hlyid').hide();
+        $('#yjczid').hide();
+        $('#syzrid').show();
+        $('#gylid').hide();
+        $('#menuTop_018').removeClass("LiDefault").addClass("LiCur");//首页
+        $('#menuTop_020').removeClass("LiCur").addClass("LiDefault");//护林员
+        $('#menuTop_012').removeClass("LiCur").addClass("LiDefault");//应急处置
+        $('#menuTop_017').removeClass("LiCur").addClass("LiDefault");//公益林
+    }
+    //公益林
+    function showGylFun() {
+        $('#gylid').show();
+        $('#hlyid').hide();
+        $('#yjczid').hide();
+        $('#syzrid').hide();
+        $('#menuTop_018').removeClass("LiCur").addClass("LiDefault");//首页
+        $('#menuTop_020').removeClass("LiCur").addClass("LiDefault");//护林员
+        $('#menuTop_012').removeClass("LiCur").addClass("LiDefault");//应急处置
+        $('#menuTop_017').removeClass("LiDefault").addClass("LiCur");//公益林
+    }
+    //设定跳转url
+    function setUrl() {
+        var type = getQueryString("type");
+        if (type == "0") {
+            showHlyFun();
+        } else if (type == "1") {
+            showYjczFun();
+        } else if (type == "2") {
+            showSyzrFun();
+        } else if (type == "3") {
+            showGylFun();
+        }
+    }
+    //common
+    function menuOclick(id) {
+        $(".ulhlytree>li:eq(" + id + ")>label").click();
+    }
+    function menuEvent(id) {
+        var $parent_li, $ul, $span;
+        $(".ulhlytree li>label").click(function () {
+            $span = $(this);
+            $parent_li = $span.parent();
+            $parent_li.siblings().children("ul").slideUp();
+            $ul = $span.next("ul");
+            $ul.slideToggle();
+        });
+        $(".ulhlytree>li:eq(" + id + ")>label").click();
+    }
+
+</script>

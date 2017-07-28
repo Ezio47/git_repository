@@ -1,0 +1,68 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+}
+@model IEnumerable<ManagerSystem.MVC.Models.YJJCFireLevelModel>
+<script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        火险等级：
+                        <select id="firelevel">
+                            <option value="0">全部</option>
+                            <option value="5">五级</option>
+                            <option value="4">四级</option>
+                            <option value="3">三级</option>
+                            <option value="2">二级</option>
+                            <option value="1">一级</option>
+                        </select>
+                        时间：<input class="Wdate" type="text" id="txttime" onclick="WdatePicker()" style="width:110px;height:25px">
+                        <input type="button" class="searchBox_01 border_ty1" value="查询" onclick="SearchLevel()" />
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <div id="divmsg" class="divTable">
+                    <table cellpadding="0" cellspacing="0">
+                        <thead> <tr><th>区域</th><th>等级</th><th>时间</th></tr></thead>
+                        <tbody>
+                            @if (Model.Any())
+                            {
+                                foreach (var item in Model)
+                                {
+                                    <tr><td class="center">@item.AreaName</td><td class="center">@item.FireLevel</td><td class="center">@item.LevelDate</td></tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr><td colspan="3"><em>暂未查询到记录!</em></td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function SearchLevel() {
+        var level = $('#firelevel').val();//火险等级
+        var time = $('#txttime').val();//火险等级
+        $.ajax({
+            type: "Post",
+            url: "/BaseCommon/GetFireLevel",
+            data: { level: level, dt: time },
+            dataType: "json",
+            success: function (data) {
+                if (data != null && data.Success) {
+                    $('#divmsg').html('');
+                    $('#divmsg').html(data.Msg);
+                }
+            }
+        });
+    }
+</script>

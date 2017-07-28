@@ -1,0 +1,179 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+}
+@section Header{
+}
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        单位名称：<select id="tbxORGNO" onchange="Query()"> @Html.Raw(@ViewBag.vdOrg)  </select>&nbsp;&nbsp;
+                        状态：<select id="tbxIsOpenOA">@Html.Raw(@ViewBag.IsOpenOA) </select>&nbsp;&nbsp;
+                        姓名：<input id="tbxUserName" type="text" value="@ViewBag.UserName" />
+                        <input type="button" value="查 询" onclick="Query()" class="btnSearchCss" />&nbsp;&nbsp;
+                        <input id="btnOpen" type="button" value="开 通" onclick="Open()" class="btnCss" style="display:none;" />&nbsp;&nbsp;
+                        <input id="btnClose" type="button" value="禁 用" onclick="Close()" class="btnCss" style="display:none;" /> &nbsp;&nbsp;
+                        <font color="red">备注： 初始密码：@ViewBag.OAPWD</font>
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <div class="divTable">
+                    @Html.Raw(ViewBag.UserList)
+                </div>
+            </div>
+            <div data-options="region:'south'" title="" style=" height:40px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
+                @Html.Raw(@ViewBag.PagerInfo)
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var blnOpen = '@ViewBag.Open';
+    var blnClose = '@ViewBag.Close';
+    if (blnOpen == "1") {
+        document.getElementById('btnOpen').style.display = "";
+    }
+    if (blnClose == "1") {
+        document.getElementById('btnClose').style.display = "";
+    }
+    //查询
+    function Query() {
+        $.ajax({
+            url: '/System/OAUserListQuery',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: {
+                PageSize: document.getElementById("selPageSize").value,
+                ORGNO: document.getElementById("tbxORGNO").value,
+                UserName: document.getElementById("tbxUserName").value,
+                IsOpenOA: document.getElementById("tbxIsOpenOA").value,
+                Page: document.getElementById("selPage").value,
+            },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    window.location.assign(ar.Url);
+                    var _len = $("#OAUserTable tr").length - 1; //行数
+                    if (_len <= 0) {
+                        document.getElementById("tbxUserIDALL").disabled = true;
+                        document.getElementById("btnOpen").disabled = true;
+                        document.getElementById("btnClose").disabled = true;
+                    }
+                }
+                else {
+                    alert(ar.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                alert('登录异常');
+            }
+        });
+    }
+    //勾选
+    function selectall(v, c) {
+        var _len = $("#OAUserTable tr").length - 1;//行数
+        if (_len > 0) {
+            if (v == "ALL") {
+                for (var i = 0; i < _len; i++) {
+                    document.getElementById('tbxUserID' + i).checked = c;
+                }
+            }
+        }
+    }
+    //开通OA账号
+    function Open() {
+        var UserIDList = $("input:checkbox[name='tbxUserID']:checked").map(function (index, elem) { return $(elem).val(); }).get().join(',');
+        if (UserIDList.length > 0) {
+            $.ajax({
+                url: '/System/OAUserOpen',
+                timeout: 10000, //10秒后超时，如果为0则永不超时
+                data: { ORGNO: document.getElementById("tbxORGNO").value, UserIDList: UserIDList, Method: 'Open' },
+                type: 'POST',
+                success: function (data, ioArgs) {
+                    var ar = eval('(' + data + ')');
+                    if (ar.Success) {
+                        layer.alert(ar.Msg, { icon: 6 });
+                        Query()
+                    }
+                    else {
+                        layer.msg(ar.Msg);
+                    }
+                },
+                error: function (err, ioArgs) {
+                    layer.msg("系统异常!");
+                }
+            });
+        }
+        else {
+            var _len = $("#OAUserTable tr").length - 1;//行数
+            if (_len <= 0) {
+                layer.msg("没有可开通的账号!");
+            }
+            else {
+                layer.msg("请选择要开通的账号!");
+            }
+        }
+    }
+    //禁用OA账号
+    function Close() {
+        var UserIDList = $("input:checkbox[name='tbxUserID']:checked").map(function (index, elem) { return $(elem).val(); }).get().join(',');
+        if (UserIDList.length > 0) {
+            $.ajax({
+                url: '/System/OAUserClose',
+                timeout: 10000, //10秒后超时，如果为0则永不超时
+                data: { UserIDList: UserIDList },
+                type: 'POST',
+                success: function (data, ioArgs) {
+                    var ar = eval('(' + data + ')');
+                    if (ar.Success) {
+                        layer.alert(ar.Msg, { icon: 6 });
+                        Query()
+                    }
+                    else {
+                        layer.msg(ar.Msg);
+                    }
+                },
+                error: function (err, ioArgs) {
+                    layer.msg("系统异常!");
+                }
+            });
+        }
+        else {
+            var _len = $("#OAUserTable tr").length - 1;//行数
+            if (_len <= 0) {
+                layer.msg("没有可禁用的账号!");
+            }
+            else {
+                layer.msg("请选择要禁用的账号!");
+            }
+        }
+    }
+    //初始化密码
+    function InitPwd(userId, pwd) {
+        $.ajax({
+            url: '/System/OAUserInitPwd',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: { UserId: userId, Pwd: pwd },
+            type: 'POST',
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    layer.alert(ar.Msg, { icon: 6 });
+                    Query()
+                }
+                else {
+                    layer.msg(ar.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("系统异常!");
+            }
+        });
+    }
+</script>

@@ -1,0 +1,344 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+}
+@section Header{
+}
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+    @*<div data-options="region:'west'" title="" style=" width:220px; border: none;">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>*@
+    <div data-options="region:'center'" title="" style=" border: none; ">
+
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="homeUL">
+                        <input type="button" value="保存" onclick="Manager()" id="btnSave" style="display:none;" class="btnSaveCss" />
+                        @*<input type="button" value="返回" onclick="javascript: history.go(-1);" class="btnReturnCss" />*@
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; ">
+
+                <div class="divMan">
+                    <table cellpadding="0" cellspacing="0">
+
+                        <tr class='row1'>
+                            <td style="width:100px;">
+                                单位名称:
+                            </td>
+                            <td>
+                                <select id="tbxBYORGNO">
+                                    @Html.Raw(@ViewBag.vdOrg)
+                                </select>
+                            </td>
+                            <td style="width:100px;">
+                                设备编号:
+                            </td>
+                            <td>
+                                <input id="tbxTTBH" type="text" value="" style="width:90%;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                型号:
+                            </td>
+                            <td>
+                                <input id="tbxXH" type="text" value="" style="width:90%;" />
+                            </td>
+                            <td>
+                                品牌:
+                            </td>
+                            <td>
+                                <input id="tbxPP" type="text" value="" style="width:90%;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                监控名称:
+                            </td>
+                            <td>
+                                <input id="tbxEMNAME" type="text" value="" style="width:90%;" />
+                            </td>
+                            <td>
+                                高程:
+                            </td>
+                            <td>
+                                <input id="tbxGC" type="text" value="" style="width:90%;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                经度:
+                            </td>
+                            <td>
+                                <input id="tbxJD" type="text" value="" style="width:90%;" />
+                            </td>
+                            <td>
+                                纬度:
+                            </td>
+                            <td>
+                                <input id="tbxWD" type="text" value="" style="width:60%;" />
+                                <input type="button" value="地图定位" onclick="setPoint()" class="btnMapLoaclCss" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                设备高度:
+                            </td>
+                            <td>
+                                <input id="tbxGD" type="text" value="" style="width:90%;" />
+                            </td>
+                            <td>
+                                最大监控距离:
+                            </td>
+                            <td>
+                                <input id="tbxJCJL" type="text" value="" style="width:90%;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                IP:
+                            </td>
+                            <td>
+                                <input id="tbxIP" type="text" value="" style="width:90%;" />
+                            </td>
+                            <td>
+                                端口:
+                            </td>
+                            <td>
+                                <input id="tbxPORT" type="text" value="" style="width:90%;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                登录名:
+                            </td>
+                            <td>
+                                <input id="tbxLOGINUSERNAME" type="text" value="" style="width:90%;" />
+                            </td>
+                            <td>
+                                密码:
+                            </td>
+                            <td>
+                                <input id="tbxUSERPWD" type="text" value="" style="width:90%;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                设备号:
+                            </td>
+                            <td>
+                                <input id="tbxOBJID" type="text" value="" style="width:90%;" />
+                            </td>
+                            <td>
+                                模板号:
+                            </td>
+                            <td>
+                                <input id="tbxTEMPLATEDID" type="text" value="" style="width:90%;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                设备类型:
+                            </td>
+                            <td>
+                                <select id="tbxTYPE">
+                                    <option value="0">海康视频</option>
+                                    <option value="1">森林眼视频</option>
+                                </select>
+                            </td>
+                            <td>
+                                地址:
+                            </td>
+                            <td >
+                                <input id="tbxADDRESS" type="text" value="" style="width:90%;" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/javascript">
+
+    if ('@ViewBag.T_Method' != 'See')
+        document.getElementById("btnSave").style.display = '';
+    $.ajax({
+        url: '/YJJC/GetMONITOR_INFOJson',
+        cache: false,
+        timeout: 10000, //10秒后超时，如果为0则永不超时
+
+        data: {
+            ID: '@ViewBag.T_ID'
+        },
+        success: function (data, ioArgs) {
+            var ar = eval('(' + data + ')');
+            if (ar.EMID != null) {
+
+                //document.getElementById("tbxEMID").value = ar.EMID;
+                document.getElementById("tbxTTBH").value = ar.TTBH;
+                document.getElementById("tbxBYORGNO").value = ar.BYORGNO;
+                document.getElementById("tbxJD").value = ar.JD;
+                document.getElementById("tbxWD").value = ar.WD;
+                document.getElementById("tbxEMNAME").value = ar.EMNAME;
+                document.getElementById("tbxGC").value = ar.GC;
+                document.getElementById("tbxADDRESS").value = ar.ADDRESS;
+                document.getElementById("tbxLOGINUSERNAME").value = ar.LOGINUSERNAME;
+                document.getElementById("tbxUSERPWD").value = ar.USERPWD;
+                document.getElementById("tbxIP").value = ar.IP;
+                document.getElementById("tbxXH").value = ar.XH;
+                document.getElementById("tbxPP").value = ar.PP;
+                document.getElementById("tbxGD").value = ar.GD;
+                document.getElementById("tbxJCJL").value = ar.JCJL;
+                document.getElementById("tbxOBJID").value = ar.OBJID;
+                document.getElementById("tbxTEMPLATEDID").value = ar.TEMPLATEDID;
+                document.getElementById("tbxPORT").value = ar.PORT;
+                $("#tbxTYPE").val(ar.TYPE);
+                if ('@ViewBag.T_Method' == "See") {
+                    document.getElementById('btnSave').style.display = 'none';
+                }
+                if ('@ViewBag.T_Method' == "Del") {
+                    Manager();
+                }
+            }
+        },
+        error: function (err, ioArgs) {
+            alert('登录异常');
+        }
+    });
+    function Manager() {
+        var name = $("#tbxEMNAME").val();
+        var t4 = $('#tbxJD').val();
+        var t5 = $('#tbxWD').val();
+        var t2 = $('#tbxOBJID').val();
+        var t3 = $('#tbxTEMPLATEDID').val();
+        if ($.trim(name)=="") {
+            layer.msg('监控名称不可为空！', { icon: 5 });
+            $('#tbxEMNAME').focus();
+            return;
+        }
+
+        if ($.trim(t4) == "") {
+            layer.msg('经度不可为空！', { icon: 5 });
+            $('#tbxJD').focus();
+            return;
+        } else {
+            reg = /^-?\d+\.\d{1,6}$/;
+            if (!reg.test(t4)) {
+                layer.msg('经度格式不正确！', { icon: 5 });
+                $('#tbxJD').focus();
+                return;
+            }
+        }
+        if ($.trim(t5) == "") {
+            layer.msg('纬度不可为空！', { icon: 5 });
+            $('#tbxWD').focus();
+            return;
+        } else {
+            reg = /^-?\d+\.\d{1,6}$/;
+            if (!reg.test(t5)) {
+                layer.msg('纬度格式不正确！', { icon: 5 });
+                $('#tbxWD').focus();
+                return;
+            }
+        }
+        if ($.trim(t2) == "") {
+            layer.msg('设备号不可为空！', { icon: 5 });
+            $('#tbxOBJID').focus();
+            return;
+        }
+        if ($.trim(t3) == "") {
+            layer.msg('模板号不可为空！', { icon: 5 });
+            $('#tbxTEMPLATEDID').focus();
+            return;
+        }
+        $.ajax({
+            url: '/YJJC/MONITOR_INFOManger',
+            cache: false,
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: {
+                //EMID: document.getElementById("tbxEMID").value,
+                TTBH: document.getElementById("tbxTTBH").value,
+                BYORGNO: document.getElementById("tbxBYORGNO").value,
+                JD: document.getElementById("tbxJD").value,
+                WD: document.getElementById("tbxWD").value,
+                EMNAME: document.getElementById("tbxEMNAME").value,
+                GC: document.getElementById("tbxGC").value,
+                ADDRESS: document.getElementById("tbxADDRESS").value,
+                LOGINUSERNAME: document.getElementById("tbxLOGINUSERNAME").value,
+                USERPWD: document.getElementById("tbxUSERPWD").value,
+                IP: document.getElementById("tbxIP").value,
+                XH: document.getElementById("tbxXH").value,
+                PP: document.getElementById("tbxPP").value,
+                GD: document.getElementById("tbxGD").value,
+                JCJL: document.getElementById("tbxJCJL").value,
+                OBJID: document.getElementById("tbxOBJID").value,
+                TEMPLATEDID: document.getElementById("tbxTEMPLATEDID").value,
+                PORT: document.getElementById("tbxPORT").value,
+                TYPE: $("#tbxTYPE").val(),
+                EMID: '@ViewBag.T_ID',
+                Method: '@ViewBag.T_Method',
+                returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)',
+            },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    if (confirm(ar.Msg )) {
+                        var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                        parent.layer.close(index);
+                        window.location.assign(ar.Url);
+                    }
+                }
+                else {
+                    alert(ar.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                alert('保存异常');
+            }
+        });
+    }
+
+    //地图定位
+    function setPoint() {
+        var name = document.getElementById("tbxEMNAME").value;
+        var jd = document.getElementById("tbxJD").value;
+        var wd = document.getElementById("tbxWD").value;
+        parent.layer.open({
+            type: 2,
+            title: name + '地图位置设置',
+            btn: ['保存', '关闭'],
+            area: ['800px', '530px'],
+            fix: false, //不固定
+            maxmin: true,
+            content: '/MapCommon/GetMapPontIndex?jd=' + jd + "&wd=" + wd,
+            yes: function (index, layero) { //或者使用btn1
+                //按钮【按钮一】的回调
+                var ptxt = parent.layer.getChildFrame("p", index);
+                var arr = ptxt.html().split(',');
+                if ($.trim(arr) != "") {
+                    var jd = parseFloat(arr[0]).toFixed(6);
+                    var wd = parseFloat(arr[1]).toFixed(6);
+                    $('#tbxJD').val(jd);
+                    $('#tbxWD').val(wd);
+                }
+                //var index = parent.layer.getFrameIndex(window.name);
+                parent.layer.close(index);
+            }, cancel: function (index) {
+                //var index = parent.layer.getFrameIndex(window.name);
+                layer.close(index);
+            }
+        });
+
+    }
+</script>

@@ -1,0 +1,725 @@
+﻿@using ManagerSystem.MVC.HelpCom;
+@using ManagerSystemClassLibrary;
+@using ManagerSystemSearchWhereModel;
+@model IEnumerable<ManagerSystem.MVC.Models.EHCurFireMode>
+@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+    //首页
+    var result = T_SYS_MENUCls.getT_SYS_MENUModel(new T_SYS_MENU_SW { UID = SystemCls.getUserID(), SYSFLAG = ConfigCls.getSystemFlag(), MenuCodeList = "008,013" });
+    var msy = result.Where(p => p.MENUCODE == "008").FirstOrDefault();//获取该页面对应的菜单信息
+    var dicLonLatstr = T_SYS_ORGCls.GetOrgLonLat(new T_SYS_ORGSW { ORGNO = SystemCls.getCurUserOrgNo() });//获取当前用户所处市县的经纬度
+    //无人机
+    int total = 0;
+    var UavStr = "";//无人机名称
+    var UavEquipStr = "";//设备名称
+    try
+    {
+        var UavList = JC_UAVCls.getModelList(new JC_UAV_SW { }, out total).Where(p => !string.IsNullOrEmpty(p.UAVNAME))
+        .Select(p => p.UAVNAME).ToArray();
+
+        for (int j = 0; j < UavList.Count(); j++)
+        {
+            if (j == UavList.Count() - 1)
+            {
+                UavStr += UavList[j];
+            }
+            else
+            {
+                UavStr += UavList[j] + ",";
+            }
+        }
+
+        var UavEquipList = JC_UAVCls.getModelList(new JC_UAV_SW { }, out total).Where(p => !string.IsNullOrEmpty(p.UAVEQUIPNAME))
+        .Select(p => p.UAVEQUIPNAME).ToArray();
+
+        for (int j = 0; j < UavEquipList.Count(); j++)
+        {
+            if (j == UavEquipList.Count() - 1)
+            {
+                UavEquipStr += UavEquipList[j];
+            }
+            else
+            {
+                UavEquipStr += UavEquipList[j] + ",";
+            }
+        }
+    }
+    catch (Exception)
+    {
+
+        throw;
+    }
+}
+@section Header{
+    <link href="~/Content/MapStyle.css" rel="stylesheet" />
+    <script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+    <script src="~/Scripts/skyline/3DMapTotal.js"></script>
+    <script src="~/Scripts/NPPInterface.js"></script>
+    <script src="~/Scripts/NPPInterlayer.js"></script>
+    <script src="~/Scripts/npp_examples_config.js"></script>
+    <script src="~/Scripts/jquery.snippet.js"></script>
+}
+<input type="hidden" id="hidstr" value="@UavStr" />
+<input type="hidden" id="hidequipstr" value="@UavEquipStr" />
+<div id="syzrid" style="">
+    <div class="indexLeftDiv floatLeft" style="width:99%">
+        <div class="DefaultDivTitle" style="cursor:pointer;" onclick="Swithch('firejcidpanel')">
+            <h1><span>火情监测</span></h1>
+        </div>
+        <div class="warnPanel" id="firejcidpanel" style="width:300px">
+            <div class="firMonitor">
+                <div id="divwarnPanelBody">
+                </div>
+            </div>
+        </div>
+        <div id="firediv" style="display:none">
+            <div class="DefaultDivTitle">
+                <h1><span id="fireResult">火情结果</span><a onclick="$('#firediv').hide(); $('#firejcidpanel').show();">隐藏</a></h1>
+            </div>
+            <div class="warnPanel">
+                <div class="divTable" id="divSupplies">
+                </div>
+                <div class="divPager" id="divPager">
+                </div>
+                <div id="addCaseDiv" style="display:none;">
+                    <iframe></iframe>
+                </div>
+            </div>
+        </div>
+        @if (msy != null)
+        {
+            var mModel = result.Where(p => p.MENUCODE == "008").FirstOrDefault();
+            if (mModel != null)
+            {
+                <div class="DefaultDivTitle" style="cursor:pointer;" onclick="Swithch('menuid_008')">
+                    <h1><span>@mModel.MENUNAME</span></h1>
+                </div>
+                <div class="warnPanel" id="menuid_008">
+                    @foreach (var sv in mModel.subMenuModel)
+                    {
+                        <dl class="yjjc center">
+                            <dt><a href="@sv.MENUURL" target="_blank"><p class="@sv.LICLASS"></p></a></dt>
+                            <dd><a href="@sv.MENUURL" target="_blank">@sv.MENUNAME</a></dd>
+                        </dl>
+                    }
+                    <input type="hidden" value="@dicLonLatstr" id="lonlathide" />
+                    <div class="clear"></div>
+                </div>
+            }
+        }
+        <div class="DefaultDivTitle">
+            <h1 style="cursor:pointer;"><span onclick="PopYjXy()">预警响应</span></h1>
+        </div>
+        <div class="warnPanel">
+            <dl class="yjjc center">
+                <dt><a href="javascript:void(0)" onclick="PopFireLevel()"><p class="dt3_01"></p></a></dt>
+                <dd><a href="javascript:void(0)" onclick="PopFireLevel()">火险查询</a></dd>
+            </dl>
+            <dl class="yjjc center">
+                <dt><a href="javascript:void(0)" onclick="ExportDoc()"><p class="dt3_02"></p></a></dt>
+                <dd><a href="javascript:void(0)" onclick="ExportDoc()">生成警报</a></dd>
+            </dl>
+            <dl class="yjjc center">
+                <dt><p class="dt3_03"></p></dt>
+                <dd><a href="javascript:void(0)">发布警报</a></dd>
+            </dl>
+            <dl class="yjjc center">
+                <dt><a href="javascript:void(0)" onclick="msgShow()"><p class="dt3_04"></p></a></dt>
+                <dd><a href="javascript:void(0)" onclick="msgShow()">响应措施</a></dd>
+            </dl>
+            <div class="clear"></div>
+        </div>
+        @if (msy != null)
+        {
+            var mModel = result.Where(p => p.MENUCODE == "013").FirstOrDefault();
+            if (mModel != null)
+            {
+                <div class="DefaultDivTitle" style="cursor:pointer;" onclick="Swithch('menuid_013')">
+                    <h1><span>@mModel.MENUNAME</span></h1>
+                </div>
+                <div class="warnPanel" id="menuid_013">
+                    @foreach (var sv in mModel.subMenuModel)
+                    {
+                        <dl class="yjjc center">
+                            <dt><a href="@sv.MENUURL" target="_blank"><p class="@sv.LICLASS"></p></a></dt>
+                            <dd><a href="@sv.MENUURL" target="_blank">@sv.MENUNAME</a></dd>
+                        </dl>
+                    }
+                    <input type="hidden" value="@dicLonLatstr" id="lonlathide" />
+                    <div class="clear"></div>
+                </div>
+            }
+        }
+        <div class="DefaultDivTitle" onclick="Swithch('hly_id')" style="cursor:pointer;">
+            <h1><span>护林员监督</span></h1>
+        </div>
+        <div class="warnPanel" id="hly_id">
+            <dl class="hlyjd">
+                <dt class="center">
+                    <input type="text" class="textBox_01 border_ty5">
+                    <input type="button" class="searchBox_01 border_ty1" value="查询" onclick="parent.location.reload()" />
+                </dt>
+                <dd>
+                    <div class="left" id="divGetLineInfo">
+                    </div>
+                </dd>
+            </dl>
+            <div class="clear"></div>
+        </div>
+    </div>
+</div>
+<object id="SGWorld" classid="CLSID:3a4f91b1-65a8-11d5-85c1-0001023952c1" style="visibility:hidden;height:0 "></object>
+<script>
+    $(function () {
+        loadClass();
+        loadLineClass();
+    });
+
+    //用户在线、不在线情况
+    var str = "";
+    function showPerson(obj) {
+        if (obj == "0") {
+            str = "离线人员信息";
+        }
+        else {
+            str = "在线人员信息";
+        }
+        qrueyHTML_showPerson(obj, str);
+    }
+    //护林员
+    function showHlyPerson(obj) {
+        var titlestr = "";
+        if (obj == "0") {
+            titlestr = "在线护林员信息";
+        }
+        else if (obj == "1") {
+            titlestr = "离线护林员信息";
+        }
+        else if (obj == "2") {
+            titlestr = "出围护林员信息";
+        }
+        qrueyHTML_showHlyPerson(obj, titlestr);
+    }
+    //获取在线系统人员
+    function loadLineClass() {
+        $.ajax({
+            url: '/MainDefault/GetLineInfoJson',
+            data: {},
+            type: 'post',
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#divGetLineInfo').html(ar.Msg);
+                }
+                else {
+                    layer.msg("获取错误!");
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("系统错误!")
+            }
+        });
+    }
+    //获取热点类型信息
+    function loadClass() {
+        $.ajax({
+            url: '/MainDefault/GetHotInfoJson',
+            data: {},
+            type: 'post',
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#divwarnPanelBody').html(ar.Msg);
+                    $('.hqjc>.floatRight').css("margin-top", "23px");
+                }
+                else {
+                    layer.msg("获取错误!");
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("系统错误!");
+            }
+        });
+    }
+    //短信响应
+    function msgShow() {
+        qrueyHTML_msgShow();
+    }
+    //卫星报警
+    function wxbj() {
+        window.open('/YJJC/SatelliteAlarmIndex');
+    }
+    //电话报警
+    function telebj() {
+        window.open('/YJJC/PERALARMMan');
+    }
+    //火险等级报告
+    function ExportDoc() {
+        $.post("/MainDefault/GetFireLevelFData", function (data) {
+            if (data.Success == false) {
+                layer.alert(data.Msg);
+            }
+            else {
+                window.open('/MainDefault/DownloadFireLevelFile');
+            }
+        });
+    }
+    //火险等级查看
+    function PopFireLevel() {
+        qrueyHTML_PopFireLevel();
+    }
+    //预警响应介绍
+    function PopYjXy() {
+        qrueyHTML_PopYjXy();
+    }
+    //切换
+    function Swithch(obj) {
+        $obj = $('#' + obj);
+        $obj.toggle();
+    }
+    var firetype;
+    var strname = "";
+    //显示各种监测火情方式的火情信息
+    function ShowFires(type) {
+        $('#firejcidpanel').hide();
+        firetype = type;
+        if (type == "2") {
+            strname = "【卫星监控】";
+        }
+        else if (type == "3") {
+            strname = "【电话报警】";
+        } else if (type == "4") {
+            strname = "【电子监控】";
+        } else if (type == "5") {
+            strname = "【护林员】";
+        }
+        else {
+            strname = "【无人机】";
+            WebClient.Connect();
+            WebClient.FetchResource();
+            $('#firediv').show();
+            $('#fireResult').html(strname + "火情结果");
+            return;
+        }
+        query('1');
+        $('#firediv').show();
+        $('#fireResult').html(strname + "火情结果");
+    }
+    //火情数据检索方法
+    function query(page) {
+        var pagesize = '10';
+        if (document.getElementById("selPageSize") != null) {
+            pagesize = document.getElementById("selPageSize").value;
+        }
+        $('#divPager').html('');
+        $('#divSupplies').html('');
+        var index = layer.load(0, { offset: ['350px', '80px'], shade: 0.4 });
+        $.ajax({
+            url: '/MainDefault/GetFireInfosAjax',
+            data: { firetype: firetype, PageSize: pagesize, Page: page },
+            type: 'post',
+            success: function (data) {
+                if (data.Success) {
+                    //关闭
+                    layer.close(index);
+                    var str = data.pagerInfo.replace("<ul ", "<ol ").replace("</ul>", "</ol>");
+                    $('#divPager').html(str);
+                    $('#divSupplies').html(data.tableInfo);
+                }
+                else {//关闭
+                    layer.close(index);
+                    alert('登录异常!');
+                }
+            },
+            error: function (err, ioArgs) {//关闭
+                layer.close(index);
+                alert('查询条件有误!');
+            }
+        });
+    }
+    //无人机
+    var WebClient = {
+        connectId: null,
+        resource: new NPPUtils.Hash(),
+        Windowopen: new NPPUtils.Hash(),
+        wnd: null,
+        childwindow: null,
+        Load: function () {
+            try {
+                //初始化
+                if (!NPPILY.Plug.inited) {
+                    $("#preCode").snippet("javascript", { style: "acid", collapse: true, startCollapsed: false });
+                    var rv = NPPILY.Init(new NPPILY.Struct.InitParamStruct(false, null, null));
+                    if (rv.rv != NrcapError.NRCAP_SUCCESS) {
+                    }
+                    WebClient.Connect();
+                }
+            }
+            catch (e) {
+                alert(e.name + "," + e.message);
+                return false;
+            }
+        },
+        // - 创建连接,并记录在NPPILY.Connections中
+        Connect: function () {
+            var path = _npc.connParams.path || "127.0.0.1:8866";
+            var username = _npc.connParams.username || "admin";
+            var password = _npc.connParams.password || "";
+            var epId = _npc.connParams.epId || "system";//登陆参数：企业id
+            var bfix = _npc.connParams.bfix || 0;
+            var param = new NPPIF.Struct.ConnParamStruct(path, username, epId, password, bfix);
+            var conn = NPPILY.Connect(param);
+            if (conn.rv == NrcapError.NRCAP_SUCCESS) {
+                WebClient.connectId = conn.response;//NPPILY.Connect接口返回的连接ID(string)
+            } else {
+                if ($("#loginMsg")[0])
+                    $("#loginMsg")[0].innerHTML += NrcapError.Detail(conn.rv) + "</br>";
+            }
+        },
+        /*
+            获取资源(FetchResource)
+            connectId(string) 连接ID
+            forkLevel(NPPILY.Enum.ForkResourceLevel) 构建资源级别
+            offset(uint) 分页查询开始索引
+            count(unit) 分页查询每次最大个数
+        */
+        FetchResource: function () {
+            try {
+                var connectId = WebClient.connectId;
+                if (!connectId || !NPPILY.Connections.get(connectId)) {
+                    alert("连接信息不存在,获取资源失败!");
+                    return false;
+                }
+                var _connStruct = NPPILY.Connections.get(connectId),
+                    rootName = "",
+                    resource = [],
+                    style = "cr",
+                    offset = 0,
+                    count = 200,
+                    html = [];
+                if (_connStruct.connType == NPPILY.Enum.ConnectionType.Server) {
+                    rootName = _connStruct.systemName || "网络视频监控系统";
+                    while (true) {
+                        // 分页获取所有设备资源
+                        var operator = NPPILY.ForkResource
+                        (
+                            connectId,
+                            NPPILY.Enum.ForkResourceLevel.nppForkPUInfo,
+                            offset,
+                            count,
+                            "" // 为空获取根平台的资源
+                        );
+                        if (operator.rv == 0 && operator.response) {
+                            resource = resource.concat(operator.response);
+                            // 继续获取
+                            if (operator.response.length >= count) {
+                                offset = offset + count;
+                            }
+                            else {
+                                break;
+                            }
+                        }
+                        else { // 其他错误跳出循环
+                            break;
+                        }
+                    };
+                    // 进行在线排序
+                    var onlines = [], offlines = [];
+                    $.each(resource, function (index, item) {
+                        if (item.online == 1 && item.enable == 1) {
+                            onlines.push(item);
+                        }
+                        else {
+                            offlines.push(item);
+                        }
+                    });
+                    resource = [];
+                    resource = resource.concat(onlines);
+                    resource = resource.concat(offlines);
+                }
+                else {// 直连设备
+                    var operator = NPPILY.ForkResource(connectId);
+                    if (operator.rv == 0 && operator.response) {
+                        resource = [operator.response];
+                        rootName = operator.response.name || "";
+                    }
+                }
+                // 记录资源信息
+                WebClient.resource.set(connectId, resource);
+                if ($("#divSupplies")[0]) {
+                    var lastnode = "",
+                        idRootPfx = style + '_cesSystemManagement';
+                    var arry = $('#hidstr').val().split(',');//无人机名称
+                    var arrequip = $('#hidequipstr').val().split(',');
+                    var arrN = $('#hidstr').val().split(',');//无人机名称
+                    var arrOnline = new Array();//在线的无人机
+                    var i = 0;
+                    // 遍历资源
+                    $.each(resource, function (index, item) {
+                        var name = item.name;
+
+                        var prefix = "station", suffix = "_disabled", idPfx = style + "_" + item.puid;
+                        if (_connStruct.connType == NPPILY.Enum.ConnectionType.Server) {
+                            switch (item.modelType) {
+                                case NPPILY.Enum.PuModelType.ENC:
+                                    prefix = "station";
+                                    break;
+                                case NPPILY.Enum.PuModelType.WENC:
+                                    prefix = "gateway";
+                                    break;
+                                default:
+                                    return true;
+                                    break;
+                            }
+                        }
+                        if (item.online == 1 && item.enable == 1) {
+                            suffix = "";
+                        }
+                        var clsname = prefix + "" + suffix;
+
+
+
+                        if ($.inArray(name, arrequip) >= 0) {
+
+                            var index = $.inArray(name, arrequip);
+
+                            html.push('<ul class="page-menu">')
+                            //html.push('<div style="white-space:nowrap;">');
+                            html.push('<ul style="display:block">');
+                            html.push('<li class="title" style="text-align:center" onclick="WebClient.FetchChildResource(\'' + item.puid + '\', \'' + style + '\');">')
+                            html.push('<label style="font-size:14px;font-weight:bold;color:#156c02;background:none;float:none"  title="' + arry[index] + '">' + arry[index] + '</label>');
+                            //html.push('<a href="javascript:void(0);" onclick="WebClient.FetchChildResource(\'' + item.puid + '\', \'' + style + '\');" title="' + item.name + '">' + item.name + '</a>');
+                            html.push('</li>');
+                            html.push('</ul>');
+                            //html.push('</div>');
+                            html.push('</ul>')
+                            html.push('<div id="' + idPfx + '_childresourcebox" class="childresourcebox_directline" style="height:auto;display:none;padding-left:15px;">');
+                            html.push('</div>');
+                            lastnode = idPfx + '_childresourcebox';
+
+
+
+                            arrOnline[i] = arry[index];
+                            i++;
+                        }
+                    });
+                    //console.info("arronline11111==" + arrOnline);
+                    var result = [];
+                    for (var i = 0; i < arry.length; i++) {
+                        var obj = arry[i];
+                        var isExist = false;
+                        for (var j = 0; j < arrOnline.length; j++) {
+                            var aj = arrOnline[j];
+                            if (obj == aj) {
+                                isExist = true;
+                                break;
+                            }
+                        }
+                        if (!isExist) {
+                            result.push(obj);
+                        }
+                    }
+                    //console.log("result==="+result);
+                    for (var j = 0; j < result.length; j++) {
+                        html.push('<ul class="page-menu">')
+                        //html.push('<div style="white-space:nowrap;">');
+                        html.push('<ul style="display:block">');
+                        html.push('<li class="title" style="text-align:center" >')
+                        html.push('<label style="font-size:14px;font-weight:bold;color:gray;background:none;float:none"  title="' + result[j] + '">' + result[j] + '</label>');
+                        //html.push('<a href="javascript:void(0);" onclick="WebClient.FetchChildResource(\'' + item.puid + '\', \'' + style + '\');" title="' + item.name + '">' + item.name + '</a>');
+                        html.push('</li>');
+                        html.push('</ul>');
+                        //html.push('</div>');
+                        html.push('</ul>')
+                        html.push('<div class="childresourcebox_directline" style="height:auto;display:none;padding-left:15px;">');
+                        html.push('</div>');
+                        //lastnode = idPfx + '_childresourcebox';
+                        lastnode = "offline";
+                    }
+
+                    if (resource.length <= 0) {
+                        html.push('<div style="font-style:italic;">（无设备资源）</div>');
+                    }
+                    html.push('</div>');
+                    $("#divSupplies").html(html.join("")).find("#" + lastnode).attr("class", "childresourcebox_blankline");
+                }
+            }
+            catch (e) {
+                alert("excep error -> " + e.name + "::" + e.message);
+                return false;
+            }
+        },
+
+        /*获取子资源(FetchChildResource)
+          puid(string) 设备PUID
+          connectId(string) 连接ID
+          forkLevel(NPPILY.Enum.ForkResourceLevel.nppForkPUResourceInfo) 构建资源级别
+        */
+        FetchChildResource: function (puid, style) {
+            try {
+                var idPfx = style + "_" + puid,
+                    idChildresbox = idPfx + "_childresourcebox",
+                    idPUTitle = idPfx + "_img_title";
+                var connectId = WebClient.connectId;
+                if (!connectId || !NPPILY.Connections.get(connectId)) {
+                    alert("连接信息不存在,获取资源失败!");
+                    return false;
+                }
+                var _connStruct = NPPILY.Connections.get(connectId);
+                if ($("#" + idChildresbox)[0]) {
+                    if ($("#" + idChildresbox).html() == "") {
+                        // 是否存在相关子资源信息
+                        var puInfo, puChildres = [];
+                        $.each(WebClient.resource.get(connectId), function (index, item) {
+                            if (item.puid == puid) {
+                                puInfo = item;
+                                puChildres = item.childResource || [];
+                                return false;
+                            }
+                        });
+                        // 为空就去获取子资源信息
+                        if (!puChildres || puChildres.length <= 0) {
+                            var operator = NPPILY.ForkResource
+                                (
+                                 connectId,
+                                 NPPILY.Enum.ForkResourceLevel.nppForkPUResourceInfo,
+                                 null,
+                                 null,
+                                 null,
+                                 { PUID: puid }
+                                );
+                            if (operator.rv == 0) {
+                                puChildres = operator.response;
+                            }
+                        }
+                        var html = [], lastnode = "";
+                        if (puInfo && puChildres && puChildres.length > 0) {
+                            $.each(puChildres, function (index, item) {
+                                var prefix = "inputvideo", suffix = "";
+                                if (item.type != NPPILY.Enum.PuResourceType.VideoIn) {
+                                    return true;
+                                }
+                                if (puInfo.online == 0 || puInfo.enable == 0 || item.enable == 0) {
+                                    suffix = "_disabled";
+                                }
+                                var clsname = prefix + "" + suffix;
+                                var idChildPfx = idPfx + "_" + item.type + "_" + item.idx;
+                                html.push('<div style="white-space:nowrap;text-align:center">');
+                                //html.push('<input id="' + idChildPfx + '_img_title" type="button" class="outline" onfocus="this.blur();" onclick="WebClient.treeCallBack(\'' + puid + '\',\'' + item.idx + '\',\'' + style + '\',\'' + item.name + '\');" />');
+                                //html.push('<input id="' + idChildPfx + '_img_ico" type="button" class="' + clsname + '" onfocus="this.blur();" onclick="WebClient.treeCallBack(\'' + puid + '\',\'' + item.idx + '\',\'' + style + '\',\'' + item.name + '\');" />');
+                                html.push('<label style="font-size:12px;font-weight:bold;color:#156c02;" onclick="WebClient.treeCallBack(\'' + puid + '\',\'' + item.idx + '\',\'' + style + '\',\'' + item.name + '\');" title="' + item.name + '">' + item.name + '</label>');
+                                // html.push('<a href="javascript:void(0);" onclick="WebClient.treeCallBack(\'' + puid + '\',\'' + item.idx + '\',\'' + style + '\',\'' + item.name + '\');" title="' + item.name + '">' + item.name + '</a>');
+                                html.push('</div>');
+                                lastnode = idChildPfx + "_img_title";
+                            });
+                        }
+                        else {
+                            html.push('<div style="font-style:italic;">（无视频资源）</div>');
+                        }
+                        $("#" + idChildresbox).html(html.join("")).find("#" + lastnode).attr("class", "endline");
+                    }
+                    WebClient.Expandsion($("#" + idChildresbox)[0], $("#" + idPUTitle)[0]);
+                }
+            }
+            catch (e) {
+                alert("excep error -> " + e.name + "::" + e.message);
+                return false;
+            }
+        },
+        treeCallBack: function (puid, idx, type, name) {
+            var connectId = WebClient.connectId;
+            var PageName = "playvideo_" + puid + "_" + idx;
+            //打开子页面
+            var url = "playvideo?puid=" + puid + "&idx=" + idx + "&type=" + type + "&name=" + name + "&connectId=" + connectId + "&PageName=" + PageName + "";
+            var childwindow = window.open(url, PageName, "height=350, width=450,toolbar=no, menubar=no,scrollbars=no, resizable=no,location=no, status=no")
+            WebClient.Windowopen.set(PageName, childwindow);
+            WebClient.childwindow = childwindow;
+        },
+        //资源树控制
+        Expandsion: function (obj, title, ico) {
+            if (obj) {
+                if (obj.style.display == "none") {
+                    if (obj.innerHTML == "") return;
+                    obj.style.display = "block";
+                    if (title) title.className = "minus";
+                    if (ico) {
+                        ico.className = "stationmodel_expand";
+                    }
+                }
+                else {
+                    obj.style.display = "none";
+                    if (title) title.className = "plus";
+                    if (ico) {
+                        ico.className = "stationmodel_collapse";
+                    }
+                }
+            }
+        },
+        //卸载插件
+        UnLoad: function () {
+            WebClient.Windowopen.each(function (item) {
+                var childwindow = item.value;
+                childwindow.WebClient.StopVideo();
+            });
+            NPPILY.UnLoad();
+        },
+        end: true
+    }
+
+    if (window.attachEvent) {
+        window.attachEvent(
+            "onload",
+            function () {
+                if (WebClient && typeof WebClient == "object" && typeof WebClient.Load == "function") {
+                    WebClient.Load();
+                }
+            }
+        );
+        window.attachEvent(
+            "onunload",
+            function () {
+                if (WebClient && typeof WebClient == "object" && typeof WebClient.UnLoad == "function") {
+                    WebClient.UnLoad();
+                }
+            }
+        );
+        window.attachEvent(
+            "onbeforeunload",
+            function () {
+                if (WebClient && typeof WebClient == "object" && typeof WebClient.UnLoad == "function") {
+                    WebClient.UnLoad();
+                }
+            }
+        );
+    }
+    else {
+        window.addEventListener(
+            "load",
+            function () {
+                if (WebClient && typeof WebClient == "object" && typeof WebClient.Load == "function") {
+                    WebClient.Load();
+                }
+            },
+            false
+        );
+        window.addEventListener(
+            "unload",
+            function () {
+                if (WebClient && typeof WebClient == "object" && typeof WebClient.UnLoad == "function") {
+                    WebClient.UnLoad();
+                }
+            },
+            false
+        );
+        window.addEventListener(
+            "beforeunload",
+            function () {
+                if (WebClient && typeof WebClient == "object" && typeof WebClient.UnLoad == "function") {
+                    WebClient.UnLoad();
+                }
+            },
+            false
+        );
+    }
+</script>
+

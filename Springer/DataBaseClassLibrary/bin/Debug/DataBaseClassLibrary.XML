@@ -1,0 +1,156 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DataBaseClassLibrary</name>
+    </assembly>
+    <members>
+        <member name="T:DataBaseClassLibrary.SDEDataBaseClass">
+            <summary>
+            数据库操作类
+            创建人：叶磊
+            创建时间：20150824
+            说明：数据库操作基本类，包含执行SQL执行语句、SQL查询语句
+            </summary>
+        </member>
+        <member name="M:DataBaseClassLibrary.SDEDataBaseClass.OpenConn">
+            <summary>
+            打开数据库连接 2007-3-28 10:48:29
+            </summary>
+        </member>
+        <member name="M:DataBaseClassLibrary.SDEDataBaseClass.CloseConn">
+            <summary>
+            关闭数据库连接 2007-3-23
+            </summary>
+        </member>
+        <member name="M:DataBaseClassLibrary.SDEDataBaseClass.FullDataSet(System.String)">
+            <summary>
+            根据SQL语句和表名返回DATASE
+            </summary>
+            <param name="sql">查询的语句</param>         
+            <returns>返回 DataSet</returns>
+        </member>
+        <member name="M:DataBaseClassLibrary.SDEDataBaseClass.FullDataSet(System.String,System.Int32,System.Int32,System.String)">
+            <summary>
+            返回分页的DataSet
+            </summary>
+            <param name="sql"></param>
+            <param name="startRecord"></param>
+            <param name="maxRecords"></param>
+            <param name="srcTables"></param>
+            <returns>参见模型</returns>
+        </member>
+        <member name="M:DataBaseClassLibrary.SDEDataBaseClass.ReturnSqlField(System.String)">
+            <summary>
+            得到SQL语句中第一个字段的值，一般只有一条记录
+            </summary>
+            <param name="sql">要查询的SQL语句</param>
+            <returns>返回值</returns>
+        </member>
+        <member name="M:DataBaseClassLibrary.SDEDataBaseClass.ExeSql(System.String)">
+            <summary>
+            执行不返回值的SQL语句
+            </summary>
+            <param name="sql">SQL语句</param>
+            <returns>false/true 失败/成功</returns>
+        </member>
+        <member name="M:DataBaseClassLibrary.SDEDataBaseClass.ExecuteSqlTran(System.Collections.Generic.List{System.String})">
+            <summary>
+            执行多条SQL语句，实现数据库事务。
+            </summary>
+            <param name="SQLStringList">多条SQL语句</param>		
+        </member>
+        <member name="M:DataBaseClassLibrary.SDEDataBaseClass.JudgeRecordExists(System.String)">
+            <summary>
+            判断SQL语句是否存在多条记录
+            </summary>
+            <param name="sql">要判断的SQL语句</param>
+            <returns>false/true 不存在/存在多条记录</returns>
+        </member>
+        <member name="M:DataBaseClassLibrary.SDEDataBaseClass.ExeNoProc(System.String,System.Data.SqlClient.SqlParameter[])">
+            <summary>
+            执行存储过程
+            </summary>
+            <param name="proc">存储过程名称</param>
+            <param name="paramlist">参数</param>
+        </member>
+        <member name="T:DataBaseClassLibrary.DataBaseClass">
+            <summary>
+            数据库操作类
+            创建人：叶磊
+            创建时间：20150824
+            说明：数据库操作基本类，包含执行SQL执行语句、SQL查询语句
+            </summary>
+        </member>
+        <member name="F:DataBaseClassLibrary.DataBaseClass.connStr">
+            <summary>
+            字义数据库连接字符串
+            </summary>
+        </member>
+        <member name="F:DataBaseClassLibrary.DataBaseClass.conn">
+            <summary>
+            定义SqlConnection
+            </summary>
+        </member>
+        <member name="M:DataBaseClassLibrary.DataBaseClass.OpenConn">
+            <summary>
+            打开数据库连接 2007-3-28 10:48:29
+            </summary>
+        </member>
+        <member name="M:DataBaseClassLibrary.DataBaseClass.CloseConn">
+            <summary>
+            关闭数据库连接 2007-3-23
+            </summary>
+        </member>
+        <member name="M:DataBaseClassLibrary.DataBaseClass.FullDataSet(System.String)">
+            <summary>
+            根据SQL语句和表名返回DATASE
+            </summary>
+            <param name="sql">查询的语句</param>         
+            <returns>返回 DataSet</returns>
+        </member>
+        <member name="M:DataBaseClassLibrary.DataBaseClass.FullDataSet(System.String,System.Int32,System.Int32,System.String)">
+            <summary>
+            返回分页的DataSet
+            </summary>
+            <param name="sql">Sql语句</param>
+            <param name="startRecord">开始记录数</param>
+            <param name="maxRecords">最大（结束）记录数</param>
+            <param name="srcTables">表名称</param>
+            <returns>参见模型</returns>
+        </member>
+        <member name="M:DataBaseClassLibrary.DataBaseClass.ReturnSqlField(System.String)">
+            <summary>
+            得到SQL语句中第一个字段的值，只获取第一条记录第一个字段的值
+            </summary>
+            <param name="sql">要查询的SQL语句</param>
+            <returns>返回值</returns>
+        </member>
+        <member name="M:DataBaseClassLibrary.DataBaseClass.ExeSql(System.String)">
+            <summary>
+            执行不返回值的SQL语句
+            </summary>
+            <param name="sql">SQL语句</param>
+            <returns>false/true 失败/成功</returns>
+        </member>
+        <member name="M:DataBaseClassLibrary.DataBaseClass.JudgeRecordExists(System.String)">
+            <summary>
+            判断SQL语句是否存在多条记录
+            </summary>
+            <param name="sql">要判断的SQL语句</param>
+            <returns>false/true 不存在/存在多条记录</returns>
+        </member>
+        <member name="M:DataBaseClassLibrary.DataBaseClass.ExeNoProc(System.String,System.Data.SqlClient.SqlParameter[])">
+            <summary>
+            执行无返回值的存储过程
+            </summary>
+            <param name="proc">存储过程名称</param>
+            <param name="paramlist">参数数组</param>
+        </member>
+        <member name="M:DataBaseClassLibrary.DataBaseClass.ExecuteSqlTran(System.Collections.Generic.List{System.String})">
+            <summary>
+            执行多条SQL语句，实现数据库事务。
+            </summary>
+            <param name="SQLStringList">多条SQL语句</param>		
+        </member>
+    </members>
+</doc>

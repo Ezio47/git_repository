@@ -1,0 +1,283 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+}
+@section Header{
+    <script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <ul>
+                        <li class="homeUL">
+                            主题：<input id="tbxTITLE" type="text" class="input-small" style="width:120px" value="" />&nbsp;&nbsp;&nbsp;
+                            开始时间：<input id="tbxStartTime" type="text" class="Wdate" style="width:100px" value="@ViewBag.StartTime" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd'})" />&nbsp;&nbsp;&nbsp;
+                            结束时间：<input id="tbxEndTime" type="text" class="Wdate" style="width:100px" value="@ViewBag.EndTime" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd'})" />&nbsp;&nbsp;&nbsp;
+                            <input type="button" value="查询" onclick="query('1')" class="btnSearchCss" />
+                            <input type="button" value="添加" onclick="Manager('Add','','')" id="btnAdd" style="display:none;" class="btnAddCss" />
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" class="LayoutCenterBG">
+                <div class="divTable" id="divTable">
+
+                </div>
+            </div>
+            <div data-options="region:'south'" title="" style=" height:40px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
+                <div class="divPager" id="divPager">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="divMan" id="tableAdd" style="display:none;margin-left:5px;margin-top:8px">
+    <input id="HidID" name="HidID" type="hidden" value="" />
+    <table cellpadding="0" cellspacing="0">
+        <tr>
+            <td style="width:100px;">主题: </td>
+            <td><input id="tbxCONSULTITLE" type="text" value="" style="width:99%;" /></td>
+        </tr>
+        <tr>
+            <td style="width: 100px;">手机号码:</td>
+            <td><input type="text" id="tbxCONSULPHONE" value="" style="width:99%;" /></td>
+        </tr>
+        <tr>
+            <td>内容:</td>
+            <td><textarea id="tbxCONSULCONTENT" style="width: 99%; height: 100px"></textarea></td>
+        </tr>
+    </table>
+</div>
+
+<script type="text/javascript">
+    var bln = '@ViewBag.IsAdd';
+    if (bln == "1") {
+        document.getElementById('btnAdd').style.display = "";
+    }
+
+    query('1');
+    //查询
+    function query(Page) {
+        var Pagesize = '0';
+        if (document.getElementById("selPageSize") != null) {
+            Pagesize = document.getElementById("selPageSize").value;
+        }
+        var TITLE = $('#tbxTITLE').val();
+        var StartTime = $('#tbxStartTime').val();
+        var EndTime = $('#tbxEndTime').val();
+        if (!checkEndTime(StartTime, EndTime)) {
+            layer.msg("开始时间不能大于结束时间!", { icon: 5 });
+            return;
+        }
+        $.ajax({
+            url: '/PEST/GetConsulTationList',
+            data: {
+                TITLE: TITLE,
+                StartTime: StartTime,
+                EndTime: EndTime,
+                PageSize: Pagesize,
+                Page: Page
+            },
+            type: 'post',
+            dataType: 'json',
+            success: function (data) {
+                if (data.Success) {
+                    $('#divTable').html('');
+                    $('#divPager').html('');
+                    $('#divTable').html(data.tableInfo);
+                    $('#divPager').html(data.pagerInfo);
+                }
+                else {
+                    $('#divTable').html('');
+                    $('#divPager').html('');
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('系统异常!', { icon: 5 });
+            }
+        });
+    }
+
+    //选中改变颜色
+    function setColor(obj) {
+        $(obj).css("background-color", "#FFDAB9");
+        $("tr").not($(obj)).css("background-color", "");
+    }
+
+    function Photo(TableName, DataId) {
+        layer.open({
+            type: 2,
+            title: '照片管理',
+            area: ['60%', '60%'],
+            fix: true,
+            maxmin: true,
+            content: '/PEST/PESTPhoto?TableName=' + TableName + '&DataId=' + DataId
+        })
+    }
+
+    //数据增、删、改、查看
+    function Manager(Method, ID, Page) {
+        if (Method == 'Del') {
+            layer.confirm('确实要删除吗?', { icon: 3, title: '提示' }, function (index) {
+                $.ajax({
+                    type: "post",
+                    url: "/PEST/ConsulTationManager",
+                    data: { PEST_CONSULTATIONID: ID, Method: Method },
+                    dataType: "json",
+                    success: function (re) {
+                        if (re.Success) {
+                            layer.msg(re.Msg, { icon: 6 });
+                            query(Page);
+                        }
+                        else {
+                            layer.msg(re.Msg, { icon: 5 });
+                        }
+                    },
+                    error: function () {
+                        layer.msg('系统异常!', { icon: 5 });
+                    }
+                });
+            });
+        }
+        else if (Method == 'Relay') {
+            layer.open({
+                type: 2,
+                title: '会诊回复',
+                area: ['62%', '98%'],
+                fix: true,
+                //maxmin: true,
+                content: '/PEST/ConsulRealy?PEST_CONSULTATIONID=' + ID,
+                end: function () {
+                    end: query(Page);
+                }
+            })
+        }
+        else if (Method == 'See') {
+            layer.open({
+                type: 2,
+                title: '查看会诊信息',
+                area: ['62%', '98%'],
+                fix: true,
+                //maxmin: true,
+                content: '/PEST/ConsulDataSee?PEST_CONSULTATIONID=' + ID,
+            })
+        }
+        else {
+            if (Method == 'Add') {
+                $("#HidID").val('');
+                $("#tbxCONSULTITLE").val('');
+                $("#tbxCONSULPHONE").val('');
+                $("#tbxCONSULCONTENT").val('');
+            }
+            if (Method == 'Mdy') {
+                $.ajax({
+                    type: "post",
+                    url: "/PEST/GetConsulDataJson",
+                    data: { PEST_CONSULTATIONID: ID, },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.PEST_CONSULTATIONID != '') {
+                            $('#HidID').val(data.PEST_CONSULTATIONID);
+                            $("#tbxCONSULTITLE").val(data.CONSULTITLE);
+                            $("#tbxCONSULPHONE").val(data.CONSULPHONE);
+                            $("#tbxCONSULCONTENT").val(data.CONSULCONTENT);
+                        }
+                    },
+                    error: function () {
+                        layer.msg('系统异常!', { icon: 5 });
+                    }
+                });
+            }
+            var btnInfo = ['保存', '取消'];
+            var str = "添加会诊信息";
+            if (Method == "Mdy") {
+                str = "修改会诊信息";
+            }
+            layer.open({
+                type: 1,
+                title: str,
+                area: ['50%', '50%'],
+                btn: btnInfo,
+                shade: 0,
+                maxmin: true,
+                content: $('#tableAdd'),
+                yes: function (index, layero) {
+                    var HID = $('#HidID').val();
+                    if (HID != "") {
+                        ID = HID;
+                        Method = 'Mdy';
+                    }
+                    var title = $("#tbxCONSULTITLE").val();
+                    if ($.trim(title) == "") {
+                        layer.msg('请输入主题!', { icon: 5 });
+                        $("#tbxCONSULTITLE").focus();
+                        return;
+                    }
+                    var phone = $("#tbxCONSULPHONE").val();
+                    if ($.trim(phone) == "") {
+                        layer.msg('请输入手机号码!', { icon: 5 });
+                        $("#tbxCONSULPHONE").focus();
+                        return;
+                    }
+                    else {
+                        if (checkPhone(phone) == false) {
+                            layer.msg('手机号码格式不正确!', { icon: 5 });
+                            $('#tbxCONSULPHONE').focus();
+                            return;
+                        }
+                    }
+                    var content = $("#tbxCONSULCONTENT").val();
+                    if ($.trim(content) == "") {
+                        layer.msg('请输入内容!', { icon: 5 });
+                        $("#tbxCONSULCONTENT").focus();
+                        return;
+                    }
+                    $.ajax({
+                        type: "post",
+                        url: "/PEST/ConsulTationManager",
+                        data: {
+                            PEST_CONSULTATIONID: ID,
+                            CONSULTITLE: title,
+                            CONSULPHONE: phone,
+                            CONSULCONTENT: content,
+                            Method: Method
+                        },
+                        dataType: "json",
+                        success: function (re) {
+                            if (re.Success) {
+                                $('#HidID').val(re.Url);
+                                layer.confirm(re.Msg + ' 请返回?', { icon: 3, title: '提示' }, function (index2) {
+                                    layer.close(index2);
+                                    layer.close(index);
+                                });
+                                if (Page != "") {
+                                    query(Page);
+                                }
+                                else {
+                                    query('1');
+                                }
+                            }
+                            else {
+                                layer.msg(re.Msg, { icon: 5 });
+                            }
+                        },
+                        error: function () {
+                            layer.msg('系统异常!', { icon: 5 });
+                        }
+                    });
+                },
+                cancel: function (index) {
+                    layer.close(index);
+                }
+            })
+        }
+    }
+</script>

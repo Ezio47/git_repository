@@ -1,0 +1,108 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+
+    <div data-options="region:'center'" title="">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <ul>
+                        <li class="homeUL"><a href="/System/MenuList">菜单管理</a></li>
+                        @Html.Raw(@ViewBag.navList)
+                        <li><input type="button" value="添加" onclick="Manager('','Add')" class="btnAddCss" /></li>
+                    </ul>
+                    <input id="hidMENUCODE" name="hidMENUCODE" type="hidden" value="@ViewBag.MENUCODE" />
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style="overflow-x:auto; border: none; " class="LayoutCenterBG">
+                <div id="divTable" class="divTable">
+                    @Html.Raw(@ViewBag.MenuList)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    //查询
+    function Query() {
+        $.ajax({
+            url: '/System/MenuListQuery',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: { MENUCODE: $('#hidMENUCODE').val() },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#divTable').html("");
+                    $('#divTable').html(ar.Msg);
+                }
+                else {
+                    layer.msg(ar.Msg);
+                }
+            },
+            error: function () {
+                layer.msg("系统异常!", { icon: 5 });
+            }
+        });
+    }
+    //增、删、改
+    function Manager(MENUCODE, Method) {
+        if (Method == 'Add') {
+            MENUCODE = $('#hidMENUCODE').val();
+            layer.open({
+                type: 2,
+                title: '添加菜单管理',
+                area: ['650px', '300px'],  //[长,高]
+                offset: ['150px', '350px'], //[上,左]
+                fix: true, //固定
+                maxmin: true,
+                content: '/System/MenuMan?MENUCODE=' + MENUCODE + "&Method=" + Method,
+                end: function () {
+                    Query();
+                }
+            });
+        }
+        if (Method == 'Mdy') {
+            layer.open({
+                type: 2,
+                title: '修改菜单管理',
+                area: ['650px', '300px'],  //[长,高]
+                offset: ['150px', '350px'], //[上,左]
+                fix: true, //固定
+                maxmin: true,
+                content: '/System/MenuMan?MENUCODE=' + MENUCODE + "&Method=" + Method,
+                end: function () {
+                    Query();
+                }
+            });
+        }
+        if (Method == 'Del') {
+            if (confirm('确实要删除吗?')) {
+                $.ajax({
+                    url: '/System/MenuManager',
+                    cache: false,
+                    data: { MENUCODE: MENUCODE, Method: Method },
+                    type: 'post',
+                    success: function (data) {
+                        var ar = eval('(' + data + ')');
+                        if (ar.Success) {
+                            alert(ar.Msg, { icon: 5 });
+                            Query();
+                        }
+                        else {
+                            layer.msg(ar.Msg, { icon: 5 });
+                        }
+                    },
+                    error: function () {
+                        layer.msg("删除异常!");
+                    }
+                });
+            }
+        }
+    }  
+</script>

@@ -1,0 +1,1019 @@
+﻿@using System.Web;
+@using ManagerSystem.MVC.HelpCom;
+@using ManagerSystemClassLibrary;
+@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+    //配置文件经纬度读取
+    var lon = System.Configuration.ConfigurationManager.AppSettings["Longitude"];
+    var lat = System.Configuration.ConfigurationManager.AppSettings["Latitude"];
+    var maptype = System.Configuration.ConfigurationManager.AppSettings["mapType"];//地图类型
+    var lonlatchange = System.Configuration.ConfigurationManager.AppSettings["lonLatChange"];//经纬度转换
+    var lonlattype = System.Configuration.ConfigurationManager.AppSettings["lonLatType"];//经纬度转换--度分秒
+    var ZoomLayer = System.Configuration.ConfigurationManager.AppSettings["ZoomLayer"];//默认放大级别--度分秒
+    //系统参数读取坐标上传时间点
+    var stime = StateSwitch.GetParamenterByKey("STATR_TIME");
+    var edtime = StateSwitch.GetParamenterByKey("END_TIME");
+}
+
+@section Header{
+    <link rel="stylesheet" href="~/js/esri/css/esri.css" />
+    <link rel="stylesheet" href="~/Content/themes/dijit/themes/tundra/tundra.css" />
+    <link rel="stylesheet" href="~/Content/themes/dijit/themes/claro/claro.css" />
+    <script src="~/Scripts/Total2dSpringer/Total2dSpringerMapAlarm.js"></script>
+    <script src="~/Scripts/Total2dSpringer/Total2dSpringerMapCollect.js"></script>
+    <script src="~/Scripts/Total2dSpringer/Total2dSpringerMapHot.js"></script>
+    <script src="~/Scripts/Total2dSpringer/Total2dSpringerMapReport.js"></script>
+    <script src="~/js/init.js"></script>
+    <script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+    <link href="~/Content/MapStyle.css" rel="stylesheet" />
+    <script src="~/Scripts/Springer.js"></script>
+    <script src="~/Scripts/Springer/SpringerMapCommon.js"></script>
+    <script src="~/Scripts/Springer/SpringerBusiness.js"></script>
+    <script src="~/Scripts/Springer/SpringerMap.js"></script>
+    <script src="~/Content/themes/assets/js/date-time/bootstrap-datepicker.min.js"></script>
+    <script src="~/Content/themes/assets/js/date-time/daterangepicker.min.js"></script>
+    <script src="~/Content/themes/assets/js/date-time/bootstrap-timepicker.min.js"></script>
+    <script src="~/Content/themes/assets/js/bootstrap.min.js"></script>
+    <script src="~/Content/themes/assets/js/jquery.gritter.min.js"></script>
+    <script src="~/Content/themes/assets/js/bootbox.min.js"></script>
+    <script src="~/Content/themes/assets/js/ace-elements.min.js"></script>
+    @*<script src="~/Content/themes/assets/js/ace.min.js"></script>*@
+
+    <script>
+        @*获取权限全局变量*@
+        var rights= '@ViewBag.rights';
+    </script>
+
+    <script src="@Url.Content("~/Scripts/jquery-easyui-1.4/jquery.easyui.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/jquery-easyui-1.4/locale/easyui-lang-zh_CN.js")"></script>
+    <script src="@Url.Content("~/Scripts/jquery-easyui-1.4/validateHelper.js")"></script>
+    <link href="@Url.Content("~/Content/kefu.css")" rel="stylesheet" type="text/css" />
+
+    <style type="text/css">
+        html, body, #map {
+            height: 100%;
+            width: auto;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #FFF;
+            overflow: hidden;
+        }
+
+        /*隐藏底部*/
+        .LayOutFooter {
+            display: none;
+        }
+    </style>
+}
+@*<script src="~/Scripts/SpringerMapTest.js"></script>*@
+<script type="text/javascript">
+    $(function ($) {
+        $('#setmap').val(@maptype);//地图类型
+    });
+    var CollapseStatus = 1;//展开(历史轨迹)
+    var DmCollapseStatus = 1;//展开(实时点名)
+    var DLCollapseStatus = 1;//展开(电量)
+    var AlarmCollapseStatus = 0;//展开(报警信息)
+    var HotCollapseStatus = 0;//展开（热点）
+    var ReportCollapseStatus = 0;//展开（上报）
+    var CollecttCollapseStatus = 0;//展开（采集）
+    //历史轨迹
+    var hideInfoWin = function () {
+        if (CollapseStatus == 0) {
+            $('#gj').css("height", '50px');
+            CollapseStatus = 1;
+        }
+        else {
+            $('#gj').css("height", '280px');
+            CollapseStatus = 0;//收缩
+        }
+    };
+    var closeInfoWin = function () {
+        $("#gj").hide();
+        CollapseStatus = 1;
+    };
+    //实时点名（在线状态）
+    var hideInfoWinDm = function () {
+        if (DmCollapseStatus == 0) {
+            $('#dmstatus').css("height", '50px');
+            DmCollapseStatus = 1;
+        }
+        else {
+            $('#dmstatus').css("height", '280px');
+            DmCollapseStatus = 0;//收缩
+        }
+    };
+    var closeInfoWinDm = function () {
+        $("#dmstatus").hide();
+        DmCollapseStatus = 1;
+    };
+    //电量
+    var hideInfoWinDL = function () {
+        if (DLCollapseStatus == 0) {
+            $('#dl').css("height", '50px');
+            DLCollapseStatus = 1;
+        }
+        else {
+            $('#dl').css("height", '280px');
+            DLCollapseStatus = 0;//收缩
+        }
+    };
+    var closeInfoWinDL = function () {
+        $("#dl").hide();
+        DLCollapseStatus = 1;
+    };
+    //报警信息
+    var hideInfoWinAlarm = function () {
+        if (AlarmCollapseStatus == 0) {
+            $('#divalarmsearch').css("height", '50px');
+            AlarmCollapseStatus = 1;
+        }
+        else {
+            $('#divalarmsearch').css("height", '280px');
+            AlarmCollapseStatus = 0;//收缩
+        }
+    };
+    var closeInfoWinAlarm = function () {
+        $("#divalarmsearch").hide();
+        AlarmCollapseStatus = 1;
+    };
+    //热点
+    var hideInfoWinHot = function () {
+        if (HotCollapseStatus == 0) {
+            $('#divhot').css("height", '50px');
+            HotCollapseStatus = 1;
+        }
+        else {
+            $('#divhot').css("height", '280px');
+            HotCollapseStatus = 0;//收缩
+        }
+    }
+    var closeInfoWinHot = function () {
+        $("#divhot").hide();
+        HotCollapseStatus = 1;
+    };
+    //数据上报
+    var hideInfoWinRepo = function () {
+        if (ReportCollapseStatus == 0) {
+            $('#divreport').css("height", '50px');
+            ReportCollapseStatus = 1;
+        }
+        else {
+            $('#divreport').css("height", '280px');
+            ReportCollapseStatus = 0;//收缩
+        }
+    }
+    var closeInfoWinRepo = function () {
+        $("#divreport").hide();
+        ReportCollapseStatus = 1;
+    };
+    //数据采集
+    var hideInfoWinCollect = function () {
+        if (CollecttCollapseStatus == 0) {
+            $('#divcollect').css("height", '50px');
+            CollecttCollapseStatus = 1;
+        }
+        else {
+            $('#divcollect').css("height", '280px');
+            CollecttCollapseStatus = 0;//收缩
+        }
+    }
+    var closeInfoWinCollect = function () {
+        $("#divcollect").hide();
+        CollecttCollapseStatus = 1;
+    };
+    var nav;
+    dojoConfig = {
+        parseOnLoad: true,
+        packages: [{name: 'bdlib',location: this.location.pathname.replace(/\/[^/]+$/, "") + "/js/bdlib"}]
+    };
+    var intervalMethod;
+    var map, toolbar, graphicLayer;
+    var editToolbar;
+    var configMaptype;//地图展示类型
+    var lonlatchangeFlag="1";//是否地图偏移量
+    var scalebar;//标尺
+    var measurement;//测距
+    bevent = require("dojo/_base/event");
+    //用来记录显示图层的id用
+    var visible = [];
+    var dynamicMapServiceLayer = [];
+    //var list;
+    require(["esri/map",
+        "dojo/dom","esri/units",
+    "bdlib/GoogleLayer",
+     "bdlib/TDTLayer",
+   "bdlib/TDTAnnoLayer",
+     "esri/layers/FeatureLayer",
+     "esri/geometry/Point",
+     "esri/symbols/SimpleFillSymbol",
+     "esri/symbols/SimpleLineSymbol",
+     "dojo/_base/Color", "dojo/parser", "esri/toolbars/draw", "esri/symbols/SimpleMarkerSymbol", "esri/graphic", "esri/dijit/Scalebar", "esri/dijit/OverviewMap",
+     "esri/toolbars/navigation", "dijit/registry", "esri/symbols/TextSymbol", "esri/dijit/HomeButton", "esri/toolbars/edit",
+     "esri/tasks/GeometryService","esri/dijit/Measurement", "dijit/layout/BorderContainer", "dijit/layout/ContentPane", "dijit/TitlePane","esri/dijit/BasemapGallery",
+     "dojo/domReady!"],
+     function (Map, dom,Units,GoogleLayer, TDTLayer, TDTAnnoLayer, FeatureLayer, Point, SimpleFillSymbol, SimpleLineSymbol, Color, parser, Draw, SimpleMarkerSymbol, Graphic, Scalebar, OverviewMap, Navigation
+         , registry, TextSymbol, HomeButton, Edit,GeometryService,Measurement,BasemapGallery) {
+         map = new Map("map", { logo: false, sliderStyle: "large" });
+         this.map_type = "img_p";
+         configMaptype='@maptype';
+         lonlatchangeFlag='@lonlatchange';
+         loadMap(configMaptype,this.map_type);
+         var CenterX = $("#CenterX").val();
+         var CenterY = $("#CenterY").val();
+         var CenterZ = $("#CenterZ").val();
+         if (CenterX==null||CenterX==""||CenterY==null||CenterY==""||CenterZ==null||CenterZ=="") {
+             var pt = new Point(parseFloat(@lon), parseFloat(@lat));
+             map.centerAndZoom(pt,parseFloat(@ZoomLayer));
+         }
+         else {
+             var pt = new Point(parseFloat(CenterX), parseFloat(CenterY));
+             map.centerAndZoom(pt,parseFloat(CenterZ));
+         }
+         var select = document.getElementById('setmap');//切换不同地图
+         select.onchange =function(){
+             this.map_type = "img_p";//地图
+             var value=$('#setmap').val();
+             map.destroy();
+             map = new Map("map", { logo: true, sliderStyle: "large" });
+             configMaptype=value;
+             if (configMaptype=="2") {
+                 lonlatchangeFlag="0";
+             }
+             else{
+                 lonlatchangeFlag="1";
+             }
+             loadMap(value,this.map_type);
+             var pt = new Point(parseFloat(@lon), parseFloat(@lat));
+             map.centerAndZoom(pt, '@ZoomLayer');
+             graphicLayer = new esri.layers.GraphicsLayer();
+             map.addLayer(graphicLayer);
+             scalebar.destroy();
+             //比例尺
+             scalebar = new Scalebar({map: map,attachTo: "bottom-center",scalebarUnit: "metric" });
+             //给地图控件添加载鼠标移动监听事件
+             dojo.connect(map, "onMouseMove",function(evt){
+                 showChangeCoordinates(evt,lonlatchangeFlag,'@lonlattype');
+             });
+             //给地图控件添加载鼠标拖拽监听事件
+             dojo.connect(map, "onMouseDrag", function(evt){
+                 showChangeCoordinates(evt,lonlatchangeFlag,'@lonlattype');
+             });
+             $('#measureWindow').hide();
+             $('#maptool').show();
+             //在地图初始化的时候添加监听画图的事件：
+             toolbar = new esri.toolbars.Draw(map);
+             dojo.connect(toolbar, "onDrawEnd", doMeasure);
+         };
+
+         dojo.connect(map, "onMouseMove", function(evt){
+             var normalizedVal = new esri.geometry.xyToLngLat((map.extent.xmax + map.extent.xmin) / 2, (map.extent.ymax + map.extent.ymin) / 2);//google地图转换坐标
+             document.getElementById('xcenter').value = parseFloat(normalizedVal[0]).toFixed(6) ;
+             document.getElementById('ycenter').value = parseFloat(normalizedVal[1]).toFixed(6) ;
+             document.getElementById('scale').value = parseFloat(map.getScale().toFixed(6));
+         });
+         nav = new esri.toolbars.Navigation(map);
+         graphicLayer = new esri.layers.GraphicsLayer();
+         map.addLayer(graphicLayer);
+         $('#maptool').hide();
+         $('#measureWindow').show();
+         measurement = new Measurement({
+             map: map,
+             defaultAreaUnit: Units.SQUARE_KILOMETERS,
+             defaultLengthUnit: Units.KILOMETERS
+         }, dom.byId("measurementDiv"));
+         measurement.startup();
+         //比例尺
+         scalebar = new Scalebar({ map: map,attachTo: "bottom-center",scalebarUnit: "metric" });
+         //取最新经纬度定位
+         @Html.Raw(ViewBag.loadFunc);
+         ////给地图控件添加视图变化监听事件
+         // dojo.connect(map, "onExtentChange", showExtent);
+         //给地图控件添加载鼠标移动监听事件
+         dojo.connect(map, "onMouseMove",function(evt){
+             showChangeCoordinates(evt,lonlatchangeFlag,@lonlattype);
+         });
+         //给地图控件添加载鼠标拖拽监听事件
+         dojo.connect(map, "onMouseDrag", function(evt){
+             showChangeCoordinates(evt,lonlatchangeFlag,@lonlattype);
+         });
+         //地图切换
+         $('#switchmap').toggle(function () {
+             this.map_type = "img_c11";//卫星
+             $('#imgtype').attr('class', 'vecType');
+             $('#imgname').text("地图");
+             loadMap(configMaptype,this.map_type);
+             if (configMaptype=="1") {
+                 lonlatchangeFlag="1";
+             }
+             else{
+                 lonlatchangeFlag="0";
+             }
+             $('#info2').css('color', 'white');
+         },
+         function () {
+             this.map_type = "img_p";//地图
+             $('#imgtype').attr('class', 'yxType');
+             $('#imgname').text("影像");
+             loadMap(configMaptype,this.map_type);
+             $('#info2').css('color', 'red');
+         });
+         function loadMap(value,maptype){
+             if (value=="2") {
+                 var basemap = new TDTLayer(maptype);
+                 map.addLayer(basemap);
+                 var annolayer = new  TDTAnnoLayer();
+                 map.addLayer(annolayer);
+             }
+             else
+             {
+                 var basemap = new GoogleLayer(maptype);
+                 map.addLayer(basemap);
+             }
+         }
+     });
+    //预警监测
+    $("#menuTop_018").click(function () {
+        var xcenter= $("#xcenter").val();
+        var ycenter = $("#ycenter").val();
+        var scale = $("#scale").val();
+        window.location.href = "/Home/Total3Dindex?type=2&xcenter=" + xcenter + "&ycenter=" + ycenter + "&scale=" + scale;
+    });
+    //应急处置
+    $("#menuTop_012").click(function () {
+        var xcenter= $("#xcenter").val();
+        var ycenter = $("#ycenter").val();
+        var scale = $("#scale").val();
+        window.location.href = "/Home/Total3Dindex?type=1&xcenter=" + xcenter + "&ycenter=" + ycenter + "&scale=" + scale;
+    });
+    //三维护林员
+    $("#menuTop_020").click(function () {
+        var xcenter= $("#xcenter").val();
+        var ycenter = $("#ycenter").val();
+        var scale = $("#scale").val();
+        window.location.href = "/Home/Total3Dindex?type=0&xcenter=" + xcenter + "&ycenter=" + ycenter + "&scale=" + scale;
+    });
+    //载入地图名称到右边的列表中
+    function loadLayerList(layers) {
+        var html = "";
+        //获取图层信息
+        var infos = layers.layerInfos;
+        for (var i = 0; i < infos.length; i++) {
+            var info = infos[i];
+            //图层默认显示的话就把图层id添加到visible
+            if (info.defaultVisibility) {
+                visible.push(info.id);
+            }
+            //输出图层列表的html
+            html = html + "<div><input id='" + info.id + "' name='layerList' class='listCss' type='checkbox' value='checkbox' onclick='setLayerVisibility()' " + (info.defaultVisibility ? "checked" : "") + " />    " + info.name + "</div>"
+        }
+        //设置可视图层
+        dynamicMapServiceLayer.setVisibleLayers(visible);
+        //在右边显示图层名列表
+        $('#mapdiv').html(html);
+    }
+    //设置图层是否可视的方法
+    function setLayerVisibility() {
+        //用dojo.query获取css为listCss的元素数组
+        var inputs = dojo.query(".listCss");
+        visible = [];
+        //对checkbox数组进行变量把选中的id添加到visible
+        for (var i = 0; i < inputs.length; i++) {
+            if (inputs[i].checked) {
+                visible.push(inputs[i].id);
+            }
+        }
+        //设置可视图层
+        dynamicMapServiceLayer.setVisibleLayers(visible);
+    }
+    //量算面积和长度方法：
+    function GetLenthorArea(geometry) {//画图完毕后计算距离或者面积
+        if (geometry.type == "polyline") {
+            var geo = esri.geometry.webMercatorToGeographic(geometry);
+            if (configMaptype=="2") {
+                geo=geometry;
+            }
+            var Length = esri.geometry.geodesicLengths([geo], esri.Units.METERS);
+            map.infoWindow.setTitle("距离测量");
+            if (parseFloat(Length)<1000) {
+                map.infoWindow.setContent("距离： <strong>" + parseFloat(Length).toFixed(2)+ "米 </strong>");
+            }
+            else{
+                map.infoWindow.setContent("距离： <strong>" +  parseFloat(Length/1000).toFixed(2)+ "千米 </strong>");
+            }
+            map.infoWindow.show();
+        }
+        else if(geometry.type == "polygon") {
+            var geo = esri.geometry.webMercatorToGeographic(geometry);
+            if (configMaptype=="2") {
+                geo=geometry;
+            }
+            var Area = esri.geometry.geodesicAreas([geo], esri.Units.SQUARE_METERS);
+            map.infoWindow.setTitle("面积测量");
+            if (parseFloat(Area)<1000000) {
+                map.infoWindow.setContent("面积： <strong>" + parseFloat(Area).toFixed(2) + "平方米 </strong>");
+            }
+            else{
+                map.infoWindow.setContent("面积： <strong>" +  parseFloat(Area/1000000).toFixed(2) + "平方公里 </strong>");
+            }
+            map.infoWindow.show();
+        }
+    }
+    //量算
+    function doMeasure(geometry) {
+        toolbar.deactivate();
+        switch (geometry.type) {
+            case "polyline":
+                var symbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([255,0,0]), 2);
+                break;
+            case "polygon":
+                var symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID, new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_DASHDOT, new dojo.Color([255, 0, 0]), 2), new dojo.Color([255, 255, 0, 0.25]));
+                break;
+        }
+        //设置样式
+        var graphic = new esri.Graphic(geometry,symbol);
+        //清除上一次的画图内容
+        map.graphics.clear();
+        map.graphics.add(graphic);
+        GetLenthorArea(geometry);
+    }
+    //图层定位
+    function validate(id,type) {
+        if (type=="1") {
+            var reg = new RegExp("^[0-9]*$");//数字
+            if (!reg.test($.trim($("#"+id+"").val()))) {
+                alert("输入不正确，请输入数字!");
+                return false;
+            }
+            return true;
+        }
+        else{
+            var reg = new RegExp("^(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*))$");//小数
+            if (!reg.test($.trim($("#" + id + "").val()))) {
+                alert("输入不正确，请输入正确小数!");
+                return false;
+            }
+            return true;
+        }
+    }
+    function dingwei() {
+        var jd, wd;
+        if ($("input[name=typeRadio]:checked").val() == 0) {
+            jd = $("#jd").val();
+            wd = $("#wd").val();
+        }
+        else {
+            var obj = new Object();
+            obj.d = $("#jd_d").val();
+            obj.f = $("#jd_f").val();
+            obj.m = $("#jd_m").val();
+            jd = jsw1tojsw2(obj);
+            obj.d = $("#wd_d").val();
+            obj.f = $("#wd_f").val();
+            obj.m = $("#wd_m").val();
+            wd = jsw1tojsw2(obj);
+        }
+        ptPositionPic(jd,wd,"../Images/location.png");
+    }
+</script>
+
+<div class="claro" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'center'" style="height:100%;width:100%;">
+    <div style="float:left;height:100%; " id="floatdiv">
+        @Html.Action("Float2DIndex", "RealSupervision")
+    </div>
+    <div id="map">
+        <input type="button" id="CenterX" value="@ViewBag.CenterX" style="display:none">
+        <input type="button" id="CenterY" value="@ViewBag.CenterY" style="display:none">
+        <input type="button" id="CenterZ" value="@ViewBag.CenterZ" style="display:none">
+        <input id="xcenter" type="hidden" value="" />
+        <input id="ycenter" type="hidden" value="" />
+        <input id="scale" type="hidden" value="" />
+        <input type="hidden" id="tid" />
+        <input type="hidden" id="cid" />
+        <div class="rightNav" id="maptool" style="display:none">
+            <input id="Button1" type="button" style="font-weight:bold;color:green;" value="距离测量" onclick="toolbar.activate(esri.toolbars.Draw.POLYLINE);map.hideZoomSlider();" />
+            <input id="Button2" type="button" style="font-weight:bold;color:green;" value="面积测量" onclick="toolbar.activate(esri.toolbars.Draw.POLYGON);map.hideZoomSlider();" />
+            <input id="Button3" type="button" style="font-weight:bold;color:green;" value="清空划线" onclick=" map.graphics.clear(); map.infoWindow.hide();" />
+        </div>
+        <div class="roundedCorners" id="measureWindow" style="display:none;z-index:1">
+            <div class="innerDiv roundedCorners" style="opacity:0.8;margin-top:7%">
+                <div id="measurementDiv"></div>
+            </div>
+        </div>
+
+        @*历史轨迹播放工具*@
+        <div class="leftNav" id="playdiv" style="display:none">
+            <input type="button" id="pausebtn" value="暂停" style="color:rgb(185, 103, 13);width:50px;font-weight:bold;color:green;display:inline-block" onclick="pauseAndStart()" />&nbsp; &nbsp;
+            <input type="button" id="overbtn" value="结束" style="color:rgb(185, 103, 13);width:50px;font-weight:bold;color:green;" onclick="drawOver()" />
+        </div>
+
+        @*地理坐标，屏幕坐标*@
+        <p id="info2" class="bottomNav">
+
+        </p>
+
+        @*地图切换*@
+        <div class="pub_path1" id="switchmap" style="position: absolute; bottom: 80px; right: 20px; z-index: 1100;">
+            <div class="hoverType">
+                <div class="map_top"><div class="yxType" id="imgtype"></div>
+                </div>
+                <div class="map_bom" id="imgname">影像</div>
+            </div>
+        </div>
+
+        @*地图类型切换*@
+        <div style="position: absolute; bottom: 35px; right: 20px; z-index: 1100;">
+            <select id="setmap">
+                <option value="1">谷歌地图</option>
+                <option value="2">天地图</option>
+            </select>
+        </div>
+
+        @*历史轨迹*@
+        <div class="widget-box bottomDiv" id="gj" style="height:280px;width:73%;display:none;">
+            <div class="widget-header">
+                <table style="width:100%;height:35px;display:inline-table;">
+                    <tr>
+                        <td style="font-size:16px;width:20%"><div id="lsgjtitle">历史轨迹</div></td>
+                        <td style="width:24%;">
+                            <input type="hidden" id="userid" />
+                            <input type="hidden" id="username" />开始时间：<input class="Wdate" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd'})" id="txtStartTime" type="text" value="" style="width:90px;" />
+                            <input class="Wdate" onfocus="WdatePicker({ dateFmt: 'HH:mm'})" id="timepickerStart" type="text" value="@stime" style="width:50px;" />
+                        </td>
+                        <td style="width:23%;">
+                            结束时间：<input class="Wdate" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd'})" id="txtEndTime" type="text" value="" style="width:90px;" />
+                            <input class="Wdate" onfocus="WdatePicker({ dateFmt: 'HH:mm'})" id="timepickerEnd" type="text" value="@edtime" style="width:50px;" />
+                        </td>
+                        <td style="width:30%"><input type="button" value="查 询" onclick="searchHisData()" class="btnSearchCss"></td>
+                        <td>
+                            <a href="#" onclick="hideInfoWin()"><img src="../Images/open.png" width="10" height="10" style="padding:1px;" /> </a>
+                            <a href="javascript:void(0)" onclick="closeInfoWin()"> <img src="../Images/close.png" width="10" height="10" style="padding:1px;" /> </a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main">
+                    <div class="divTable" style="height: 220px;overflow:auto;text-align:center;" id="divhisgj">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @*实时点名*@
+        <div class="widget-box bottomDiv" id="dmstatus" style="height:280px;width:70%;display:none;">
+            <div class="widget-header">
+                <h4 id="DmTitlle"></h4>
+                <div class="widget-toolbar">
+                    <a href="#" onclick="hideInfoWinDm()"><img src="../Images/open.png" width="10" height="10" style="padding:1px;" /></a>
+                    <a href="javascript:void(0)" onclick="closeInfoWinDm()"> <img src="../Images/close.png" width="10" height="10" style="padding:1px;" /></a>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main">
+                    <div class="divTable" style="height: 220px;overflow:auto;text-align:center" id="divdm">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @*电量*@
+        <div class="widget-box bottomDiv" id="dl" style="height:280px;width:70%;display:none;">
+            <div class="widget-header">
+                <h4>电量查询</h4>
+                <input type="hidden" id="userelecid" />
+                开始时间：<input class="Wdate" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd'})" id="txtElecStartTime" type="text" value="" style="width:90px;" />
+                结束时间：<input class="Wdate" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd'})" id="txtElecEndTime" type="text" value="" style="width:90px;" />
+                <input type="button" value="查 询" onclick="searchElecData()" class="btnSearchCss">
+                <div class="widget-toolbar">
+                    <a href="#" onclick="hideInfoWinDL()"><img src="../Images/open.png" width="10" height="10" style="padding:1px;" /> </a>
+                    <a href="javascript:void(0)" onclick="closeInfoWinDL()"><img src="../Images/close.png" width="10" height="10" style="padding:1px;" /> </a>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main">
+                    <div class="divTable" style="height: 220px;overflow:auto;text-align:center;" id="divdl">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @*报警查看*@
+        <div id="divalarmsee" class="divTable" style="display:none;margin:10px 10px 5px 10px">
+            <table class="table table-striped table-bordered table-hover">
+                <tbody>
+                    <tr>
+                        <td class="tabcenter"> <label>报警人:</label></td>
+                        <td><label id="bjnameSee"></label></td>
+                        <td class="tabcenter"><label>手机号:</label></td>
+                        <td><label id="bjphoneSee"></label></td>
+                        <td class="tabcenter"><label>状态:</label></td>
+                        <td><label id="alarmstateSee" style="color:red"></label></td>
+                    </tr>
+                    <tr>
+                        <td class="tabcenter"><label>报警时间:</label></td>
+                        <td colspan="2"><label id="alarmtimeSee"></label></td>
+                        <td class="tabcenter"><label for="bjaddressSee">报警地址:</label></td>
+                        <td colspan="2">
+                            <textarea id="bjaddressSee" readonly="readonly" class="autosize-transition form-control" style="overflow: auto; word-wrap: break-word; resize: horizontal; height: 50px;width:100%"></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tabcenter"><label for="bjcontentSee">报警内容:</label></td>
+                        <td colspan="5">
+                            <textarea id="bjcontentSee" readonly="readonly" class="autosize-transition form-control" style="overflow: auto; word-wrap: break-word; resize: horizontal; height: 40px;width:100%"></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tabcenter"><label for="bjresultSee">处理结果:</label></td>
+                        <td colspan="5">
+                            <textarea id="bjresultSee" readonly="readonly" class="autosize-transition form-control" style="overflow: auto; word-wrap: break-word; resize: horizontal; height: 40px;width:100%"></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tabcenter">上报时间:</td>
+                        <td colspan="2"><label id="alarmtbtime"></label></td>
+                        <td class="tabcenter"><label>填报人:</label></td>
+                        <td colspan="2"><input readonly="readonly" type="text" id="alarmperson" /></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        @*报警处理*@
+        <div id="divalarm" class="divTable" style="display:none;margin:10px 10px 5px 10px">
+            <table class="table table-striped table-bordered table-hover">
+                <tbody>
+                    <tr>
+                        <td><label>报警人:</label></td>
+                        <td><label id="bjperson"></label></td>
+                        <td><label>报警时间:</label></td>
+                        <td><label id="bjtime"></label></td>
+                    </tr>
+                    <tr>
+                        <td><label for="bjcontent">报警内容:</label></td>
+                        <td colspan="3">
+                            <textarea id="bjcontent" class="autosize-transition form-control" style="overflow: auto; word-wrap: break-word; resize: horizontal; height: 67px;width:100%"></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label for="tbresult">处理结果:</label></td>
+                        <td colspan="3">
+                            <textarea id="tbresult" class="autosize-transition form-control" style="overflow: auto; word-wrap: break-word; resize: horizontal; height: 67px;width:100%"></textarea>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+
+        @*报警处理查询*@
+        <div class="widget-box bottomDiv" id="divalarmsearch" style="width:75%;display:none;">
+            <div class="widget-header">
+                <h4>报警处理查询</h4>&nbsp;&nbsp;&nbsp;&nbsp;
+                开始时间：<input class="Wdate" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd'})" id="txtAlarmStartTime" type="text" style="width:90px;" />&nbsp;&nbsp;
+                结束时间：<input class="Wdate" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd'})" id="txtAlarmEndTime" type="text" style="width:90px;" />&nbsp;&nbsp;
+                处理结果：
+                <select style="width:100px" id="status">
+                    <option value="0">未处理</option>
+                    <option value="1">已处理</option>
+                    <option value="2">全部</option>
+                </select> &nbsp;&nbsp;&nbsp;&nbsp;
+                <input type="button" value="查 询" onclick="searchAlarmData()" class="btnSearchCss">
+                <div class="widget-toolbar">
+                    <a href="#" onclick="hideInfoWinAlarm()"><img src="../Images/open.png" width="10" height="10" style="padding:1px;" /> </a>
+                    <a href="javascript:void(0)" onclick="closeInfoWinAlarm()"><img src="../Images/close.png" width="10" height="10" style="padding:1px;" /></a>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main">
+                    <div class="divTable" style="height: 220px;overflow:auto;text-align:center" id="divalarminfo">
+                        <p>请按条件查询</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @*热点查询列表*@
+        <div class="widget-box bottomDiv" id="divhot" style="width:75%;display:none;">
+            <div class="widget-header">
+                <h4>热点查询</h4>&nbsp;&nbsp;&nbsp;&nbsp;
+                开始时间：<input class="Wdate" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd'})" id="txtHotStartTime" type="text" value="" style="width:90px;" />&nbsp;&nbsp;
+                结束时间：<input class="Wdate" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd'})" id="txtHotEndTime" type="text" value="" style="width:90px;" />&nbsp;&nbsp;
+                处理结果：
+                <select style="width:100px" id="hotstatus">
+                    <option value="0">未处理</option>
+                    <option value="1">已处理</option>
+                    <option value="2">全部</option>
+                </select>&nbsp;&nbsp;&nbsp;&nbsp;
+                <input type="button" value="查 询" onclick="searchHotData()" class="btnSearchCss">
+                <div class="widget-toolbar">
+                    <a href="#" onclick="hideInfoWinHot()"><img src="../Images/open.png" width="10" height="10" style="padding:1px;" /></a>
+                    <a href="javascript:void(0)" onclick="closeInfoWinHot()"><img src="../Images/close.png" width="10" height="10" style="padding:1px;" /></a>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main">
+                    <div class="divTable" style="height: 220px;overflow:auto;text-align:center;" id="divhotinfo">
+                        <p>请按条件查询</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @*热点处理*@
+        <div id="divhotmanager" class="divTable" style="display:none;margin:10px">
+            <table class="table table-striped table-bordered table-hover">
+                <tbody>
+                    <tr>
+                        <td><label>卫星编号:</label></td>
+                        <td><input readonly="readonly" type="text" id="wxbh" /></td>
+                        <td><label>像素:</label></td>
+                        <td><label id="xs"></label></td>
+                    </tr>
+                    <tr>
+                        <td><label>热点编号:</label></td>
+                        <td><input readonly="readonly" type="text" id="rdbh" /></td>
+                        <td><label>面积:</label></td>
+                        <td><label id="rdmj"></label></td>
+                    </tr>
+                    <tr>
+                        <td><label for="hotresult">处理结果:</label></td>
+                        <td colspan="3">
+                            <textarea id="hotresult" class="autosize-transition form-control" style="overflow: auto; word-wrap: break-word; resize: horizontal; height: 60px;width:100%"></textarea>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        @*热点查看*@
+        <div id="divhotsee" class="divTable" style="display:none;margin:10px">
+            <table class="table table-striped table-bordered table-hover">
+                <tbody>
+                    <tr>
+                        <td class="tabcenter"><label>卫星编号:</label></td>
+                        <td><input readonly="readonly" type="text" id="wxbhSee" /></td>
+                        <td class="tabcenter"><label>像素:</label></td>
+                        <td><label id="xsSee"></label></td>
+                    </tr>
+                    <tr>
+                        <td class="tabcenter"><label>热点编号:</label></td>
+                        <td><input readonly="readonly" type="text" id="rdbhSee" /></td>
+                        <td class="tabcenter"><label>面积:</label></td>
+                        <td><label id="rdmjSee"></label></td>
+                    </tr>
+                    <tr>
+                        <td class="tabcenter"><label>预报员:</label></td>
+                        <td><label id="hothly"></label></td>
+                        <td class="tabcenter"><label>地类:</label></td>
+                        <td><label id="hotdl"></label></td>
+                    </tr>
+                    <tr>
+                        <td class="tabcenter"><label>是否烟云:</label></td>
+                        <td><label id="hotyy"></label></td>
+                        <td class="tabcenter"><label>连续火:</label></td>
+                        <td><label id="hotfire"></label></td>
+                    </tr>
+                    <tr>
+                        <td class="tabcenter"><label>发生地:</label></td>
+                        <td colspan="3"><label id="hotaddress"></label></td>
+                    </tr>
+                    <tr>
+                        <td class="tabcenter"><label>上报时间:</label></td>
+                        <td><label id="sbtimeSee"></label></td>
+                        <td class="tabcenter"> <label>状态:</label></td>
+                        <td><label id="hottstate" style="color:red"></label></td>
+                    </tr>
+                    <tr>
+                        <td class="tabcenter"><label for="hotresultSee">处理结果:</label></td>
+                        <td colspan="5">
+                            <textarea id="hotresultSee" readonly="readonly" class="autosize-transition form-control" style="overflow: auto; word-wrap: break-word; resize: horizontal; height: 40px;width:100%"></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tabcenter">填报时间:</td>
+                        <td><label id="hottbtime"></label></td>
+                        <td class="tabcenter"><label>填报人:</label></td>
+                        <td><input readonly="readonly" type="text" id="hotperson" /></td>
+                    </tr>
+                    <tr>
+                        <td class="tabcenter">图片</td>
+                        <td colspan="3">
+                            <div id="hotimgdiv" onclick="imgshow('hotimgdiv')">
+                                <img id="hotimg" style="height:100px;width:200px" src="" />
+                                <a href="" id="imghref" target="_blank">查看大图</a>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        @*数据上报管理列表*@
+        <div class="widget-box bottomDiv" id="divreport" style="width:70%;display:none;">
+            <div class="widget-header">
+                <h4>数据上报</h4>&nbsp;&nbsp;&nbsp;&nbsp;
+                开始时间：<input class="Wdate" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd'})" id="txtReportStartTime" type="text" value="" style="width:90px;" />&nbsp;&nbsp;
+                结束时间：<input class="Wdate" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd'})" id="txtReportEndTime" type="text" value="" style="width:90px;" />&nbsp;&nbsp;
+                处理结果：
+                <select style="width:100px" id="reportstatus">
+                    <option value="0">未处理</option>
+                    <option value="1">已处理</option>
+                    <option value="2">全部</option>
+                </select>&nbsp;&nbsp;&nbsp;&nbsp;
+                <input type="button" value="查 询" onclick="searchReportData()" class="btnSearchCss">
+                <div class="widget-toolbar">
+                    <a href="#" onclick="hideInfoWinRepo()"><img src="../Images/open.png" width="10" height="10" style="padding:1px;" /></a>
+                    <a href="javascript:void(0)" onclick="closeInfoWinRepo()"><img src="../Images/close.png" width="10" height="10" style="padding:1px;" /> </a>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main">
+                    <div class="divTable" style="height: 220px;overflow:auto;text-align:center;" id="divreportinfo">
+                        <p>请按条件查询</p>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @*数据上报处理*@
+        <div id="divreportmanager" class="divTable" style="display:none;margin:10px 10px 5px 10px">
+            <table class="table table-striped table-bordered table-hover">
+                <tbody>
+                    <tr>
+                        <td class="tabcenter"><label>护林员:</label></td>
+                        <td><label id="hname"></label></td>
+                        <td class="tabcenter"><label>手机号:</label></td>
+                        <td><label id="phone"></label></td>
+                    </tr>
+                    <tr>
+                        <td class="tabcenter"><label>发生地:</label></td>
+                        <td colspan="3"><input type="text" id="address" style="width:100%" /></td>
+                    </tr>
+                    <tr>
+                        <td class="tabcenter"><label>上报描述:</label></td>
+                        <td colspan="3"><textarea id="reportdescribe" class="autosize-transition form-control" style="overflow: auto; word-wrap: break-word; resize: horizontal; height: 40px;width:100%"></textarea></td>
+                    </tr>
+                    <tr>
+                        <td class="tabcenter"><label for="reportresult">处理结果:</label></td>
+                        <td colspan="3"><textarea id="reportresult" class="autosize-transition form-control" style="overflow: auto; word-wrap: break-word; resize: horizontal; height: 60px;width:100%"></textarea></td>
+                    </tr>
+                    <tr>
+                        <td class="tabcenter">上报文件</td>
+                        <td colspan="3">
+                            <div id="reportmanalayerphotos" onclick="imgshow('reportmanalayerphotos')">
+                            </div>
+                            <div id="fileManagerid">
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        @*数据上报查看*@
+        <div id="divreportsee" class="divTable" style="display:none;margin:10px 10px 5px 10px">
+            <table class="table table-striped table-bordered table-hover">
+                <tbody>
+                    <tr>
+                        <td class="tabcenter"><label>上报人:</label></td>
+                        <td><label id="sbname"></label></td>
+                        <td class="tabcenter"><label>手机号:</label></td>
+                        <td><label id="sbphone"></label></td>
+                        <td class="tabcenter"><label>状态:</label></td>
+                        <td><label id="reporttstate" style="color:red"></label> </td>
+                    </tr>
+                    <tr>
+                        <td class="tabcenter"><label>发生地址:</label></td>
+                        <td colspan="5">
+                            <input type="text" readonly="readonly" id="sbaddress" style="width:100%" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tabcenter"><label>上报描述:</label></td>
+                        <td colspan="5">
+                            <textarea id="sbdescribe" readonly="readonly" class="autosize-transition form-control" style="overflow: auto; word-wrap: break-word; resize: horizontal; height: 40px;width:100%"></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tabcenter"><label>处理结果:</label></td>
+                        <td colspan="5">
+                            <textarea id="sbresult" readonly="readonly" class="autosize-transition form-control" style="overflow: auto; word-wrap: break-word; resize: horizontal; height: 40px;width:100%"></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tabcenter">上报时间:</td>
+                        <td colspan="2"><label id="reportbtime"></label></td>
+                        <td class="tabcenter"><label>填报人:</label></td>
+                        <td colspan="2"><input readonly="readonly" type="text" id="reporperson" /></td>
+                    </tr>
+                    <tr>
+                        <td class="tabcenter">上报文件</td>
+                        <td colspan="5">
+                            <div id="reportlayerphotos" onclick="imgshow('reportlayerphotos')">
+                            </div>
+                            <div id="fileReportSeeid">
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        @*数据采集处理*@
+        <div id="divcollectmanager" class="divTable" style="display:none">
+            <input type="hidden" id="collecttypeid" />
+            <input type="hidden" id="collectmanstate" />
+            <table>
+                <tbody>
+                    <tr>
+                        <td><label for="collectdescribem">采集描述:</label></td>
+                        <td><input type="text" id="collectdescribem" style="width:100%" /></td>
+                    </tr>
+                    <tr>
+                        <td><label for="collectresult">处理结果:</label></td>
+                        <td><textarea id="collectresult" class="autosize-transition form-control" style="overflow: auto; word-wrap: break-word; resize: horizontal; height: 60px;width:100%"></textarea></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        @*数据采集查看*@
+        <div id="divcollectsee" class="divTable" style="display:none;margin:10px 10px 5px 10px">
+            <table class="table table-striped table-bordered table-hover">
+                <tbody>
+                    <tr>
+                        <td class="tabcenter"><label>采集人:</label></td>
+                        <td><label id="cjname"></label></td>
+                        <td class="tabcenter"><label>手机号:</label></td>
+                        <td><label id="cjphone"></label></td>
+                        <td class="tabcenter"><label>状态:</label></td>
+                        <td><label id="collectstate" style="color:red"></label></td>
+                    </tr>
+                    <tr>
+                        <td class="tabcenter">采集描述:</td>
+                        <td colspan="5"><label id="collectdescribe"></label></td>
+                    </tr>
+                    <tr>
+                        <td class="tabcenter"><label>采集点数:</label></td>
+                        <td colspan="4"><label id="cjcount"></label>&nbsp;&nbsp;<label id="point"></label></td>
+                        <td><a href="javascript:void(0);" id="cjxx" onclick="detailinfo()" style="color:red">详细</a></td>
+                    </tr>
+                    <tr>
+                        <td class="tabcenter">填报时间: </td>
+                        <td colspan="2"><label id="collecttbtime"></label></td>
+                        <td class="tabcenter"><label>填报人:</label></td>
+                        <td colspan="2"><input readonly="readonly" type="text" id="collectperson" /></td>
+                    </tr>
+                    <tr>
+                        <td class="tabcenter">图片</td>
+                        <td colspan="5">
+                            <div id="collectlayerphotos" onclick="imgshow('collectlayerphotos')">
+                                <img id="imgcollect" style="height:100px" />
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        @*数据详细*@
+        <div id="datadetail" class="divTable" style="display:none;margin:10px ">
+
+        </div>
+
+        @*数据采集查询列表*@
+        <div class="widget-box bottomDiv" id="divcollect" style="width:75%;display:none;">
+            <div class="widget-header">
+                <h4>数据上报</h4>&nbsp;&nbsp;&nbsp;&nbsp;
+                开始时间：<input class="Wdate" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd'})" id="txtCollectStartTime" type="text" value="" style="width:90px;" />&nbsp;&nbsp;
+                结束时间：<input class="Wdate" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd'})" id="txtCollectEndTime" type="text" value="" style="width:90px;" />&nbsp;&nbsp;
+                处理结果：
+                <select style="width:100px" id="collectstatus">
+                    <option value="0" selected>未处理</option>
+                    <option value="1">已处理</option>
+                    <option value="2">全部</option>
+                </select>&nbsp;&nbsp;&nbsp;&nbsp;
+                <input type="button" value="查 询" onclick="searchCollectData()" class="btnSearchCss">
+                <div class="widget-toolbar">
+                    <a href="#" onclick="hideInfoWinCollect()"><img src="../Images/open.png" width="10" height="10" style="padding:1px;" /></a>
+                    <a href="javascript:void(0)" onclick="closeInfoWinCollect()"><img src="../Images/close.png" width="10" height="10" style="padding:1px;" /></a>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main">
+                    <div class="divTable" style="height: 220px;overflow:auto;text-align:center;" id="divcollectinfo">
+                        <p>请按条件查询</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

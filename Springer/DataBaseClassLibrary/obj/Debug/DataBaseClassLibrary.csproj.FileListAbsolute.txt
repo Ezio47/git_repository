@@ -1,0 +1,14 @@
+D:\work\springer\06.Development\TeleWare.AnHui.Product\Springer\ManagerSystem.MVC\DataBaseClassLibrary\bin\Debug\DataBaseClassLibrary.XML
+D:\work\springer\06.Development\TeleWare.AnHui.Product\Springer\ManagerSystem.MVC\DataBaseClassLibrary\bin\Debug\DataBaseClassLibrary.dll
+D:\work\springer\06.Development\TeleWare.AnHui.Product\Springer\ManagerSystem.MVC\DataBaseClassLibrary\bin\Debug\DataBaseClassLibrary.pdb
+D:\work\springer\06.Development\TeleWare.AnHui.Product\Springer\ManagerSystem.MVC\DataBaseClassLibrary\bin\Debug\Oracle.ManagedDataAccess.dll
+D:\work\springer\06.Development\TeleWare.AnHui.Product\Springer\ManagerSystem.MVC\DataBaseClassLibrary\obj\Debug\DataBaseClassLibrary.csprojResolveAssemblyReference.cache
+D:\work\springer\06.Development\TeleWare.AnHui.Product\Springer\ManagerSystem.MVC\DataBaseClassLibrary\obj\Debug\DataBaseClassLibrary.dll
+D:\work\springer\06.Development\TeleWare.AnHui.Product\Springer\ManagerSystem.MVC\DataBaseClassLibrary\obj\Debug\DataBaseClassLibrary.pdb
+F:\SI201705P002_森林防火决策指挥系统V2\01开发库\05代码\01trunk\Springer\DataBaseClassLibrary\bin\Debug\DataBaseClassLibrary.XML
+F:\SI201705P002_森林防火决策指挥系统V2\01开发库\05代码\01trunk\Springer\DataBaseClassLibrary\bin\Debug\DataBaseClassLibrary.dll
+F:\SI201705P002_森林防火决策指挥系统V2\01开发库\05代码\01trunk\Springer\DataBaseClassLibrary\bin\Debug\DataBaseClassLibrary.pdb
+F:\SI201705P002_森林防火决策指挥系统V2\01开发库\05代码\01trunk\Springer\DataBaseClassLibrary\bin\Debug\Oracle.ManagedDataAccess.dll
+F:\SI201705P002_森林防火决策指挥系统V2\01开发库\05代码\01trunk\Springer\DataBaseClassLibrary\obj\Debug\DataBaseClassLibrary.csprojResolveAssemblyReference.cache
+F:\SI201705P002_森林防火决策指挥系统V2\01开发库\05代码\01trunk\Springer\DataBaseClassLibrary\obj\Debug\DataBaseClassLibrary.dll
+F:\SI201705P002_森林防火决策指挥系统V2\01开发库\05代码\01trunk\Springer\DataBaseClassLibrary\obj\Debug\DataBaseClassLibrary.pdb

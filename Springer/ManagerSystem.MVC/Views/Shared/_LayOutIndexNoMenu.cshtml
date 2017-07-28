@@ -1,0 +1,28 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" class='indexHtml'>
+<head id="Head1">
+    <title>@ViewBag.Title</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+    @Scripts.Render("~/bundles/jquery")
+    <script src="/Scripts/jquery-easyui-1.4/jquery.easyui.min.js"></script>
+    <script src="/Scripts/jquery-easyui-1.4/locale/easyui-lang-zh_CN.js"></script>
+    <script src="/Scripts/jquery-easyui-1.4/validateHelper.js"></script>
+    <script src="/Scripts/jquery-easyui-1.4/jquery.SuperSlide.2.1.1.js"></script>
+    <link href="/Content/themes/easyui/easyui.css" rel="stylesheet" />
+    <link href="/Content/themes/easyui/color.css" rel="stylesheet" />
+    <link href="/Content/themes/easyui/icon.css" rel="stylesheet" />
+    <link href="/Content/themes/default/Default.css" rel="stylesheet" />
+    <link href="/Content/themes/default/Public.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/Content/themes/assets/css/font-awesome.min.css" />
+
+    <script src="~/Scripts/layer/layer.js"></script>
+    <script src="~/Scripts/laydate/laydate.js"></script>
+    <script src="~/Scripts/Springer.js"></script>
+    <script src="~/Scripts/SpringerCommonValidate.js"></script>
+    @RenderSection("Header", required: false)@*View页面自定义特定js/css使用*@
+</head>
+<body>
+    @RenderBody()
+</body>
+</html>

@@ -1,0 +1,563 @@
+﻿@using ManagerSystemClassLibrary;
+@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+    var curorgno = SystemCls.getCurUserOrgNo();
+    if (curorgno.Substring(6, 3) == "000" && curorgno.Substring(4, 2) != "00")
+    {
+        curorgno = curorgno.Substring(0, 6) + "xxx";
+    }
+    else
+    {
+        curorgno = SystemCls.getCurUserOrgNo();
+    }
+}
+<script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+<script src="~/Scripts/test.js"></script>
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <ul>
+                        <li class="homeUL">
+                            单位：<div id="tbxBYORGNO" class="easyui-combotree"></div>
+                            任务名称： <input id="tbxTASKTITLE" type="text" value="" />
+                            状态:
+                            <select id="Status">
+                                <option value="">--请选择--</option>
+                                <option value="0">新增</option>
+                                <option value="2">已下发</option>
+                                <option value="3">已反馈</option>
+                                <option value="4">已结束</option>
+                            </select>
+                            <input id="btnQuery" type="button" value="查询" onclick="query('1')" class="btnSearchCss" />
+                            <input id="btnAdd" type="button" value="添加" style="display:none;" onclick="Manager('','Add')" class="btnAddCss" />
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <div class="divTable" id="divTable">
+                    @*@Html.Raw(ViewBag.UserList)*@
+                </div>
+            </div>
+            <div data-options="region:'south'" title="" style=" height:40px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
+                <div class="divPager" id="divPager">
+                    @*@Html.Raw(@ViewBag.PagerInfo)*@
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="divMan" id="tableadd" style="display:none;margin-left:5px;margin-top:8px">
+    <table cellpadding="0" cellspacing="0">
+        <tr>
+            <td style="width:80px;">
+                单位名称：
+            </td>
+            <td>
+                <select id="BYORGNO" class="easyui-combotree" style="width:180px"></select>
+            </td>
+            <td style="width:80px;">
+                任务名称：
+            </td>
+            <td style="width:35%">
+                <input type="text" id="NAME" style="width:80%" class="input-small" value="" />
+            </td>
+        </tr>
+        <tr>
+            <td style="width:80px;">
+                任务类型：
+            </td>
+            <td>
+                <select id="TASKTYPE" style="width:80%">
+                    @Html.Raw(@ViewBag.TASKTYPE)
+                </select>
+            </td>
+            <td style="width:80px;">
+                任务级别：
+            </td>
+            <td style="width:35%">
+                <select id="TASKLEVEL" style="width:80%">
+                    @Html.Raw(@ViewBag.TASKLEVEL)
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td style="width:100px;">
+                任务开始时间：
+            </td>
+            <td>
+                <input class="Wdate" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss' })" id="tbxBEGINTIME" type="text" value="" style="width:80%;" />
+            </td>
+            <td style="width:100px;">
+                任务结束时间：
+            </td>
+            <td style="width:35%">
+                <input class="Wdate" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss'})" id="tbxENDTIME" type="text" value="" style="width:80%;" />
+            </td>
+        </tr>
+
+        <tr>
+            <td style="width:80px;">
+                任务发起时间：
+            </td>
+            <td>
+                <input class="Wdate" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss'})" id="tbxSTARTTIME" type="text" value="" style="width:80%;" />
+            </td>
+            <td style="width:80px;">
+                是否下发：
+            </td>
+            <td style="width:35%">
+                <input type="checkbox" id="chk">
+            </td>
+        </tr>
+        <tr>
+            <td style="width:80px;">
+                指派护林员：
+            </td>
+            <td colspan="3">
+                @*<input type="checkbox" id="chk">*@
+                @*<select id="HlyList" class="easyui-combotree" style="width:200px"></select>*@
+                <input id="HlyList" type="text" style="width:80%" />
+                <input type="button" style="width:10%;height:60%" value="指派" onclick="Assign();" />
+                <input id="HlyListid" type="hidden" style="width:80%" />
+                @*<textarea id="tbxCONTENT" style="width:95%;height:50px; margin-top:10px; OVERFLOW:visible"></textarea>*@
+            </td>
+        </tr>
+        <tr>
+            <td style="width:80px;">
+                任务内容：
+            </td>
+            <td colspan="3">
+                <textarea id="tbxCONTENT" style="width:95%;height:50px; margin-top:10px; OVERFLOW:visible"></textarea>
+            </td>
+        </tr>
+
+    </table>
+
+</div>
+
+<div class="divMan" id="HlyTree" style="display:none;margin-left:5px;margin-top:8px">
+    <table style="background-color:#f4fef6;width:100%">
+        <tr>
+            <td>
+                <div style="height:300px" id="tt" class="easyui-tree" checkbox="true"></div>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<script type="text/javascript">
+
+    $(function () {
+        var bln = '@ViewBag.isAdd';
+        if (bln == "1") {
+            document.getElementById('btnAdd').style.display = "";
+        }
+
+        $('#tbxBYORGNO').combotree({
+            url: '/System/OnlyOrgTreeget',
+            editable: false,
+            required: false,
+            panelHeight: 'auto',
+            onLoadSuccess: function (node, data) {
+                var t = $("#tbxBYORGNO").combotree('tree');//获取tree
+                t.tree("collapseAll");
+                node = t.tree("find", data[0].id);
+                t.tree("expand", node.target);//展开节点 expandTo
+            }
+        });
+
+        $('#BYORGNO').combotree({
+            url: '/System/OnlyOrgTreeget',
+            editable: false,
+            required: true,
+            panelHeight: 'auto',
+            onLoadSuccess: function (node, data) {
+                var t = $("#BYORGNO").combotree('tree');//获取tree
+                t.tree("collapseAll");
+                node = t.tree("find", data[0].id);
+                t.tree("expand", node.target);//展开节点 expandTo
+                $('#BYORGNO').combotree('setValue', node.id);
+            }
+        });
+
+        getTree();
+        query('1');
+    });
+
+    function query(Page) {
+        var pagesize = '0';
+        if (document.getElementById("selPageSize") != null) {
+            pagesize = document.getElementById("selPageSize").value;
+        }
+        var orgno = $('#tbxBYORGNO').combotree('getValue');
+        $.ajax({
+            url: '/System/getTaskList',
+            data: {
+                BYORGNO: orgno,
+                TASKTITLE: $("#tbxTASKTITLE").val(),
+                STATUS: $("#Status").val(),
+                PageSize: pagesize,
+                Page: Page,
+            },
+            type: 'post',
+            success: function (data) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#divTable').html(ar.tableInfo);
+                    $('#divPager').html(ar.pagerInfo);
+                }
+                else {
+                    layer.msg('查询异常');
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('查询异常');
+            }
+        });
+    }
+
+    //获取护林员树
+    function getTree() {
+        $('#tt').tree({
+            url: '/System/HlyGet',
+            checked: false,
+            animate: true,
+            lines: true,
+            cache: false
+            //onClick: function (node) {
+            //    $('#grid').datagrid({ url: '/SystemMan/TreeGet' })
+            //}
+        });
+    }
+
+    var arr = new Array();
+    var hidarr = new Array();
+    var map = {};
+    var dicmap = {};
+    //指派护林员
+    function Assign() {
+        var hidlist = $('#HlyListid').val();
+
+        //$('#tt').tree({
+        //    onLoadSuccess: function (node, data) {
+        //        if (hidlist != "" && hidlist != null) {
+        //            var arrhid = hidlist.split(',');
+        //            for (var i = 0; i < arrhid.length; i++) {
+        //                if (arrhid[i] != null && arrhid[i] != "") {
+        //                    //$.ajax({
+        //                    //    type: "post",
+        //                    //    url: "/system/GetHidOrg",
+        //                    //    data: "hid=" + arrhid[i],
+        //                    //    dataType: "json",
+        //                    //    async: false,
+        //                    //    success: function (data) {
+        //                    //        arr[i] = data;
+        //                    //        hidarr[i] = arrhid[i];
+        //                    //    }
+        //                    //});
+        //                    var xznn = $('#tt').tree('find', arrhid[i]);
+        //                    $('#tt').tree('check', xznn.target);
+        //                }
+        //            }
+        //        }
+        //    }
+        //});
+        layer.open({
+            type: 1,
+            title: "指派护林员",
+            area: ['30%', '70%'],
+            btn: ['确定', '取消'],
+            shade: 0,
+            maxmin: true,
+            content: $('#HlyTree'),
+            yes: function (index, layero) {
+                var nodes = $('#tt').tree('getChecked');
+                if (nodes.length > 0) {
+                    var arr = [];
+                    var arrname = [];
+                    var arro = [];
+                    var arrHlyList = [];
+                    for (var i = 0; i < nodes.length; i++) {
+                        if (nodes[i].treeType == 'hly') {
+                            arr.push(nodes[i].id);
+                            arrname.push(nodes[i].text);
+                        }
+                        if (nodes[i].treeType == 'org') {
+                            arro.push(nodes[i].id);
+                        }
+                    }
+                    //alert("arr" + arr.length);
+                    var strname = '';
+                    var strid = '';
+                    if (arr.length == "0") {
+                        layer.alert('请指派护林员！', { icon: 2 });
+                        return false;
+                    } else if (arr.length == "1") {
+                        strname = arrname[0];
+                        strid = arr[0];
+                    } else {
+                        for (var i = 0; i < arr.length; i++) {
+                            strname = strname + arrname[i] + ",";
+                            strid = strid + arr[i] + ",";
+                        }
+                        strname = strname.substring(0, strname.length - 1);
+                        strid = strid.substring(0, strid.length - 1);
+                    }
+                    $('#HlyList').val(strname);
+                    $('#HlyListid').val(strid);
+                    layer.close(index);
+                } else {
+                    layer.alert('请指派护林员！', { icon: 2 });
+                    return false;
+                }
+            }
+        });
+    }
+
+    function Manager(ID, Method, page) {
+        if (Method == 'Del' || Method == 'End') {
+            if (Method == 'Del') {
+                if (confirm('确定要删除该任务吗?')) {
+                    $.ajax({
+                        type: "Post",
+                        url: "/System/TaskManager",
+                        data: {
+                            TASK_INFOID: ID,
+                            METHOD: Method,
+                            STATUS: '',//删除 流转表里面状态
+                            OPTITLE: '删除任务'
+                        },
+                        dataType: "json",
+                        error: function () {
+                            layer.msg('错误:异常!', 'error');
+                        },
+                        success: function (re) {
+                            if (re.Success) {
+                                layer.msg('删除成功', { icon: 6 });
+                                query(page);
+                            }
+                            else {
+                                layer.msg('删除失败', { icon: 5 });
+                            }
+                        }
+                    });
+                }
+            } else {
+                if (confirm('确定要结束该任务吗?')) {
+                    $.ajax({
+                        type: "Post",
+                        url: "/System/TaskManager",
+                        data: {
+                            TASK_INFOID: ID,
+                            METHOD: Method,
+                            STATUS: '4', //结束 流转表里面状态
+                            OPTITLE: '结束任务'
+                        },
+                        dataType: "json",
+                        error: function () {
+                            layer.msg('错误:异常!', 'error');
+                        },
+                        success: function (re) {
+                            if (re.Success) {
+                                layer.msg('成功', { icon: 6 });
+                                query(page);
+                            }
+                            else {
+                                layer.msg('失败', { icon: 5 });
+                            }
+                        }
+                    });
+                }
+            }
+
+        }
+        else {
+            if (Method == "Add") {
+                $('#BYORGNO').combotree('setValue', "@curorgno");
+                $('#NAME').val('');
+                $('#tbxSTARTTIME').val('');
+                $('#tbxBEGINTIME').val('');
+                $('#tbxENDTIME').val('');
+                $("#chk").attr("checked", false);
+                $('#HlyList').val('');//护林员文本框
+                $('#HlyListid').val('');//护林员隐藏id
+                $('#tbxCONTENT').val('');
+            } else if (Method == "Mdy") {
+                $.ajax({
+                    type: "Post",
+                    url: "/system/GetTaskjson",
+                    data: {
+                        TASK_INFOID: ID,
+                    },
+                    dataType: "json",
+                    error: function () {
+                        layer.msg('错误:异常!', 'error');
+                    },
+                    success: function (data) {
+                        if (data.TASK_INFOID != '') {
+                            document.getElementById("NAME").value = data.TASKTITLE;
+                            $('#BYORGNO').combotree('setValue', data.BYORGNO);
+                            $("#TASKTYPE").find("option[value='" + data.TASKTYPE + "']").attr("selected", true);
+                            $("#TASKLEVEL").find("option[value='" + data.TASKLEVEL + "']").attr("selected", true);
+                            document.getElementById("tbxBEGINTIME").value = data.TASKBEGINTIME;
+                            document.getElementById("tbxENDTIME").value = data.TASKENDTIME;
+                            document.getElementById("tbxSTARTTIME").value = data.TASKSTARTTIME;
+                            if (data.TASKSTAUTS == "2" || data.TASKSTAUTS == "3" || data.TASKSTAUTS == "4")
+                                $("#chk").attr("checked", true);
+                            else
+                                $("#chk").attr("checked", false);
+                            document.getElementById("HlyList").value = data.HLYNAMELIST;
+                            //document.getElementById("HlyListid").value = data.HIDLIST;
+                            $('#HlyListid').val(data.HIDLIST);
+
+                            document.getElementById("tbxCONTENT").value = data.TASKCONTENT;
+
+                            //$('#tt').tree({
+                            //    url: '/System/HlyGet?phonehname='+name ,
+                            //    checked: false,
+                            //    animate: true,
+                            //    lines: true,
+                            //    cache: false,
+                            //    onclick: function (node) {
+
+                            //    }
+
+                            //});
+                        }
+                    }
+                });
+            }
+
+            var str = "新增任务";
+            if (Method == "Mdy")
+                str = "任务修改";
+
+            layer.open({
+                type: 1,
+                title: str,
+                area: ['50%', '60%'],
+                btn: ['保存', '取消'],
+                shade: 0,
+                maxmin: true,
+                content: $('#tableadd'),
+                yes: function (index, layero) {
+                    var status;
+                    if ($('#chk').is(':checked')) {
+                        status = 2;//已下发
+                    } else {
+                        status = 0;//新建
+                    }
+                    var name = $('#NAME').val();
+                    //var type = $('#TASKTYPE').find("option:selected").text();
+                    //var level = $('#TASKLEVEL').find("option:selected").text();
+                    var type = $('#TASKTYPE').val();
+                    var level = $('#TASKLEVEL').val();
+                    var starttime = $('#tbxSTARTTIME').val();
+                    var hlylist = $('#HlyListid').val();
+                    var begintime = $('#tbxBEGINTIME').val();
+                    var endtime = $('#tbxENDTIME').val();
+                    var content = $('#tbxCONTENT').val();
+
+                    if ($.trim(name) == "") {
+                        layer.msg('任务名称不可为空！', { icon: 5 });
+                        $('#NAME').focus();
+                        return;
+                    }
+                    if ($.trim(begintime) == "") {
+                        layer.msg('任务开始时间不可为空！', { icon: 5 });
+                        $('#tbxBEGINTIME').focus();
+                        return;
+                    }
+                    if ($.trim(endtime) == "") {
+                        layer.msg('任务结束时间不可为空！', { icon: 5 });
+                        $('#tbxENDTIME').focus();
+                        return;
+                    }
+                    if ($.trim(begintime) > $.trim(endtime)) {
+                        layer.msg('开始时间不可大于结束时间！', { icon: 5 });
+                        return;
+                    }
+                    if ($.trim(starttime) == "") {
+                        layer.msg('任务发起时间不可为空！', { icon: 5 });
+                        $('#tbxSTARTTIME').focus();
+                        return;
+                    }
+                    if ($.trim(hlylist) == "") {
+                        layer.msg('请选择指派的护林员！', { icon: 5 });
+                        $('#HlyList').focus();
+                        return;
+                    }
+                    if ($.trim(content) == "") {
+                        layer.msg('任务内容不可为空！', { icon: 5 });
+                        $('#tbxCONTENT').focus();
+                        return;
+                    }
+
+                    $.ajax({
+                        type: "Post",
+                        url: "/System/TaskManager",
+                        data: {
+                            TASK_INFOID: ID,
+                            BYORGNO: $('#BYORGNO').combotree('getValue'),
+                            NAME: name,
+                            TYPE: type,
+                            LEVEL: level,
+                            TYPE: type,
+                            STATUS: status,
+                            STARTTIME: starttime,
+                            HLYLIST: hlylist,
+                            BEGINTIME: begintime,
+                            ENDTIME: endtime,
+                            CONTENT: content,
+                            METHOD: Method,
+                            OPTITLE: str
+                        },
+                        dataType: "json",
+                        error: function () {
+                            alert('错误:异常!', 'error');
+                        },
+                        success: function (re) {
+                            if (re.Success) {
+                                layer.close(index);
+                                layer.msg('操作成功', { icon: 6 });
+                                query('1');
+                            }
+                            else {
+                                layer.msg(re.Msg, { icon: 5 });
+                            }
+                        }
+                    });
+                }, cancel: function (index) {
+                    layer.close(index);
+                }
+            })
+        }
+
+    }
+
+    //查看
+    function See(ID, tablename) {
+        layer.open({
+            type: 2,
+            title: '任务查看',
+            area: ['60%', '90%'],
+            fix: true,
+            maxmin: true,
+            content: '/System/SeeDetail?tablename=' + tablename + "&ID=" + ID
+        })
+    }
+
+
+
+</script>
+

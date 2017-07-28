@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="0d9eb283-4a4a-4d15-b56f-95c173ebf878" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://192.168.5.244:8090/SpringerRemoteSystemService.svc" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="SpringerRemoteSystemService5.xsd" MetadataType="Schema" ID="19be44cf-5bf5-4f55-b8ad-a30783e84efe" SourceId="1" SourceUrl="http://192.168.5.244:8090/SpringerRemoteSystemService.svc?xsd=xsd1" />
+    <MetadataFile FileName="SpringerRemoteSystemService51.xsd" MetadataType="Schema" ID="8851e4d9-8d1e-43da-bd7f-7cc9238d5851" SourceId="1" SourceUrl="http://192.168.5.244:8090/SpringerRemoteSystemService.svc?xsd=xsd0" />
+    <MetadataFile FileName="SpringerRemoteSystemService52.xsd" MetadataType="Schema" ID="cc0e69c3-745b-4599-9d4a-b7e0c3144820" SourceId="1" SourceUrl="http://192.168.5.244:8090/SpringerRemoteSystemService.svc?xsd=xsd3" />
+    <MetadataFile FileName="SpringerRemoteSystemService53.xsd" MetadataType="Schema" ID="23ca3132-b872-4387-bac2-6e5906480ac0" SourceId="1" SourceUrl="http://192.168.5.244:8090/SpringerRemoteSystemService.svc?xsd=xsd2" />
+    <MetadataFile FileName="SpringerRemoteSystemService1.wsdl" MetadataType="Wsdl" ID="274546f6-7803-4919-95d3-9008d007da93" SourceId="1" SourceUrl="http://192.168.5.244:8090/SpringerRemoteSystemService.svc?wsdl" />
+    <MetadataFile FileName="SpringerRemoteSystemService1.disco" MetadataType="Disco" ID="cbe83975-ca61-4063-963c-b167a71e3bde" SourceId="1" SourceUrl="http://192.168.5.244:8090/SpringerRemoteSystemService.svc?disco" />
+    <MetadataFile FileName="SpringerRemoteSystemService54.xsd" MetadataType="Schema" ID="d5f8cab7-c4ad-43e8-99a8-e4fdc28e3dae" SourceId="1" SourceUrl="http://192.168.5.244:8090/SpringerRemoteSystemService.svc?xsd=xsd4" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

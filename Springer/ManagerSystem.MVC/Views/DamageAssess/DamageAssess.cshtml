@@ -1,0 +1,132 @@
+﻿@using ManagerSystemClassLibrary;
+@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+    var curorgno = SystemCls.getCurUserOrgNo();
+    if (curorgno.Substring(6, 3) == "000" && curorgno.Substring(4, 2) != "00")
+    {
+        curorgno = curorgno.Substring(0, 6) + "xxx";
+    }
+    else
+    {
+        curorgno = SystemCls.getCurUserOrgNo();
+    }
+}
+@section Header{
+    <script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+
+    <div data-options="region:'center'" title="">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <ul>
+                        <li class="homeUL">
+                            单位：<div id="tbxORGNO" class="easyui-tree"></div>&nbsp;&nbsp;&nbsp;
+                            时间：<input id="tbxTime" type="text" class="Wdate" style="width:100px" value="@ViewBag.Time" onclick="WdatePicker({ dateFmt: 'yyyy-MM'})" />
+                            <input type="button" value="查询" onclick="query('1')" class="btnSearchCss" />
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; " class="LayoutCenterBG">
+                <div id="divTable" class="divTable">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    //查询时的单位选择下拉框
+    $(function () {
+        $('#tbxORGNO').combotree({
+            url: '/DataCenter/OrgTreeget',
+            editable: false,
+            required: true,
+            panelHeight: 'auto',
+            onLoadSuccess: function (node, data) {
+                var t = $("#tbxORGNO").combotree('tree');//获取tree
+                t.tree("collapseAll");
+                node = t.tree("find", data[0].id);
+                t.tree("expand", node.target);//展开节点 expandTo
+            }
+        });
+        $('#tbxORGNO').combotree('setValue', "@curorgno");
+        query('1');
+    });
+
+    //查询
+    function query(Page) {
+        var pagesize = '0';
+        if (document.getElementById("selPageSize") != null) {
+            pagesize = document.getElementById("selPageSize").value;
+        }
+        var ORGNO = $('#tbxORGNO').combotree('getValue');
+        $.ajax({
+            url: '/DamageAssess/GetDamageList',
+            data: {
+                BYORGNO: ORGNO,
+                Time: $('#tbxTime').val(),
+                PageSize: pagesize,
+                Page: Page,
+            },
+            type: 'post',
+            dataType: 'json',
+            success: function (data) {
+                if (data.Success) {
+                    $('#divTable').html('');
+                    $('#divPager').html('');
+                    $('#divTable').html(data.tableInfo);
+                    $('#divPager').html(data.pagerInfo);
+                }
+                else {
+                    $('#divTable').html('');
+                    $('#divPager').html('');
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('系统异常!', { icon: 5 });
+            }
+        });
+    }
+
+    //选中改变颜色
+    function setColor(obj) {
+        $(obj).css("background-color", "#FFDAB9");
+        $("tr").not($(obj)).css("background-color", "");
+    }
+
+    //查看、评估
+    function Manager(Method, DataId, Page) {
+        if (Method == "See") {
+            layer.open({
+                type: 2,
+                title: '灾损查看',
+                area: ['60%', '90%'],
+                fix: true,
+                maxmin: true,
+                content: '/DamageAssess/FireLostDataSee?JCFID=' + DataId,
+            })
+        }
+        if (Method == "Assess") {
+            var index = layer.open({
+                type: 2,
+                title: '灾损评估',
+                fix: true,
+                maxmin: false,
+                offset: '10%',
+                content: '/DamageAssess/FireLostAssess?JCFID=' + DataId,
+                end: function () {
+                    end: query(Page);
+                }
+            });
+            layer.full(index);
+        }
+    }
+</script>

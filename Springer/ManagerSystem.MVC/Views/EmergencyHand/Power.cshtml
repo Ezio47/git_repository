@@ -1,0 +1,103 @@
+﻿@{
+    ViewBag.Title = "Power";
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+}
+<script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+<script src="~/Scripts/skyline/3DMapTotal.js"></script>
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'center'" title="" style=" border: none; float:left"  >
+                <div style="padding-top:7px;padding-left:7px">
+                    <input type="hidden" id="userelecid" />
+                    <input type="hidden" id="uid" value="@ViewBag.uid" />
+                    开始时间：<input class="Wdate" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd'})" id="txtElecStartTime" type="text" value="" style="width:90px;" />
+                    结束时间：<input class="Wdate" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd'})" id="txtElecEndTime" type="text" value="" style="width:90px;" />
+                    <input type="button" value="查 询" onclick="searchElecData()" class="btnSearchCss">
+                </div>
+                <div id="divdl" class="divTable" >
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<object id="SGWorld" classid="CLSID:3a4f91b1-65a8-11d5-85c1-0001023952c1" style="visibility:hidden;height:0 "></object>
+
+<script type="text/javascript">
+    var uid = $("#uid").val();
+    $(function () {
+        searchElecData1();
+    })
+    //初始化显示电量查询
+    function searchElecData1() {
+        $('#txtElecStartTime').val(getLocalTime(0))
+        $('#txtElecEndTime').val(getLocalTime(0))
+        $.ajax({
+            type: "Post",
+            url: "/RealSupervision/GetElectricAjax",
+            data: { uid: uid, startTime: $('#txtElecStartTime').val(), endTime: $('#txtElecEndTime').val() },
+            dataType: "json",
+            success: function (obj) {
+                if (obj != null) {
+                    if (obj.Success) {
+                        $('#divdl').empty();
+                        $('#divdl').html(obj.Msg);
+                    }
+                    else {
+                        $('#divdl').empty();
+                        $('#divdl').html(obj.Msg);
+                        layer.alert(obj.Url, { icon: 5 });
+                    }
+
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                layer.alert('Ajax事件异常', { icon: 5 });
+            }
+        });
+    }
+    //点击查询显示电量查询
+    function searchElecData() {
+        var startTime = $('#txtElecStartTime').val()
+        var endTime = $('#txtElecEndTime').val()
+        if ($.trim(startTime) == "" || $.trim(endTime) == "") {
+            layer.alert('时间不能为空！', { icon: 2 });
+            return false;
+        }
+        var bo = checkEndTime(startTime, endTime);
+        if (bo == false) {
+            layer.alert('开始时间不能大于结束时间！', { icon: 2 });
+            return false;
+        }
+        if ($.trim(uid) == "") {
+            layer.alert('护林员ID传参失败！', { icon: 2 });
+            return false;
+        }
+        $.ajax({
+            type: "Post",
+            url: "/RealSupervision/GetElectricAjax",
+            data: { uid: uid, startTime: startTime, endTime: endTime },
+            dataType: "json",
+            success: function (obj) {
+                if (obj != null) {
+                    if (obj.Success) {
+                        $('#divdl').empty();
+                        $('#divdl').html(obj.Msg);
+                    }
+                    else {
+                        $('#divdl').empty();
+                        $('#divdl').html(obj.Msg);
+                        layer.alert(obj.Url, { icon: 5 });
+                    }
+
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                layer.alert('Ajax事件异常', { icon: 5 });
+            }
+
+        });
+    }
+</script>

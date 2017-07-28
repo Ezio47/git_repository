@@ -1,0 +1,223 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        灾后处理名称： <input id="PROCESSNAME" type="text" value="" />
+                        灾后处理类别：<select id="PROCESSCODE" onchange="query()">@Html.Raw(@ViewBag.PROCESSCODE)</select>
+                        <input type="button" value="查询" onclick="query()" class="btnSearchCss" />
+                        <input type="button" value="添加" onclick="Manager('Add','','')" class="btnAddCss" />
+                    </div>
+                </div>
+            </div>
+
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <input id="hidFIREINFOID" type="hidden" value="@ViewBag.FIREINFOID" />
+                <div class="divTable" id="divTable">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="divMan" id="tableAdd" style="display:none;margin-left:5px;margin-top:8px">
+    <input id="HidID" name="HidID" type="hidden" value="" />
+    <table cellpadding="0" cellspacing="0">
+        <tr>
+            <td style="width:100px;">灾后处理名称: </td>
+            <td><input id="tbxPROCESSNAME" type="text" value="" style="width:98%;" /></td>
+            <td style="width:100px;">灾后处理类别: </td>
+            <td><select id="tbxPROCESSCODE" style="width: 99%;">@Html.Raw(@ViewBag.PROCESSCODEAdd)</select></td>
+        </tr>
+        <tr>
+            <td id="td1">损失金额:</td>
+            <td>
+                <input id="tbxLOSEMONEY" type="text" value="" style="width:85%;" />
+                <span style="color: gray;" id="span1">元</span>
+            </td>
+            <td colspan="2"></td>
+        </tr>
+        <tr>
+            <td>备注:</td>
+            <td colspan="3"><input id="tbxMARK" type="text" value="" style="width:99%;" /></td>
+        </tr>
+    </table>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        query();
+    });
+
+    //查询
+    function query() {
+        $.ajax({
+            url: '/DamageAssess/GetLOSTPROCESSList',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: { FIREINFOID: $("#hidFIREINFOID").val(), PROCESSNAME: $("#PROCESSNAME").val(), PROCESSCODE: $("#PROCESSCODE").val() },
+            dataType: 'json',
+            success: function (data) {
+                if (data.Success) {
+                    $('#divTable').html('');
+                    $('#divTable').html(data.Msg);
+                }
+                else {
+                    $('#divTable').html('');
+                }
+            },
+            error: function (error) {
+                layer.msg('查询异常!', { icon: 5 });
+            }
+        });
+    }
+
+    //选中改变颜色
+    function setColor(obj) {
+        $(obj).css("background-color", "#FFDAB9");
+        $("tr").not($(obj)).css("background-color", "");
+    }
+
+    //数据增、删、改、查看
+    function Manager(Method, ID) {
+        if (Method == 'Del') {
+            layer.confirm('确实要删除吗?', { icon: 3, title: '提示' }, function (index) {
+                $.ajax({
+                    type: "post",
+                    url: "/DamageAssess/LOSTPROCESSManager",
+                    data: { PROCESSID: ID, Method: Method },
+                    dataType: "json",
+                    success: function (re) {
+                        if (re.Success) {
+                            layer.msg(re.Msg, { icon: 6 });
+                            query();
+                        }
+                        else {
+                            layer.msg(re.Msg, { icon: 5 });
+                        }
+                    },
+                    error: function () {
+                        layer.msg('系统异常!', { icon: 5 });
+                    }
+                });
+            });
+        }
+        else if (Method == 'See') {
+            layer.open({
+                type: 2,
+                title: '查看灾后处理费用',
+                area: ['70%', '70%'],
+                fix: true,
+                maxmin: true,
+                content: '/DamageAssess/LOSTPROCESSDataSee?PROCESSID=' + ID,
+            })
+        }
+        else {
+            if (Method == 'Add') {
+                $("#HidID").val('');
+                $("#tbxPROCESSNAME").val('');
+                $("#tbxPROCESSCODE").val('1');
+                $("#tbxLOSEMONEY").val('');
+                $("#tbxMARK").val('');
+            }
+            if (Method == 'Mdy') {
+                $.ajax({
+                    type: "post",
+                    url: "/DamageAssess/GetLOSTPROCESSJson",
+                    data: { PROCESSID: ID, },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.LOSTPROCESSID != '') {
+                            $('#HidID').val(data.LOSTPROCESSID);
+                            $("#tbxPROCESSNAME").val(data.LOSTPROCESSNAME);
+                            $("#tbxPROCESSCODE").val(data.LOSTPROCESSCODE);
+                            $("#tbxLOSEMONEY").val(data.LOSEMONEYCOUNT);
+                            $("#tbxMARK").val(data.MARK);
+                        }
+                    },
+                    error: function () {
+                        layer.msg('系统异常!', { icon: 5 });
+                    }
+                });
+            }
+            var btnInfo = ['保存', '取消'];
+            var str = "添加灾后处理费用";
+            if (Method == "Mdy") {
+                str = "修改灾后处理费用";
+            }
+            layer.open({
+                type: 1,
+                title: str,
+                area: ['70%', '72%'],
+                btn: btnInfo,
+                shade: 0,
+                maxmin: true,
+                content: $('#tableAdd'),
+                yes: function (index, layero) {
+                    var HID = $('#HidID').val();
+                    if (HID != "") {
+                        ID = HID;
+                        Method = 'Mdy';
+                    }
+                    var processName = $("#tbxPROCESSNAME").val();
+                    if ($.trim(processName) == "") {
+                        layer.msg('请输入灾后处理名称!', { icon: 5 });
+                        $("#tbxPROCESSNAME").focus();
+                        return;
+                    }
+                    var loseMoney = $("#tbxLOSEMONEY").val();
+                    if ($.trim(loseMoney) == "") {
+                        layer.msg('请输入损失金额!', { icon: 5 });
+                        $("#tbxSTOPCOUNT").focus();
+                        return;
+                    }
+                    else {
+                        if (CheckNUM2(loseMoney) == false) {
+                            layer.msg('损失金额请输入数字,且最多保留2位有效数字!', { icon: 5 });
+                            $('#tbxSTOPCOUNT').focus();
+                            return;
+                        }
+                    }
+                    $.ajax({
+                        type: "post",
+                        url: "/DamageAssess/LOSTPROCESSManager",
+                        data: {
+                            PROCESSID: ID,
+                            FIREINFOID: $('#hidFIREINFOID').val(),
+                            PROCESSNAME: processName,
+                            PROCESSCODE: $('#tbxPROCESSCODE').val(),
+                            LOSEMONEYCOUNT: loseMoney,
+                            MARK: $('#tbxMARK').val(),
+                            Method: Method
+                        },
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.Success) {
+                                $('#HidID').val(data.Url);
+                                layer.confirm(data.Msg + ' 请返回?', { icon: 3, title: '提示' }, function (index2) {
+                                    layer.close(index2);
+                                    layer.close(index);
+                                });
+                                query();
+                            }
+                            else {
+                                layer.msg(data.Msg, { icon: 5 });
+                            }
+                        },
+                        error: function () {
+                            layer.msg('系统异常!', { icon: 5 });
+                        }
+                    });
+                },
+                cancel: function (index) {
+                    layer.close(index);
+                }
+            })
+        }
+    }
+</script>
+

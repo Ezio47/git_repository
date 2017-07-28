@@ -1,0 +1,246 @@
+﻿@{
+    ViewBag.Title = "视频界面";
+    Layout = null;
+}
+
+<title>@ViewBag.Title</title>
+<script src="~/Scripts/Springer.js"></script>
+<link href="~/Content/videocontrol.css" rel="stylesheet" />
+<link href="~/Content/themes/easyui/easyui.css" rel="stylesheet" />
+<link href="~/Content/themes/easyui/icon.css" rel="stylesheet" />
+<link href="~/Content/themes/easyui/color.css" rel="stylesheet" />
+<script src="~/Scripts/VideoJs/jquery-2.2.2.js"></script>
+<script src="~/Scripts/jquery-easyui-1.4/jquery.min.js"></script>
+<script src="~/Scripts/jquery-easyui-1.4/jquery.easyui.min.js"></script>
+<script src="~/Scripts/jquery-easyui-1.4/locale/easyui-lang-zh_CN.js"></script>
+
+<!-- 引入与服务器通信的js文件  -->
+
+<script src="~/Scripts/VideoJs/common.js"></script>
+<script src="~/Scripts/VideoJs/ckplayer/ckplayer.js" charset="utf-8"></script>
+<script src="~/Scripts/VideoJs/md5.js"></script>
+<script src="~/Scripts/VideoJs/base64.js"></script>
+<script src="~/Scripts/VideoJs/loginService.js"></script>
+<script src="~/Scripts/VideoJs/serverInfoService.js"></script>
+<script src="~/Scripts/VideoJs/cacheService.js"></script>
+<script src="~/Scripts/VideoJs/businessService.js"></script>
+<script src="~/Scripts/VideoJs/WebSocket.js"></script>
+<script src="~/Scripts/VideoJs/VideoShow.js"></script>
+<style type="text/css">
+    .videoclass {
+        width: 100%;
+        height: 100%;
+    }
+</style>
+<script type="text/javascript">
+
+    this.valuedatas = new treeNode();
+    this.valuedatas.value = new devObj();
+    var $j = jQuery.noConflict(); //自定义一个比较短快捷方式
+    var id = '@ViewBag.id';
+    var eid = '@ViewBag.eid';
+    $j(function () {
+        login();
+        
+       
+    });
+
+    var valuedata;
+    var valuechildren;
+    var jsonstr = "";
+    var jsondata1 = [{
+        "id": 1,
+        "text": "吉林汪清汪清县子服务器",
+        "isVideo": false,
+        "iconCls": "icon-server",
+        "children": [{
+            "text": "汪清县",
+            "state": "open",
+            "isVideo": false,
+            "children": [{
+                "id": 2,
+                "text": "磨盘山",
+                "isVideo": false,
+                //"children": JSON.parseJSON('{"text":1}')
+                //"children": [{
+                //    "parentid": 270, "text": "球台160", "objId": 271, "templateId": "650604426", "objState": 2, "objType": 2, "parentConnection": "0_263.0_269.0_270.271", "summary": "", "summaryAddition": "", "img": "", "classes": "devListView", "isVideo": true
+                //},
+                //{
+                //    "parentid": 275, "text": "球台162", "objId": 276, "templateId": "650604426", "objState": 2, "objType": 2, "parentConnection": "0_263.0_269.0_275.276", "summary": "", "summaryAddition": "", "img": "", "classes": "devListView", "isVideo": true
+                //}]
+                // "children":
+                //  [{ "parentid": 270, "text": "球台160", "objId": 271, "templateId": "650604426", "objState": 2, "objType": 2, "parentConnection": "0_263.0_269.0_270.271", "summary": "", "summaryAddition": "", "img": "", "classes": "devListView", "isVideo": true }, { "parentid": 275, "text": "球台162", "objId": 276, "templateId": "650604426", "objState": 2, "objType": 2, "parentConnection": "0_263.0_269.0_275.276", "summary": "", "summaryAddition": "", "img": "", "classes": "devListView", "isVideo": true }]
+                //[{"parentid":270,"name":"球台160","objId":271,"templateId":"650604426","objState":2,"objType":2,"parentConnection":"0_263.0_269.0_270.271","summary":"","summaryAddition":"","img":"","classes":"devListView","isVideo":true},{"parentid":275,"name":"球台162","objId":276,"templateId":"650604426","objState":2,"objType":2,"parentConnection":"0_263.0_269.0_275.276","summary":"","summaryAddition":"","img":"","classes":"devListView","isVideo":true}]
+                //"state": "closed",
+                "children": [{
+                    "id": 3,
+                    "objId": 271,
+                    "iconCls": "icon-video",
+                    "text": "球台160",
+                    "isVideo": true,
+                    "templateId": "650604426"
+
+                }]
+            },
+                {
+                    "id": 2,
+                    "text": "窟窿山",
+                    "isVideo": false,
+                    "children": [{
+                        "id": 3,
+                        "objId": 276,
+                        "iconCls": "icon-video",
+                        "text": "球台162",
+                        "isVideo": true,
+                        "templateId": "650604426"
+                    }]
+                }
+            ]
+        }]
+    }];
+
+    function chenggong() {
+        var tree = cacheService.getDevTree();
+        valuechildren = "";
+        for (var i = 0; i < tree.children.length; i++) {
+            genTree(tree.children[i]);
+        }
+        valuechildren += jsonstr.trim().substring(0, jsonstr.Length - 1);//.trimEnd(',');
+
+        console.info(valuechildren);
+        console.info(jsondata1);
+        $j('#devTree').tree({
+            url: '/BaseCommon/GetVideoTree?id='+id+"&eid="+eid,
+            animate: true,
+            lines: true,
+            onDblClick: function (node) {
+                if ($j('#devTree').tree('isLeaf', node.target)) {//判断是否是叶子节点
+                    valuedatas.value.objId = node.objId;
+                    valuedatas.value.templateId = node.templateId;
+                    businessService.getVideoUrl(valuedatas, 0, function (url) {
+                        play(url, "videoScreen");
+                    });
+                }
+                //else {
+                //    alert("父节点" + node.text);
+                //}
+            },
+            onLoadSuccess: function (node, data) {
+                //alert(data[0].objId);
+                valuedatas.value.objId = data[0].objId;
+                valuedatas.value.templateId = data[0].templateId;
+                businessService.getVideoUrl(valuedatas, 0, function (url) {
+                    play(url, "videoScreen");
+                });
+            }
+        });
+    }
+    function genTree(node) {
+        videoNode = node;
+        if (node.value.isVideo == true) {
+            valuedata = node;
+            jsonstr += JSON.stringify(node.value).replace('name', 'text') + ",";
+            //console.info(JSON.stringify(node.value));
+
+        }
+        if (node.children.length > 0) {
+            for (var i = 0; i < node.children.length; i++) {
+                if (node.children[i] != null) {
+                    genTree(node.children[i]);
+                }
+            }
+        }
+    }
+    function shibai() {
+        alert("获取设备树失败！");
+    }
+
+</script>
+
+
+<div>
+    <div class="easyui-layout" style="width:100%;height:100%;" data-options="fit:true">
+        <div data-options="region:'north',split:true" title="" style="height:50px;text-align:center"><h3 style="margin-top:1%;">视频监控云操作界面</h3></div>
+        <div data-options="region:'east',split:true" title="云控制台" style="width:260px;height:100%">
+            <div class="videoControl">
+                <ul id="controlmenu">
+                    <li id="li1">
+                        <ul id="graphul">
+                            <li id="graphli">
+                                <div id="controldiv">
+                                    <div id="controlgraphdiv">
+                                        <div class="arrow-up" id="up" title="向上" onmousedown="moveVideo(0, 1);" onmouseup="moveVideoStop();"></div>
+                                        <div class="arrow-down" id="down" title="向下" onmousedown="moveVideo(0, -1);" onmouseup="moveVideoStop();"></div>
+                                        <div class="arrow-left" id="left" title="向左" onmousedown="moveVideo(-1, 0);" onmouseup="moveVideoStop();"></div>
+                                        <div class="arrow-right" id="right" title="向右" onmousedown=" moveVideo(1, 0);" onmouseup="moveVideoStop();"></div>
+                                        <div class="arrow-right-up" id="right_up" title="右上" onmousedown="moveVideo(1, 1);" onmouseup="moveVideoStop();"></div>
+                                        <div class="arrow-right-down" id="right_down" title="右下" onmousedown="moveVideo(1, -1);" onmouseup="moveVideoStop();"></div>
+                                        <div class="arrow-left-down" id="left_down" title="左下" onmousedown="moveVideo(-1, -1);" onmouseup="moveVideoStop();"></div>
+                                        <div class="arrow-left-up" id="left_up" title="左上" onmousedown="moveVideo(-1, 1);" onmouseup="moveVideoStop();"></div>
+                                        <div class="circle" id="circle"></div>
+                                        <div class="insidecircle" id="insidecircle">
+                                            <div class="innerCircle"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li id="focusingli">
+                                <div id="focusingdiv">
+                                    <div id="lowbutton" title="减焦" onmousedown="reduicejjMouseDown();" onmouseup="reduicejjMouseUp();">
+                                        -
+                                    </div>
+                                    <label id="focusingtext">焦距</label>
+                                    <div id="addbutton" title="增焦" onmousedown="addjjMouseDown();" onmouseup="addjjMouseUp();">
+                                        +
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                    <li id="li2" style="margin-bottom:5%;display:none;">
+                        <div class="panel-header">
+                            <div class="panel-title">多屏选择</div>
+                        </div>
+
+                        <div id="selectdiv">
+                            <select id="select">
+                                <option>一屏</option>
+                                <option>四屏</option>
+                            </select>
+                        </div>
+
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div data-options="region:'west',split:true,collapsed:true" title="视频监控点" style="width:200px;height:100%">
+            <div class="easyui-panel" style="padding:5px">
+                <ul id="devTree"></ul>
+            </div>
+        </div>
+        <div data-options="region:'center',title:'监控画面',iconCls:'icon-video'">
+            <div id="videoScreen" style="width:100%;height:100%;">
+                @*<object pluginspage="http://www.macromedia.com/go/getflashplayer"
+                            classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"
+                            codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=11,3,0,0"
+                            width="820" height="900" id="ckplayer_videoScreen" name="ckplayer_videoScreen" align="middle">
+                        <param name="allowScriptAccess" value="always"><param name="allowFullScreen" value="true">
+                        <param name="quality" value="high">
+                        <param name="bgcolor" value="#FFF">
+                        <param name="wmode" value="transparent">
+                        <param name="movie" value="../Scripts/VideoJs/ckplayer/ckplayer.swf">
+                        <param name="flashvars" value="f=rtmp://114.64.239.254:1935/stream/live/1323/1?token=dXNlcl9uYW1lOg0KcGFzc3dvcmQ6DQp1cmw6cnRzcDovLzEwLjI4LjY0LjIwNDo1NTQvc3RyZWFtL2xpdmUvMTMyMy8xP3Rva2VuPWRYTmxjbDl1WVcxbE9nMEtjR0Z6YzNkdmNtUTZEUXAxY213NmNuUnpjRG92THpFNU1pNHhOamd1TmpRdU1UY3lPalUxTkM5emRISmxZVzB2YkdsMlpTOHhNekl6THpFL2RHOXJaVzQ5WkZoT2JHTnNPWFZaVnpGc1QyMUdhMkpYYkhWRVVYQjNXVmhPZW1ReU9YbGFSSEJvV2tjeGNHSm5NRXRrV0VwelQyNUtNR016UVRaTWVUaDRUMVJKZFUxVVdUUk1hbGt3VEdwRk1rMUViekZPVkZGMlRVUkJkMDFVUVhjPQ==&amp;c=0&amp;p=1&amp;lv=1">
+                        <embed style="width:100%;height:100%" allowscriptaccess="always" allowfullscreen="true" quality="high"
+                               bgcolor="#FFF" wmode="transparent" src="../ckplayer/ckplayer.swf"
+                               flashvars="f=rtmp://114.64.239.254:1935/stream/live/1323/1?token=dXNlcl9uYW1lOg0KcGFzc3dvcmQ6DQp1cmw6cnRzcDovLzEwLjI4LjY0LjIwNDo1NTQvc3RyZWFtL2xpdmUvMTMyMy8xP3Rva2VuPWRYTmxjbDl1WVcxbE9nMEtjR0Z6YzNkdmNtUTZEUXAxY213NmNuUnpjRG92THpFNU1pNHhOamd1TmpRdU1UY3lPalUxTkM5emRISmxZVzB2YkdsMlpTOHhNekl6THpFL2RHOXJaVzQ5WkZoT2JHTnNPWFZaVnpGc1QyMUdhMkpYYkhWRVVYQjNXVmhPZW1ReU9YbGFSSEJvV2tjeGNHSm5NRXRrV0VwelQyNUtNR016UVRaTWVUaDRUMVJKZFUxVVdUUk1hbGt3VEdwRk1rMUViekZPVkZGMlRVUkJkMDFVUVhjPQ==&amp;c=0&amp;p=1&amp;lv=1"
+                               name="ckplayer_videoScreen"
+                               id="ckplayer_videoScreen" align="middle" type="application/x-shockwave-flash"
+                               pluginspage="http://www.macromedia.com/go/getflashplayer" />
+
+                    </object>*@
+
+
+            </div>
+        </div>
+    </div>
+</div>

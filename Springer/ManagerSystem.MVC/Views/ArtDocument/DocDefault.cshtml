@@ -1,0 +1,129 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="" style=" border: none;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        标题：<input id="tbxTITLE" type="text" style="width:200px" value="@ViewBag.SearchTITLE" />
+                        <input type="button" class="btnSearchCss" value="搜  索" onclick="query(1)" />
+                        <input type="button" class="btnAddCss" value="添  加" id="btnAdd" onclick="Add()" />
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" class="LayoutCenterBG">
+                <div class="divTable" id="divTable">
+                    @*@Html.Raw(ViewBag.UserList)*@
+                </div>
+            </div>
+            <div data-options="region:'south'" title="" style=" height:40px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
+                <div class="divPager" id="divPager">
+                    @*@Html.Raw(@ViewBag.PagerInfo)*@
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+   // var bln = '@ViewBag.isDel';
+    //if (bln == "1") {
+    //    document.getElementById('btnAdd').style.display = "";
+    //}
+    function Add() {
+        layer.open({
+            type: 2,
+            title: '添加',
+            fix: false, //不固定
+            area: ['56%', '90%'],
+            maxmin: true,
+            content: '/ArtDocument/DocMan?typeID=@ViewBag.typeID',
+            end: function () {
+                query(1);
+            }
+        });
+    }
+    function Mdy(id, typeid) {
+        layer.open({
+            type: 2,
+            title: '修改',
+            fix: false, //不固定
+            area: ['56%', '90%'],
+            maxmin: true,
+            content: '/ArtDocument/DocMan?id=' + id + '&typeID=' + typeid + '&Method=Mdy',
+            end: function () {
+                query(page);
+            }
+        });
+    }
+    $(function () {
+        query('1');
+    });
+    var page = 1;//当前默认页面为1
+    function query(Page) {
+        page = Page;
+        var pagesize = '0';
+        if (document.getElementById("selPageSize") != null) {
+            pagesize = document.getElementById("selPageSize").value;
+        }
+        $.ajax({
+            url: '/ArtDocument/getDocDefaultAjax',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: {
+                TITLE: document.getElementById("tbxTITLE").value,
+                PageSize: pagesize,
+                Page: Page,
+                typeID: '@ViewBag.typeID'
+            },
+            type: 'post',
+            success: function (data) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#divTable').html(ar.tableInfo);
+                    $('#divPager').html(ar.pagerInfo);
+                }
+                else {
+                    alert(ar.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                alert('登录异常');
+            }
+        });
+    }
+
+    function Manager(id) {
+        if (confirm('确实要删除该内容吗?')) {
+            $.ajax({
+                url: '/ArtDocument/DocManager',
+                data: {
+                    id: id
+                    , Method: 'Del'
+                    , returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)'
+                },
+                type: 'post',
+                error: function () {
+                    alert('错误:异常!', 'error');
+                },
+                success: function (re) {
+
+                    var ar = eval('(' + re + ')');
+                    if (ar.Success) {
+                        if (confirm(ar.Msg + ' 请返回！')) {
+                            query(page);// window.location.reload();//.assign(ar.Url);
+                        }
+                    }
+                    else {
+                        alert(ar.Msg, "Error");
+                    }
+                }
+            });
+        }
+    }
+</script>

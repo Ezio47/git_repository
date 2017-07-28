@@ -1,0 +1,302 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+    // Layout = null;
+    //配置文件经纬度读取
+    var lon = System.Configuration.ConfigurationManager.AppSettings["Longitude"];
+    var lat = System.Configuration.ConfigurationManager.AppSettings["Latitude"];
+    var maptype = System.Configuration.ConfigurationManager.AppSettings["mapType"];//地图类型
+    var lonlatchange = System.Configuration.ConfigurationManager.AppSettings["lonLatChange"];//经纬度转换
+    var lonlattype = System.Configuration.ConfigurationManager.AppSettings["lonLatType"];//经纬度转换--度分秒
+    var ZoomLayer = System.Configuration.ConfigurationManager.AppSettings["ZoomLayer"];//默认放大级别--度分秒
+}
+
+@section Header{
+    @*<meta http-equiv="refresh" content="200">*@
+    <link rel="stylesheet" href="~/js/esri/css/esri.css" />
+    <script src="~/js/init.js"></script>
+
+    <link href="~/Content/MapStyle.css" rel="stylesheet" />
+    <script src="~/Scripts/Springer/SpringerMapCommon.js"></script>
+
+    <script src="~/Scripts/laydate/laydate.js"></script>
+    <script src="~/Scripts/Springer/SpringerMapFireInfo.js"></script>
+    <script src="~/Scripts/Springer/SpringerMainYYJC.js"></script>
+    <script src="~/Scripts/Springer/SpringerMapShow.js"></script>
+
+    <link href="~/Scripts/uploadify/uploadify.css" rel="stylesheet" />
+    <script src="~/Scripts/uploadify/jquery.uploadify.min.js"></script>
+
+    <script language="javascript">
+
+        $(function () {
+            var $indexMenuDiv = $(".LeftMenu li ul");
+            //一级菜单点击
+            $indexMenuDiv.on("click", "li", function () {
+                $indexMenuDiv.find("li").removeClass("liCur");
+                $(this).addClass("title liCur");
+            });
+            $indexMenuDiv.find("li").removeClass("liCur");
+            $('#li-@ViewBag.typeID').removeClass("liCur").addClass('title liCur');
+        });
+
+    </script>
+
+}
+
+
+<div class="easyui-layout" data-options="fit:true">
+
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @*<div style="height:auto;">
+            <ul id="LeftMenu" class="LeftMenu">
+                <li>
+                    <span><h1><span>火情监测</span></h1></span>
+                    <ul>
+                        <li class="title" id="li-2" onclick="FireAjax('2')"><label class="wxjc"></label>卫星监控(@ViewBag.wxJcCount)</li>
+                        <li class="title" id="li-5" onclick="FireAjax('5')"><label class="fkqk"></label>瞭望护林员(@ViewBag.hlyJcCount)</li>
+                        <li class="title " id="li-4" onclick="FireAjax('4')"><label class="spjc"></label>电子监控(@ViewBag.dzJcCount)</li>
+                        <li class="title " id="li-6" onclick="FireAjax('6')"><label class="fjjc"></label>无人机巡护(@ViewBag.planeJcCount)</li>
+                        <li class="title " id="li-3" onclick="FireAjax('3')"><label class="dhjc"></label>电话报警(@ViewBag.phoneJcCount)</li>
+                       
+                    </ul>
+                </li>
+
+
+            </ul>
+        </div>*@
+
+            @*<ul class="page-menu">
+                <li>
+                    <span><h1><span>预警监测</span></h1></span>
+                    <ul style="display: block;">
+                        <li class="title liCur" onclick="window.location.href='/MainYJJC/YJJCNIndex';"><label class=" dt_01"></label>预警预测</li>
+                        <li class="title dt_02" onclick="window.location.href='/MainYJJC/FireLevelMapIndex';"><label class=" dt_02"></label>火险等级</li>
+                        <li class="title dt_03" onclick="window.location.href='/MainYJJC/YJResponseIndex';"><label class=" dt_03"></label>监测查询</li>
+                        <li class="title dt_04" onclick="window.location.href='/MainYJJC/WxCloudImageIndex';"><label class=" dt_04"></label>卫星云图</li>
+                        <li class="title dt_05" onclick="window.location.href='/MainYJJC/MapWeatherIndex';"><label class=" dt_05"></label>气象信息</li>
+                        <li class="title dt_06" onclick="window.location.href='/MainYJJC/YJXYIndex';"><label class=" dt_06"></label>预警响应</li>
+                        <li class="title dt_07" onclick="window.location.href='/YJJC/SatelliteAlarmIndex';"><label class=" dt_07"></label>卫星报警</li>
+                        <li class="title dt_08" onclick="window.location.href='/YJJC/PERALARMList';"><label class=" dt_08"></label>电话报警</li>
+                    </ul>
+                </li>
+               
+            </ul>*@
+
+
+
+        @*<div class="DefaultDivTitle">
+                <h1><span>护林员监督</span></h1>
+            </div>*@
+
+        @Html.Raw(@ViewBag.PageLeftMenu)
+
+    </div>
+    <div data-options="region:'center'" title="" style=" width:720px; border: none;">
+
+        <div class="divTable" id="divwxmsg">
+        </div>
+        @*<div id="persontree" style="display:none">
+                <div id="tt" style="width:240px" class="easyui-tree" data-options="checkbox:true"></div>
+            </div>*@<div id="persontree" style="display:none">
+            <div id="tt" style="width:240px" class="easyui-tree" data-options="checkbox:true"></div>
+        </div>
+        @*人工派发核查*@
+        <div id="pfhc" style="display:none;margin-left:5px;margin-top:8px">
+            派发单位： <input id="dept" name="dept" style="width:200px;height:50px;" />
+        </div>
+    </div>
+
+</div>
+
+
+
+<script type="text/javascript">
+
+    //function QSSJOrgSelectYL(id, ftype) {
+    //    $('#w').window('open');
+    //    document.getElementById("FID").value = id;
+    //    GetOrgConty();
+    //}
+    //function QSYL() {
+    //    $.ajax({
+    //        type: "Post",
+    //        url: "/MainYJJC/QSMethod",
+    //        data: { jcid: document.getElementById("FID").value, orgno: document.getElementById("QSselect").value },
+    //        dataType: "json",
+    //        success: function (obj) {
+    //            if (obj != null && obj.Success) {
+    //                // alert(obj.Msg);
+    //                layer.msg('签收成功！', { icon: 6, time: 2000 });
+    //            }
+    //            else {
+    //                // alert(obj.Msg);
+    //                layer.alert(obj.Msg, { icon: 5 });
+    //            }
+    //        }
+    //    });
+    //}
+    $(function () {
+        FireAjax('@ViewBag.typeID')
+        @*document.getElementById('li-3').class="title liCur";
+        alert( document.getElementById('li-@ViewBag.typeID'));*@
+        var t = window.setInterval("FireAjax('" +@ViewBag.typeID +"')", 120000);//定时执行
+        //$('#tt').tree({
+        //    url: '/JCFireInfo/GetSYSPerson',
+        //    checked: false,
+        //    animate: true,
+        //    lines: true,
+        //    cache: false
+        //});
+        //人工派发单位Jsonstring
+        $('#dept').combobox({
+            url: '/JCFireInfo/PFCheckOrgJson',
+            required: true,
+            editable: false,
+            multiple: true,
+            multiline: true,
+            valueField: 'id',
+            textField: 'text'
+        });
+    });
+
+    //全选 反选
+    function checkfun() {
+        if ($("#CHK_ALL").attr("checked")) {
+            $(":checkbox").attr("checked", true);
+        } else {
+            $(":checkbox").attr("checked", false);
+        }
+    };
+
+    //派发单位核查
+    function pFCheck(jcfid) {
+        $('#dept').combobox('reset');
+        layer.open({
+            type: 1,
+            title: '人工派发',
+            area: '290px',
+            btn: ['确定', '取消'],
+            shade: 0,
+            //zIndex: 20160331,
+            content: $('#pfhc'),
+            yes: function (index, layero) { //或者使用btn1
+                var orgstr = $('#dept').combobox('getValues');
+                if (orgstr != "") {
+                    $.ajax({
+                        type: "Post",
+                        url: "/JCFireInfo/PFCheckMethod",
+                        data: { jcfid: jcfid, orgstr: orgstr.join(',') },
+                        dataType: "json",
+                        success: function (obj) {
+                            if (obj != null && obj.Success) {
+                                layer.close(index);
+                                layer.msg('派发成功', { icon: 6 });
+                            }
+                            else {
+                                layer.msg('派发失败', { icon: 5 });
+                            }
+                        }
+                    });
+                }
+                else {
+                    layer.msg('派发单位不可为空！');
+                    return false;
+                }
+
+            }, cancel: function (index) {
+                layer.close(index);
+            }
+        })
+    }
+
+    //地图查看定位
+    function ShowMapLoc(id) {
+        //var bb = $('#CHK_' + id).is(':checked');
+        //if (bb == false) {
+        //    layer.alert("该火点未选择", { icon: 5 });
+        //    return false;
+        //}
+        var chk_value = [];
+        $('input[name="chk_list"]:checked').each(function () {
+            chk_value.push($(this).val());
+        });
+        var strjcfid = '';
+        if (chk_value.length == 0) {
+            //layer.alert("请选择火点", { icon: 5 });
+            //return false;
+            strjcfid = id;
+        } else {
+             strjcfid = chk_value.join(",");
+        }
+
+        //iframe层-父子操作
+        var index = layer.open({
+            type: 2,
+            title: '二维地图查看',
+            area: ['75%', '78%'],
+            fix: false, //不固定
+            maxmin: true,
+            content: '/MapCommon/Index?jcfid=' + strjcfid
+        });
+        layer.full(index);
+    };
+    //地图查看定位三维
+    function Show3DMapLoc(id) {
+        var bb = $('#CHK_' + id).is(':checked');
+        if (bb == false) {
+            layer.alert("该火点未选择", { icon: 5 });
+            return false;
+        }
+        var chk_value = [];
+        $('input[name="chk_list"]:checked').each(function () {
+            chk_value.push($(this).val());
+        });
+        if (chk_value.length == 0) {
+            layer.alert("请选择火点", { icon: 5 });
+            return false;
+        }
+        var strjcfid = chk_value.join(",");
+        //iframe层-父子操作
+        var index = layer.open({
+            type: 2,
+            title: '三维地图查看',
+            area: ['75%', '70%'],
+            fix: false, //不固定
+            maxmin: true,
+            content: '/EmergencyHand/From2Dto3D?jcfid=' + strjcfid
+        });
+        layer.full(index);
+    };
+
+
+    //状态Logs
+    function StateLogsLayer(jcfid, orgno) {
+        $.ajax({
+            type: "Post",
+            url: "/MainYJJC/GetStateLogs",
+            data: { jcfid: jcfid, orgno: orgno },
+            dataType: "json",
+            success: function (obj) {
+                if (obj != null && obj.Success) {
+                    layer.open({
+                        type: 1,
+                        title: '热点状态信息',
+                        area: '65%',
+                        content: obj.Msg,//注意，如果str是object，那么需要字符拼接。
+                        shadeClose: false,
+                        btn: ["取消"],
+                        cancel: function (index) {
+                            layer.closeAll();
+                        }
+                    })
+                }
+                else {
+                    layer.alert('取值失败！', { icon: 5 });
+                }
+            }
+        });
+    };
+
+
+
+</script>

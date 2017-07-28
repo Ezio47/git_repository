@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+您 Web 项目的发布/打包进程将使用此文件。您可以通过编辑此 MSBuild 文件
+来自定义该进程的行为。若要了解与此相关的详细信息，请访问 http://go.microsoft.com/fwlink/?LinkID=208121。
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+    <_PublishTargetUrl>E:\SpringerWcf</_PublishTargetUrl>
+  </PropertyGroup>
+  <ItemGroup>
+    <File Include="bin/AKSON.SystemX.Web.dll">
+      <publishTime>06/02/2017 16:51:08</publishTime>
+    </File>
+    <File Include="bin/ESRI.ArcGIS.Carto.dll">
+      <publishTime>06/02/2017 16:51:21</publishTime>
+    </File>
+    <File Include="bin/ESRI.ArcGIS.DataSourcesRaster.dll">
+      <publishTime>06/02/2017 16:51:21</publishTime>
+    </File>
+    <File Include="bin/ESRI.ArcGIS.Geodatabase.dll">
+      <publishTime>06/02/2017 16:51:21</publishTime>
+    </File>
+    <File Include="bin/ESRI.ArcGIS.Geometry.dll">
+      <publishTime>06/02/2017 16:51:21</publishTime>
+    </File>
+    <File Include="bin/ESRI.ArcGIS.System.dll">
+      <publishTime>06/02/2017 16:51:21</publishTime>
+    </File>
+    <File Include="bin/ESRI.ArcGIS.Version.dll">
+      <publishTime>06/02/2017 16:51:21</publishTime>
+    </File>
+    <File Include="bin/FFmpeg/ffmpeg.exe">
+      <publishTime>06/02/2017 16:51:00</publishTime>
+    </File>
+    <File Include="bin/GeoAPI.dll">
+      <publishTime>06/02/2017 16:51:35</publishTime>
+    </File>
+    <File Include="bin/log4net.dll">
+      <publishTime>06/02/2017 16:51:38</publishTime>
+    </File>
+    <File Include="bin/Maticsoft.Common.dll">
+      <publishTime>06/02/2017 16:51:15</publishTime>
+    </File>
+    <File Include="bin/NetTopologySuite.dll">
+      <publishTime>06/02/2017 16:51:35</publishTime>
+    </File>
+    <File Include="bin/Newtonsoft.Json.dll">
+      <publishTime>06/02/2017 16:51:32</publishTime>
+    </File>
+    <File Include="bin/Oracle.DataAccess.dll">
+      <publishTime>06/02/2017 16:51:15</publishTime>
+    </File>
+    <File Include="bin/PowerCollections.dll">
+      <publishTime>06/02/2017 16:51:35</publishTime>
+    </File>
+    <File Include="bin/Springer.BLL.dll">
+      <publishTime>06/21/2017 14:00:34</publishTime>
+    </File>
+    <File Include="bin/Springer.Common.dll">
+      <publishTime>06/21/2017 14:00:33</publishTime>
+    </File>
+    <File Include="bin/Springer.DAL.dll">
+      <publishTime>06/21/2017 14:00:33</publishTime>
+    </File>
+    <File Include="bin/Springer.DBUtility.dll">
+      <publishTime>06/21/2017 14:00:32</publishTime>
+    </File>
+    <File Include="bin/Springer.EntityModel.dll">
+      <publishTime>06/21/2017 14:00:32</publishTime>
+    </File>
+    <File Include="bin/SpringerRemoteDataWcfService.dll">
+      <publishTime>06/21/2017 14:00:36</publishTime>
+    </File>
+    <File Include="bin/SpringerRemoteService.dll">
+      <publishTime>06/21/2017 14:00:35</publishTime>
+    </File>
+    <File Include="SpringerRemoteSystemService.svc">
+      <publishTime>06/02/2017 16:50:58</publishTime>
+    </File>
+    <File Include="Web.config">
+      <publishTime>06/21/2017 14:00:37</publishTime>
+    </File>
+  </ItemGroup>
+</Project>

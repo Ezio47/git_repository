@@ -1,0 +1,80 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutIndexNoMenu.cshtml";
+}
+<script src="~/Scripts/Chart/echarts.js"></script>
+<script src="~/Scripts/Chart/HUReportChart/HUChart.js"></script>
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+    <div data-options="region:'center'" title="" style=" border: none;">
+
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home">
+                        <div style="float:left;">
+                            单位:<select id="ORGNO">
+                                @Html.Raw(@ViewBag.vdOrg)
+                            </select>
+                            类型:<select id="type" onchange="TypeChange()">
+                                <option value="1">性别</option>
+                                <option value="2">固/兼职</option>
+                            </select>
+                        </div>
+                        <div id="sextype" style="float:left;display:none;">
+                            <input type="checkbox" value="0" name="chk1" checked="checked">男
+                            <input type="checkbox" value="1" name="chk1" checked="checked">女
+                        </div>
+                        <div id="onstate" style="float:left;display:none;">
+                            <input type="checkbox" value="1" name="chk2" checked="checked">固职
+                            <input type="checkbox" value="2" name="chk2" checked="checked">兼职
+                        </div>
+                        <input type="button" value="查询" onclick="query()" class="btnSearchCss" />
+                    </div>
+                </div>
+            </div>
+
+            <div data-options="region:'center'" title="" class="LayoutCenterBG" style="width:100%;">
+                <div id="HUChart" style="width:100%;height:500px;float:left;">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var HUChart = echarts.init(document.getElementById('HUChart'));//个数展示
+    var Sextype = '';
+    var Onstate = '';
+    var Type = '';
+    TypeChange()
+    function TypeChange() {
+        Type = $('#type').val()
+        if (Type == "1" || Type == '') {
+            document.getElementById('sextype').style.display = "";
+            document.getElementById('onstate').style.display = "none";
+        }
+        if (Type == "2") {
+            document.getElementById('onstate').style.display = "";
+            document.getElementById('sextype').style.display = "none";
+        }
+      
+    }
+    function query() {
+        var TopEchart = $('#ORGNO').val();
+        Type = $('#type').val();
+        if (Type == "1" || Type == '') {
+            Sextype = $("input:checkbox[name='chk1']:checked").map(function (index, elem) {
+                return $(elem).val();
+            }).get().join(',');
+            Onstate = '';
+        }
+        if (Type == "2") {
+            Onstate = $("input:checkbox[name='chk2']:checked").map(function (index, elem) {
+                return $(elem).val();
+            }).get().join(',');
+            Sextype = '';
+        }
+        getHUCount(TopEchart, Sextype, Onstate);
+    }
+</script>
+

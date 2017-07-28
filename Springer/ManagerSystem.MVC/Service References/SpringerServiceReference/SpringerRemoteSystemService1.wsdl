@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="http://tempuri.org/" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="SpringerRemoteSystemService" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://tempuri.org/Imports">
+      <xsd:import schemaLocation="http://192.168.5.244:8090/SpringerRemoteSystemService.svc?xsd=xsd0" namespace="http://tempuri.org/" />
+      <xsd:import schemaLocation="http://192.168.5.244:8090/SpringerRemoteSystemService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xsd:import schemaLocation="http://192.168.5.244:8090/SpringerRemoteSystemService.svc?xsd=xsd2" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+      <xsd:import schemaLocation="http://192.168.5.244:8090/SpringerRemoteSystemService.svc?xsd=xsd3" namespace="http://schemas.datacontract.org/2004/07/Springer.EntityModel.Entity" />
+      <xsd:import schemaLocation="http://192.168.5.244:8090/SpringerRemoteSystemService.svc?xsd=xsd4" namespace="http://schemas.datacontract.org/2004/07/Springer.EntityModel" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="IHUserWcfService_ReturnPhoneStatusWcf_InputMessage">
+    <wsdl:part name="parameters" element="tns:ReturnPhoneStatusWcf" />
+  </wsdl:message>
+  <wsdl:message name="IHUserWcfService_ReturnPhoneStatusWcf_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ReturnPhoneStatusWcfResponse" />
+  </wsdl:message>
+  <wsdl:message name="IHUserWcfService_RegisterHUserWcf_InputMessage">
+    <wsdl:part name="parameters" element="tns:RegisterHUserWcf" />
+  </wsdl:message>
+  <wsdl:message name="IHUserWcfService_RegisterHUserWcf_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RegisterHUserWcfResponse" />
+  </wsdl:message>
+  <wsdl:message name="IHUserWcfService_RegisterHUserWcfStr_InputMessage">
+    <wsdl:part name="parameters" element="tns:RegisterHUserWcfStr" />
+  </wsdl:message>
+  <wsdl:message name="IHUserWcfService_RegisterHUserWcfStr_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RegisterHUserWcfStrResponse" />
+  </wsdl:message>
+  <wsdl:message name="IHUserWcfService_GetDicSysParaments_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetDicSysParaments" />
+  </wsdl:message>
+  <wsdl:message name="IHUserWcfService_GetDicSysParaments_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetDicSysParamentsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IHUserWcfService_GetJsonSysParaments_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetJsonSysParaments" />
+  </wsdl:message>
+  <wsdl:message name="IHUserWcfService_GetJsonSysParaments_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetJsonSysParamentsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IHUserWcfService_AddRealData_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddRealData" />
+  </wsdl:message>
+  <wsdl:message name="IHUserWcfService_AddRealData_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddRealDataResponse" />
+  </wsdl:message>
+  <wsdl:message name="IHUserWcfService_AddRealDataTest_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddRealDataTest" />
+  </wsdl:message>
+  <wsdl:message name="IHUserWcfService_AddRealDataTest_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddRealDataTestResponse" />
+  </wsdl:message>
+  <wsdl:message name="IHUserWcfService_AddAlarmInfo_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddAlarmInfo" />
+  </wsdl:message>
+  <wsdl:message name="IHUserWcfService_AddAlarmInfo_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddAlarmInfoResponse" />
+  </wsdl:message>
+  <wsdl:message name="IHUserWcfService_AddReportData_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddReportData" />
+  </wsdl:message>
+  <wsdl:message name="IHUserWcfService_AddReportData_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddReportDataResponse" />
+  </wsdl:message>
+  <wsdl:message name="IHUserWcfService_AddReportDataStr_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddReportDataStr" />
+  </wsdl:message>
+  <wsdl:message name="IHUserWcfService_AddReportDataStr_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddReportDataStrResponse" />
+  </wsdl:message>
+  <wsdl:message name="IHUserWcfService_AddCollectData_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddCollectData" />
+  </wsdl:message>
+  <wsdl:message name="IHUserWcfService_AddCollectData_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddCollectDataResponse" />
+  </wsdl:message>
+  <wsdl:message name="IHUserWcfService_AddCollectDataStr_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddCollectDataStr" />
+  </wsdl:message>
+  <wsdl:message name="IHUserWcfService_AddCollectDataStr_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddCollectDataStrResponse" />
+  </wsdl:message>
+  <wsdl:message name="IHUserWcfService_GetModelList_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetModelList" />
+  </wsdl:message>
+  <wsdl:message name="IHUserWcfService_GetModelList_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetModelListResponse" />
+  </wsdl:message>
+  <wsdl:message name="IHUserWcfService_GetModelListDic_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetModelListDic" />
+  </wsdl:message>
+  <wsdl:message name="IHUserWcfService_GetModelListDic_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetModelListDicResponse" />
+  </wsdl:message>
+  <wsdl:message name="IHUserWcfService_GetJsonModelListDic_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetJsonModelListDic" />
+  </wsdl:message>
+  <wsdl:message name="IHUserWcfService_GetJsonModelListDic_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetJsonModelListDicResponse" />
+  </wsdl:message>
+  <wsdl:message name="IHUserWcfService_GetTxlModelList_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetTxlModelList" />
+  </wsdl:message>
+  <wsdl:message name="IHUserWcfService_GetTxlModelList_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetTxlModelListResponse" />
+  </wsdl:message>
+  <wsdl:message name="IHUserWcfService_GetHLYTXLModelList_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetHLYTXLModelList" />
+  </wsdl:message>
+  <wsdl:message name="IHUserWcfService_GetHLYTXLModelList_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetHLYTXLModelListResponse" />
+  </wsdl:message>
+  <wsdl:message name="IHUserWcfService_GetAddreass_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAddreass" />
+  </wsdl:message>
+  <wsdl:message name="IHUserWcfService_GetAddreass_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAddreassResponse" />
+  </wsdl:message>
+  <wsdl:message name="IFireSpreadService_FireSpread_InputMessage">
+    <wsdl:part name="parameters" element="tns:FireSpread" />
+  </wsdl:message>
+  <wsdl:message name="IFireSpreadService_FireSpread_OutputMessage">
+    <wsdl:part name="parameters" element="tns:FireSpreadResponse" />
+  </wsdl:message>
+  <wsdl:portType name="IHUserWcfService">
+    <wsdl:operation name="ReturnPhoneStatusWcf">
+      <wsdl:input wsaw:Action="http://tempuri.org/IHUserWcfService/ReturnPhoneStatusWcf" message="tns:IHUserWcfService_ReturnPhoneStatusWcf_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IHUserWcfService/ReturnPhoneStatusWcfResponse" message="tns:IHUserWcfService_ReturnPhoneStatusWcf_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RegisterHUserWcf">
+      <wsdl:input wsaw:Action="http://tempuri.org/IHUserWcfService/RegisterHUserWcf" message="tns:IHUserWcfService_RegisterHUserWcf_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IHUserWcfService/RegisterHUserWcfResponse" message="tns:IHUserWcfService_RegisterHUserWcf_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RegisterHUserWcfStr">
+      <wsdl:input wsaw:Action="http://tempuri.org/IHUserWcfService/RegisterHUserWcfStr" message="tns:IHUserWcfService_RegisterHUserWcfStr_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IHUserWcfService/RegisterHUserWcfStrResponse" message="tns:IHUserWcfService_RegisterHUserWcfStr_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDicSysParaments">
+      <wsdl:input wsaw:Action="http://tempuri.org/IHUserWcfService/GetDicSysParaments" message="tns:IHUserWcfService_GetDicSysParaments_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IHUserWcfService/GetDicSysParamentsResponse" message="tns:IHUserWcfService_GetDicSysParaments_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetJsonSysParaments">
+      <wsdl:input wsaw:Action="http://tempuri.org/IHUserWcfService/GetJsonSysParaments" message="tns:IHUserWcfService_GetJsonSysParaments_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IHUserWcfService/GetJsonSysParamentsResponse" message="tns:IHUserWcfService_GetJsonSysParaments_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AddRealData">
+      <wsdl:input wsaw:Action="http://tempuri.org/IHUserWcfService/AddRealData" message="tns:IHUserWcfService_AddRealData_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IHUserWcfService/AddRealDataResponse" message="tns:IHUserWcfService_AddRealData_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AddRealDataTest">
+      <wsdl:input wsaw:Action="http://tempuri.org/IHUserWcfService/AddRealDataTest" message="tns:IHUserWcfService_AddRealDataTest_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IHUserWcfService/AddRealDataTestResponse" message="tns:IHUserWcfService_AddRealDataTest_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AddAlarmInfo">
+      <wsdl:input wsaw:Action="http://tempuri.org/IHUserWcfService/AddAlarmInfo" message="tns:IHUserWcfService_AddAlarmInfo_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IHUserWcfService/AddAlarmInfoResponse" message="tns:IHUserWcfService_AddAlarmInfo_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AddReportData">
+      <wsdl:input wsaw:Action="http://tempuri.org/IHUserWcfService/AddReportData" message="tns:IHUserWcfService_AddReportData_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IHUserWcfService/AddReportDataResponse" message="tns:IHUserWcfService_AddReportData_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AddReportDataStr">
+      <wsdl:input wsaw:Action="http://tempuri.org/IHUserWcfService/AddReportDataStr" message="tns:IHUserWcfService_AddReportDataStr_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IHUserWcfService/AddReportDataStrResponse" message="tns:IHUserWcfService_AddReportDataStr_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AddCollectData">
+      <wsdl:input wsaw:Action="http://tempuri.org/IHUserWcfService/AddCollectData" message="tns:IHUserWcfService_AddCollectData_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IHUserWcfService/AddCollectDataResponse" message="tns:IHUserWcfService_AddCollectData_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AddCollectDataStr">
+      <wsdl:input wsaw:Action="http://tempuri.org/IHUserWcfService/AddCollectDataStr" message="tns:IHUserWcfService_AddCollectDataStr_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IHUserWcfService/AddCollectDataStrResponse" message="tns:IHUserWcfService_AddCollectDataStr_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetModelList">
+      <wsdl:input wsaw:Action="http://tempuri.org/IHUserWcfService/GetModelList" message="tns:IHUserWcfService_GetModelList_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IHUserWcfService/GetModelListResponse" message="tns:IHUserWcfService_GetModelList_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetModelListDic">
+      <wsdl:input wsaw:Action="http://tempuri.org/IHUserWcfService/GetModelListDic" message="tns:IHUserWcfService_GetModelListDic_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IHUserWcfService/GetModelListDicResponse" message="tns:IHUserWcfService_GetModelListDic_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetJsonModelListDic">
+      <wsdl:input wsaw:Action="http://tempuri.org/IHUserWcfService/GetJsonModelListDic" message="tns:IHUserWcfService_GetJsonModelListDic_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IHUserWcfService/GetJsonModelListDicResponse" message="tns:IHUserWcfService_GetJsonModelListDic_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetTxlModelList">
+      <wsdl:input wsaw:Action="http://tempuri.org/IHUserWcfService/GetTxlModelList" message="tns:IHUserWcfService_GetTxlModelList_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IHUserWcfService/GetTxlModelListResponse" message="tns:IHUserWcfService_GetTxlModelList_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetHLYTXLModelList">
+      <wsdl:input wsaw:Action="http://tempuri.org/IHUserWcfService/GetHLYTXLModelList" message="tns:IHUserWcfService_GetHLYTXLModelList_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IHUserWcfService/GetHLYTXLModelListResponse" message="tns:IHUserWcfService_GetHLYTXLModelList_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAddreass">
+      <wsdl:input wsaw:Action="http://tempuri.org/IHUserWcfService/GetAddreass" message="tns:IHUserWcfService_GetAddreass_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IHUserWcfService/GetAddreassResponse" message="tns:IHUserWcfService_GetAddreass_OutputMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="IFireSpreadService">
+    <wsdl:operation name="FireSpread">
+      <wsdl:input wsaw:Action="http://tempuri.org/IFireSpreadService/FireSpread" message="tns:IFireSpreadService_FireSpread_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IFireSpreadService/FireSpreadResponse" message="tns:IFireSpreadService_FireSpread_OutputMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="BasicHttpBinding_IHUserWcfService" type="tns:IHUserWcfService">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="ReturnPhoneStatusWcf">
+      <soap:operation soapAction="http://tempuri.org/IHUserWcfService/ReturnPhoneStatusWcf" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RegisterHUserWcf">
+      <soap:operation soapAction="http://tempuri.org/IHUserWcfService/RegisterHUserWcf" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RegisterHUserWcfStr">
+      <soap:operation soapAction="http://tempuri.org/IHUserWcfService/RegisterHUserWcfStr" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDicSysParaments">
+      <soap:operation soapAction="http://tempuri.org/IHUserWcfService/GetDicSysParaments" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetJsonSysParaments">
+      <soap:operation soapAction="http://tempuri.org/IHUserWcfService/GetJsonSysParaments" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddRealData">
+      <soap:operation soapAction="http://tempuri.org/IHUserWcfService/AddRealData" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddRealDataTest">
+      <soap:operation soapAction="http://tempuri.org/IHUserWcfService/AddRealDataTest" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddAlarmInfo">
+      <soap:operation soapAction="http://tempuri.org/IHUserWcfService/AddAlarmInfo" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddReportData">
+      <soap:operation soapAction="http://tempuri.org/IHUserWcfService/AddReportData" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddReportDataStr">
+      <soap:operation soapAction="http://tempuri.org/IHUserWcfService/AddReportDataStr" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddCollectData">
+      <soap:operation soapAction="http://tempuri.org/IHUserWcfService/AddCollectData" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddCollectDataStr">
+      <soap:operation soapAction="http://tempuri.org/IHUserWcfService/AddCollectDataStr" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetModelList">
+      <soap:operation soapAction="http://tempuri.org/IHUserWcfService/GetModelList" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetModelListDic">
+      <soap:operation soapAction="http://tempuri.org/IHUserWcfService/GetModelListDic" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetJsonModelListDic">
+      <soap:operation soapAction="http://tempuri.org/IHUserWcfService/GetJsonModelListDic" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetTxlModelList">
+      <soap:operation soapAction="http://tempuri.org/IHUserWcfService/GetTxlModelList" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetHLYTXLModelList">
+      <soap:operation soapAction="http://tempuri.org/IHUserWcfService/GetHLYTXLModelList" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAddreass">
+      <soap:operation soapAction="http://tempuri.org/IHUserWcfService/GetAddreass" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="BasicHttpBinding_IFireSpreadService" type="tns:IFireSpreadService">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="FireSpread">
+      <soap:operation soapAction="http://tempuri.org/IFireSpreadService/FireSpread" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="SpringerRemoteSystemService">
+    <wsdl:port name="BasicHttpBinding_IHUserWcfService" binding="tns:BasicHttpBinding_IHUserWcfService">
+      <soap:address location="http://192.168.5.244:8090/SpringerRemoteSystemService.svc" />
+    </wsdl:port>
+    <wsdl:port name="BasicHttpBinding_IFireSpreadService" binding="tns:BasicHttpBinding_IFireSpreadService">
+      <soap:address location="http://192.168.5.244:8090/SpringerRemoteSystemService.svc" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

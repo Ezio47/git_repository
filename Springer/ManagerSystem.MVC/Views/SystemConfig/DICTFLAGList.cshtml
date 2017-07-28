@@ -1,0 +1,233 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+}
+@section Header{
+    <script src="~/Scripts/SpringerCommonValidate.js"></script>
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="" style="  border: none; ">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <ul>
+                        <li class="homeUL"><a href="#">数据字典管理</a></li>
+                        <li class="active">@ViewBag.DICTTYPENAME</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div data-options="region:'center'" title="" style=" border: none;">
+                <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+                    <div data-options="region:'center'" title="" style=" border: none; " class="LayoutCenterBG">
+                        <div class="divTable" id="tableList">
+
+                        </div>
+                    </div>
+
+                    <div data-options="region:'south'" title="" style=" height:160px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
+                        <div class="divTable" style="text-align:left;" id="divDictManTable">
+                            <table cellpadding="0" cellspacing="0">
+                                <tr class='row1'>
+                                    <td style="width:80px;"> 字典名称:</td>
+                                    <td><input type="text" id="tbxDICTNAME" value="" style="width:180px" /></td>
+                                    <td>字典值:</td>
+                                    <td><input type="text" id="tbxDICTVALUE" value="" style="width:180px" /></td>
+                                    <td style="width:80px;">排序号:</td>
+                                    <td><input type="text" id="tbxORDERBY" value="" style="width:180px" /></td>
+                                </tr>
+                                <tr>
+                                    <td> 备用一:</td>
+                                    <td><input type="text" id="tbxSTANDBY1" value="" style="width:180px" /></td>
+                                    <td style="width:80px;">备用二: </td>
+                                    <td><input type="text" id="tbxSTANDBY2" value="" style="width:180px" /></td>
+                                    <td>备用三:</td>
+                                    <td><input type="text" id="tbxSTANDBY3" value="" style="width:180px" /></td>
+                                </tr>
+                                <tr class='row1'>
+                                    <td>备用四:</td>
+                                    <td><input type="text" id="tbxSTANDBY4" value="" style="width:180px" /></td>
+                                    <td colspan="4"><div id="divMark" style="color:red;text-align:left"></div></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="6" style="text-align:center;">
+                                        <input id="tbxDICTID" type="hidden" value="" />
+                                        <input id="tbxDICTTYPEID" type="hidden" value="" />
+                                        <input type="button" id="btnAdd" value="添 加" onclick="Manager('Add')" class="btnAddCss" />
+                                        <input type="button" id="btnMdy" value="修 改" onclick="Manager('Mdy')" class="btnMdyCss" />
+                                        <input type="button" id="btnDel" value="删 除" onclick=" Manager('Del');" class="btnDelCss" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div data-options="region:'west'" title="" style="width:220px; border: none; ">
+                <div id="tt" style="overflow: hidden;" class="easyui-tree">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    bindTree('', '');
+    function bindTree(AddressID, typeID) {
+        $('#tt').tree({
+            url: '/SystemConfig/DictTreeGet',
+            checked: false,
+            animate: true,
+            lines: true,
+            cache: false,
+            checkbox: false,
+            onClick: function (node) {
+                clear();
+                $('#tableList').html('');
+                if ($.trim(node.id) == "") {
+                    document.getElementById("tbxDICTTYPEID").value = "";
+                }
+                else {
+                    document.getElementById("tbxDICTTYPEID").value = node.id;
+                }
+                queryValue();
+            }
+        });
+    }
+
+    function queryValue() {
+        if (document.getElementById('tbxDICTTYPEID').value == '') {
+            layer.msg('请先选择要修改的字典!', { icon: 5 });
+            return false;
+        }
+        $.ajax({
+            url: '/SystemConfig/getDICTListJson',
+            cache: false,
+            data: { trans: document.getElementById('tbxDICTTYPEID').value },
+            type: 'post',
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#tableList').html(ar.Msg);
+                }
+                else {
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('系统错误!', { icon: 5 });
+            }
+        });
+        $.ajax({
+            url: '/SystemConfig/getDICTTypeJson',
+            cache: false,
+            data: { ID: document.getElementById('tbxDICTTYPEID').value },
+            type: 'post',
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.DICTTYPEID != null) {
+                    $('#divMark').html(ar.MARK);
+                    if (ar.ISMAN == "0") {
+                        layer.msg('系统字典，禁止修改!', { icon: 5 });
+                        $("#btnAdd").attr({ "disabled": "disabled" });
+                        $("#btnMdy").attr({ "disabled": "disabled" });
+                        $("#btnDel").attr({ "disabled": "disabled" });
+                    } else {
+                        $("#btnAdd").removeAttr("disabled");
+                        $("#btnMdy").removeAttr("disabled");
+                        $("#btnDel").removeAttr("disabled");
+                    }
+                }
+                else {
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('系统错误!', { icon: 5 });
+            }
+        });
+    }
+
+    function clear() {
+        $('#divMark').html('');
+        document.getElementById("tbxDICTNAME").value = "";
+        document.getElementById("tbxDICTTYPEID").value = "";
+        document.getElementById("tbxDICTVALUE").value = "";
+        document.getElementById("tbxORDERBY").value = "";
+        document.getElementById("tbxSTANDBY1").value = "";
+        document.getElementById("tbxSTANDBY2").value = "";
+        document.getElementById("tbxSTANDBY3").value = "";
+        document.getElementById("tbxSTANDBY4").value = "";
+        document.getElementById("tbxDICTID").value = "";
+    }
+
+    function showValue(ID, type) {
+        if (type == "0") {
+            layer.msg('系统字典，禁止修改!', { icon: 5 });
+            return false;
+        }
+        $.ajax({
+            url: '/SystemConfig/getDICTJson',
+            cache: false,
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: { ID: ID },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.DICTID != null) {
+                    document.getElementById("tbxDICTNAME").value = ar.DICTNAME;
+                    document.getElementById("tbxDICTTYPEID").value = ar.DICTTYPEID;
+                    document.getElementById("tbxDICTVALUE").value = ar.DICTVALUE;
+                    document.getElementById("tbxORDERBY").value = ar.ORDERBY;
+                    document.getElementById("tbxSTANDBY1").value = ar.STANDBY1;
+                    document.getElementById("tbxSTANDBY2").value = ar.STANDBY2;
+                    document.getElementById("tbxSTANDBY3").value = ar.STANDBY3;
+                    document.getElementById("tbxSTANDBY4").value = ar.STANDBY4;
+                    document.getElementById("tbxDICTID").value = ID;
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('登录异常!', { icon: 5 });
+            }
+        });
+    }
+
+    function Manager(Method) {
+        if (Method == "Del") {
+            if (confirm('确实要删除该内容吗?') == false)
+                return false;
+        }
+        $.ajax({
+            url: '/SystemConfig/DICTManager',
+            cache: false,
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: {
+                DICTNAME: document.getElementById("tbxDICTNAME").value,
+                DICTVALUE: document.getElementById("tbxDICTVALUE").value,
+                DICTID: document.getElementById("tbxDICTID").value,
+                DICTTYPEID: document.getElementById("tbxDICTTYPEID").value,
+                ORDERBY: document.getElementById("tbxORDERBY").value,
+                STANDBY1: document.getElementById("tbxSTANDBY1").value,
+                STANDBY2: document.getElementById("tbxSTANDBY2").value,
+                STANDBY3: document.getElementById("tbxSTANDBY3").value,
+                STANDBY4: document.getElementById("tbxSTANDBY4").value,
+                Method: Method,
+            },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    layer.msg('保存成功!', { icon: 6 });
+                    queryValue();
+                }
+                else {
+                    layer.msg(ar.Msg, { icon: 5 });
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('保存异常!', { icon: 5 });
+            }
+        });
+    }
+</script>

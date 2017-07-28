@@ -1,0 +1,274 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{AE48B06F-E03B-4897-A82F-073AE747D20E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ManagerSystemModel</RootNamespace>
+    <AssemblyName>ManagerSystemModel</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\ManagerSystemModel.XML</DocumentationFile>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="OAModel">
+      <HintPath>..\packages\OA\OAModel.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ArchvalCount_Model.cs" />
+    <Compile Include="ArmyCount_Model.cs" />
+    <Compile Include="ART_DOCUMENT_Model.cs" />
+    <Compile Include="ART_TYPE_Model.cs" />
+    <Compile Include="CampCount_Model.cs" />
+    <Compile Include="CarCount_Model.cs" />
+    <Compile Include="CollectCount_Model.cs" />
+    <Compile Include="DUTY_CLASS_Model.cs" />
+    <Compile Include="DUTY_HANDOVER_Model.cs" />
+    <Compile Include="DUTY_USER_Model.cs" />
+    <Compile Include="EquipnewCount_Model.cs" />
+    <Compile Include="ExtenAttribute\DicTypeAttribute.cs" />
+    <Compile Include="DataCenterCount_Model.cs" />
+    <Compile Include="DCArchivalCount_Model.cs" />
+    <Compile Include="DCCAMPCount_Model.cs" />
+    <Compile Include="DCFACTORCOLLECTSTATIONCount_Model.cs" />
+    <Compile Include="DCFIRECHANNELCount_Model.cs" />
+    <Compile Include="DCISOLATIONSTRIPCount_Model.cs" />
+    <Compile Include="DCMONITORINGSTATIONCount_Model.cs" />
+    <Compile Include="DCOVERWATCHCount_Model.cs" />
+    <Compile Include="DCPROPAGANDASTELECount_Model.cs" />
+    <Compile Include="DCRELAYCount_Model.cs" />
+    <Compile Include="DC_ARMY_EQUIP_Model.cs" />
+    <Compile Include="DC_ARMY_MEMBER_Model.cs" />
+    <Compile Include="DC_ARMY_Model.cs" />
+    <Compile Include="DC_CAR_Model.cs" />
+    <Compile Include="DC_DETAILS_Model.cs" />
+    <Compile Include="DC_EQUIP_Model.cs" />
+    <Compile Include="DC_EQUIP_NEW_Model.cs" />
+    <Compile Include="DC_FACILITY_Model.cs" />
+    <Compile Include="DC_FULLTIMEUSER_Model.cs" />
+    <Compile Include="DC_PHOTO_Model.cs" />
+    <Compile Include="DC_PROTEAM_Model.cs" />
+    <Compile Include="DC_REPOSITORY_Model.cs" />
+    <Compile Include="DC_RESOURCE_Model.cs" />
+    <Compile Include="DC_RESOURCE_NEW_Model.cs" />
+    <Compile Include="DC_SUPPLIESPROP_Model.cs" />
+    <Compile Include="DC_SUPPLIES_Model.cs" />
+    <Compile Include="DC_TYPE_Model.cs" />
+    <Compile Include="DC_UTILITY_CAMP_Model.cs" />
+    <Compile Include="DC_UTILITY_FACTORCOLLECTSTATION_Model.cs" />
+    <Compile Include="DC_UTILITY_FIRECHANNEL_Model.cs" />
+    <Compile Include="DC_UTILITY_ISOLATIONSTRIP_Model.cs" />
+    <Compile Include="DC_UTILITY_MONITORINGSTATION_Model.cs" />
+    <Compile Include="DC_UTILITY_OVERWATCH_Model.cs" />
+    <Compile Include="DC_UTILITY_PROPAGANDASTELE_Model.cs" />
+    <Compile Include="DC_UTILITY_RELAY_Model.cs" />
+    <Compile Include="DC_WATCHTOWERModel.cs" />
+    <Compile Include="DC_WATCHTOWERUSER_Model.cs" />
+    <Compile Include="DC_WATCHTOWER_Model.cs" />
+    <Compile Include="ExtenAttribute\UnitDisplayAttribute.cs" />
+    <Compile Include="E_FILE_Model.cs" />
+    <Compile Include="E_GROUP_Model.cs" />
+    <Compile Include="E_RECEIVE_Model.cs" />
+    <Compile Include="E_SUBJECT_Model.cs" />
+    <Compile Include="FactorcollectstationCount_Model.cs" />
+    <Compile Include="FirechannelCount_Model.cs" />
+    <Compile Include="Firedepartment_Model.cs" />
+    <Compile Include="FIRELOST_FIREINFO_Model.cs" />
+    <Compile Include="FIRELOST_LOSTTYPECOUNT_Model.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_ATTACK_P1_Model.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_ATTACK_P2_Model.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_ATTACK_P3_Model.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_ATTACK_P4_Model.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_ATTACK_P5_Model.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_ATTACK_P6_Model.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_CASUALTYDETAIL_Model.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_CASUALTY_Model.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_CURRENTASSETS_Model.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_FARMPASTUREPRODUCT_Model.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_FIXEDASSETS_Model.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_LOSTPROCESS_Model.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_NTFP_Model.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_RESIDENTPROPERTY_Model.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_STOPREDUCTION_Model.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_WILDANIMAL_Model.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_WOOD_Model.cs" />
+    <Compile Include="FIRERECORD_ARMY_Model.cs" />
+    <Compile Include="FIRERECORD_REPORT12_Model.cs" />
+    <Compile Include="FIRERECORD_REPORT11_Model.cs" />
+    <Compile Include="FIRERECORD_REPORT10_Model.cs" />
+    <Compile Include="FIRERECORD_REPORT9_Model.cs" />
+    <Compile Include="FIRERECORD_REPORT8_Model.cs" />
+    <Compile Include="FIRERECORD_FIREINFO_Model.cs" />
+    <Compile Include="HUCheck_Model.cs" />
+    <Compile Include="HUReport_Model.cs" />
+    <Compile Include="IsolationstripCount_Model.cs" />
+    <Compile Include="JC_FIRETICKLING_Model.cs" />
+    <Compile Include="JC_FIRE_Model.cs" />
+    <Compile Include="JC_FIRE_PLAN_Model.cs" />
+    <Compile Include="JC_FIRE_PLOTTING_Model.cs" />
+    <Compile Include="JC_FIRE_PROP_Model.cs" />
+    <Compile Include="JC_FIRE_REPORT_Model.cs" />
+    <Compile Include="JC_INFRAREDCAMERA_BASICINFO_Model.cs" />
+    <Compile Include="JC_MONITOR_Model.cs" />
+    <Compile Include="JC_PERALARM_Model.cs" />
+    <Compile Include="JC_UAV_Model.cs" />
+    <Compile Include="LogicModel\CollectDataListModel.cs" />
+    <Compile Include="LogicModel\JCFireFKInfoModel.cs" />
+    <Compile Include="LogicModel\SDE_QueyLayerResultModel.cs" />
+    <Compile Include="MessageListObject.cs" />
+    <Compile Include="MessageObject.cs" />
+    <Compile Include="MonitoringstationCount_Model.cs" />
+    <Compile Include="OD_CLASS_Model.cs" />
+    <Compile Include="OD_HANDOVER_Model.cs" />
+    <Compile Include="OD_ODTYPE_Model.cs" />
+    <Compile Include="OD_USER_Model.cs" />
+    <Compile Include="OD_DATE_Model.cs" />
+    <Compile Include="OrgMapUpload_Model.cs" />
+    <Compile Include="OVERWATCHCount_Model.cs" />
+    <Compile Include="PathNameModel.cs" />
+    <Compile Include="PEST_COLLECTDATA_Model.cs" />
+    <Compile Include="PEST_COLLECT_DATAUPLOAD_Model.cs" />
+    <Compile Include="PEST_CONSULREPLY_Model.cs" />
+    <Compile Include="PEST_CONSULTATION_Model.cs" />
+    <Compile Include="PEST_LOCALTREESPECIES_Model.cs" />
+    <Compile Include="PEST_MONITORINGSTATION_Model.cs" />
+    <Compile Include="PEST_PHOTO_Model.cs" />
+    <Compile Include="PEST_REMOTEDIAGN_Model.cs" />
+    <Compile Include="PEST_REPORT_ASSESSINGTARGET_Model.cs" />
+    <Compile Include="PEST_REPORT_CONTROL_Model.cs" />
+    <Compile Include="PEST_REPORT_DIEPINESURVEY_Model.cs" />
+    <Compile Include="PEST_REPORT_FORECAST_Model.cs" />
+    <Compile Include="PEST_REPORT_HAPPEN_Model.cs" />
+    <Compile Include="PEST_REPORT_HARM_Model.cs" />
+    <Compile Include="PEST_REPORT_QUARANTINE_Model.cs" />
+    <Compile Include="PEST_REPORT_RCWTYPE_Model.cs" />
+    <Compile Include="PEST_REPORT_RCW_Model.cs" />
+    <Compile Include="PEST_REPORT_SCXCBFZMX_Model.cs" />
+    <Compile Include="PEST_REPORT_SCXCBFZ_Model.cs" />
+    <Compile Include="PEST_REPORT_SCXCBPC_Model.cs" />
+    <Compile Include="PropagandasteleCount_Model.cs" />
+    <Compile Include="RelayCount_Model.cs" />
+    <Compile Include="ReportCount_Model.cs" />
+    <Compile Include="ResourseCount_Model.cs" />
+    <Compile Include="SDEModel\BINGCHONGHAI_Model.cs" />
+    <Compile Include="SDEModel\GUSHUMINGMU_Model.cs" />
+    <Compile Include="SDEModel\SDE_QueyLayerModel.cs" />
+    <Compile Include="SDEModel\SDE_GONGYILIN_Model.cs" />
+    <Compile Include="SDEModel\TD_DUTYAREA_Model.cs" />
+    <Compile Include="SDEModel\TD_HUOSHAOMIAN_Model.cs" />
+    <Compile Include="SDEModel\TD_MONITORINGSTATION_Model.cs" />
+    <Compile Include="SDEModel\TD_CAMP_Model.cs" />
+    <Compile Include="SDEModel\TD_CAR_Model.cs" />
+    <Compile Include="SDEModel\TD_EQUIP_Model.cs" />
+    <Compile Include="SDEModel\TD_FACTORCOLLECTSTATION_Model.cs" />
+    <Compile Include="SDEModel\TD_FIRECHANNEL_Model.cs" />
+    <Compile Include="SDEModel\TD_ISOLATIONSTRIP_Model.cs" />
+    <Compile Include="SDEModel\TD_MOUNTAIN_Model.cs" />
+    <Compile Include="SDEModel\TD_OVERWATCH_Model.cs" />
+    <Compile Include="SDEModel\TD_POINTMARK_Model.cs" />
+    <Compile Include="SDEModel\TD_PROPAGANDASTELE_Model.cs" />
+    <Compile Include="SDEModel\TD_RELAY_Model.cs" />
+    <Compile Include="SDEModel\TD_REPOSITORY_Model.cs" />
+    <Compile Include="SDEModel\TD_RESOURCE_Model.cs" />
+    <Compile Include="SDEModel\TD_DUTYROUTE_Model.cs" />
+    <Compile Include="SDEModel\YHSWJCD_Model.cs" />
+    <Compile Include="SendMessage_Model.cs" />
+    <Compile Include="TASK_FEEDBACK_Model.cs" />
+    <Compile Include="TASK_INFO_Model.cs" />
+    <Compile Include="TASK_TURNOVER_Model.cs" />
+    <Compile Include="TREES_TREEGROUPINFO_DATAUPLOAD_Model.cs" />
+    <Compile Include="TREES_TREEGROUPINFO_Model.cs" />
+    <Compile Include="TREES_TREESINFO_DATAUPLOAD_Model.cs" />
+    <Compile Include="TREES_TREESINFO_Model.cs" />
+    <Compile Include="T_ALL_AREA_Model.cs" />
+    <Compile Include="T_COLLECTLINES_Model.cs" />
+    <Compile Include="T_COLLECTPOINTS_Model.cs" />
+    <Compile Include="T_IPSCOL_COLLECT_Model.cs" />
+    <Compile Include="T_IPSFR_ROUTERAIL_Model.cs" />
+    <Compile Include="T_IPSRPT_REPORT_Model.cs" />
+    <Compile Include="T_IPS_ALARM_Model.cs" />
+    <Compile Include="T_IPS_HOTS_Model.cs" />
+    <Compile Include="T_IPS_REALDATAModel.cs" />
+    <Compile Include="Message.cs" />
+    <Compile Include="PagerModel.cs" />
+    <Compile Include="SystemModel.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="T_IPS_REALDATATEMPORARYModel.cs" />
+    <Compile Include="T_IPSFR_USER_Model.cs" />
+    <Compile Include="T_RDXXZLModel.cs" />
+    <Compile Include="T_SysDept_OADept_Model.cs" />
+    <Compile Include="T_SYSSEC_IPSUSER_Model.cs" />
+    <Compile Include="T_SYSSEC_ROLE_Model.cs" />
+    <Compile Include="T_SYSSEC_ROLE_RIGHT_Model.cs" />
+    <Compile Include="T_SYSSEC_USER_ROLE_Model.cs" />
+    <Compile Include="T_SYSSEC_RIGHT_Model.cs" />
+    <Compile Include="T_SYS_ADDREDDBOOK_Model.cs" />
+    <Compile Include="T_SYS_ADDREDDTYPE_Model.cs" />
+    <Compile Include="T_SYS_DICTModel.cs" />
+    <Compile Include="T_SYS_LAYER_Model.cs" />
+    <Compile Include="T_SYS_LOG_Model.cs" />
+    <Compile Include="T_SYS_MENU_Model.cs" />
+    <Compile Include="T_SYS_NOTICE_Model.cs" />
+    <Compile Include="T_SYS_ORGModel.cs" />
+    <Compile Include="T_SYS_ORG_CWH_Model.cs" />
+    <Compile Include="T_SYS_ORG_EXTENDID_Model.cs" />
+    <Compile Include="T_SYS_ORG_LINK_Model.cs" />
+    <Compile Include="T_SYS_PARAMETER_Model.cs" />
+    <Compile Include="T_SYS_PEST_Model.cs" />
+    <Compile Include="T_SYS_PEST_OBSERVEAREA_Model.cs" />
+    <Compile Include="T_SYS_TREESPECIES_Model.cs" />
+    <Compile Include="T_SYS_TREESPECIES_PEST_Model.cs" />
+    <Compile Include="Weather_Model.cs" />
+    <Compile Include="YJ_DANGERCLASS_Model.cs" />
+    <Compile Include="YJ_DCSMS_SEND_Model.cs" />
+    <Compile Include="YJ_DCSMS_TMP_Model.cs" />
+    <Compile Include="YJ_SATELLITECLOUD_Model.cs" />
+    <Compile Include="YJ_WEATHER_Model.cs" />
+    <Compile Include="YJ_XY_WORK_Model.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ManagerSystemSearchWhereModel\ManagerSystemSearchWhereModel.csproj">
+      <Project>{1b70188a-c959-4760-8bab-25fc669e0c3b}</Project>
+      <Name>ManagerSystemSearchWhereModel</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

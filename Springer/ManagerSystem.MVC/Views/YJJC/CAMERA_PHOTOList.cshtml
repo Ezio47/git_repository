@@ -1,0 +1,179 @@
+﻿@using ManagerSystemModel;
+@{
+    //ViewBag.Title =  "首页";
+    Layout = "~/Views/Shared/_LayoutNoMap.cshtml";
+}
+@section Header{
+
+    <script src="~/Content/themes/assets/js/date-time/bootstrap-datepicker.min.js"></script>
+    <script src="~/Content/themes/assets/js/date-time/daterangepicker.min.js"></script>
+
+
+    <script type="text/javascript">
+        jQuery(function ($) {
+
+            $('.date-picker').datepicker({ autoclose: true, language: 'cn' }).next().on(ace.click_event, function () {
+                $(this).prev().focus();
+            });
+
+        });
+    </script>
+}
+<div class="main-content">
+    <div class="breadcrumbs" id="breadcrumbs">
+        <script type="text/javascript">
+            try { ace.settings.check('breadcrumbs', 'fixed') } catch (e) { }
+        </script>
+
+        <ul class="breadcrumb">
+            <li>
+                <i class="icon-home home-icon"></i>
+                <a href="/home/index">首页</a>
+            </li>
+            <li>预警监测</li>
+            <li class="active">红外相机图片管理</li>
+        </ul><!-- .breadcrumb -->
+
+        <div class="nav-search" id="nav-search">
+
+        </div><!-- #nav-search -->
+    </div>
+    <div class="page-content">
+
+        <div class="row">
+            <div class="col-xs-12">
+                <!-- PAGE CONTENT BEGINS -->
+                <div class="row">
+                    <div class="col-xs-12">
+
+                        <div class="table-responsive">
+                            <div id="sample-table-2_wrapper" class="dataTables_wrapper" role="grid">
+
+
+                                <div class="widget-box">
+                                    <div class="widget-header">
+                                        <div class="widget-main">
+                                            <div class="col-sm-10">
+
+                                                手机号码：<input id="tbxtpa" type="text" class="input-small" value="@ViewBag.tpa" />
+                                                开始时间：<input class="date-picker" id="tbxDateBegin" value="@ViewBag.DateBegin" style="width:100px;" type="text" data-date-format="yyyy-mm-dd">
+                                                结束时间：<input class="date-picker" id="tbxDateEnd" value="@ViewBag.DateEnd" style="width:100px;" type="text" data-date-format="yyyy-mm-dd">
+                                                <button type="button" class="btn btn-info btn-sm" onclick="query()">
+                                                    <i class="icon-search bigger-110 green"></i>
+                                                    查 询
+                                                </button>
+                                            </div>
+                                            <div class="center col-sm-2">
+                                                <input type="checkbox" name="check" onclick="checkAll(this,'chk1');" />
+                                                <a onclick="check.click()">全选</a>
+                                                <button type="button" class="btn btn-info btn-sm" onclick="Manager('Del')">
+                                                    <i class="icon-plus-sign bigger-110 green"></i>
+                                                    删除
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @Html.Raw(@ViewBag.CAMERA_PHOTOList)
+                                <div class="row">
+                                    @Html.Raw(@ViewBag.PagerInfo)
+                                </div>
+
+
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+    </div><!-- /.page-content -->
+</div>
+<script type="text/javascript">
+    //全选
+    function checkAll(obj, cName) {
+        var checkboxs = document.getElementsByName(cName);
+        for (var i = 0; i < checkboxs.length; i++) {
+            checkboxs[i].checked = obj.checked;
+        }
+    }
+
+
+//查询
+    function query() {
+
+        dojo.xhrPost({
+            url: '/YJJC/CAMERA_PHOTOListQuery',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            content: {
+                PageSize: document.getElementById("selPageSize").value,
+                tpa: document.getElementById("tbxtpa").value,
+                DateBegin: document.getElementById("tbxDateBegin").value,
+                DateEnd: document.getElementById("tbxDateEnd").value,
+                Page: document.getElementById("selPage").value
+            },
+            load: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    window.location.assign(ar.Url);
+                }
+                else {
+                    alert(ar.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                alert('登录异常');
+            }
+        });
+    }
+    //删除
+    function Manager(Method) {
+        //var check_val = [];
+        //$("input:checkbox").each(function () {
+        //    if ($(this).is(':checked')) {
+        //        check_val.push($(this).val());
+        //    }
+
+        //})
+
+        //if ($.trim(check_val) == "") {
+        //    alert("请选择要删除的图片！");
+        //}
+        //else {
+        //    if (Method == "Del") {
+        //        if (confirm('确实要删除该内容吗?') == false)
+        //            return false;
+        //    }
+        var id = document.getElementsByName('chk1');
+        var chk1 = new Array();
+        for (var i = 0; i < id.length; i++) {
+            if (id[i].checked)
+                chk1.push(id[i].value);
+        }
+        dojo.xhrPost({
+            url: '/YJJC/CAMERA_PHOTOManger',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            content: {
+                smid: chk1,
+                opMethod: Method,
+            },
+            load: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    if (confirm(ar.Msg + ' 请返回！')) {
+                        window.location.reload();
+                    }
+                }
+                else {
+                    alert(ar.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                alert('保存异常');
+            }
+        });
+    }
+</script>

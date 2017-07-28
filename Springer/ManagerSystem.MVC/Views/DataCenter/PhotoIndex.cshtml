@@ -1,0 +1,95 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutIndexNoMenu.cshtml";
+}
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.8.2.min.js")"></script>
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'center'" title="" class="LayoutCenterBG">
+        <div class="divTable" id="divTable">
+            @Html.Raw(@ViewBag.photo)
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function PHOnclik(id, title, explain, name) {
+        document.getElementById("PHOTO_ID").value = id;
+        document.getElementById("PHOTOTITLE").value = title;
+        document.getElementById("PHOTOEXPLAIN").value = explain;
+        document.getElementById("PHOTOFILENAME").value = name;
+        document.getElementById('btnPhotoDel').style.display = "";
+        document.getElementById('btnPhotoMdy').style.display = "";
+    }
+
+    function ManagerPhoto(Method) {
+        var bln = false;
+        if (Method == 'Del') {
+            if (confirm('确实要删除该内容吗?')) {
+                bln = true;
+            }
+        }
+        else {
+            bln = true;
+        }
+        if (bln == true) {
+            $.ajax({
+                type: "Post",
+                url: "/DataCenter/PhotoManager",
+                data: {
+                    Method: Method,
+                    PHOTO_ID: document.getElementById("PHOTO_ID").value,
+                    PRID: document.getElementById("PRID").value,
+                    PHOTOTITLE: document.getElementById("PHOTOTITLE").value,
+                    PHOTOFILENAME: document.getElementById("PHOTOFILENAME").value,
+                    PHOTOEXPLAIN: document.getElementById("PHOTOEXPLAIN").value,
+                    PHOTOTYPE: document.getElementById("PHOTOTYPE").value,
+                },
+                success: function (data) {
+                    var ar = eval('(' + data + ')');
+                    if (ar.Success) {
+                        layer.msg(ar.Msg);
+                        window.location.reload();
+                    }
+                    else {
+                        layer.msg(ar.Msg);
+                    }
+                },
+                error: function (err, ioArgs) {
+                    layer.msg('操作异常，请重试');
+                }
+            });
+        }
+    }
+    //图片上传
+    function UploadPhoto(Method) {
+        var formData = new FormData($("#uploadForm")[0]);
+        formData.append("PHOTO_ID", $('#PHOTO_ID').val());
+        formData.append("PRID", $('#PRID').val());
+        formData.append("PHOTOTITLE", $('#PHOTOTITLE').val());
+        formData.append("PHOTOEXPLAIN", $('#PHOTOEXPLAIN').val());
+        formData.append("PHOTOTYPE", $('#PHOTOTYPE').val());
+        formData.append("Method", Method);
+        $.ajax({
+            type: "post",
+            url: '/DataCenter/UploadPhoto',
+            data: formData,
+            dataType: "json",
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (data) {
+                if (data.Success) {
+                    layer.msg(data.Msg, { icon: 6 });
+                    document.getElementById('lblInfo').innerText = "已上传";
+                    window.location.reload();
+                }
+                else {
+                    layer.msg(data.Msg, { icon: 5 });
+                }
+            },
+            error: function (data) {
+                layer.msg("上传失败", { icon: 5 });
+            }
+        });
+    }
+</script>

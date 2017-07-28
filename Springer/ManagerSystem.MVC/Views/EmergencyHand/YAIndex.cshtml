@@ -1,0 +1,48 @@
+﻿@{
+    ViewBag.Title = "YAIndex";
+    Layout = null;
+    int i = 0;
+}
+@model IEnumerable<ManagerSystemModel.JC_FIRE_PLAN_Model>
+
+@*<link href="/Content/themes/easyui/Default.css" rel="stylesheet" />*@
+<link href="~/Content/themes/default/Public.css" rel="stylesheet" />
+<link href="~/Content/themes/default/Default.css" rel="stylesheet" />
+
+
+<div class="divTable">
+    <table cellpadding="0" cellspacing="0">
+        <thead>
+            <tr>
+                <th>序号</th>
+                <th>单位名称</th>
+                <th>火灾级别</th>
+                <th>预案标题</th>
+            </tr>
+        </thead>
+        <tbody style="font-size:13px;">
+            @if (Model.Any())
+            {
+                foreach (var item in Model)
+                {
+                    ++i;
+                    <tr>
+                        <td>@i</td>
+                        <td>@item.BYORGNOName</td>
+                        <td>@item.FIRELEVELName</td>
+                        @*<td><a href="@Url.Action("FirePlanShow", "System", new { ID = @item.JC_FIRE_PLANID })" target="_blank">@item.PLANTITLE</a></td>*@
+                        <td><a href="/System/FirePlanShow?ID=@item.JC_FIRE_PLANID" target="_blank">@item.PLANTITLE</a></td>
+                    </tr>
+                }
+
+            }
+            else
+            {
+                <tr>
+                    <td colspan="4"><em>暂无火灾预案</em></td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,126 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+    <div data-options="region:'center'" title="" style=" border: none; background:#f5f5f5; padding:5px 5px 5px 5px;">
+
+
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+            <div data-options="region:'north'" title="" style=" height:50%;border: none;">
+                <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+                    <div data-options="region:'west'" title="" style=" width:50%; border: none; overflow:hidden;">
+
+
+                        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+                            <div data-options="region:'north'" title="" style=" height:30px; border: none; overflow:hidden;">
+                                <div class="DefaultDivTitle">组织机构图</div>
+                            </div>
+                            <div data-options="region:'center'" title="" style=" border: none; ">
+
+                                <div id="aa" style="width:240px" class="easyui-tree"></div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div data-options="region:'center'" title="" style=" border: none; ">
+
+                        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+                            <div data-options="region:'north'" title="" style=" height:30px; border: none; overflow:hidden;">
+                                <div class="DefaultDivTitle">队伍</div>
+                            </div>
+                            <div data-options="region:'center'" title="" style=" border: none; ">
+
+                                <div id="tt" style="width:240px" class="easyui-tree"></div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div data-options="region:'west'" title="" style=" width:50%; border: none; overflow:hidden;">
+
+
+                <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+                    <div data-options="region:'north'" title="" style=" height:30px; border: none; overflow:hidden;">
+                        <div class="DefaultDivTitle">仓库</div>
+                    </div>
+                    <div data-options="region:'center'" title="" style=" border: none; ">
+
+                        <div id="bb" style="width:240px" class="easyui-tree"></div>
+
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; background:#f5f5f5; padding:0px 0px 0px 0px;">
+
+                <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+                    <div data-options="region:'north'" title="" style=" height:30px; border: none; overflow:hidden;">
+                        <div class="DefaultDivTitle">装备</div>
+                    </div>
+                    <div data-options="region:'center'" title="" style=" border: none;padding-left:40%; padding-top:5%; vertical-align:middle; ">
+
+                        <a onclick="cheakout()" class="easyui-linkbutton" style="width:90px;height:70px;background:red">出库</a>
+                        <a href="#" class="easyui-linkbutton" style="width:90px;height:70px;background:red">入库</a>
+                        <br />
+                        <a href="#" class="easyui-linkbutton" style="width:90px;height:70px;background:red">库存盘点</a>
+                        <a href="#" class="easyui-linkbutton" style="width:90px;height:70px;background:red">出入库查询</a>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/Content/themes/assets/js/bootstrap.min.js"></script>
+<script src="~/Content/themes/assets/js/typeahead-bs2.min.js"></script>
+<script src="~/Content/themes/assets/js/ace-elements.min.js"></script>
+<script src="~/Content/themes/assets/js/ace.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+        $('#aa').tree({
+            url: '/DataCenter/OrgTreeget',
+            checked: false,
+            animate: true,
+            lines: true,
+            cache: false,
+            state:'closed'
+        });
+    })
+    $(function () {
+        $('#tt').tree({
+            url: '/DataCenter/ArmyTreeget',
+            checked: false,
+            animate: true,
+            lines: true,
+            cache: false
+        });
+    })
+    $(function () {
+        $('#bb').tree({
+            url: '/DataCenter/DEPOTTreeget',
+            checked: false,
+            animate: true,
+            lines: true,
+            cache: false
+        });
+    })
+    function cheakout()
+    {
+    }
+</script>

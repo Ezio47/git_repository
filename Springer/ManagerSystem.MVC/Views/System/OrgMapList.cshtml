@@ -1,0 +1,308 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+}
+@section Header{
+    <script src="~/Scripts/SpringerCommonValidate.js"></script>
+}
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+
+    <div data-options="region:'center'" title="" style=" border: none;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        单位名称：<select id="tbxBYORGNO" name="tbxBYORGNO" onchange="loadOrg()"> @Html.Raw(@ViewBag.vdOrg) </select>
+                        类型： <label id="lbltypeInfo"></label>
+                        <input id="tbxkeys" type="hidden" style="width:80px" value="" />
+                        <input type="button" value="村委会管理" style="width:120px; display:none;" id="btnCWHMan" onclick="CWHMan()" />
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" class="LayoutCenterBG">
+                <div class="divTable" id="divTable">
+
+                </div>
+            </div>
+            <div data-options="region:'south'" title="" style=" height:55px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <ul>
+                        <li class="homeUL">
+                            @using (@Html.BeginForm("OrgUpload", "System", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                            {
+                                <input name="file" style="width:130px;" type="file" id="file" class="btn btn-info btn-sm" />
+                                <button type="submit" name="Upload" value="导入" class="btnInputCss"> 导 入 </button>
+                            }
+                        </li>
+                        <li class="active" style="text-align:left;">
+                            <a href="~/UploadFile/HRExcel/组织机构图乡镇模板.xls" target="_blank" title="右键，另存为">下载模板</a>
+                            <font color="red">说明：请严格按照模块进行数据录入，请勿调整模板各列顺序，同时建议一个乡镇一个乡镇的导入</font>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    loadOrg();
+    function loadOrg() {
+        $.ajax({
+            url: '/System/getORGLINKTYPEByOrgNo',
+            data: {
+                orgNo: document.getElementById("tbxBYORGNO").value,
+            },
+            type: 'post',
+            success: function (data) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#lbltypeInfo').html(ar.Msg);
+                    query();
+                    if (ar.Url == "1") {
+                        document.getElementById('btnCWHMan').style.display = "";
+                    }
+                    else {
+                        document.getElementById('btnCWHMan').style.display = "none";
+                    }
+                }
+                else {
+                    alert('查询异常，请重试');
+                }
+            },
+            error: function (err, ioArgs) {
+                alert('登录异常，请重试');
+            }
+        });
+    }
+    function query() {
+        $.ajax({
+            url: '/System/getOrgLinklist',
+            data: {
+                BYORGNO: document.getElementById("tbxBYORGNO").value,
+                ORGLINKTYPE: document.getElementById("tbxORGLINKTYPE").value,
+                keys: document.getElementById("tbxkeys").value,
+            },
+            type: 'post',
+            success: function (data) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#divTable').html(ar.tableInfo);
+                }
+                else {
+                    alert('查询异常，请重试');
+                }
+            },
+            error: function (err, ioArgs) {
+                alert('登录异常，请重试');
+            }
+        });
+    }
+    function LinkOnclik(ORGLINK_ID, UNITNAME, NAME, USERJOB, PHONE, Tell, ORDERBY) {
+        document.getElementById("tbxLinkORGLINK_ID").value = ORGLINK_ID;
+        document.getElementById("tbxLinkUNITNAME").value = UNITNAME;
+        document.getElementById("tbxLinkNAME").value = NAME;
+        document.getElementById("tbxLinkUSERJOB").value = USERJOB;
+        document.getElementById("tbxLinkPHONE").value = PHONE;
+        document.getElementById("tbxLinkTell").value = Tell;
+        document.getElementById("tbxLinkORDERBY").value = ORDERBY;
+        document.getElementById('btnLinkMdy').style.display = "";
+        document.getElementById('btnLinkDel').style.display = "";
+    }
+    function LinkOnclik2(ORGLINK_ID, NAME, USERJOB, PHONE, Tell, ORDERBY) {
+        document.getElementById("tbxLinkORGLINK_ID2").value = ORGLINK_ID;
+        document.getElementById("tbxLinkNAME2").value = NAME;
+        document.getElementById("tbxLinkUSERJOB2").value = USERJOB;
+        document.getElementById("tbxLinkPHONE2").value = PHONE;
+        document.getElementById("tbxLinkTell2").value = Tell;
+        document.getElementById("tbxLinkORDERBY2").value = ORDERBY;
+        document.getElementById('btnLinkMdy2').style.display = "";
+        document.getElementById('btnLinkDel2').style.display = "";
+    }
+    function ManagerLink(Method,type) {
+        var t3 = $('#tbxLinkPHONE').val();
+        var t4 = $('#tbxLinkTell').val();
+        if ($.trim(t3) != "") {
+            if (checkPhone(t3) == false) {
+                layer.msg('手机号码格式不正确！', { icon: 5 });
+                $('#tbxLinkPHONE').focus();
+                return;
+            }           
+        }
+        if ($.trim(t4) != "") {
+            if (checkTel(t4) == false) {
+                layer.msg('电话格式不正确！', { icon: 5 });
+                $('#tbxLinkTell').focus();
+                return;
+            }
+        }
+        var bln = false;
+        if (Method == 'Del') {
+            if (confirm('确实要删除该内容吗?')) {
+                bln = true;
+            }
+        } else {
+            bln = true;
+        }
+        if (bln == true) {
+            $.ajax({
+                url: '/System/OrgLinkManager',
+                data: {
+                    BYORGNO:$("#tbxBYORGNO").val(), 
+                    Type:type,
+                    Method: Method,
+                    ORGLINK_ID:$("#tbxLinkORGLINK_ID").val(),
+                    ORGLINKTYPE:$("#tbxORGLINKTYPE").val(), 
+                    UNITNAME:$("#tbxLinkUNITNAME").val(), 
+                    NAME:$("#tbxLinkNAME").val(), 
+                    USERJOB:$("#tbxLinkUSERJOB").val(), 
+                    PHONE:t3,  
+                    Tell: t4, 
+                    ORDERBY:$("#tbxLinkORDERBY").val(), 
+                },
+                type: 'post',
+                success: function (data) {
+                    var ar = eval('(' + data + ')');
+                    if (ar.Success) {
+                        layer.alert(ar.Msg, { icon: 6 });
+                        query();
+
+                    }
+                    else {
+                        layer.alert(ar.Msg, { icon: 5 });
+                    }
+                },
+                error: function (err, ioArgs) {
+                    layer.msg('操作异常，请重试');
+                }
+            });
+        }
+    }
+    function ManagerLink2(Method, type) {
+        var t3 = $('#tbxLinkPHONE2').val();
+        var t4 = $('#tbxLinkTell2').val();
+        if ($.trim(t3) != "") {
+            if (checkPhone(t3) == false) {
+                layer.msg('手机号码格式不正确！', { icon: 5 });
+                $('#tbxLinkPHONE').focus();
+                return;
+            }
+        }
+        if ($.trim(t4) != "") {
+            if (checkTel(t4) == false) {
+                layer.msg('电话格式不正确！', { icon: 5 });
+                $('#tbxLinkTell').focus();
+                return;
+            }
+        }
+        var bln = false;
+        if (Method == 'Del') {
+            if (confirm('确实要删除该内容吗?')) {
+                bln = true;
+            }
+        } else {
+            bln = true;
+        }
+        if (bln == true) {
+            $.ajax({
+                url: '/System/OrgLinkManager',
+                data: {
+                    BYORGNO: document.getElementById("tbxBYORGNO").value,
+                    Type: type,
+                    Method: Method,
+                    ORGLINK_ID:$("#tbxLinkORGLINK_ID2").val(),// document.getElementById("tbxLinkORGLINK_ID2").value,
+                    ORGLINKTYPE: document.getElementById("tbxORGLINKTYPE").value,
+                    UNITNAME: "",
+                    NAME: $("#tbxLinkNAME2").val(), //document.getElementById("tbxLinkNAME2").value,
+                    USERJOB: document.getElementById("tbxLinkUSERJOB2").value,
+                    PHONE: document.getElementById("tbxLinkPHONE2").value,
+                    Tell: document.getElementById("tbxLinkTell2").value,
+                    ORDERBY: document.getElementById("tbxLinkORDERBY2").value,
+                },
+                type: 'post',
+                success: function (data) {
+                    var ar = eval('(' + data + ')');
+                    if (ar.Success) {
+                        layer.alert(ar.Msg, { icon: 6 });
+                        query();
+                    }
+                    else {
+                        layer.alert(ar.Msg, { icon: 5 });
+                    }
+                },
+                error: function (err, ioArgs) {
+                    layer.msg('操作异常，请重试');
+                }
+            });
+        }
+    }
+    function CWHMan() {
+        $.ajax({
+            url: '/System/getOrgCWHlist',
+            data: {
+                BYORGNO: document.getElementById("tbxBYORGNO").value
+            },
+            type: 'post',
+            success: function (data) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#divTable').html(ar.tableInfo);
+                }
+                else {
+                    alert('查询异常，请重试');
+                }
+            },
+            error: function (err, ioArgs) {
+                alert('登录异常，请重试');
+            }
+        });
+
+    }
+    function CWHOnclik(id, name, orderby) {
+        document.getElementById("CWHID").value = id;
+        document.getElementById("CWHNAME").value = name;
+        document.getElementById("CWHORDERBY").value = orderby;
+        document.getElementById('btnCWHMdy').style.display = "";
+        document.getElementById('btnCWHDel').style.display = "";
+    }
+    function ManagerCWH(Method) {
+        var bln = false;
+        if (Method == 'Del') {
+            if (confirm('确实要删除该内容吗?')) {
+                bln = true;
+            }
+        } else {
+            bln = true;
+        }
+        if (bln == true) {
+            $.ajax({
+                url: '/System/ManagerCWH',
+                data: {
+                    BYORGNO: document.getElementById("tbxBYORGNO").value,
+                    Method: Method,
+                    CWHID: document.getElementById("CWHID").value,
+                    CWHNAME: document.getElementById("CWHNAME").value,
+                    ORDERBY: document.getElementById("CWHORDERBY").value,
+                },
+                type: 'post',
+                success: function (data) {
+                    var ar = eval('(' + data + ')');
+                    if (ar.Success) {
+                        layer.msg(ar.Msg, { icon: 6 });
+                        loadOrg();
+                        CWHMan();
+                    }
+                    else {
+                        layer.msg(ar.Msg, { icon: 5 });
+                    }
+                },
+                error: function (err, ioArgs) {
+                    layer.msg('操作异常，请重试');
+                }
+            });
+        }
+    }   
+</script>

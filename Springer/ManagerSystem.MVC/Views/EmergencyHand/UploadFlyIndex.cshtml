@@ -1,0 +1,95 @@
+﻿@{
+    ViewBag.Title = "UploadFlyIndex";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>标绘文件保存</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link href="~/Content/themes/default/Public.css" rel="stylesheet" />
+    <link href="~/Content/themes/default/Default.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.8.2.min.js"></script>
+    <style type="text/css">
+        form {
+            border: 1px solid #CCC;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+            width: 400px;
+            background: #EEE;
+        }
+    </style>
+
+</head>
+
+
+<body>
+    <fieldset class="bhwjsc">
+        <legend>标绘文件服务器保存上传</legend>
+        <input type="button" id="btn_show" value="上传服务器文件" /><br />
+        <form id="form_upload" style="padding:20px; display:none;" action="/EmergencyHand/Upload" method="post" enctype="multipart/form-data">
+             标绘文件名： <input type="text" name="subjectName"  id="txtSubName" style="width:200px"/>
+            <input name="upFile" style="width:350px;height:25px;" size="38" type="file" />
+            <input type="submit" value="上传" class="btnUploadCss btnCss" />
+            <input type="hidden" name="jcfid" value="@ViewBag.jcfid " />
+        </form>
+        <div id="result" style="color:red"></div>
+        <div><span class="floatLeft" style="font-size:14px;">本地路径：</span> <p id="tdid" class="floatLeft">@Html.Raw(ViewBag.url)</p><a class="padd_10" href="javascript:;" onclick="copyText(document.all.tdid)">点击复制</a></div>
+        <p style="color:red">说明：点击复制路径，点击上传服务器按钮后，在浏览选择文件框内直接复制路径即可</p>
+    </fieldset>
+</body>
+</html>
+
+<script src="~/Scripts/jquery.form.js"></script>
+<script type="text/javascript">
+
+    $(function () {
+        $("#btn_show").bind("click", function () {
+            $("#form_upload").show();
+            var options = {
+                success: function (responseText, statusText, xhr, $form) {
+                    var pPath = responseText.purl;
+                    if (pPath == "") {
+                        alert(responseText.error);
+                        return false;
+                    }
+                    else {
+                        $("#form_upload").hide();
+                        $("#result").html("保存至服务器成功").show();
+                    }
+                    setTimeout(CloseWin, 1000);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("错误：" + textStatus);
+                    //console.log(textStatus);
+                    //console.log(errorThrown);
+                }
+            };
+
+            $("#form_upload").ajaxForm(options);
+        });
+    });
+    function CloseWin() //这个不会提示是否关闭浏览器
+    {
+        window.opener = null;
+        //window.opener=top;
+        window.open("", "_self");
+        window.close();
+    }
+
+    function copyText(obj) {
+        try {
+            var rng = document.body.createTextRange();
+            rng.moveToElementText(obj);
+            rng.scrollIntoView();
+            rng.select();
+            rng.execCommand("Copy");
+            rng.collapse(false);
+            alert("已经复制到粘贴板!你可以使用Ctrl+V 贴到需要的地方去了哦!");
+        } catch (e) {
+            alert("您的浏览器不支持此复制功能，请选中相应内容并使用Ctrl+C进行复制!");
+        }
+    }
+
+</script>

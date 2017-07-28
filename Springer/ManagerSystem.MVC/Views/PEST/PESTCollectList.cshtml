@@ -1,0 +1,454 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+}
+@section Header{
+    <script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        单位：<select id="tbxORGNO" name="tbxORGNO" onchange="query()">@Html.Raw(@ViewBag.vdOrg)</select>
+                        开始时间：<input id="tbxStartTime" name="tbxStartTime" type="text" class="Wdate" value="@ViewBag.StartTime" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd'})" style="width:100px" />
+                        结束时间：<input id="tbxEndTime" name="tbxEndTime" type="text" class="Wdate" value="@ViewBag.EndTime" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd'})" style="width:100px" />
+                        村名：<input id="tbxVILLAGENAME" name="tbxVILLAGENAME" type="text" class="input-small" style="width:80px" value="@ViewBag.VILLAGENAME" />
+                        小地名：<input id="tbxSMALLADDRESS" name="tbxSMALLADDRESS" type="text" class="input-small" style="width:80px" value="@ViewBag.SMALLADDRESS" />
+                        <input id="btnQuery" type="button" value="查询" onclick="query()" class="btnSearchCss" />
+                        <input id="btnAdd" type="button" value="添加" onclick="Manager('Add','')" style="display:none;" class="btnAddCss" />
+                        <input id="btnDel" type="button" value="删除" onclick="Manager('Del', '')" style="display:none;" class="btnDelCss" />
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <div class="divTable">
+                    @Html.Raw(@ViewBag.TableInfo)
+                </div>
+            </div>
+            <div data-options="region:'south'" title="" style=" height:40px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
+                @Html.Raw(@ViewBag.PageInfo)
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="tableAdd" class="divMan" style="display:none;margin-left:5px;margin-top:8px">
+    <input id="PESTCOLLDATAID" name="PESTCOLLDATAID" type="hidden" value="" />
+    <table cellpadding="0" cellspacing="0">
+        <tr>
+            <td style="width:100px;">单位：</td>
+            <td><select id="BYORGNO" style="width:96%;">@Html.Raw(@ViewBag.vdOrg)</select></td>
+            <td style="width:100px;">寄主树种：</td>
+            <td><select id="HOSTTREESPECIESCODE" style="width:96%;">@Html.Raw(@ViewBag.TREES)</select></td>
+        </tr>
+        <tr>
+            <td>调查类型：</td>
+            <td><select id="SEARCHTYPE" style="width:96%;" onchange="loadCOLLECTPEST()">@Html.Raw(ViewBag.PESTTYPE)</select></td>
+            <td>病虫名称：</td>
+            <td><select id="COLLECTPESTCODE" style="width:96%;"></select></td>
+        </tr>
+        <tr>
+            <td>村名： </td>
+            <td><input id="VILLAGENAME" type="text" class="input-small" value="" style="width:96%;" /><span style="color:red;">*</span></td>
+            <td>小地名：</td>
+            <td><input id="SMALLADDRESS" type="text" class="input-small" value="" style="width:96%;" /><span style="color:red;">*</span></td>
+        </tr>
+        <tr>
+            <td>小班号： </td>
+            <td><input id="SMALLCLASSCODE" type="text" class="input-small" value="" style="width:96%;" /><span style="color:red;">*</span></td>
+            <td>小班面积：</td>
+            <td><input id="SMALLCLASSAREA" type="text" class="input-small" value="" style="width:88%;" /><span style="color: gray;">&nbsp;公顷</span></td>
+        </tr>
+        <tr>
+            <td>经纬度点：</td>
+            <td colspan="2"><input id="JWDLIST" type="text" style="width:98%" value=""  /></td>
+            <td><input id="KID" type="hidden" value="" /><input type="button" value="地图定位" onclick="SetLine()" class="btnMapLoaclCss" /></td>
+        </tr>
+        <tr>
+            <td>危害部位：</td>
+            <td><select id="HARMPOSITION" style="width:96%;">@Html.Raw(@ViewBag.HARMPOSITION)</select></td>
+            <td>危害程度：</td>
+            <td><select id="HARMLEVEL" style="width:96%;">@Html.Raw(@ViewBag.HARMLEVEL)</select></td>
+        </tr>
+        <tr>
+            <td>疑似病死：</td>
+            <td><input id="DEADCOUNT" type="text" class="input-small" value="" style="width:90%;" /><span style="color:gray;">&nbsp;株&nbsp;</span></td>
+            <td>不明枯死：</td>
+            <td><input id="UNKNOWNDIEOFFCOUNT" type="text" class="input-small" value="" style="width:90%;" /><span style="color:gray;">&nbsp;株&nbsp;</span></td>
+        </tr>
+        <tr>
+            <td>其他枯死：</td>
+            <td><input id="ELSEDIEOFFCOUNT" type="text" class="input-small" value="" style="width:90%;" /><span style="color:gray;">&nbsp;株&nbsp;</span></td>
+            <td>取&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;样：</td>
+            <td><input id="SAMPLECOUNT" type="text" class="input-small" value="" style="width:90%;" /><span style="color:gray;">&nbsp;株&nbsp;</span></td>
+        </tr>
+        <tr>
+            <td>处理状态：</td>
+            <td><select id="MANSTATE" name="BYORGNO" style="width:96%;">@Html.Raw(@ViewBag.MANSTATE)</select></td>
+            <td>反馈结果：</td>
+            <td><input id="MANRESULT" type="text" class="input-small" value="" style="width:98%" /></td>
+        </tr>
+        <tr>
+            <td>备注：</td>
+            <td colspan="3"><input id="MARK" type="text" class="input-small" value="" style="width:99%" /></td>
+        </tr>
+    </table>
+</div>
+
+<script type="text/javascript">
+    var blnAdd = '@ViewBag.Add';
+    var blnDel = '@ViewBag.Del';
+    if (blnAdd == "1") {
+        document.getElementById('btnAdd').style.display = "";
+    }
+    if (blnDel == "1") {
+        document.getElementById('btnDel').style.display = "";
+    }
+    loadCOLLECTPEST();
+    //加载病虫名称
+    function loadCOLLECTPEST() {
+        var PESTCODE = document.getElementById('SEARCHTYPE').value;
+        if (PESTCODE != "") {
+            $.ajax({
+                type: "Post",
+                url: "/PEST/LoadCOLLECTPEST",
+                data: { PESTCODE: PESTCODE },
+                dataType: "json",
+                error: function () {
+                    layer.msg('系统异常!', { icon: 5 });
+                },
+                success: function (data) {
+                    if (data.Success) {
+                        $('#COLLECTPESTCODE').html('');
+                        $('#COLLECTPESTCODE').html(data.Msg);
+                    }
+                    else {
+                        $('#COLLECTPESTCODE').html('');
+                    }
+                }
+            });
+        }
+    }
+    //行选中改变颜色
+    function SetColor(obj) {
+        $(obj).css("background-color", "#FFDAB9");
+        $("tr").not($(obj)).css("background-color", "");
+    }
+    //查询
+    function query() {
+        var StartTime = $('#tbxStartTime').val();
+        var EndTime = $('#tbxEndTime').val();
+        if (!checkEndTime(StartTime, EndTime)) {
+            layer.msg("开始时间不能大于结束时间!", { icon: 5 });
+            return;
+        }
+        $.ajax({
+            url: '/PEST/PESTCollectListQuery',
+            type: 'get',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: {
+                PageSize: $('#selPageSize').val(),
+                StartTime: StartTime,
+                EndTime: EndTime,
+                VILLAGENAME: $('#tbxVILLAGENAME').val(),
+                SMALLADDRESS: $('#tbxSMALLADDRESS').val(),
+                BYORGNO: $('#tbxORGNO').val(),
+                Page: $('#selPage').val()
+            },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    window.location.assign(ar.Url);
+                }
+                else {
+                    layer.msg(ar.Msg, { icon: 5 });
+                }
+            },
+            error: function () {
+                layer.msg("查询异常!", { icon: 5 });
+            }
+        });
+    }
+    //勾选
+    function SelectAll(v, c) {
+        var _len = $("#CollectTable tr").length - 1;//行数
+        if (_len > 0) {
+            if (v == "ALL") {
+                for (var i = 0; i < _len; i++) {
+                    document.getElementById('tbxCollect' + i).checked = c;
+                }
+            }
+        }
+    }
+    //增、删、改
+    function Manager(Method, DataId) {
+        if (Method == 'Del') {
+            var PESTCOLLDATAID = $("input:checkbox[name='tbxCollect']:checked").map(function (index, elem) { return $(elem).val(); }).get().join(',');
+            if (PESTCOLLDATAID.length > 0) {
+                layer.confirm('确实要删除吗?', { icon: 3, title: '提示' }, function (index) {
+                    $.ajax({
+                        type: "Post",
+                        url: "/PEST/PESTCollectDataManager",
+                        data: { PESTCOLLDATAID: PESTCOLLDATAID, Method: Method },
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.Success) {
+                                layer.msg(data.Msg, { icon: 6 });
+                                query();
+                            }
+                            else {
+                                layer.msg(data.Msg, { icon: 5 });
+                            }
+                        },
+                        error: function () {
+                            layer.msg('系统异常!', { icon: 5 });
+                        }
+                    });
+                });
+            }
+            else {
+                layer.msg('请选择要删除的数据!', { icon: 5 });
+            }
+        }
+        else {
+            var btnInfo = ['保存', '取消'];
+            var str = "采集有害生物数据";
+            if (Method == "Mdy")
+                str = "修改有害生物数据";
+            if (Method == 'Add') {
+                $('#VILLAGENAME').val("");
+                $('#SMALLADDRESS').val("");
+                $('#SMALLCLASSCODE').val("");
+                $('#SMALLCLASSAREA').val("");
+                $('#KID').val();
+                $('#DEADCOUNT').val("");
+                $('#UNKNOWNDIEOFFCOUNT').val("");
+                $('#ELSEDIEOFFCOUNT').val("");
+                $('#SAMPLECOUNT').val("");
+                $('#MANRESULT').val();
+                $('#MARK').val();
+            }
+            else if (Method == 'Mdy') {
+                $.ajax({
+                    type: "get",
+                    url: "/PEST/GetPESTCollectDataJson",
+                    data: { PESTCOLLDATAID: DataId },
+                    dataType: "json",
+                    error: function () {
+                        layer.msg('系统异常!', { icon: 5 });
+                    },
+                    success: function (data) {
+                        $('#PESTCOLLDATAID').val(data.PESTCOLLDATAID);
+                        $('#BYORGNO').val(data.BYORGNO);
+                        $('#HOSTTREESPECIESCODE').val(data.HOSTTREESPECIESCODE);
+                        $('#SEARCHTYPE').val(data.SEARCHTYPE);
+                        $('#COLLECTPESTCODE').val(data.COLLECTPESTCODE);
+                        $('#VILLAGENAME').val(data.VILLAGENAME);
+                        $('#SMALLADDRESS').val(data.SMALLADDRESS);
+                        $('#SMALLCLASSCODE').val(data.SMALLCLASSCODE);
+                        $('#SMALLCLASSAREA').val(data.SMALLCLASSAREA);
+                        $('#JWDLIST').val(data.JWDLIST);
+                        $('#KID').val(data.KID);
+                        $('#HARMPOSITION').val(data.HARMPOSITION);
+                        $('#HARMLEVEL').val(data.HARMLEVEL);
+                        $('#DEADCOUNT').val(data.DEADCOUNT);
+                        $('#UNKNOWNDIEOFFCOUNT').val(data.UNKNOWNDIEOFFCOUNT);
+                        $('#ELSEDIEOFFCOUNT').val(data.ELSEDIEOFFCOUNT);
+                        $('#SAMPLECOUNT').val(data.SAMPLECOUNT);
+                        $('#MANSTATE').val(data.MANSTATE);
+                        $('#MANRESULT').val(data.MANRESULT);
+                        $('#MARK').val(data.MARK);
+                    }
+                });
+            }
+            layer.open({
+                type: 1,
+                title: str,
+                area: ['60%', '82%'],
+                btn: btnInfo,
+                shade: 0,
+                maxmin: true,
+                content: $('#tableAdd'),
+                yes: function (index, layero) {
+                    var PESTCOLLDATAID = $('#PESTCOLLDATAID').val();
+                    if (PESTCOLLDATAID != "") {
+                        Method = 'Mdy';
+                    }
+                    var VILLAGENAME = $('#VILLAGENAME').val();
+                    if ($.trim(VILLAGENAME) == "") {
+                        layer.msg('请输入村名!', { icon: 5 });
+                        $('#VILLAGENAME').focus();
+                        return;
+                    }
+                    var SMALLADDRESS = $('#SMALLADDRESS').val();
+                    if ($.trim(SMALLADDRESS) == "") {
+                        layer.msg('请输入小地名!', { icon: 5 });
+                        $('#SMALLADDRESS').focus();
+                        return;
+                    }
+                    var SMALLCLASSCODE = $('#SMALLCLASSCODE').val();
+                    if ($.trim(SMALLCLASSCODE) == "") {
+                        layer.msg('请输入小班号!', { icon: 5 });
+                        $('#SMALLCLASSCODE').focus();
+                        return;
+                    }
+                    var DEADCOUNT = $('#DEADCOUNT').val();
+                    if ($.trim(DEADCOUNT) != "") {
+                        if (!CheckINT(DEADCOUNT)) {
+                            layer.msg('疑似病死株数输入非法!', { icon: 5 });
+                            $('#DEADCOUNT').focus();
+                            return;
+                        }
+                    }
+                    var UNKNOWNDIEOFFCOUNT = $('#UNKNOWNDIEOFFCOUNT').val();
+                    if ($.trim(UNKNOWNDIEOFFCOUNT) != "") {
+                        if (!CheckINT(DEADCOUNT)) {
+                            layer.msg('不明枯死株数输入非法!', { icon: 5 });
+                            $('#UNKNOWNDIEOFFCOUNT').focus();
+                            return;
+                        }
+                    }
+                    var ELSEDIEOFFCOUNT = $('#ELSEDIEOFFCOUNT').val();
+                    if ($.trim(ELSEDIEOFFCOUNT) != "") {
+                        if (!CheckINT(ELSEDIEOFFCOUNT)) {
+                            layer.msg('其他枯死株数输入非法!', { icon: 5 });
+                            $('#ELSEDIEOFFCOUNT').focus();
+                            return;
+                        }
+                    }
+                    var SAMPLECOUNT = $('#SAMPLECOUNT').val();
+                    if ($.trim(SAMPLECOUNT) != "") {
+                        if (!CheckINT(SAMPLECOUNT)) {
+                            layer.msg('取样株数输入非法!', { icon: 5 });
+                            $('#SMALLCLASSAREA').focus();
+                            return;
+                        }
+                    }
+                    $.ajax({
+                        type: "post",
+                        url: "/PEST/PESTCollectDataManager",
+                        data: {
+                            PESTCOLLDATAID: PESTCOLLDATAID,
+                            BYORGNO: $('#BYORGNO').val(),
+                            HOSTTREESPECIESCODE: $('#HOSTTREESPECIESCODE').val(),
+                            SEARCHTYPE: $('#SEARCHTYPE').val(),
+                            COLLECTPESTCODE: $('#COLLECTPESTCODE').val(),
+                            VILLAGENAME: VILLAGENAME,
+                            SMALLADDRESS: SMALLADDRESS,
+                            SMALLCLASSCODE: SMALLCLASSCODE,
+                            SMALLCLASSAREA: $('#SMALLCLASSAREA').val(),
+                            JWDLIST: $('#JWDLIST').val(),
+                            KID: $('#KID').val(),
+                            HARMPOSITION: $('#HARMPOSITION').val(),
+                            HARMLEVEL: $('#HARMLEVEL').val(),
+                            DEADCOUNT: DEADCOUNT,
+                            UNKNOWNDIEOFFCOUNT: UNKNOWNDIEOFFCOUNT,
+                            ELSEDIEOFFCOUNT: ELSEDIEOFFCOUNT,
+                            SAMPLECOUNT: SAMPLECOUNT,
+                            MANSTATE: $('#MANSTATE').val(),
+                            MANRESULT: $('#MANRESULT').val(),
+                            MARK: $('#MARK').val(),
+                            Method: Method
+                        },
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.Success) {
+                                $('#PESTCOLLDATAID').val(data.Url);
+                                var arrMsg = data.Msg.split(',');                               
+                                $('#KID').val(arrMsg[1]);
+                                layer.confirm(arrMsg[0] + ' 请返回?', { icon: 3, title: '提示' }, function (index) {
+                                    layer.close(index);
+                                    query();
+                                });
+                            }
+                            else {
+                                layer.msg(data.Msg, { icon: 5 });
+                            }
+                        },
+                        error: function () {
+                            layer.msg('系统异常!', { icon: 5 });
+                        }
+                    });
+                },
+                cancel: function (index) {
+                    layer.close(index);
+                }
+            })
+        }
+    }
+    //数据查看
+    function See(DataId) {
+        layer.open({
+            type: 2,
+            title: '查看有害生物数据',
+            area: ['60%', '80%'],
+            fix: true,
+            maxmin: true,
+            content: '/PEST/PESTCollectDataSee?DataId=' + DataId,
+        })
+    }
+    //地图定位
+    function SetLine() {
+        var code = $('#COLLECTPESTCODE').val();
+        if (code != "") {
+            var name = $('#COLLECTPESTCODE').find('option:selected').text();
+            var str = document.getElementById("JWDLIST").value;
+            layer.open({
+                type: 2,
+                title: name + '地图位置设置',
+                btn: ['保存', '关闭'],
+                area: ['70%', '80%'],
+                fix: false, //不固定
+                maxmin: true,
+                content: '/MapCommon/GetMapPontIndex?LINE=2',
+                success: function (layero, index) {
+                    var body = layer.getChildFrame('body', index);
+                    body.find('#editcollecttxt').text(str);
+                    window["layui-layer-iframe" + index].getLocaCollectPolygon();//面
+                },
+                yes: function (index, layero) { //或者使用btn1
+                    var ptxt = layer.getChildFrame("#editcollecttxt", index);
+                    $('#JWDLIST').val(ptxt.html());
+                    if ($('#JWDLIST').val() == "") {
+                        $('#SMALLCLASSAREA').val("");
+                    }
+                    else {
+                        var lm = layer.getChildFrame("#MjACdtxt", index)//面积
+                        $('#SMALLCLASSAREA').val(lm.html());//面积
+                    }
+                    layer.close(index);
+                },
+                cancel: function (index) {
+                    layer.close(index);
+                }
+            });
+        }
+    }
+    //地图定位(面)
+    function PositionLine(tablename, id, name, type) {
+        layer.open({
+            type: 2,
+            title: name + '地图定位',
+            area: ['70%', '80%'],
+            fix: true,
+            maxmin: true,
+            content: '/MapCommon/MapPostionCommonIndex?tablename=' + tablename + "&id=" + id + "&type=" + type
+        })
+    }
+    //照片管理
+    function Photo(DataId) {
+        layer.open({
+            type: 2,
+            title: '照片管理',
+            area: ['60%', '60%'],
+            fix: true,
+            maxmin: true,
+            content: '/PEST/PhotoIndex?DataId=' + DataId
+        })
+    }
+</script>

@@ -1,0 +1,141 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+}
+@section Header{
+    <script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        单位：<select id="tbxORGNO" onchange="Query()">@Html.Raw(@ViewBag.vdOrg)</select>&nbsp;&nbsp;&nbsp;
+                        季节：<select id="tbxSEASON" onchange="Query()">@Html.Raw(@ViewBag.SEASON)</select>&nbsp;&nbsp;&nbsp;
+                        年份：<input id="tbxYEAR" type="text" class="Wdate" style="width:100px" value="@ViewBag.YEAR" onclick="WdatePicker({ dateFmt: 'yyyy'})" />
+                        <input type="button" value="查询" onclick="Query()" class="btnSearchCss" />
+                        <input type="button" value="保存" onclick="Manager()" id="btnSave" class="btnSaveCss" style="display:none;">
+                        <input type="button" value="导出" onclick="Export()" id="btnExport" class="btnOutputCss" style="display:none;">
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <input id="dic112Value" type="hidden" value="@ViewBag.dic112Value" />
+                <input id="dic112Count" type="hidden" value="@ViewBag.dic112Count" />
+                <div id="divTable" class="divTable">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var blnSave = '@ViewBag.Save';
+    if (blnSave == "1") {
+        document.getElementById('btnSave').style.display = "";
+    }
+    var blnExport = '@ViewBag.Export';
+    if (blnExport == "1") {
+        document.getElementById('btnExport').style.display = "";
+    }
+
+    Query();
+    function Query() {
+        var year = $('#tbxYEAR').val();
+        if (year == "") {
+            layer.msg("请选择查询年份!", { icon: 5 });
+            return;
+        }
+        $.ajax({
+            type: 'get',
+            url: '/PEST/SCXCBPCREPORTQuery',
+            dataType: 'json',
+            data: { ORGNO: $('#tbxORGNO').val(), YEAR: year, SEASON: $('#tbxSEASON').val() },
+            success: function (data, ioArgs) {
+                if (data.Success) {
+                    $('#divTable').html("");
+                    $('#divTable').html(data.Msg);
+                }
+                else {
+                    $('#divTable').html("");
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("查询异常!", { icon: 5 });
+            }
+        });
+    }
+
+    function Manager() {
+        var _len = $('#SCXCBPCREPORTTable tr').length - 1;//行数
+        if (_len > 0) {
+            var dic112Value = $('#dic112Value').val().split(',');
+            var dic112Count = $('#dic112Count').val();
+            if (dic112Count != "") {
+                dic112Count = parseInt(dic112Count);
+            }
+            var strBYORGNO = "";
+            var strSCXCBPCTYPECODE = "";
+            var strSCXCBPCVALUE = "";
+            for (var i = 0; i < _len; i++) {
+                for (var x = 0; x < dic112Count; x++) {
+                    var temp = i.toString() + x.toString();
+                    var SCXCBPCVALUE = $('#txt' + temp + '').val().replace('%', '');
+                    if ($.trim(SCXCBPCVALUE) != "") {
+                        if (!CheckNUM2(SCXCBPCVALUE)) {
+                            layer.msg('请输入正数,且最多保留2位有效小数!', { icon: 5 });
+                            $('#txt' + temp + '').focus();
+                            return;
+                        }
+                        else {
+                            strBYORGNO = strBYORGNO + $('#txtORGNO' + i + '').val() + ",";
+                            strSCXCBPCTYPECODE = strSCXCBPCTYPECODE + dic112Value[x] + ",";
+                            strSCXCBPCVALUE = strSCXCBPCVALUE + SCXCBPCVALUE + ",";
+                        }
+                    }
+                }
+            }
+            $.ajax({
+                url: '/PEST/SCXCBPCREPORTManager',
+                type: 'post',
+                timeout: 10000, //10秒后超时，如果为0则永不超时
+                dataType: 'json',
+                data: {
+                    TopORGNO: $('#tbxORGNO').val(),
+                    BYORGNO: strBYORGNO,
+                    SCXCBPCYEAR: $('#tbxYEAR').val(),
+                    SCXCBPCSEASONCODE: $('#tbxSEASON').val(),
+                    SCXCBPCTYPECODE: strSCXCBPCTYPECODE,
+                    SCXCBPCVALUE: strSCXCBPCVALUE
+                },
+                success: function (data, ioArgs) {
+                    if (data.Success) {
+                        layer.msg(data.Msg, { icon: 6 });
+                        Query();
+                    }
+                    else {
+                        layer.msg(data.Msg, { icon: 5 });
+                    }
+                },
+                error: function (err, ioArgs) {
+                    layer.msg("保存异常!", { icon: 5 });
+                }
+            });
+        }
+    }
+
+    function Export() {
+        var ORGNO = $('#tbxORGNO').val();
+        var YEAR = $('#tbxYEAR').val();
+        var SEASON = $('#tbxSEASON').val();
+        var url = '/PEST/SCXCBPCREPORTExportExcel?ORGNO=' + ORGNO + '&YEAR=' + YEAR + '&SEASON=' + SEASON;
+        window.location = url;
+    }
+</script>
+

@@ -1,0 +1,8 @@
+
+ 
+记录时间：2017-06-06 15:16:36,342 
+线程ID:[39] 
+日志级别：  INFO  
+出错类：PublicClassLibrary.LogHelper property: [(null)] - 
+错误描述：第三方平台短信模板成功，模板tid=3275
+ 

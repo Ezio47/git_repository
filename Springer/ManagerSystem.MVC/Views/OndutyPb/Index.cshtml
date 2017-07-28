@@ -1,0 +1,310 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+}
+@section Header{
+}
+
+<div class="easyui-layout" data-options="fit:true" style="border: 0;">
+
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style="height: 35px; border: none; overflow: hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        <input id="typeID" type="hidden" value="@ViewBag.id" />
+                        标题名称：<input type="text" id="txtType" value="@ViewBag.Ttitle" />
+                        开始时间：<input class="easyui-datebox" id="tbxTIMEBegin" value="@ViewBag.bigTime" type="text" style="width: 90px; height: 28px;" />
+
+                        结束时间：<input class="easyui-datebox" id="tbxTIMEEnd" value="@ViewBag.endTime" type="text" style="width:90px;height:28px;" />
+                        <input type="button" id="create" style="width: 80px; display: none" class="btnAddCss" value="新建排班" onclick="createOnDuty('Add')">
+                        <input type="button" id="tocreate" style="width: 80px; display: none" class="btnCancelCss" value="重新排班" onclick="createOnDuty('Mdy')">
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" class="LayoutCenterBG">
+
+                <div class="divTable" id="msg">
+                </div>
+            </div>
+            <div data-options="region:'south'" title="" class="LayoutCenterBG">
+
+                <div class="divTable">
+                    <table>
+                        <tr>
+                            <td class="center" style="width: 10%;">
+                                <span id="inputime"></span>
+                            </td>
+                            <td class="center">
+                                <span>结束日期</span><input class="easyui-datebox" id="txtDateTm" type="text" style="width: 90px; height: 28px;" />
+                                <input id="hiddenID" type="hidden" />
+                            </td>
+                            <td>
+
+                                <select name="inputzao" id="inputzao" style="width: 150px;"
+                                        data-options="multiple:true,">
+                                    @Html.Raw(@ViewBag.ZBR)
+                                </select>
+                            </td>
+                            <td>
+                                <select name="inputzhong" id="inputzhong" style="width: 150px;"
+                                        data-options="multiple:true,">
+                                    @Html.Raw(@ViewBag.ZBR)
+                                </select>
+                            </td>
+                            <td>
+                                <select name="inputwan" id="inputwan" style="width: 150px;"
+                                        data-options="multiple:true,">
+                                    @Html.Raw(@ViewBag.ZBR)
+                                </select>
+                            </td>
+                            <td>
+                                <select name="inpudaiban" id="inpudaiban" style="width: 150px;"
+                                        data-options="multiple:true,">
+                                    @Html.Raw(@ViewBag.ZBR)
+                                </select>
+
+                            </td>
+                            <td>
+                                <select name="inpuzongdaiban" id="inpuzongdaiban" style="width: 150px;"
+                                        data-options="multiple:true,">
+                                    @Html.Raw(@ViewBag.ZBR)
+                                </select>
+
+                            </td>
+                        </tr>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    //新建、重置排班
+    function createOnDuty(method) {
+        $.ajax({
+            url: '/OndutyPb/createOnDuty',
+            data: {
+                TIMEBegin: $('#tbxTIMEBegin').datebox('getValue')//开始时间
+                , TIMEEnd: $('#tbxTIMEEnd').datebox('getValue') //结束时间
+                , TYPENAME: document.getElementById("txtType").value//标题
+                , TYPEID: document.getElementById("typeID").value//值班类别序号
+                , Method: method//创建方式 Add 新增 Reset 重置
+            },
+            type: 'post',
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    document.getElementById("typeID").value = ar.Url;
+                    query();
+                    layer.alert('排班日期生成成功！', { icon: 1 });
+                }
+                else {
+                    layer.alert(ar.Msg, { icon: 0 });
+                }
+            },
+            error: function (err, ioArgs) {
+                alert("排班生成异常，请重试！");
+            }
+        });
+    }
+    //排班日期两个按钮做权限控制
+    var bln = '@ViewBag.create';
+    if (bln == "1") {
+        document.getElementById('create').style.display = "";
+    }
+    var bln = '@ViewBag.tocreate';
+    if (bln == "1") {
+        document.getElementById('tocreate').style.display = "";
+    }
+    //页面第一次加载时执行
+    $(function () {
+        query();
+    });
+    //页面加载时运行
+    function query() {
+        $.ajax({
+            url: '/OndutyPb/indexQuery',
+            data: {
+                //BYORGNO: "",//组织机构编码后台获取了，保留是因为OLD方法有接受这个参数
+                ODTypeID: document.getElementById("typeID").value
+            },
+            type: 'post',
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#msg').html(ar.Msg);
+                }
+                else {
+                    $('#msg').html('');
+                    $('#msg').html(ar.Msg).css("color", "red");
+                }
+            },
+            error: function (err, ioArgs) {
+                alert("查询排班数据异常，请刷新重试！");
+            }
+        });
+    }
+
+
+
+
+
+
+    //向下复制功能
+    function copy(date, dbld) {
+        if (date == $('#tbxTIMEEnd').datebox('getValue')) {
+            layer.msg("已是最后一天", { icon: 0 });
+            return false;
+        }
+        $.ajax({
+            url: '/OndutyPb/copy',
+            data: {
+                ONDUTYDATE: date,//排班日期
+                DBLD: dbld//带班领导
+            },
+            type: 'post',
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    var s = "#" + $("#hiddenID").val();//当前行的ID
+                    var n = Number($("#hiddenID").val()) + 1;//下一行的ID
+                    var id = "#" + n;
+                    $("" + id + "").children("td").get(2).innerHTML = $("" + s + "").children("td").get(2).innerHTML;
+                    $("" + id + "").children("td").get(3).innerHTML = $("" + s + "").children("td").get(3).innerHTML;
+                    $("" + id + "").children("td").get(4).innerHTML = $("" + s + "").children("td").get(4).innerHTML;
+                    $("" + id + "").children("td").get(5).innerHTML = $("" + s + "").children("td").get(5).innerHTML;
+                    $("" + id + "").children("td").get(6).innerHTML = $("" + s + "").children("td").get(6).innerHTML;
+
+                    layer.msg(ar.Msg);
+                }
+                else {
+                    layer.msg(ar.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("系统错误！");
+            }
+        })
+
+    }
+    //五个下拉框公用的Ajax保存事件
+    function save(ondutyType, td, inputID) {
+        var txtTime = $('#txtDateTm').datebox('getValue');//编辑行日期表单的值 结束日期
+        var dateEnd = $("#inputime").html();//排班开始日期
+        var classID = $(inputID).combobox('getValues');//人员选择框值
+        if (classID == null || classID == '') {//清空下拉框
+            $(inputID).combobox('clear')
+        }
+        if (dateEnd == "" || dateEnd == null) {//结束日期不能超出排班的结束日期
+        } else {
+            $.ajax({
+                url: '/OndutyPb/PbSave',
+                data: {
+                    userID: classID.toString(),//被排班人ID
+                    tDate: dateEnd,//排班日期
+                    ondutyType: ondutyType,//早中晚班哪一个类别(早班)
+                    txtTime: txtTime//结束日期
+                    , TYPEID: document.getElementById("typeID").value//值班类别序号
+                },
+                type: 'post',
+                success: function (data, ioArgs) {
+                    var ar = eval('(' + data + ')');
+                    if (ar.Success) {
+                        var trid = $("#hiddenID").val();//获取当前行的行号
+                        var sunDate = Number($("#hiddenID").val()) + Number(ar.Url);//获取编辑行日期所在的行号
+                        while (Number(trid) <= Number(sunDate))//循环行号遍历赋值
+                        {
+                            var s = "#" + Number(trid);
+                            $("" + s + "").children("td").get(td).innerHTML = $('' + inputID + '').combobox('getText');
+                            trid = Number(trid) + 1;
+                        }
+                        layer.msg(ar.Msg);
+                    }
+                    else {
+                        layer.msg(ar.Msg);
+                    }
+                },
+                error: function (err, ioArgs) {
+                    layer.msg("系统错误！");
+                }
+            })
+        }
+    }
+
+
+    $('#inputzao').combobox({ //早班编辑按钮
+        onChange: function () {
+            save(1, 2, '#inputzao');
+        }
+    });
+
+    $('#inputzhong').combobox({//中班编辑按钮
+        onChange: function () {
+            save(2, 3, '#inputzhong');
+        }
+    });
+
+    $('#inputwan').combobox({ //晚班编辑按钮
+        onChange: function () {
+            save(3, 4, '#inputwan');
+        }
+    });
+
+    $('#inpudaiban').combobox({//带班领导编辑按钮
+        onChange: function () {
+            save(-1, 5, '#inpudaiban');
+        }
+    });
+
+    $('#inpuzongdaiban').combobox({ //总带班领导编辑按钮
+        onChange: function () {
+            save(-2, 6, '#inpuzongdaiban');
+        }
+    });
+
+    //table 每行的点击事件 要修改的值赋值到修改框里
+    function trClick(date, week, bc1, bc2, bc3, bc4, bc5, trid) {
+        $("#hiddenID").val(trid);
+        $("#inputime").html('');
+        //$("#inpupweek").html(week);//当前行的星期几赋值给编辑行的星期几标签
+        $.ajax({
+            url: '/OndutyPb/getUserID',
+            data: {
+                ONDUTYDATE: date//值班日期
+                , TYPEID: document.getElementById("typeID").value//值班类别序号
+            },
+            type: 'post',
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    bc1 = ar.Msg.split("=")[0];
+                    bc2 = ar.Msg.split("=")[1];
+                    bc3 = ar.Msg.split("=")[2];
+                    bc4 = ar.Msg.split("=")[3];
+                    bc5 = ar.Msg.split("=")[4];
+                    $("#inputzao").combobox('setValues', bc1.split(','));
+                    $("#inputzhong").combobox('setValues', bc2.split(','));
+                    $("#inputwan").combobox('setValues', bc3.split(','));
+                    $("#inpudaiban").combobox('setValues', bc4.split(','));
+                    $("#inpuzongdaiban").combobox('setValues', bc5.split(','));
+                    $("#inputime").html(date);
+                    $("#txtDateTm").datebox("setValue", date);
+                }
+                else {
+                    layer.alert(ar.Msg, { icon: 0 });
+                }
+            },
+            error: function (err, ioArgs) {
+                alert("登录异常！");
+            }
+        });
+
+
+    };
+</script>

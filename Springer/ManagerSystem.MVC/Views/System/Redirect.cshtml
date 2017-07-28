@@ -1,0 +1,13 @@
+﻿@{
+    ViewBag.Title = "Redirect";
+    Layout = null;
+}
+<script language="javascript">
+    var url = '@ViewBag.redUrl';
+    url = url.replace('&amp;', '&');
+    url = url.replace('&amp;', '&');
+    url = url.replace('&amp;', '&');
+    url = url.replace('&amp;', '&');
+    window.location.href =url;
+
+</script>

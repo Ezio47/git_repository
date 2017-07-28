@@ -1,0 +1,258 @@
+﻿@using ManagerSystemClassLibrary;
+@{
+    ViewBag.Title = "转成队伍";
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+
+    var curorgno = SystemCls.getCurUserOrgNo();
+    if (curorgno.Substring(6, 3) == "000" && curorgno.Substring(4, 2) != "00")
+    {
+        curorgno = curorgno.Substring(0, 6) + "xxx";
+    }
+    else
+    {
+        curorgno = SystemCls.getCurUserOrgNo();
+    }
+}
+
+<div class="divMan" id="tableadd" style="margin-left:5px;margin-top:8px">
+    <table cellpadding="0" cellspacing="0">
+        <tr>
+            <td style="width:80px;">
+                单位名称：
+            </td>
+            <td>
+                <select id="BYORGNO" class="easyui-combotree" style="width:200px;"></select>
+            </td>
+            <td style="width:80px;">
+                队伍类型：
+            </td>
+            <td>
+                <select id="ARMYTYPE">
+                    @Html.Raw(@ViewBag.armytypeadd)
+                </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td style="width:80px;">
+                <span style="color:red;">*</span>
+                名称：
+            </td>
+            <td>
+                <input type="text" id="NAME" class="input-small" value="" />
+
+            </td>
+            <td style="width:80px;">
+                <span style="color:red;">*</span>
+                编号：
+            </td>
+            <td>
+                <input id="NUMBER" type="text" class="input-small" value="" />
+            </td>
+        </tr>
+        <tr>
+            <td style="width:80px;">
+                人数：
+            </td>
+            <td>
+                <input id="ARMYMEMBERCOUNT" type="text" class="input-small" value="" />
+            </td>
+            <td style="width:80px;">
+                <span style="color:red;">*</span>
+                队长：
+            </td>
+            <td>
+                <input id="ARMYLEADER" type="text" class="input-small" value="" />
+            </td>
+        </tr>
+        <tr>
+            <td style="width:80px;">
+                <span style="color:red;">*</span>
+                联系方式：
+            </td>
+            <td>
+                <input id="CONTACTS" type="text" class="input-small" value="" />
+            </td>
+            <td style="width:80px;">
+                队伍特点：
+            </td>
+            <td>
+                <input id="ARMYCHARACTER" type="text" class="input-small" value="" />
+            </td>
+        </tr>
+        <tr>
+            <td style="width:80px;">
+                经度：
+            </td>
+            <td>
+                <input id="JD" type="text" class="input-small" value="" readonly />
+            </td>
+            <td style="width:80px;">
+                纬度：
+            </td>
+            <td>
+                <input id="WD" type="text" class="input-small" value="" readonly />
+            </td>
+        </tr>
+        <tr>
+            <td style="width:80px;">
+                备注：
+            </td>
+            <td colspan="3">
+                <input id="MARK" type="text" class="input-small" value="" />
+            </td>
+        </tr>
+        <tr>
+            <td colspan="4" style="text-align:center;">
+                <input type="button" id="savebtn" value="保存" onclick="Manager()" class="btnAddCss" />
+            </td>
+        </tr>
+    </table>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $('#BYORGNO').combotree({
+            url: '/DataCenter/OnlyOrgTreeget',
+            editable: false,
+            required: true,
+            panelHeight: 'auto',
+            onLoadSuccess: function (node, data) {
+                var t = $("#BYORGNO").combotree('tree');//获取tree
+                t.tree("collapseAll");
+                node = t.tree("find", data[0].id);
+                t.tree("expand", node.target);//展开节点 expandTo
+            }
+        });
+        $('#BYORGNO').combotree('setValue', "@curorgno");
+        detailPoints();//获取详细点经纬度
+    });
+
+    var ID = "";
+    var Method = "Add";
+    //保存
+    function Manager() {
+        var t1 = $('#JD').val();
+        var t2 = $('#WD').val();
+        var t3 = $('#CONTACTS').val();
+        var t4 = $('#ARMYMEMBERCOUNT').val();
+        var t5 = $('#NUMBER').val();
+        var t6 = $('#ARMYLEADER').val();
+        var t7 = $('#NAME').val();
+        if ($.trim(t1) == "") {
+            layer.msg('经度格式不为空！', { icon: 5 });
+            $('#JD').focus();
+            return false;
+        }
+        if ($.trim(t2) == "") {
+            layer.msg('纬度格式不为空！', { icon: 5 });
+            $('#WD').focus();
+            return false;
+        }
+        if ($.trim(t3) != "") {
+            if (checkPhone(t3) == false && checkTel(t3) == false) {
+                layer.msg('联系方式格式不正确！', { icon: 5 });
+                $('#CONTACTS').focus();
+                return false;
+            }
+        }
+        if ($.trim(t4) != "") {
+            if (CheckINT($.trim(t4)) == false) {
+                layer.msg('人数请填写整数！', { icon: 5 });
+                $('#ARMYMEMBERCOUNT').focus();
+                return false;
+            }
+        }
+        if ($.trim(t7) == "") {
+            layer.msg('请填写名称！', { icon: 5 });
+            $('#NAME').focus();
+            return false;
+        }
+        if ($.trim(t5) == "") {
+            layer.msg('请填写编号！', { icon: 5 });
+            $('#NUMBER').focus();
+            return false;
+        }
+        if ($.trim(t6) == "") {
+            layer.msg('请队伍队长！', { icon: 5 });
+            $('#ARMYLEADER').focus();
+            return false;
+        }
+        if ($.trim(t3) == "") {
+            layer.msg('请填写联系方式！', { icon: 5 });
+            $('#CONTACTS').focus();
+            return false;
+        }
+         
+        $.ajax({
+            type: "Post",
+            url: "/DataCenter/ARMYManager",
+            data: {
+                DC_ARMY_ID: ID,
+                Method: Method,
+                ARMYTYPE: document.getElementById("ARMYTYPE").value,
+                NUMBER: document.getElementById("NUMBER").value,
+                NAME: document.getElementById("NAME").value,
+                //BYORGNO: document.getElementById("BYORGNO").value,
+                BYORGNO: $('#BYORGNO').combotree('getValue'),
+                ARMYMEMBERCOUNT: document.getElementById("ARMYMEMBERCOUNT").value,
+                ARMYLEADER: document.getElementById("ARMYLEADER").value,
+                CONTACTS: document.getElementById("CONTACTS").value,
+                ARMYCHARACTER: document.getElementById("ARMYCHARACTER").value,
+                //ARMYEQUIP: document.getElementById("ARMYEQUIP").value,
+                MARK: document.getElementById("MARK").value,
+                JD: document.getElementById("JD").value,
+                WD: document.getElementById("WD").value,
+            },
+            dataType: "json",
+            error: function () {
+                ID = "";
+                Method = "Add";
+                layer.msg({ icon: 5 }, '错误:异常!');
+            },
+            success: function (re) {
+                if (re.Success) {
+                    layer.msg('操作成功', { icon: 6 });
+                    ID = re.Url;
+                    Method = "Mdy";
+
+                }
+                else {
+                    ID = "";
+                    Method = "Add";
+                    layer.msg(re.Msg, { icon: 5 });
+                }
+            }
+        });
+
+    }
+
+    //详细点
+    function detailPoints() {
+        var detailcid = getQueryString("detailid");
+        $.ajax({
+            type: "Post",
+            url: "/SkylineManger/DataCollectDetailList",
+            data: { cid: detailcid },
+            dataType: "json",
+            success: function (obj) {
+                //console.info(obj);
+                if (obj != null) {
+                    for (var i = 0; i < obj.length; i++) {
+                        $('#JD').val(parseFloat(obj[i].LONGITUDE).toFixed(6));
+                        $('#WD').val(parseFloat(obj[i].LATITUDE).toFixed(6));
+                        // html += obj[i].LONGITUDE + "," + obj[i].LATITUDE + "|";
+                    }
+                }
+                else {
+                    layer.alert('获取采集点失败！', { icon: 5 });
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                //通常情况下textStatus和errorThrown只有其中一个包含信息
+                // this;   //调用本次ajax请求时传递的options参数
+                layer.msg('ajax出错！' + textStatus);
+            }
+        });
+    }
+</script>

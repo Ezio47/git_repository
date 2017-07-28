@@ -1,0 +1,244 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+}
+@section Header{
+    <script src="~/Scripts/SpringerCommonValidate.js"></script>
+}
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+    <div data-options="region:'center'" title="" style=" border: none; ">
+
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="homeUL">
+                        <input type="button" value="保存" onclick="Manager()" id="btnSave" style="display:none;" class="btnSaveCss">
+                        @*<input type="button" value="返回" onclick="javascript: history.go(-1);">*@
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; ">
+
+                <div class="divMan">
+                    <table cellpadding="0" cellspacing="0">
+
+                        <tr class='row1'>
+                            <td style="width:100px;">
+                                单位名称:
+                            </td>
+                            <td>
+                                <select id="tbxBYORGNO">
+                                    @Html.Raw(@ViewBag.vdOrg)
+                                </select>
+                            </td>
+                            <td>
+                                相机名:
+                            </td>
+                            <td>
+                                <input id="tbxINFRAREDCAMERANAME" type="text" value="" style="width:90%;" />
+                            </td>
+                           
+                        </tr>
+                        <tr>
+                            <td style="width:100px;">
+                                手机号码:
+                            </td>
+                            <td>
+                                <input id="tbxPHONE" type="text" value="" style="width:90%;" />
+                            </td>
+                            <td>
+                                高程:
+                            </td>
+                            <td>
+                                <input id="tbxGC" type="text" value="" style="width:90%;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                经度:
+                            </td>
+                            <td>
+                                <input id="tbxJD" type="text" value="" style="width:90%;" />
+                            </td>
+                            <td>
+                                纬度:
+                            </td>
+                            <td>
+                                <input id="tbxWD" type="text" value="" style="width:60%;" />
+                                <input type="button" value="地图定位" onclick="setPoint()" class="btnMapLoaclCss" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                地址:
+                            </td>
+                            <td colspan="3">
+                                <input id="tbxADDRESS" type="text" value="" style="width:90%;" />
+                                <input id="tbxINFRAREDCAMERAID" type="hidden" value="" />
+                            </td>
+                        </tr>
+
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    if ('@ViewBag.T_Method' != 'See')
+        document.getElementById("btnSave").style.display = '';
+    $.ajax({
+        url: '/YJJC/GetINFRAREDCAMERA_BASICINFOJson',
+        cache: false,
+        timeout: 10000, //10秒后超时，如果为0则永不超时
+
+        data: {
+            ID: '@ViewBag.T_ID'
+        },
+        success: function (data, ioArgs) {
+            var ar = eval('(' + data + ')');
+            if (ar.INFRAREDCAMERAID != null) {
+
+                document.getElementById("tbxINFRAREDCAMERAID").value = ar.INFRAREDCAMERAID
+                document.getElementById("tbxPHONE").value = ar.PHONE
+                document.getElementById("tbxBYORGNO").value = ar.BYORGNO
+                document.getElementById("tbxJD").value = ar.JD
+                document.getElementById("tbxWD").value = ar.WD
+                document.getElementById("tbxINFRAREDCAMERANAME").value = ar.INFRAREDCAMERANAME
+                document.getElementById("tbxGC").value = ar.GC
+                document.getElementById("tbxADDRESS").value = ar.ADDRESS
+                if ('@ViewBag.T_Method' == "See") {
+                    document.getElementById('btnSave').style.display = 'none';
+                }
+                if ('@ViewBag.T_Method' == "Del") {
+                    Manager();
+                }
+            }
+        },
+        error: function (err, ioArgs) {
+            alert('登录异常');
+        }
+    });
+
+    function Manager() {
+        var t1 = $('#tbxPHONE').val();
+        var t2 = $('#tbxINFRAREDCAMERANAME').val();
+        var t4 = $('#tbxJD').val();
+        var t5 = $('#tbxWD').val();
+
+        if ($.trim(t2) == "") {
+            layer.msg('相机名称不可为空！', { icon: 5 });
+            $('#tbxINFRAREDCAMERANAME').focus();
+            return;
+        }
+
+        if ($.trim(t1) !== "") {
+            if (checkPhone(t1) == false) {
+                layer.msg('手机号码格式不正确！', { icon: 5 });
+                $('#tbxPHONE').focus();
+                return;
+            }
+        } else {
+            layer.msg('手机号码不可为空！', { icon: 5 });
+            $('#tbxPHONE').focus();
+            return;
+        }
+
+        if ($.trim(t4) == "") {
+            layer.msg('经度不可为空！', { icon: 5 });
+            $('#tbxJD').focus();
+            return;
+        } else {
+            reg = /^-?\d+\.\d{1,6}$/;
+            if (!reg.test(t4)) {
+                layer.msg('经度格式不正确！', { icon: 5 });
+                $('#tbxJD').focus();
+                return;
+            }
+        }
+        if ($.trim(t5) == "") {
+            layer.msg('纬度不可为空！', { icon: 5 });
+            $('#tbxWD').focus();
+            return;
+        } else {
+            reg = /^-?\d+\.\d{1,6}$/;
+            if (!reg.test(t5)) {
+                layer.msg('纬度格式不正确！', { icon: 5 });
+                $('#tbxWD').focus();
+                return;
+            }
+        }
+
+        $.ajax({
+            url: '/YJJC/INFRAREDCAMERA_BASICINFOManger',
+            cache: false,
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+
+            data: {
+                INFRAREDCAMERAID: document.getElementById("tbxINFRAREDCAMERAID").value,
+                PHONE: document.getElementById("tbxPHONE").value,
+                BYORGNO: document.getElementById("tbxBYORGNO").value,
+                JD: document.getElementById("tbxJD").value,
+                WD: document.getElementById("tbxWD").value,
+                INFRAREDCAMERANAME: document.getElementById("tbxINFRAREDCAMERANAME").value,
+                GC: document.getElementById("tbxGC").value,
+                ADDRESS: document.getElementById("tbxADDRESS").value,
+                ID: '@ViewBag.T_ID',
+                Method: '@ViewBag.T_Method',
+                returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)',
+            },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    if (confirm(ar.Msg))
+                        var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                        parent.layer.close(index);
+                        window.location.assign(ar.Url);
+                }
+                else {
+                    alert(ar.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                alert('保存异常');
+            }
+        });
+    }
+
+    //地图定位
+    function setPoint() {
+        var name = document.getElementById("tbxINFRAREDCAMERANAME").value;
+        var jd = document.getElementById("tbxJD").value;
+        var wd = document.getElementById("tbxWD").value;
+        parent.layer.open({
+            type: 2,
+            title: name + '地图位置设置',
+            btn: ['保存', '关闭'],
+            area: ['800px', '530px'],
+            fix: false, //不固定
+            maxmin: true,
+            content: '/MapCommon/GetMapPontIndex?jd=' + jd + "&wd=" + wd,
+            yes: function (index, layero) { //或者使用btn1
+                //按钮【按钮一】的回调
+                var ptxt = parent.layer.getChildFrame("p", index);
+                var arr = ptxt.html().split(',');
+                if ($.trim(arr) != "") {
+                    var jd = parseFloat(arr[0]).toFixed(6);
+                    var wd = parseFloat(arr[1]).toFixed(6);
+                    $('#tbxJD').val(jd);
+                    $('#tbxWD').val(wd);
+                }
+                //var index = parent.layer.getFrameIndex(window.name);
+                parent.layer.close(index);
+            }, cancel: function (index) {
+                //var index = parent.layer.getFrameIndex(window.name);
+                layer.close(index);
+            }
+        });
+
+    }
+</script>

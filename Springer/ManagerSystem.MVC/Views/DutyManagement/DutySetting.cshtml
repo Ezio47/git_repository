@@ -1,0 +1,146 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+}
+
+<script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+<div class="easyui-layout" data-options="fit:true" style="border: 0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+
+    <div data-options="region:'center'" title="" class="LayoutCenterBG">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+
+                    <ul>
+                        <li class="homeUL">
+                            <input type="button" class="btnSaveCss" value="保存" onclick="Save()">
+                        </li>
+                        @*<li style="background-image:none"><input type="button" class="btnDelCss" value="删除" onclick="Del()"></li>*@                     
+                    </ul>
+                    
+                </div>
+            </div>
+
+            <div data-options="region:'center'" title="" class="LayoutCenterBG">
+                <div class="divMan">
+                    <table cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td>
+                                值班名称：
+                            </td>
+                            <td>
+                                <select id="tbxDUTYNAME" style="width:90%;">
+                                    <option value="1">早班</option>
+                                    <option value="2">中班</option>
+                                    <option value="3">晚班</option>
+                                </select>
+                            </td>
+                            <td>
+                                <span style="color:red">*</span>值班开始时间：
+                            </td>
+                            <td>
+                                <input class="Wdate" onclick="WdatePicker({ dateFmt: 'HH:mm' })" id="tbxSTARTTIME" type="text" value="" style="width:90%;" />
+                            </td>
+                        </tr>
+                        <tr>
+
+                            <td>
+                                <span style="color:red">*</span>值班结束时间：
+                            </td>
+                            <td>
+                                <input class="Wdate" onclick="WdatePicker({ dateFmt: 'HH:mm'})" id="tbxENDTIME" type="text" value="" style="width:90%;" />
+                            </td>
+                            <td style="display:none"></td>
+                            <td style="display:none"></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="divTable" id="msg" style="margin-top:10px">
+                    @Html.Raw(@ViewBag.list)
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<script type="text/javascript">
+    function Save() {
+        var str = $('#tbxDUTYNAME').val();//值班班次 1 早班 2 中班 3 晚班
+        var text = $("#tbxDUTYNAME").find("option:selected").text();//值班名称
+        var starttime = $('#tbxSTARTTIME').val();
+        var endtime = $('#tbxENDTIME').val();
+        if ($.trim(starttime) == "") {
+            layer.msg('值班开始时间不可为空！', { icon: 5 });
+            $('#tbxSTARTTIME').focus();
+            return;
+        }
+        if ($.trim(endtime) == "") {
+            layer.msg('值班结束时间不可为空！', { icon: 5 });
+            $('#tbxENDTIME').focus();
+            return;
+        }
+        //if ($.trim(starttime) >= $.trim(endtime)) {
+        //    layer.msg('值班开始时间不可小于值班结束时间', { icon: 5 })
+        //    return;
+        //}
+        var METHOD = "Add";
+        $.ajax({
+            url: '/DutyManagement/DutySettingManager',
+            data: {
+                DUTYCLASSID: str,
+                DUTYCLASSNAME: text,
+                DUTYBEGINTIME: starttime,
+                DUTYENDTIME: endtime,
+                METHOD:METHOD
+            },
+            type: 'post',
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    layer.alert("保存成功!", { icon: 6 }, function (index) {
+                        window.location.reload();
+                    });
+                }
+                else {
+                    layer.msg(ar.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.alert("保存异常！");
+            }
+        });
+    }
+
+    function Del(id, orgno) {
+        var METHOD = "Del";
+        $.ajax({
+            url: '/DutyManagement/DutySettingManager',
+            data: {
+                DUTYCLASSID: id,
+                BYORGNO: orgno,
+                METHOD: METHOD
+            },
+            type: 'post',
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    layer.alert("删除成功!", { icon: 6 }, function (index) {
+                        window.location.reload();
+                    });
+                }
+                else {
+                    layer.msg(ar.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.alert("保存异常！");
+            }
+        });
+    }
+</script>

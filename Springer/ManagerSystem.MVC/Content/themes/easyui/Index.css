@@ -1,0 +1,250 @@
+﻿
+.LayOutHeader{color: rgb(255, 255, 255); font-family: "宋体"; font-size: 28px; font-weight:bold;}
+.LayOutLogo{width:100px;height: 65px;border: 0;background-image: url(images/index/logo2.png);overflow: hidden;}
+
+body {
+	margin: 0px; padding: 0px; color: rgb(0, 0, 0); font-family: "宋体"; font-size: 13px;
+}
+div {
+	margin: 0px; padding: 0px; color: rgb(0, 0, 0); font-family: "宋体"; font-size: 13px;
+}
+dl {
+	margin: 0px; padding: 0px; color: rgb(0, 0, 0); font-family: "宋体"; font-size: 13px;
+}
+dt {
+	margin: 0px; padding: 0px; color: rgb(0, 0, 0); font-family: "宋体"; font-size: 13px;
+}
+dd {
+	margin: 0px; padding: 0px; color: rgb(0, 0, 0); font-family: "宋体"; font-size: 13px;
+}
+ul {
+	margin: 0px; padding: 0px; color: rgb(0, 0, 0); font-family: "宋体"; font-size: 13px;
+}
+ol {
+	margin: 0px; padding: 0px; color: rgb(0, 0, 0); font-family: "宋体"; font-size: 13px;
+}
+h1 {
+	margin: 0px; padding: 0px; color: rgb(0, 0, 0); font-family: "宋体"; font-size: 13px;
+}
+li {
+	margin: 0px; padding: 0px; color: rgb(0, 0, 0); font-family: "宋体"; font-size: 13px;
+}
+h2 {
+	margin: 0px; padding: 0px; color: rgb(0, 0, 0); font-family: "宋体"; font-size: 13px;
+}
+h3 {
+	margin: 0px; padding: 0px; color: rgb(0, 0, 0); font-family: "宋体"; font-size: 13px;
+}
+h4 {
+	margin: 0px; padding: 0px; color: rgb(0, 0, 0); font-family: "宋体"; font-size: 13px;
+}
+h5 {
+	margin: 0px; padding: 0px; color: rgb(0, 0, 0); font-family: "宋体"; font-size: 13px;
+}
+h6 {
+	margin: 0px; padding: 0px; color: rgb(0, 0, 0); font-family: "宋体"; font-size: 13px;
+}
+pre {
+	margin: 0px; padding: 0px; color: rgb(0, 0, 0); font-family: "宋体"; font-size: 13px;
+}
+form {
+	margin: 0px; padding: 0px; color: rgb(0, 0, 0); font-family: "宋体"; font-size: 13px;
+}
+fieldset {
+	margin: 0px; padding: 0px; color: rgb(0, 0, 0); font-family: "宋体"; font-size: 13px;
+}
+input {
+	margin: 0px; padding: 0px; color: rgb(0, 0, 0); font-family: "宋体"; font-size: 13px;
+}
+textarea {
+	margin: 0px; padding: 0px; color: rgb(0, 0, 0); font-family: "宋体"; font-size: 13px;
+}
+p {
+	margin: 0px; padding: 0px; color: rgb(0, 0, 0); font-family: "宋体"; font-size: 13px;
+}
+blockquote {
+	margin: 0px; padding: 0px; color: rgb(0, 0, 0); font-family: "宋体"; font-size: 13px;
+}
+th {
+	margin: 0px; padding: 0px; color: rgb(0, 0, 0); font-family: "宋体"; font-size: 13px;
+}
+td {
+	margin: 0px; padding: 0px; color: rgb(0, 0, 0); font-family: "宋体"; font-size: 13px;
+}
+body {
+	background-color: rgb(233, 243, 243);
+}
+a:link {
+	color: rgb(255, 255, 255); text-decoration: none;
+}
+a:visited {
+	color: rgb(255, 255, 255); text-decoration: none;
+}
+a:hover {
+	color: rgb(255, 0, 0); text-decoration: none;
+}
+a:active {
+	color: rgb(255, 255, 255); text-decoration: none;
+}
+.thead_a {
+	color: rgb(0, 102, 51); text-indent: 30px; font-family: "宋体"; font-size: 13px; font-weight: normal;
+}
+.caozuo2 {
+	color: rgb(0, 0, 0); font-family: "宋体"; font-size: 13px; font-weight: normal; border-right-color: rgb(163, 209, 209); border-bottom-color: rgb(163, 209, 209); border-right-width: 1px; border-bottom-width: 1px; border-right-style: solid; border-bottom-style: solid;
+}
+.caozuo1 {
+	color: rgb(0, 102, 51); font-family: "宋体"; font-size: 13px; font-weight: normal; border-top-color: rgb(163, 209, 209); border-right-color: rgb(163, 209, 209); border-bottom-color: rgb(163, 209, 209); border-top-width: 1px; border-right-width: 0px; border-bottom-width: 0px; border-top-style: solid; border-right-style: solid; border-bottom-style: solid;
+}
+.caozuo1 a:link {
+	color: rgb(0, 102, 51); text-indent: 20px; font-family: "宋体"; font-size: 13px; font-weight: normal; text-decoration: none;
+}
+.caozuo1 a:visited {
+	color: rgb(0, 102, 51); text-indent: 20px; font-family: "宋体"; font-size: 13px; font-weight: normal; text-decoration: none;
+}
+.caozuo1 a:hover {
+	color: rgb(102, 204, 0); text-indent: 20px; font-family: "宋体"; font-size: 13px; font-weight: normal; text-decoration: none;
+}
+.caozuo3 {
+	color: rgb(0, 102, 51); font-family: "宋体"; font-size: 13px; font-weight: normal; border-top-color: rgb(163, 209, 209); border-right-color: rgb(163, 209, 209); border-bottom-color: rgb(163, 209, 209); border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-top-style: solid; border-right-style: solid; border-bottom-style: solid;
+}
+.caozuo3 a:link {
+	color: rgb(0, 102, 51); text-indent: 20px; font-family: "宋体"; font-size: 13px; font-weight: normal; text-decoration: none;
+}
+.caozuo3 a:visited {
+	color: rgb(0, 102, 51); text-indent: 20px; font-family: "宋体"; font-size: 13px; font-weight: normal; text-decoration: none;
+}
+.caozuo3 a:hover {
+	color: rgb(102, 204, 0); text-indent: 20px; font-family: "宋体"; font-size: 13px; font-weight: normal; text-decoration: none;
+}
+.button2 a:hover {
+	color: rgb(255, 255, 255); font-family: "宋体"; font-size: 13px; font-weight: normal;
+}
+.sendmailform td {
+	padding: 6px 0px; color: rgb(0, 102, 51); text-indent: 20px; font-family: "宋体"; font-size: 13px; font-weight: normal; border-right-color: rgb(163, 209, 209); border-bottom-color: rgb(163, 209, 209); border-right-width: 1px; border-bottom-width: 1px; border-right-style: solid; border-bottom-style: solid;
+}
+.sendmailform th {
+	padding: 6px 0px; color: rgb(0, 102, 51); text-indent: 20px; font-family: "宋体"; font-size: 13px; font-weight: normal; border-right-color: rgb(163, 209, 209); border-bottom-color: rgb(163, 209, 209); border-right-width: 1px; border-bottom-width: 1px; border-right-style: solid; border-bottom-style: solid;
+}
+#button1 {
+	background: url("../images/anniu1.png") no-repeat center; border: currentColor; width: 68px; height: 50px;
+}
+.yonghu {
+	color: rgb(255, 255, 255); font-family: "宋体"; font-size: 14px; font-weight: normal;
+}
+#yonghu1 {
+	padding: 0px 3px; width: 240px; height: 28px; line-height: 28px;
+}
+#yonghu2 {
+	width: 170px; height: 18px;
+}
+.foot1 p {
+	color: rgb(204, 255, 195); line-height: 18px;
+}
+.meua2 {
+	text-indent: 20px; border-right-color: rgb(157, 210, 157); border-bottom-color: rgb(157, 210, 157); border-left-color: rgb(157, 210, 157); border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px; border-right-style: solid; border-bottom-style: solid; border-left-style: solid;
+}
+.meua2 a:link {
+	color: rgb(255, 255, 255); font-family: "宋体"; font-size: 12px; font-weight: normal;
+}
+.meua2 a:hover {
+	color: rgb(255, 255, 255); font-family: "宋体"; font-size: 12px; font-weight: normal; text-decoration: underline;
+}
+.meua {
+	width: 135px; height: 54px;
+}
+.meua:hover {
+	background: url("../images/meau5.png"); color: rgb(255, 255, 255); font-family: "宋体"; font-size: 14px; font-weight: bold; text-decoration: none;
+}
+.meua a:link {
+	color: rgb(255, 255, 255); font-family: "宋体"; font-size: 14px; font-weight: bold; text-decoration: none;
+}
+.right5 {
+	background: url("../images/right5.png") repeat-x; color: rgb(0, 102, 0); text-indent: 25px; font-family: "??????", "宋体"; font-size: 14px; border-top-color: rgb(163, 209, 209); border-bottom-color: rgb(163, 209, 209); border-top-width: 1px; border-bottom-width: 1px; border-top-style: solid; border-bottom-style: solid;
+}
+.right6 {
+	padding-top: 10px; padding-bottom: 5px;
+}
+.right7 {
+	padding: 10px 40px 5px; color: rgb(0, 51, 0); line-height: 24px; font-family: "宋体"; font-size: 13px; font-weight: normal;
+}
+li {
+	color: rgb(82, 76, 76); line-height: 22px; font-family: "宋体"; font-size: 13px;
+}
+.tablelistyle li {
+	width: 100%; float: left;
+}
+li a:link {
+	color: rgb(61, 120, 77); font-family: "宋体"; font-size: 13px; font-weight: normal;
+}
+li a:visited {
+	color: red; font-family: "宋体"; font-size: 13px; font-weight: normal;
+}
+li span {
+	color: rgb(82, 76, 76); line-height: 22px; padding-right: 25px; font-family: "宋体"; font-size: 13px; float: right;
+}
+.left1 {
+	color: rgb(255, 255, 255); padding-top: 10px; padding-bottom: 10px;
+}
+.left1 p {
+	color: rgb(255, 255, 255); line-height: 24px; font-family: "宋体"; font-size: 13px; font-weight: normal;
+}
+.left1 a:link {
+	color: rgb(0, 0, 0); font-family: "宋体"; font-size: 13px; font-weight: normal;
+}
+.left1 a:hover {
+	color: red; font-family: "宋体"; font-size: 13px; font-weight: normal; text-decoration: underline;
+}
+.left1 a:visited {
+	color: rgb(0, 0, 0); font-family: "宋体"; font-size: 13px; font-weight: normal;
+}
+.left1 ul {
+	width: 200px; height: auto;
+}
+.left1 ul li {
+	color: rgb(0, 0, 0); line-height: 30px; list-style-image: none;
+}
+.left2 {
+	padding-top: 10px; padding-left: 65px;
+}
+.left2 li {
+	line-height: 24px; list-style-image: url("../images/left6.png");
+}
+.left2 li a:link {
+	color: rgb(255, 255, 255); font-family: "宋体"; font-size: 13px; font-weight: normal; text-decoration: none;
+}
+.left2 li a:hover {
+	color: rgb(255, 255, 255); font-family: "宋体"; font-size: 13px; font-weight: bold;
+}
+.left2 li a:visited {
+	color: rgb(255, 255, 255); font-family: "宋体"; font-size: 13px; font-weight: normal; text-decoration: underline;
+}
+.std_input {
+	padding: 0px 3px; border: 1px solid rgb(208, 217, 231); height: 24px; line-height: 24px; background-color: rgb(252, 253, 255);
+}
+.std_button {
+	background: url("../images/btnbg.png") no-repeat; border: currentColor; width: 60px; height: 28px; text-align: center; color: rgb(0, 0, 0); line-height: 28px; overflow: hidden; font-weight: bold; text-decoration: none; margin-right: 5px;
+}
+.std_buttonsimple {
+	background: url("../images/std_buttonleftbg.png") repeat-x; padding: 0px 6px; border: 1px solid rgb(144, 177, 227); height: 24px; line-height: 24px; cursor: pointer;
+}
+.std_textarea {
+	padding: 0px 3px; border: 1px solid rgb(208, 217, 231); width: 380px; height: 25px; -ms-overflow-y: visible; background-color: rgb(252, 253, 255);
+}
+.std_textarea_mail {
+	padding: 0px 3px; border: 1px solid rgb(208, 217, 231); width: 520px; height: 50px; -ms-overflow-y: visible; background-color: rgb(252, 253, 255);
+}
+.std_textarea_custom {
+	padding: 0px 3px; border: 1px solid rgb(208, 217, 231); width: 520px; height: 90px; -ms-overflow-y: visible; background-color: rgb(252, 253, 255);
+}
+.std_input {
+	padding: 0px 3px; border: 1px solid rgb(208, 217, 231); height: 24px; line-height: 24px; background-color: rgb(252, 253, 255);
+}
+.std_select {
+	height: 25px; text-align: center; color: rgb(0, 0, 0); line-height: 20px; overflow: hidden; font-weight: bold; text-decoration: none; margin-left: 5px;
+}
+.menu {
+	padding: 6px;
+}
+.menu td {
+	background: url("images/meau4.png") no-repeat right top rgba(0, 0, 0, 0); padding: 0px 6px; white-space: nowrap;
+}

@@ -1,0 +1,213 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+}
+@section Header{
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    @*<div data-options="region:'west'" title="" style=" width:220px; border: none;">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>*@
+    <div data-options="region:'center'" title="" style=" border: none; ">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="homeUL">
+                        <input type="button" value="保存" onclick="Manager()" class="btnSaveCss" />
+                        @*<input type="button" value="返回" onclick="javascript: history.go(-1);" class="btnReturnCss" />*@
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <div class="divMan">
+                    <table cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td>标题:</td>
+                            <td><input type="text" id="tbxSMSGROUPNAME" value="" style="width:90%;" /></td>
+                        </tr>
+                        <tr>
+                            <td>火灾等级:</td>
+                            <td><select id="tbxDANGERCLASS">@Html.Raw(@ViewBag.vdDANGERCLASS) </select></td>
+                        </tr>
+                        <tr>
+                            <td>号码来源:</td>
+                            <td>
+                                <select id="tbxSMSGROUPTYPE">
+                                    <option value="0">通讯录</option>
+                                    <option value="1">护林员</option>
+                                    <option value="2">值班员</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>是否启用:</td>
+                            <td>
+                                <select id="tbxISENABLE">
+                                    <option value="0">未启用</option>
+                                    <option value="1">启用</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>排序号:</td>
+                            <td><input type="text" id="tbxORDERBY" value="" style="width:90%;" /></td>
+                        </tr>
+                        <tr>
+                            <td>模板内容:</td>
+                            <td><textarea id="tbxTMPCONTENT" style="width: 95%; height: 90px; resize: none;"></textarea></td>
+                        </tr>
+                        <tr>
+                            <td>参数说明：</td>
+                            <td>[num]为个数；[cityconty]为市县</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div data-options="region:'east'" title="" style=" width:220px; border: none;">
+                <div class="divMan">
+                    <div id="tt" style="overflow-y:hidden;padding-left:0px;" class="easyui-tree">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    //获取选中
+    function getChecked() {
+        var nodes = $('#tt').tree('getChecked');
+        //var s = '';//name
+        var d = '';//phone
+        if (nodes.length != 0) {
+            for (var i = 0; i < nodes.length; i++) {
+              //  console.info(nodes[i]);
+                if (nodes[i].phone == '') {
+                    continue;
+                }
+                //if (s != '') s += ',';
+                if (d != '') d += ',';
+                // s += nodes[i].text;
+                d += nodes[i].phone;
+            }
+            // return s + "|" + d;
+            return d;
+        }
+        else {
+            return "";
+        }
+    }
+    function Manager() {
+        $.ajax({
+            url: '/System/DCSMSManager',
+            cache: false,
+            data: {
+                YJ_DCSMS_TMPID: '@ViewBag.YJ_DCSMS_TMPID',
+                SMSGROUPNAME: document.getElementById("tbxSMSGROUPNAME").value,
+                SMSGROUPTYPE: document.getElementById("tbxSMSGROUPTYPE").value,
+                DANGERCLASS: document.getElementById("tbxDANGERCLASS").value,
+                TMPCONTENT: document.getElementById("tbxTMPCONTENT").value,
+                SMSSENDUSERLIST: getChecked(),
+                ORDERBY: document.getElementById("tbxORDERBY").value,
+                ISENABLE: document.getElementById("tbxISENABLE").value,
+
+                Method: '@ViewBag.T_Method',
+                returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)'
+            },
+            type: 'post',
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    if (confirm(ar.Msg + ' 请返回！')) {
+                       // layer.msg('保存成功');
+                        var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                        parent.layer.close(index);
+                    }
+                  
+                    //loadClass();
+                }
+                else {
+                    //alert(ar.Msg);
+                    layer.msg(ar.Msg);
+                    //loadClass();
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('系统错误，请重试');
+                //loadClass();
+            }
+        });
+    }
+    $(function () {
+        $('#tt').tree({
+            url: '/Email/MessageTreeGet?type=1',
+            cache: false,
+            data: { nameForMat: "{ADNAME}[{USERJOB}] [电话：{PHONE}] 排序号：[{ORDERBY}]" },
+            checked: false,
+            animate: true,
+            lines: true,
+            cache: false,
+            checkbox: true,
+
+            onLoadSuccess: function (data) {
+                onloadData();
+            }
+            //onClick: function (node) {
+            //    if ($.trim(node.id) == "") {
+            //        layer.alert('node.id出错', { icon: 2 });
+            //        return false;
+            //    }
+            //    else {
+            //       // show(node.id, node.text, node.rid, node.flag);
+            //    }
+            //}
+        });
+    })
+    //初始化人员
+    function onloadData() {
+        //var userList = '';
+        $.ajax({
+            url: '/System/getDCSMSJson',
+            data: {
+                YJ_DCSMS_TMPID: '@ViewBag.YJ_DCSMS_TMPID'
+            },
+            type: 'post',
+            success: function (data) {
+                var ar = eval('(' + data + ')');
+                if (ar.YJ_DCSMS_TMPID != null) {
+                    //document.getElementById("tbxYJ_DCSMS_TMPID").value = ar.YJ_DCSMS_TMPID;
+                    document.getElementById("tbxSMSGROUPNAME").value = ar.SMSGROUPNAME;
+                    document.getElementById("tbxSMSGROUPTYPE").value = ar.SMSGROUPTYPE;
+                    document.getElementById("tbxDANGERCLASS").value = ar.DANGERCLASS;
+                    document.getElementById("tbxTMPCONTENT").value = ar.TMPCONTENT;
+                    //document.getElementById("tbxSMSSENDUSERLIST").value = ar.SMSSENDUSERLIST;
+                    //userList = ar.SMSSENDUSERLIST;
+                    //值班员和护林员隐藏tree
+                    if (document.getElementById("tbxSMSGROUPTYPE").value == "1" || document.getElementById("tbxSMSGROUPTYPE").value == "2") {
+                        $("#tt").hide();
+                    }
+                    var str = ar.SMSSENDUSERLIST.split(',');
+                    for (var i = 0; i < str.length ; i++) {
+                        if (str[i] != '') {
+                            //alert(str[i]);
+                            var node = $('#tt').tree('find', str[i]);
+
+                            if (node != null) {
+                                $('#tt').tree('check', node.target);
+                            }
+                        }
+                    }
+                    document.getElementById("tbxORDERBY").value = ar.ORDERBY;
+                    document.getElementById("tbxISENABLE").value = ar.ISENABLE;
+
+                }
+                else {
+                }
+            },
+            error: function (err, ioArgs) {
+                alert('登录异常');
+            }
+        });
+    }
+</script>

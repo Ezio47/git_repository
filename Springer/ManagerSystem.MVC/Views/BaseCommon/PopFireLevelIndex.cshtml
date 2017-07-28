@@ -1,0 +1,64 @@
+﻿@{
+    ViewBag.Title = "PopFireLevelIndex";
+    Layout = null;
+}
+@model IEnumerable<ManagerSystem.MVC.Models.YJJCFireLevelModel>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+
+<link href="~/Content/themes/default/Public.css" rel="stylesheet" />
+<link href="~/Content/themes/default/Default.css" rel="stylesheet" />
+
+@*ace*@
+@*<link href="~/Content/themes/assets/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/Content/themes/assets/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="~/Content/themes/assets/css/ace.min.css" />
+    <link rel="stylesheet" href="~/Content/themes/assets/css/ace-rtl.min.css" />
+    <link rel="stylesheet" href="~/Content/themes/assets/css/ace-skins.min.css" />*@
+
+<div class="page-content">
+    <div style="margin:3px">
+        <div class="divTable">
+            <table>
+                <thead>
+                    <tr>
+                        <th>区域</th>
+                        <th>等级</th>
+                        <th>来源</th>
+                        <th>短信状态</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.AreaName</td>
+                                <td>@item.FireLevel</td>
+                                @*@if (Convert.ToInt32(@item.FireLevel) >= 3)
+                                    {
+                                        <td>
+                                            @item.FireLevel
+                                            <span class="label label-warning">
+                                                <i class="icon-warning-sign bigger-120"></i>
+                                                危险
+                                            </span>
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td>@item.FireLevel</td>
+                                    }*@
+                                <td>@item.SourceForm</td>
+                                <td>@item.MessageStatus</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>

@@ -1,0 +1,250 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+}
+@section Header{
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'center'" title="" style=" border: none; ">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="homeUL">
+                        <input type="button" value="保存" onclick="Manager()" class="btnSaveCss" />
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <div class="divMan">
+                    <table cellpadding="0" cellspacing="0" style="width:600px ">
+                        <tr>
+                            <td style="width:80px;"> 群组名称: </td>
+                            <td>
+                                <input id="tbxEGROUPNAME" type="text" style="height:25px;width:400px" />
+                                <input type="hidden" id="tbxEGROUPPHONELIST" value="" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:80px;"> 群组人员: </td>
+                            <td>
+                                <input id="tbxEGROUPMEMBERLIST" type="text" style="height:25px;width:400px" readonly />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div data-options="region:'east'" title="" style=" width:260px; border: none;">
+                <div class="divMan">
+                    <div id="gr" style="overflow-y:hidden;padding-left:0px;" class="easyui-tree">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function Manager() {
+        $.ajax({
+            url: '/Email/EGROUPManger',
+            cache: false,
+            data: {
+                EGROUPID: '@ViewBag.EGROUPID',
+                Method: '@ViewBag.T_Method',
+                EGROUPMEMBERLIST: document.getElementById("tbxEGROUPMEMBERLIST").value,
+                EGROUPNAME: document.getElementById("tbxEGROUPNAME").value,
+                EGROUPPHONELIST: document.getElementById("tbxEGROUPPHONELIST").value,
+                EGROUPTYPE: '2',
+                returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)'
+            },
+            type: 'post',
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    if (confirm(ar.Msg + ' 请返回！')) {
+                        var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                        parent.layer.close(index);
+                    }
+
+                }
+                else {
+                    layer.msg(ar.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('系统错误，请重试');
+            }
+        });
+    }
+    $(function () {
+        var s1;
+        $('#gr').tree({
+            url: '/Email/MessageTreeGet?type=0',
+            cache: false,
+            //data: { nameForMat: "{ADNAME}[{USERJOB}] [电话：{PHONE}]]" },
+            checked: false,
+            animate: true,
+            lines: true,
+            cache: false,
+            checkbox: true,
+            onLoadSuccess: function (data) {
+                onloadData();
+            },
+            onCheck: function (node, checked) {
+                if (checked) {
+                    var ss = Checked();
+                }
+                else {
+                    var ss = Checked();
+                }
+                if ($.trim(ss) != "") {
+                    s1 = ss.split("|");
+                }
+                else {
+                    s1[0] = "";
+                    s1[1] = "";
+                }
+                $('#tbxEGROUPMEMBERLIST').val(s1[1]);
+                $('#tbxEGROUPPHONELIST').val(s1[0]);
+            }
+        });
+    })
+    ///群组tree选中的方法
+    function Checked() {
+        var nodes = $('#gr').tree('getChecked');
+        var s = '';
+        var d = '';
+        var phone = '';
+        var name = '';
+        if (nodes.length > 0) {
+            for (var i = 0; i < nodes.length; i++) {
+                if ($('#gr').tree('isLeaf', nodes[i].target)) {
+                    if (s != '') s += ',';
+                    if (d != '') d += ',';
+                    s += nodes[i].phone;
+                    d += nodes[i].flag;
+                }
+                else {
+                    var par = $('#gr').tree('getParent', nodes[i].target)
+                    if (nodes[i].state == 'open') {
+                        var cnodes = $('#gr').tree('getChildren', nodes[i].target)
+                        for (var i = 0; i < cnodes.length; i++) {
+                            if ($('#gr').tree('isLeaf', cnodes[i].target)) {
+                                if (s != '') s += ',';
+                                if (d != '') d += ',';
+                                s += cnodes[i].phone;
+                                d += cnodes[i].flag;
+                            }
+                            else {
+                                var ss = cnodes[i].id.split('|');
+                                $.ajax({
+                                    url: '/Email/GetMessagejson',
+                                    data: {
+                                        ID: ss[0],
+                                        TYPE: ss[1],
+                                    },
+                                    type: 'post',
+                                    async: false,
+                                    dataType: "json",
+                                    error: function () {
+                                        layer.msg('错误:异常!');
+                                    },
+                                    success: function (re) {
+                                        if (phone != '') phone += ',';
+                                        if (name != '') name += ',';
+                                        phone += re.PHONELIST;
+                                        name += re.NAMELIST;
+                                    }
+                                });
+                            }
+                        }
+                    }
+                    if (nodes[i].state == 'closed' && par.checked == false) {
+                        var ss = nodes[i].id.split('|');
+                        $.ajax({
+                            url: '/Email/GetMessagejson',
+                            data: {
+                                ID: ss[0],
+                                TYPE: ss[1],
+                            },
+                            type: 'post',
+                            async: false,
+                            dataType: "json",
+                            error: function () {
+                                layer.msg('错误:异常!');
+                            },
+                            success: function (re) {
+                                if (phone != '') phone += ',';
+                                if (name != '') name += ',';
+                                phone += re.PHONELIST;
+                                name += re.NAMELIST;
+                            }
+                        });
+                    }
+                }
+            }
+            if ($.trim(s) != '' && $.trim(phone) != '') {
+                ephonelist = s + "," + phone;
+            }
+            if ($.trim(s) != '' && $.trim(phone) == '') {
+                ephonelist = s;
+            }
+            if ($.trim(s) == '' && $.trim(phone) != '') {
+                ephonelist = phone;
+            }
+            if ($.trim(d) != '' && $.trim(name) != '') {
+                enamlist = d + "," + name;
+            }
+            if ($.trim(d) != '' && $.trim(name) == '') {
+                enamlist = d;
+            }
+            if ($.trim(d) == '' && $.trim(name) != '') {
+                enamlist = name;
+            }
+            return ephonelist + "|" + enamlist;
+        }
+        else {
+            return "";
+        }
+    }
+    function onloadData() {
+        var method = '@ViewBag.T_Method';
+        if (method=='Mdy') {
+            $.ajax({
+                url: '/Email/GetGROUPjson',
+                data: {
+                    EGROUPID: '@ViewBag.EGROUPID'
+                },
+                type: 'post',
+                dataType: "json",
+                success: function (ar) {
+                    //var ar = eval('(' + data + ')');
+                    if (ar.EGROUPID != null) {
+                        document.getElementById("tbxEGROUPMEMBERLIST").value = ar.EGROUPMEMBERLIST;
+                        document.getElementById("tbxEGROUPPHONELIST").value = ar.EGROUPPHONELIST;
+                        document.getElementById("tbxEGROUPNAME").value = ar.EGROUPNAME;
+                        var str = ar.EGROUPPHONELIST.split(',');
+                        for (var i = 0; i < str.length ; i++) {
+                            if (str[i] != '') {
+                                var node = $('#gr').tree('find', str[i]);
+                                if (node != null) {
+                                    $('#gr').tree('check', node.target);
+                                }
+                            }
+                        }
+                    }
+                    else {
+                    }
+                },
+                error: function (err, ioArgs) {
+                    alert('登录异常');
+                }
+            });
+        }
+        else {
+
+        }
+    }
+</script>
+

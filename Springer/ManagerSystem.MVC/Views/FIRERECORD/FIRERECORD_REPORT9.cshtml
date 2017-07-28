@@ -1,0 +1,82 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+}
+@section Header{
+    <script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+}
+<style>
+    input[type="text"] {
+        padding: 1px;
+    }
+</style>
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        单位：<select id="tbxBYORGNO" onchange="Query()">@Html.Raw(@ViewBag.vdOrg)</select>&nbsp;&nbsp;&nbsp;
+                        日期：<input id="tbxYEAR" type="text" class="Wdate" style="width:100px" value="@ViewBag.YEAR" onclick="WdatePicker({ dateFmt: 'yyyy'})" />
+                        <input type="button" value="查询" onclick="Query()" class="btnSearchCss" />
+                        <input type="button" value="导出" onclick="Export()" id="btnExport" class="btnOutputCss">
+                        <input type="button" value="添加" onclick="Manager('','Add')" class="btnAddCss" />
+                        <input id="hidFIRERECORD_REPORT9ID" name="hidFIRERECORD_REPORT9ID" type="hidden" value="@ViewBag.FIRERECORD_REPORT9ID" />
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <div id="divTable" class="divTable">
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    Query();
+    function Query() {
+        $.ajax({
+            type: 'get',
+            url: '/FIRERECORD/FIRERECORD_REPORT9Query',
+            dataType: 'json',
+            data: { YEAR: $('#tbxYEAR').val(),BYORGNO: $('#tbxBYORGNO').val(), },
+            success: function (data, ioArgs) {
+                if (data.Success) {
+                    $('#divTable').html("");
+                    $('#divTable').html(data.Msg);
+                }
+                else {
+                    layer.msg(data.Msg, { icon: 5 });
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("查询异常!", { icon: 5 });
+            }
+        });
+    }
+    //导出Excel
+    function Export() {
+        var YEAR = $('#tbxYEAR').val();
+        var url = '/FIRERECORD/FIRERECORD_REPORT9ExportExcel?YEAR=' + YEAR;
+        window.location = url;
+    }
+    function Manager(FIRERECORD_REPORT9ID, Method) {
+        if (Method == 'Add') {
+            layer.open({
+                type: 2,
+                title: '添加森林防火办事机构人员统计',
+                area: ['60%', '80%'],  //[长,高]
+                fix: false, //不固定
+                maxmin: true,
+                content: '/FIRERECORD/FIRERECORD_REPORT9Man?FIRERECORD_REPORT9ID=' + FIRERECORD_REPORT9ID + "&Method=" + Method,
+                end: function () {
+                    Query(page);
+                }
+            });
+        }
+    }
+</script>

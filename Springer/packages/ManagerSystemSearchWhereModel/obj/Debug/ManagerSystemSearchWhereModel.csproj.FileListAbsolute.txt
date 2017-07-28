@@ -1,0 +1,5 @@
+D:\work\springer\06.Development\TeleWare.AnHui.Product\Springer\ManagerSystem.MVC\ManagerSystemSearchWhereModel\bin\Debug\ManagerSystemSearchWhereModel.dll
+D:\work\springer\06.Development\TeleWare.AnHui.Product\Springer\ManagerSystem.MVC\ManagerSystemSearchWhereModel\bin\Debug\ManagerSystemSearchWhereModel.pdb
+D:\work\springer\06.Development\TeleWare.AnHui.Product\Springer\ManagerSystem.MVC\ManagerSystemSearchWhereModel\obj\Debug\ManagerSystemSearchWhereModel.dll
+D:\work\springer\06.Development\TeleWare.AnHui.Product\Springer\ManagerSystem.MVC\ManagerSystemSearchWhereModel\obj\Debug\ManagerSystemSearchWhereModel.pdb
+D:\work\springer\06.Development\TeleWare.AnHui.Product\Springer\ManagerSystem.MVC\ManagerSystemSearchWhereModel\obj\Debug\ManagerSystemSearchWhereModel.csprojResolveAssemblyReference.cache

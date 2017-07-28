@@ -1,0 +1,271 @@
+﻿@{
+    ViewBag.Title = "采集地图编辑";
+    Layout = "~/Views/Shared/_LayoutMap.cshtml";
+
+    //配置文件经纬度读取
+    var lon = System.Configuration.ConfigurationManager.AppSettings["Longitude"];
+    var lat = System.Configuration.ConfigurationManager.AppSettings["Latitude"];
+    var maptype = System.Configuration.ConfigurationManager.AppSettings["mapType"];//地图类型
+    var lonlatchange = System.Configuration.ConfigurationManager.AppSettings["lonLatChange"];//经纬度转换
+}
+@section Header{
+
+    <link href="~/Content/MapStyle.css" rel="stylesheet" />
+    <script src="~/Scripts/Springer.js"></script>
+    <script src="~/Scripts/Springer/SpringerMapCommon.js"></script>
+    <script src="~/Scripts/Springer/SpringerMapCollect.js"></script>
+    @*<script src="~/Scripts/Springer/SpringerMap.js"></script>*@
+}
+
+<script type="text/javascript">
+    dojoConfig = {
+        parseOnLoad: true,
+        packages: [{
+            name: 'bdlib',
+            location: this.location.pathname.replace(/\/[^/]+$/, "") + "/js/bdlib"
+        }]
+    };
+    var strxy = "";
+
+    var map, graphicLayer;
+    var editToolbar;
+    var editid;
+    bevent=require("dojo/_base/event");
+    require(["esri/map",
+      "bdlib/GoogleLayer",
+   "bdlib/TDTLayer",
+   "bdlib/TDTAnnoLayer",
+   "esri/layers/FeatureLayer",
+   "esri/geometry/Point",
+   "esri/symbols/SimpleFillSymbol",
+   "esri/symbols/SimpleLineSymbol",
+   "dojo/_base/Color", "dojo/_base/event","dojo/parser", "esri/toolbars/draw", "esri/symbols/SimpleMarkerSymbol", "esri/graphic", "esri/dijit/Scalebar", "esri/dijit/OverviewMap",
+   "esri/toolbars/navigation", "dijit/registry", "esri/symbols/TextSymbol", "esri/dijit/HomeButton","esri/toolbars/edit",
+   "dojo/domReady!"],
+   function (Map, GoogleLayer,TDTLayer,TDTAnnoLayer, FeatureLayer, Point, SimpleFillSymbol, SimpleLineSymbol, Color,event, parser, Draw, SimpleMarkerSymbol, Graphic, Scalebar, OverviewMap, Navigation
+       , registry, TextSymbol, HomeButton,Edit) {
+       //  parser.parse();
+       map = new Map("map", { logo:false, sliderStyle: "large",autoResize:false });
+       this.map_type="img_p";
+       //2 天地图
+       if (@maptype=="2") {
+           var basemap = new TDTLayer();
+           map.addLayer(basemap);
+           var annolayer = new TDTAnnoLayer();
+           map.addLayer(annolayer);
+       }
+       else
+       {
+           var basemap = new GoogleLayer(this.map_type);
+           map.addLayer(basemap);
+       }
+
+       var pt = new Point(@lon, @lat);
+       map.centerAndZoom(pt, 14);
+
+       nav = new esri.toolbars.Navigation(map);
+
+       graphicLayer = new esri.layers.GraphicsLayer();
+       map.addLayer(graphicLayer);
+       //比例尺
+       var scalebar = new Scalebar({
+           map: map,
+           attachTo: "bottom-center"
+       });
+       ////鹰眼
+       //var overviewMapDijit = new OverviewMap({
+       //    map: map,
+       //    attachTo: "bottom-right",
+       //    color: " #D84E13",
+       //    visible: true,
+       //    opacity: .40
+       //});
+       //overviewMapDijit.startup();
+       //取最新经纬度定位
+       @ViewBag.method;
+       ////给地图控件添加视图变化监听事件
+       // dojo.connect(map, "onExtentChange", showExtent);
+       //给地图控件添加载鼠标移动监听事件
+       dojo.connect(map, "onMouseMove", function(evt){
+           showChangeCoordinates(evt,@lonlatchange);
+       });
+       //给地图控件添加载鼠标拖拽监听事件
+       dojo.connect(map, "onMouseDrag",function(evt){
+           showChangeCoordinates(evt,@lonlatchange);
+       });
+
+       createToolbar(@ViewBag.type );
+   });
+    //定位类型
+    function getLocaEditCollect(cid,type)
+    {
+        editid=cid;
+        if (type=="0") {
+            getLocaCollectPont(cid);
+        }
+        else
+        {
+            getLocaCollectLine(cid);
+        }
+    }
+    //(点)定位
+    function getLocaCollectPont(jd,wd) {
+        map.graphics.clear();
+        graphicLayer.clear();
+        ptPosition(jd,wd);
+    }
+    //（线定位）
+    function getLocaCollectLine(cid)
+    {
+        var ring = [];
+        $.ajax({
+            type: "Post",
+            url: "/DataCollect/GetCollectInfoAjax",
+            data: { cid: cid },
+            dataType: "json",
+            success: function (obj) {
+                if (obj != null && obj.Success) {
+                    map.graphics.clear();
+                    graphicLayer.clear();
+                    var datalsit = obj.DataList;
+                    for (var i = 0; i < datalsit.length; i++) {
+                        var latlng = new esri.geometry.Point(datalsit[i].LONGITUDE, datalsit[i].LATITUDE);
+                        ring.push(latlng);
+                    }
+                    var lineSymbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SHORTDASHDOTDOT, new dojo.Color([255, 0, 0]), 5);
+                    //获取线的点
+                    var polyline = new esri.geometry.Polyline(new esri.SpatialReference({ wkid: 4326 }));
+                    polyline.addPath(ring);
+                    var graphic = new esri.Graphic(polyline, lineSymbol);
+                    map.graphics.add(graphic);
+                }
+                else {
+                    layer.alert('获取采集点失败！', { icon: 5 });
+                }
+            }
+        })
+    }
+
+    //编辑类型
+    function createToolbar(type)
+    {
+        if (type!="3") {
+            createToolbarPoint();
+        }
+        else
+        {
+            createToolbarLine();
+        }
+    }
+
+
+    //编辑(点)
+    function createToolbarPoint() {
+        //禁止双击放大
+        map.disableDoubleClickZoom();
+        editToolbar = new esri.toolbars.Edit(map);
+        // Activate the toolbar when you click on a graphic
+        var editingEnalble=false;
+        var i=0;
+        var options = {
+            allowAddVertices: true,
+            allowDeleteVertices: true
+        };
+        map.graphics.on("click", function(evt) {
+            editToolbar.activate(esri.toolbars.Edit.MOVE ,evt.graphic,options);
+            dojo.connect(map.graphics, "onMouseOut", showInfoWindow);
+
+        });
+
+    }
+
+
+    //线编辑
+    function createToolbarLine() {
+        //禁止双击放大
+        map.disableDoubleClickZoom();
+        editToolbar = new esri.toolbars.Edit(map);
+        // Activate the toolbar when you click on a graphic
+        var editingEnalble=false;
+        var i=0;
+        map.graphics.on("click", function(evt) {
+            bevent.stop(evt);
+            if (editingEnalble==false) {
+                editToolbar.activate(esri.toolbars.Edit.EDIT_VERTICES ,evt.graphic);
+                editingEnalble=true;
+                $('#BtnSavePoints').attr("disabled","disabled");
+            }
+            else
+            {
+                editToolbar.deactivate();
+                editingEnalble=false;
+                $('#BtnSavePoints').removeAttr("disabled");
+            }
+            // console.info(evt.graphic.geometry.paths[0]);
+            var strxy="";
+            $('#editcollecttxt').text('');
+            var paths=evt.graphic.geometry.paths[0];
+            for (var i = 0; i < paths.length; i++) {
+                strxy += paths[i][0] + "," + paths[i][1] + "|";
+                $('#editcollecttxt').text(strxy);
+
+            }
+        });
+    }
+
+    function showInfoWindow(evt){
+        evt.stopPropagation();
+
+        var geoPt = evt.mapPoint;
+        var normalizedVal = new esri.geometry.xyToLngLat(geoPt.x, geoPt.y);
+        var str=normalizedVal[0]+","+normalizedVal[1];
+        $('#editcollecttxt').html(str);
+        // console.info(str);
+        if ($('#editcollecttxt').html()!="") {
+            $('#BtnSavePoints').attr('disabled',false);
+        }
+        // map.infoWindow.setTitle("新标注");
+        //map.infoWindow.setContent("<b>X坐标: </b>" + normalizedVal[0].toFixed(4)
+        // + "<br><b>Y坐标: </b>" + normalizedVal[1].toFixed(4)
+        // + "<table></table>"
+        //     + "<br><input type='button' value='添加广告' onclick='map.infoWindow.hide();add(" + geoPt.x + "," + geoPt.y + ")'>"
+
+        //);
+        //map.infoWindow.show(evt.mapPoint,map.getInfoWindowAnchor(evt.screenPoint));
+    }
+    //保存点
+    function SavePoints()
+    {
+        $.ajax({
+            type: "Post",
+            url: "/DataCollect/ModifyCollectDataDetailAjax",
+            data: {editid:editid, edittxt: $('#editcollecttxt').html() },
+            dataType: "json",
+            success: function (obj) {
+                if (obj != null && obj.Success) {
+                    //$('#editcollecttxt').empty();
+                    layer.msg(obj.Msg, { time: 2000 });
+                }
+                else {
+                    layer.alert('采集点修改失败！', { icon: 5 });
+                }
+            }
+        });
+    }
+</script>
+<div data-dojo-type="dijit.layout.ContentPane" id="map" data-dojo-props="region:'center'">
+
+    <p id="editcollecttxt" style="display:block"></p>
+
+    <div class="rightNav">
+        <input id="BtnSavePoints" type="button" value="保存" disabled="disabled" onclick="SavePoints()" />
+        &nbsp;&nbsp;
+        <input id="BtnRefresh" type="button" value="刷新" onclick=" window.location.reload();" />
+        &nbsp;&nbsp;
+        @*<input id="BtnReturn" type="button" value="返回" onclick="history.go(-1);" />
+            &nbsp;&nbsp;*@
+    </div>
+
+    <p id="info2" class="bottomNav"></p>
+</div>
+

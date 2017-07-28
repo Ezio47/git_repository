@@ -1,0 +1,275 @@
+﻿@{
+    ViewBag.Title = "HuserInfoIndex";
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+}
+@model ManagerSystemModel.T_IPS_REALDATATEMPORARYModel
+
+<script src="~/Scripts/skyline/3DMapTotal.js"></script>
+
+<style type="text/css">
+    .head {
+        background-color: yellowgreen;
+        width: 20%;
+    }
+</style>
+
+<div class="divTable" style="float:left;width:590px">
+    <table cellpadding="0" cellspacing="0">
+        <tbody style="font-size:13px;">
+            @if (@Model != null)
+            {
+                <tr>
+                    <td class="head">护林员：</td>
+                    <td>@Model.HNAME</td>
+                    <td class="head">部 门：</td>
+                    <td>@Model.ORGNAME</td>
+                </tr>
+                <tr>
+                    <td class="head">联系电话：</td>
+                    <td colspan="3">@Model.PHONE <a href="/BaseCommon/SenMsgIndex?phoneno=@Model.PHONE">[发送短信]</a></td>
+
+                </tr>
+                <tr>
+                    <td class="head">经 度：</td>
+                    <td>@Model.ORILONGITUDE</td>
+                    <td class="head">纬 度：</td>
+                    <td>@Model.ORILATITUDE</td>
+                </tr>
+
+                <tr>
+                    <td class="head">电 量：</td>
+                    <td>@Model.ELECTRIC</td>
+                    <td class="head">上传时间：</td>
+                    <td>@Model.SBTIME</td>
+                </tr>
+                <tr>
+                    <td class="head">路线及巡区查询：</td>
+                    <td colspan="3">
+                    <input type="button" value="路线" class="btnSearchCss" style="text-align:center" onclick='GetFRLinePoints(@ViewBag.hid)' />
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input type="button" value="巡区" class="btnSearchCss" style="text-align:center" onclick='GetFRLinePoints1(@ViewBag.hid)' />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="head">周边查询</td>
+                    <td colspan="3">
+                        <a id="JL1" href="javascript:void(0)">1</a>
+                        <a id="JL2" href="javascript:void(0)">2</a>
+                        <a id="JL3" href="javascript:void(0)">3</a>
+                        <a id="JL4" href="javascript:void(0)">4</a>
+                        <a id="JL5" href="javascript:void(0)">5</a>
+                        <input type="hidden" id="arroundjd" value="@Model.ORILONGITUDE" /><input type="hidden" id="arroundwd" value="@Model.ORILATITUDE" />
+                        <a>（公里）</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <a>输入：</a>
+                        <input id="shuru" type="text" class="easyui-textbox" value="" style="width: 80px;border:1px #ff6a00 " />
+                        <a>（公里）</a>
+                        <input id="chaxun" class="btnSearchCss" type="button" value="查询" />
+                    </td>
+                </tr>
+                <tr style="display:none">
+                    <td>周围图层</td>
+                    <td colspan="3">
+                        <ul>
+                            <li>
+                                <div>
+                                    <input type="hidden" id="arroundjd" value="@Model.ORILONGITUDE" /><input type="hidden" id="arroundwd" value="@Model.ORILATITUDE" />
+                                    <a>类型：</a>
+                                    <select id="typeid" name="state" class="easyui-combotree" data-options="labelPosition:'top',multiple:true, editable:false,animate:true,panelHeight:'auto'" style="width:250px;"></select>
+                                </div>
+                                <div>
+                                    <a>范围：</a>
+                                    <input id="disInput" name="name" class="easyui-textbox" type="text" value="1" data-options="required:true" style="width:40px;" /><a>（公里）</a>
+                                    <input type="button" onclick="AroundQuery()" value="查询" class="btnSearchCss" />
+                                    <input type="hidden" id="LAYERID" value="@ViewBag.LAYERID">
+                                </div>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+            }
+            else
+            {
+                <tr>
+                    <td colspan="4" class="head"><em>暂无护林员信息</em></td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+    <object id="SGWorld" classid="CLSID:3a4f91b1-65a8-11d5-85c1-0001023952c1" style="visibility:hidden;height:0 "></object>
+</div>
+<script type="text/javascript">
+    //三维地图初始化函数
+    $(document).ready(function () {
+        $('#typeid').combotree('loadData', treeDate);
+    });
+    //初始化sgapi
+    function CreateSGObj() {
+        var obj = document.getElementById('SGWorld');
+        if (obj == null) {
+            obj = document.createElement('object');
+            obj.name = "sgworld";
+            obj.id = "sgworld";
+            obj.classid = "CLSID:3a4f91b1-65a8-11d5-85c1-0001023952c1";
+        }
+        return obj;
+    }
+    //巡检线--获取采集点
+    function GetFRLinePoints(id) {
+        var sgworld = new CreateSGObj();
+        //delRealLocTemp_Around();
+        //var ring = [];
+        $.ajax({
+            type: "Post",
+            url: "/System/GetFRUserRots",
+            data: { id: id, type: '0' },
+            dataType: "json",
+            success: function (obj) {
+                if (obj != null && obj.Success) {
+                    var data = obj.Data;
+                    if (data != null) {
+                        var datalist = data.DataList;
+                        var arr = [];
+                        if (datalist.length > 0) {
+                            for (var j = 0; j < datalist.length; j++) {
+                                var ring = [];
+                                var ss = datalist[j];
+                                var str = "";
+                                var m = 1;
+                                for (var i = 0; i < ss.length; i++) {
+                                    var lng = ss[i].LONGITUDE;
+                                    var lat = ss[i].LATITUDE;
+                                    if (!isNaN(lng) && !isNaN(lat)) {
+                                        ring.push(lng);
+                                        ring.push(lat);
+                                        ring.push(0);
+                                    }
+                                    m++;
+                                }
+                                //画线
+                                var color = sgworld.Creator.CreateColor(255, 0, 0);
+                                try {
+                                    var lineStringGeometry = sgworld.Creator.GeometryCreator.CreateLineStringGeometry(ring);
+                                    var line = sgworld.Creator.CreatePolyline(lineStringGeometry, color, 2, getRealLocTemp_Around());
+                                    line.LineStyle.Width = 10;
+                                    line.LineStyle.Color.SetAlpha(0.3);
+                                    sgworld.Navigate.JumpTo(line);
+
+                                } catch (e) {
+                                    //
+                                }
+                                var length =parseInt( m / 2);
+                                var imageLabel = creatImage(ss[length].LONGITUDE, ss[length].LATITUDE, "/Images/location.png", '@Model.HNAME');
+                                imageLabel.Tooltip.Text = '@Model.HNAME';
+                                obj.imageName = '@Model.HNAME';
+                                //定位图片点击弹出属性信息
+                                var url = null;
+                                url = adrHost + "/Mapcommon/RoutIndex?dbid=" + id;
+                                url = url + "&dbType=1";
+                                var message = sgworld.Creator.CreatePopupMessage("【" + '@Model.HNAME' + "】信息：", url, 0, 0, 400, 200, -1);
+                                imageLabel.Message.MessageID = message.ID;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+    //责任区--获取采集点
+    function GetFRLinePoints1(id) {
+        var sgworld = new CreateSGObj();
+        //delRealLocTemp_Around();
+        var ring = [];
+        $.ajax({
+            type: "Post",
+            url: "/System/GetFRUserRots",
+            data: { id: id, type: '1' },
+            dataType: "json",
+            success: function (obj) {
+                if (obj != null && obj.Success) {
+                    var data = obj.Data;
+                    if (data != null) {
+                        var datalist = data.DataList;
+                        var arr = [];
+                        if (datalist.length > 0) {
+                            for (var j = 0; j < datalist.length; j++) {
+                                var ring = [];
+                                var ss = datalist[j];
+                                var str = "";
+                                var m = 1;
+                                for (var i = 0; i < ss.length; i++) {
+                                    var lng = ss[i].LONGITUDE;
+                                    var lat = ss[i].LATITUDE;
+                                    if (!isNaN(lng) && !isNaN(lat)) {
+                                        ring.push(lng);
+                                        ring.push(lat);
+                                        ring.push(0);
+                                    }
+                                    m++;
+                                }
+                                if (ring[0] == ring[ring.length - 3]) {
+                                    //画面
+                                    var color = sgworld.Creator.CreateColor(255, 0, 0);
+                                    try {
+                                        var lineStringGeometry = sgworld.Creator.GeometryCreator.CreateLinearRingGeometry(ring);
+                                        var polygonGeometry = sgworld.Creator.GeometryCreator.CreatePolygonGeometry(lineStringGeometry, null);
+                                        var cPolygon = sgworld.Creator.CreatePolygon(polygonGeometry, color, color, 2, getRealLocTemp_Around());
+                                        cPolygon.FillStyle.Color.SetAlpha(0.3);
+                                        cPolygon.LineStyle.Color.SetAlpha(0.3);
+                                        cPolygon.Position.AltitudeType = 2;
+                                        sgworld.Navigate.JumpTo(cPolygon);
+
+                                    } catch (e) {
+                                        //
+                                    }
+                                }
+                                var length = parseInt(m / 2);
+                                var imageLabel = creatImage(ss[length].LONGITUDE, ss[length].LATITUDE, "/Images/location.png", '@Model.HNAME');
+                                imageLabel.Tooltip.Text = '@Model.HNAME';
+                                obj.imageName = '@Model.HNAME';
+                                //定位图片点击弹出属性信息
+                                var url = null;
+                                url = adrHost + "/Mapcommon/RoutIndex?dbid=" + id;
+                                url = url + "&dbType=2";
+                                var message = sgworld.Creator.CreatePopupMessage("【" + '@Model.HNAME' + "】信息：", url, 0, 0, 400, 200, -1);
+                                imageLabel.Message.MessageID = message.ID;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+    var area;
+    var value= $('#LAYERID').val();
+    $("#JL1").click(function () {
+        area = $('#JL1').text();
+        $('#disInput').val(area);
+        AroundQuery(value);
+    });
+    $("#JL2").click(function () {
+        area = $('#JL2').text();
+        $('#disInput').val(area);
+        AroundQuery(value);
+    });
+    $("#JL3").click(function () {
+        area = $('#JL3').text();
+        $('#disInput').val(area);
+        AroundQuery(value);
+    });
+    $("#JL4").click(function () {
+        area = $('#JL4').text();
+        $('#disInput').val(area);
+        AroundQuery(value);
+    });
+    $("#JL5").click(function () {
+        area = $('#JL5').text();
+        $('#disInput').val(area);
+        AroundQuery(value);
+    });
+    $("#chaxun").click(function () {
+        area = $('#shuru').val();
+        $('#disInput').val(area);
+        AroundQuery(value);
+    });
+</script>

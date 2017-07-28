@@ -1,0 +1,218 @@
+﻿#infowin {
+    display: none;
+    z-index: 10000;
+}
+
+#close {
+    float: right;
+    padding-top: 10px;
+    font-weight: bold;
+    font-size: 12px;
+    color: #FFF;
+    border: #000 1px solid;
+    height: 20px;
+    width: 20px;
+    text-align: center;
+}
+
+    #close:hover {
+        cursor: pointer;
+    }
+
+#title {
+    background-color: #666;
+    padding: 10px;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+#content {
+    padding-left: 10px;
+    padding-top: 10px;
+    background-color: #999;
+    height: 200px;
+}
+
+#arrow {
+    background-image: url(arrow.png);
+    height: 30px;
+}
+
+.bottomNav {
+    /*background-color: #ffffff;*/
+    opacity: 0.8;
+    z-index: 999;
+    position: relative;
+    float: left;
+    top: 88%;
+    left: 4%;
+    color: red;
+    line-height: 0px;
+    margin: 0px;
+    padding: 0px;
+    font-family: 'Microsoft YaHei';
+    /*width: 100%;*/
+    /*_position: absolute;*/
+}
+
+.rightNav {
+    opacity: 0.8;
+    z-index: 999;
+    position: fixed;
+    /*top: 60px;*/
+    right: 8%;
+    /*color: blue;*/
+    margin:5px;
+    font-family: 'Microsoft YaHei';
+}
+
+.leftNav {
+    opacity: 0.8;
+    z-index: 999;
+    position: fixed;
+    /*top: 60px;*/
+    left:25%;
+    /*color: blue;*/
+    margin:5px;
+    font-family: 'Microsoft YaHei';
+}
+
+
+
+.rightDiv {
+    /*opacity: 1;*/
+    z-index: 999;
+    position: fixed;
+    top: 70%;
+    right: 1%;
+    float: right;
+    color: blue;
+    font-family: 'Microsoft YaHei';
+}
+
+.bottomDiv {
+    opacity: 0.9;
+    z-index: 999;
+    position: absolute;
+    bottom: 0;
+    right: 6%;
+    float: right;
+    /*color: blue;*/
+    font-family: 'Microsoft YaHei';
+}
+
+.rightbottomDiv {
+    opacity: 0.9;
+    z-index: 999;
+    position: absolute;
+    bottom: 0;
+    right: 2%;
+    /*float: right;*/
+    /*color: blue;*/
+    font-family: 'Microsoft YaHei';
+}
+
+.bottomPhotoDiv {
+    opacity: 0.9;
+    z-index: 999;
+    position: absolute;
+    bottom: 0;
+    right: 10%;
+    /*float: right;*/ */
+    /*color: blue;*/
+    font-family: 'Microsoft YaHei';
+}
+
+.zoominIcon {
+    background-image: url(images/nav_zoomin.png);
+    width: 16px;
+    height: 16px;
+}
+
+.zoomoutIcon {
+    background-image: url(../Images/next4.ico);
+    width: 16px;
+    height: 16px;
+}
+
+.zoomfullextIcon {
+    background-image: url(images/nav_fullextent.png);
+    width: 16px;
+    height: 16px;
+}
+
+.zoomprevIcon {
+    background-image: url(images/nav_previous.png);
+    width: 16px;
+    height: 16px;
+}
+
+.zoomnextIcon {
+    background-image: url(images/nav_next.png);
+    width: 16px;
+    height: 16px;
+}
+
+.panIcon {
+    background-image: url(images/nav_pan.png);
+    width: 16px;
+    height: 16px;
+}
+
+.deactivateIcon {
+    background-image: url(images/nav_decline.png);
+    width: 16px;
+    height: 16px;
+}
+/*地图切换css*/
+.pub_path1 {
+    width: 58px;
+    height: 65px;
+    border: 1px solid #b1b1b1;
+    text-align: center;
+    padding-bottom: 3px;
+    /*float: left;*/
+    display: inline;
+    margin-left: 10px;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+.hoverType {
+    width: 56px;
+    height: 58px;
+    background-color: #fff;
+    margin: auto;
+}
+
+.map_top {
+    width: 56px;
+    height: 39px;
+    margin: auto;
+    margin-top: 1px;
+}
+
+/*影响地图*/
+.yxType {
+    width: 56px;
+    height: 38px;
+    background: url(../images/indexImage.png) no-repeat -154px -155px;
+}
+
+/*地图*/
+.vecType {
+    width: 56px;
+    height: 38px;
+    background: url(../images/indexImage.png) no-repeat -154px -202px;
+}
+
+.map_bom {
+    margin-top: 3px;
+    color: #333333;
+}
+
+/*table*/
+.tabcenter {
+    text-align: center;
+    width: 15%;
+}

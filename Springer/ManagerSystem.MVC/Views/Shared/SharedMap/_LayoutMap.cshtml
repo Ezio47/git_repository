@@ -1,0 +1,122 @@
+﻿
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+    <title>@ViewBag.Title</title>
+    <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <link href="~/Content/themes/assets/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/Content/themes/assets/css/font-awesome.min.css" />
+    @*<link rel="stylesheet" href="~/Content/themes/assets/css/font-awesome.css" />*@
+    <link rel="stylesheet" href="~/Content/themes/assets/css/ace.min.css" />
+    <link rel="stylesheet" href="~/Content/themes/assets/css/ace-rtl.min.css" />
+    <link rel="stylesheet" href="~/Content/themes/assets/css/ace-skins.min.css" />
+    <link href="~/Content/themes/assets/css/jquery.gritter.css" rel="stylesheet" />
+    @*<link href="~/Content/themes/assets/css/colorbox.css" rel="stylesheet" />*@
+
+    @*map*@
+    <link rel="stylesheet" href="~/js/esri/css/esri.css" />
+    <link rel="stylesheet" href="~/Content/themes/dijit/themes/tundra/tundra.css" />
+    <link rel="stylesheet" href="~/Content/themes/dijit/themes/claro/claro.css" />
+
+    @*<link href="~/Content/themes/base/jquery-ui.css" rel="stylesheet" />*@
+    <script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.8.2.min.js")"></script>
+    @*<script src="~/Scripts/jquery-ui-1.8.24.min.js"></script>*@
+    <script src="~/Scripts/layer/layer.js"></script>
+    <script src="~/js/init.js"></script>
+    @*<script src="http://js.arcgis.com/3.14/"></script>*@
+    @*<script type="text/javascript" src="~/js/dojo/dojo.js" djconfig="parseOnLoad:true"></script>*@
+    @RenderSection("Header", required: false)
+    @*View页面自定义特定js/css使用*@
+    <script type="text/javascript">
+
+        var strR = "@ViewBag.isPageRight";
+        if (strR != "True") {
+
+            alert('没有访问的权限或是登录期限已过，请重新登录');
+            window.location = "/System/Login";
+        }
+
+        layer.config({
+            extend: 'extend/layer.ext.js'
+        });
+
+    </script>
+
+    <style type="text/css">
+        html, body, #map {
+            height: 100%;
+            width: auto;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #FFF;
+            overflow: hidden;
+            font-family: "Microsoft YaHei";
+        }
+
+        #measureWindow {
+            position: absolute;
+            right: 20px;
+            top: 10%;
+            z-index: 999;
+            width: 220px;
+            /*padding: 2px;
+            background: #46472B;*/
+        }
+
+        .roundedCorners {
+            -moz-border-radius: 6px;
+            -webkit-border-radius: 6px;
+            border-radius: 6px;
+        }
+
+        .innerDiv {
+            background: #F1F1DC;
+            padding: 5px;
+        }
+
+        .claro .dijitContentPane {
+            padding:3px;
+        }
+    </style>
+
+
+
+</head>
+<body class="claro">
+    <div data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="design:'headline',gutters:false" style=" width:100%;height:100%;">
+        @*<div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'top'">
+            @RenderPage("~/Views/Shared/Header.cshtml")
+        </div>*@
+        @*<div data-dojo-type="dijit.layout.ContentPane" splitter="false" region="left"
+                 style="width: 200px;">
+                @RenderPage("~/Views/Shared/Menu.cshtml")
+            </div>*@
+
+        @*<div data-dojo-type="dijit.layout.ContentPane" splitter="false" data-dojo-props="region:'center'"  >
+                @RenderBody()
+            </div>*@
+        @RenderBody()
+    </div>
+    <script type="text/javascript">
+        window.jQuery || document.write("<script src='@Url.Content("~/Content/themes/assets/js/jquery-2.0.3.min.js")'>" + "<" + "script>");
+    </script>
+
+    <script type="text/javascript">
+        if ("ontouchend" in document) document.write("<script src='@Url.Content("~/Content/themes/assets/js/jquery.mobile.custom.min.js")'>" + "<" + "script>");
+    </script>
+    <script src="~/Content/themes/assets/js/ace-extra.min.js"></script>
+    <script src="~/Content/themes/assets/js/bootstrap.min.js"></script>
+    <script src="~/Content/themes/assets/js/jquery.gritter.min.js"></script>
+    <script src="~/Content/themes/assets/js/bootbox.min.js"></script>
+    <script src="~/Content/themes/assets/js/ace-elements.min.js"></script>
+    <script src="~/Content/themes/assets/js/ace.min.js"></script>
+    @*<script src="~/Content/themes/assets/js/jquery.colorbox-min.js"></script>
+        <script src="~/Content/themes/assets/js/typeahead-bs2.min.js"></script>*@
+
+</body>
+</html>

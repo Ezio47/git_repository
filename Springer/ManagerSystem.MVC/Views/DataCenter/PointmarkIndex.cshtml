@@ -1,0 +1,360 @@
+﻿@using ManagerSystemClassLibrary;
+@{
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+    var curorgno = SystemCls.getCurUserOrgNo();
+    if (curorgno.Substring(6, 3) == "000" && curorgno.Substring(4, 2) != "00")
+    {
+        curorgno = curorgno.Substring(0, 6) + "xxx";
+    }
+    else
+    {
+        curorgno = SystemCls.getCurUserOrgNo();
+    }
+}
+<script src="~/Scripts/Transform.js"></script>
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+    <div data-options="region:'west'" title="" style=" width:220px; border: none;">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="" style=" border: none;">
+
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="divOP">
+                        <div class="home">
+                            单位：<div id="tbxBYORGNO" class="easyui-tree"></div>
+                            名称：<input id="tbxNAME" type="text" class="input-small" style="width:120px" value="" />
+                            <input type="button" value="查询" onclick="query('1')" class="btnSearchCss" />
+                            <input type="button" value="添加" id="btnAdd" onclick="Manager('Add','','')" class="btnAddCss" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" class="LayoutCenterBG">
+
+                <div class="divTable" id="divTable">
+
+                </div>
+            </div>
+            <div data-options="region:'south'" title="" style=" height:40px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
+
+                <div class="divPager" id="divPager">
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="divMan" id="tableadd" style="display:none;margin-left:5px;margin-top:8px">
+    <table cellpadding="0" cellspacing="0">
+        <tr>
+            <td style="width:80px;">
+                单位名称：
+            </td>
+            <td>
+                <select id="BYORGNO">
+                    @Html.Raw(@ViewBag.vdOrg)
+                </select>
+            </td>
+            <td style="width:80px;">
+                <span style="color:red;">*</span>
+                名称：
+            </td>
+            <td>
+                <input type="text" id="NAME" class="input-small" value="" />
+            </td>
+        </tr>  
+        <tr>
+            <td style="width:80px;">
+                <span style="color:red;">*</span>
+                经度：
+            </td>
+            <td>
+                <input id="JD" type="text" class="input-small" value="" readonly />
+            </td>
+            <td style="width:80px;">
+                <span style="color:red;">*</span>
+                纬度：
+            </td>
+            <td>
+                <input id="WD" type="text" class="input-small" value="" readonly /> 
+                <input type="button" value="地图定位" onclick="setPoint()" class="btnMapLoaclCss" />
+            </td>
+        </tr>
+        
+    </table>
+</div>
+
+<script type="text/javascript">
+    var bln = '@ViewBag.isAdd';
+    if (bln == "1") {
+        document.getElementById('btnAdd').style.display = "";
+    }
+    $(function () {
+        $('#tbxBYORGNO').combotree({
+            url: '/DataCenter/OrgTreeget',
+            editable: false,
+            required: true,
+            panelHeight:'auto',
+            onLoadSuccess: function (node, data) {
+                var t = $("#tbxBYORGNO").combotree('tree');//获取tree
+                t.tree("collapseAll");
+                node = t.tree("find", data[0].id);
+                t.tree("expand", node.target);//展开节点 expandTo
+            }
+        });
+        $('#tbxBYORGNO').combotree('setValue', "@curorgno");
+        query('1');
+    });
+    function query(Page) {
+        var pagesize = '0';
+        if (document.getElementById("selPageSize") != null) {
+            pagesize = document.getElementById("selPageSize").value;
+            //alert(document.getElementById("selPageSize").value);
+        }
+        var ORGNOS = $('#tbxBYORGNO').combotree('getValue');
+        $.ajax({
+            url: '/DataCenter/getPOINTMARKlist',
+            //timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: {
+                BYORGNO: ORGNOS,
+                NAME: document.getElementById("tbxNAME").value,
+                PageSize: pagesize,
+                Page: Page,
+            },
+            type: 'post',
+            success: function (data) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#divTable').html(ar.tableInfo);
+                    $('#divPager').html(ar.pagerInfo);
+                }
+                else {
+                    layer.msg('登录异常');
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('登录异常');
+            }
+        });
+    }
+
+    //地图定位
+    function setPoint() {
+        var name = document.getElementById("NAME").value;
+        var JD = document.getElementById("JD").value;
+        var WD = document.getElementById("WD").value;
+        if (JD != "" && WD != "") {
+            var arr = new Array(2);
+            var lng = parseFloat(JD).toFixed(6);
+            var lat = parseFloat(WD).toFixed(6);
+            arr = wgs84togcj02(lng, lat);//转为火星坐标系
+            var jd = arr[0];
+            var wd = arr[1];
+        }
+        layer.open({
+            type: 2,
+            title:name+ '地图位置设置',
+            btn: ['保存', '关闭'],
+            area: ['70%', '80%'],
+            fix: true, //不固定
+            maxmin: true,
+            content: '/MapCommon/GetMapPontIndex?jd=' + jd + "&wd=" + wd,
+            yes: function (index, layero) { //或者使用btn1
+                //按钮【按钮一】的回调
+                var ptxt = layer.getChildFrame("p", index);
+                var arr = ptxt.html().split(',');
+                if ($.trim(arr) != "") {
+                    var lng = parseFloat(arr[0]).toFixed(6);
+                    var lat = parseFloat(arr[1]).toFixed(6);
+                    var brr = gcj02towgs84(lng, lat);//转为84坐标系
+                    var LNG1 = brr[0].toFixed(6);
+                    var LAT1 = brr[1].toFixed(6);
+                    $('#JD').val(LNG1);
+                    $('#WD').val(LAT1);
+                }
+                layer.close(index);
+            }, cancel: function (index) {
+                layer.close(index);
+            }
+        });
+    }
+    function Manager(Method, ID, page) {
+        if (Method == 'Del') {
+            if (confirm('确实要删除该内容吗?')) {
+                $.ajax({
+                    type: "Post",
+                    url: "/DataCenter/POINTMARKManager",
+                    data: {
+                        OBJECTID: ID,
+                        Method: Method,
+                    },
+                    dataType: "json",
+                    error: function () {
+                        alert('错误:异常!', 'error');
+                    },
+                    success: function (re) {
+                        if (re.Success) {
+                            layer.msg('删除成功', { icon: 6 });
+                            query(page);
+                        }
+                        else {
+                            layer.msg('删除失败', { icon: 5 });
+                        }
+                    }
+                });
+            }
+        }
+        else {
+            if (Method == 'Mdy' || Method == 'See') {
+                $.ajax({
+                    type: "Post",
+                    url: "/DataCenter/GetPointmarkjson",
+                    data: {
+                        OBJECTID: ID,
+                    },
+                    dataType: "json",
+                    error: function () {
+                        layer.msg('错误:异常!', 'error');
+                    },
+                    success: function (data) {
+                        if (data.OBJECTID != '') {
+                            document.getElementById("BYORGNO").value = data.BYORGNO,
+                            document.getElementById("NAME").value = data.NAME,
+                            document.getElementById("JD").value = data.JD,
+                            document.getElementById("WD").value = data.WD
+                        }
+                    }
+                });
+            }
+            if (Method == 'Add') {
+                document.getElementById("BYORGNO").value = "",
+                document.getElementById("NAME").value = "", 
+                document.getElementById("JD").value = "",
+                document.getElementById("WD").value = ""
+                 
+            }
+            var btnInfo = ['保存', '取消'];
+            if (Method == "See")
+                btnInfo = [];
+            var str = "自然村添加";
+            if (Method == "Mdy")
+                str = "自然村修改";
+            if (Method == "See")
+                str = "自然村查看";
+            layer.open({
+                type: 1,
+                title: str,
+                area: ['50%', '40%'],
+                btn: btnInfo,
+                shade: 0,
+                maxmin: true,
+                content: $('#tableadd'),
+                yes: function (index, layero) {
+                    var t1 = $('#JD').val();
+                    var t2 = $('#WD').val();
+                    var t3 = $('#NAME').val();
+                    if ($.trim(t1) != "") {
+                        reg = /^-?\d+\.\d{1,6}$/;
+                        if (!reg.test(t1)) {
+                            layer.msg('经度格式不正确！', { icon: 5 });
+                            $('#JD').focus();
+                            return;
+                        }
+                    }
+                    if ($.trim(t2) != "") {
+                        reg = /^-?\d+\.\d{1,6}$/;
+                        if (!reg.test(t2)) {
+                            layer.msg('纬度格式不正确！', { icon: 5 });
+                            $('#WD').focus();
+                            return;
+                        }
+                    }
+                    
+                    if ($.trim(t3) == "") {
+                        layer.msg('请填写名称！', { icon: 5 });
+                        $('#NAME').focus();
+                        return;
+                    }
+                    if ($.trim(t1) == "") {
+                        layer.msg('请在地图上画出自然村的位置！', { icon: 5 });
+                        $('#JD').focus();
+                        return;
+                    }
+                    if ($.trim(t2) == "") {
+                        layer.msg('请在地图上画出自然村的位置！', { icon: 5 });
+                        $('#WD').focus();
+                        return;
+                    }
+                       
+                        $.ajax({
+                            type: "Post",
+                            url: "/DataCenter/POINTMARKManager",
+                            data: {
+                                OBJECTID: ID,
+                                Method: Method,
+                                BYORGNO: document.getElementById("BYORGNO").value,
+                                NAME: document.getElementById("NAME").value,
+                                JD: document.getElementById("JD").value,
+                                WD: document.getElementById("WD").value
+                            },
+                            dataType: "json",
+                            error: function () {
+                                alert('错误:异常!', 'error');
+                            },
+                            success: function (re) {
+                                if (re.Success) {
+                                    layer.close(index);
+                                    layer.msg('操作成功', { icon: 6 });
+                                    query('1');
+                                }
+                                else {
+                                    layer.msg(re.Msg, { icon: 5 });
+                                }
+                            }
+                        });
+
+                    }, cancel: function (index) {
+                        layer.close(index);
+                    }
+                })
+        }
+    }
+    //地图定位展示
+    function Position(tablename, id,name) {
+        layer.open({
+            type: 2,
+            title:name+ '地图定位',
+            area: ['70%', '80%'],
+            //shade: 0,
+            fix: true,
+            maxmin: true,
+            content: '/MapCommon/MapPostionCommonIndex?tablename=' + tablename + "&id=" + id
+        })
+    }
+    //查看通用
+    function See(ID, tablename) {
+        layer.open({
+            type: 2,
+            title: '自然村查看',
+            area: ['50%', '40%'],
+            fix: true,
+            maxmin: true,
+            content: '/DataCenter/SeeIndex?tablename=' + tablename + "&ID=" + ID
+        })
+    }
+
+//选中改变颜色
+    function setColor(obj) {
+        $(obj).css("background-color", "#FFDAB9");
+        $("tr").not($(obj)).css("background-color", "");
+    }
+</script>
+

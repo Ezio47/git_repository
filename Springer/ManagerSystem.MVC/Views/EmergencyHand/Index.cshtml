@@ -1,0 +1,632 @@
+﻿@using ManagerSystem.MVC.HelpCom
+@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+    var i = 0;
+    var TicDic = StateSwitch.GetDicList("20");//火场决策_战略
+    var TacDic = StateSwitch.GetDicList("21");//火场决策_战术
+
+}
+@model IEnumerable<ManagerSystem.MVC.Models.EHCurFireMode>
+
+@section Header{
+    <script src="~/Scripts/skyline/3dMap.js"></script>
+}
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+    <div data-options="region:'west',split:true,hideCollapsedContent:false" title="" style=" width:330px; ">
+
+        <ul class="page-menu">
+            <li id="li1">
+                <span>当前火情</span>
+                <ul id="curfireul">
+                    @if (Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <li class="title ">
+                                @(++i)、
+                                <a class="left" onclick="moveto(@item.JD,@item.WD,'@item.FIRENAME',@item.JCFID);">（@item.JCFID）@item.FIRENAME</a>
+                                <a onclick="DangYAShow('火情信息', 'http://localhost:33844/EmergencyHand/FireSXIndex?jcfid=@item.JCFID', 850, 500)">火情信息</a>
+                                <a onclick="DangYAShow('预案展示', 'http://localhost:33844/EmergencyHand/YAIndex?level=@item.FIRELEVEL&org=@item.ORGNO', 400, 400)">预案</a>
+                                <a onclick="setJWValue('@item.JD','@item.WD');movetoMap(@item.JD,@item.WD,'@item.FIRENAME');menuOclick('1')">态势分析</a>
+                                <a onclick="FireOver(@item.JCFID)">标记为已灭</a>
+                            </li>
+                        }
+                    }
+                    else
+                    {
+                        <li><em>暂无火情</em></li>
+                    }
+                </ul>
+            </li>
+            @*<li id="li2">
+                    <span>周边分析</span>
+                    <div style="width:300px;height:400px;">
+
+                    </div>
+                    <ul id="zhoubian2"></ul>
+                </li>*@
+            <li id="li3">
+                <span>态势分析</span>
+                <ul>
+                    <li>
+                        <div class="divMan">
+                            <table>
+                                <tr>
+                                    <td>经度</td>
+                                    <td>
+                                        <input type="text" id="jd" onblur="validate('jd','2')" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>纬度</td>
+                                    <td><input type="text" id="wd" onblur="validate('wd','2')" /></td>
+                                </tr>
+                                <tr>
+                                    <td><label>风向角度值</label></td>
+                                    <td>
+                                        <input type="text" id="dWindDirection" onblur="validate('dWindDirection', '3')" />
+                                        <img src="~/Images/help.ico" style="width:18px;height:18px;" title="北风：180，东风：270，南风：0，西风：45以此类推，即：方向与南方向的顺时针夹角，切记有效值为0至360" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label>风力</label></td>
+                                    <td>
+                                        <input type="text" id="dWindSpeed" onblur="validate('dWindSpeed','3')" />
+                                        米/秒
+                                        <img src="~/Images/help.ico" style="width:18px;height:18px;" title="中午的风力" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label>湿度值</label></td>
+                                    <td>
+                                        <input type="text" id="dHumidity" onblur="validate('dHumidity', '3')" />%
+                                        <img src="~/Images/help.ico" style="width:18px;height:18px;" title="每天的最小相对湿度" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label>温度值</label></td>
+                                    <td>
+                                        <input type="text" id="dTemperature" onblur="validate('dTemperature', '1')" />摄氏度
+                                        <img src="~/Images/help.ico" style="width:18px;height:18px;" title="每天的最高气温" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label>历时值</label> </td>
+                                    <td>
+                                        <input type="text" id="dTime" onblur="validate('dTime', '1')" />分
+                                        <img src="~/Images/help.ico" style="width:18px;height:18px;" title="相对速度的时间值" />
+                                    </td>
+                                </tr>
+                                <tr style="text-align:center">
+                                    <td colspan="2">
+                                        <input type="button" id="analysebtn" value="分析" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                    </li>
+                </ul>
+
+            </li>
+            <li id="li4">
+                <span>周边分析</span>
+                <ul>
+                    <li>
+                        <div> 类型：<select id="easyui-combotree" class="easyui-combotree" multiple="true" onlyleafcheck="true" animate="true" style="width:200px;"></select></div>
+                        <div>
+                            范围：<input id="disInput" class="easyui-textbox" type="text" name="name" value="1" data-options="required:true" style="width:40px;" />千米
+                            <input type="button" onclick="GetFeatureAll(globeX, globeY,0)" value="查询" />
+                        </div>
+                    </li>
+                    <li id="tt" class="easyui-tree" style="font-size:14px;color:#337ab7;display:normal;padding:0 20px;"></li>
+                </ul>
+            </li>
+            <li id="li41">
+                <span>火场标绘</span>
+                <ul>
+                    <fieldset id="biaohuiLoadID">
+                        <legend> 标绘信息&nbsp;&nbsp;<input type="button" onclick="flySaveAs()" value="保存" />&nbsp;&nbsp;<input type="button" onclick="ShowFolderFileListInit()" value="还原" style="background-color:#A6A600;" /></legend>
+                        <div id="flydiv"></div>
+                    </fieldset>
+
+
+                    <fieldset>
+                        <legend>火线</legend>
+                        <li class="title ">
+                            <img src='/images/ico/ychx.png' /><font onclick="d_CreateLine(0xFFFF00, '#FFFF00',20)" style="cursor: pointer;">预测火线</font>&nbsp;&nbsp;&nbsp;&nbsp;
+                            <img src='/images/ico/sjhx.png' /><font onclick="d_CreateLine(0xFF0000, '#FF0000',20)" style="cursor: pointer;">实际火线</font>&nbsp;&nbsp;&nbsp;&nbsp;
+                            <img src='/images/ico/ymhx.png' /><font onclick="d_CreateLine(0xFFFFFF, '#FFFFFF',20)" style="cursor: pointer;">已灭火线</font>
+                        </li>
+                    </fieldset>
+                    <fieldset>
+                        <legend>火点</legend>
+                        <li class="title ">
+                            <img src='/images/ico/ymhd.png' /><font onclick="createImagesHUO('situation/7.png')" style="cursor: pointer;">已灭火点</font>
+                            <img src='/images/ico/wmhd.png' /><font onclick="createImagesHUO('situation/5.png')" style="cursor: pointer;">未灭火点</font>
+                        </li>
+                    </fieldset>
+                    <fieldset>
+                        <legend>动画</legend>
+                        <li class="title ">
+                            <img src='/images/ico/image.png' style="width:16px;height:16px;" /><font onclick="excCommand(1012, 57)" style="cursor: pointer;">火</font>&nbsp;&nbsp;&nbsp;&nbsp;
+                        </li>
+                    </fieldset>
+                    <fieldset>
+                        <legend>隔离带</legend>
+                        <li class="title ">
+                            <img src='/images/ico/ysgl.png' /><font onclick="d_CreateLine(0xC3C3C3C3, '#0085ff',12)" style="cursor: pointer;">预设隔离带</font>&nbsp;&nbsp;&nbsp;&nbsp;
+                            <img src='/images/ico/ykgl.png' /><font onclick="d_CreateLine(0xC3C3C3C3, '#FFFFFF',12)" style="cursor: pointer;">已开隔离带</font>
+                        </li>
+                    </fieldset>
+                    <fieldset>
+                        <legend>箭头</legend>
+                        <li class="title ">
+                            <img src='/images/ico/xxjt.png' /><font onclick="d_CreateArrow(1)" style="cursor: pointer;">线形箭头</font>&nbsp;&nbsp;&nbsp;&nbsp;
+                            <img src='/images/ico/jxjt.png' /><font onclick="d_CreateArrow(3)" style="cursor: pointer;">矩形箭头</font>&nbsp;&nbsp;&nbsp;&nbsp;
+                            <img src='/images/ico/yxjt.png' /><font onclick="d_CreateArrow(4)" style="cursor: pointer;">燕形箭头</font>
+                        </li>
+                    </fieldset>
+                    <fieldset>
+                        <legend>灭火方法</legend>
+                        <li class="title ">
+                            <img src='/images/ico/flpm.png' /><font onclick="createImagesHUO('method/flpm.png')" style="cursor: pointer;">风力灭火法</font>&nbsp;&nbsp;&nbsp;&nbsp;
+                            <img src='/images/ico/zjpm.png' /><font onclick="createImagesHUO('method/zjpm.png')" style="cursor: pointer;">直接扑打灭火法</font>&nbsp;&nbsp;&nbsp;&nbsp;
+                            <img src='/images/ico/spmf.png' /><font onclick="createImagesHUO('method/spmf.png')" style="cursor: pointer;">水灭火法</font>
+
+                        </li>
+
+                    </fieldset>
+                    <fieldset>
+                        <legend>扑火队伍</legend>
+                        <li class="title ">
+                            <img src='/images/ico/zydw.png' style="width:16px;height:16px;" /><font onclick="createImagesHUO('goodsdispatch/zydw.png')" style="cursor: pointer;">专业队伍</font>&nbsp;&nbsp;&nbsp;&nbsp;
+                            <img src='/images/ico/bzydw.png' style="width:16px;height:16px;" /><font onclick="createImagesHUO('goodsdispatch/bzydw.png')" style="cursor: pointer;">半专业队伍</font>&nbsp;&nbsp;&nbsp;&nbsp;
+                            <img src='/images/ico/yjdw.png' style="width:16px;height:16px;" /><font onclick="createImagesHUO('goodsdispatch/yjdw.png')" style="cursor: pointer;">应急队伍</font>
+                            <img src='/images/ico/qz.png' style="width:16px;height:16px;" /><font onclick="createImagesHUO('goodsdispatch/qz.png')" style="cursor: pointer;">群众</font>
+                            <img src='/images/ico/xfc.png' style="width:16px;height:16px;" /><font onclick="createImagesHUO('goodsdispatch/5.png')" style="cursor: pointer;">消防车</font>&nbsp;&nbsp;&nbsp;&nbsp;
+                            <img src='/images/ico/jhc.png' style="width:16px;height:16px;" /><font onclick="createImagesHUO('goodsdispatch/1.png')" style="cursor: pointer;">救护车</font>&nbsp;&nbsp;&nbsp;&nbsp;
+                            <img src='/images/ico/zzzhb.png' style="width:16px;height:16px;" /><font onclick="createImagesHUO('goodsdispatch/zzzhb.png')" style="cursor: pointer;">作战指挥部</font>
+                        </li>
+                    </fieldset>
+                    <fieldset>
+                        <legend>其他</legend>
+                        <li class="title ">
+                            <img src='/images/ico/zdyz.png' style="width:16px;height:16px;" /><font onclick="excCommand(1012, 0)" style="cursor: pointer;">自定义文字</font>&nbsp;&nbsp;&nbsp;&nbsp;
+                            <img src='/images/ico/zdytb.png' style="width:16px;height:16px;" /><font onclick="excCommand(1012, 1)" style="cursor: pointer;">自定义图标</font>&nbsp;&nbsp;&nbsp;&nbsp;
+                            <img src='/images/ico/zdyx.png' style="width:16px;height:16px;" /><font onclick="excCommand(1012, 4)" style="cursor: pointer;">自定义线</font>&nbsp;&nbsp;&nbsp;&nbsp;
+                            <img src='/images/ico/zdytb.png' style="width:16px;height:16px;" /><font onclick="excCommand(1012, 5)" style="cursor: pointer;">贴图</font>
+                        </li>
+                    </fieldset>
+                </ul>
+            </li>
+            <li id="li42">
+                <span>战略选择</span>
+                <ul>
+                    @if (TicDic.Any())
+                    {
+                        for (int m = 0; m < 4; m++)
+                        {
+                            var str = "";
+                            if (m == 0)
+                            {
+                                str = "北线-";
+                            }
+                            else if (m == 1)
+                            {
+                                str = "东线-";
+                            }
+                            else if (m == 2)
+                            {
+                                str = "南线-";
+                            }
+                            else
+                            {
+                                str = "西线-";
+                            }
+
+                            foreach (var item in TicDic)
+                            {
+                                var strtitle = str + @item.Value;
+                                <li class="title " onclick="createTextLable('@strtitle')" style="cursor:pointer"><img src='/images/ico/arrow_right1.png' style="width:16px;height:16px;" />@strtitle</li>
+                                strtitle = "";
+                            }
+
+                        }
+                    }
+                    else
+                    {
+                        <li class="title ">暂无战略</li>
+                    }
+
+                </ul>
+            </li>
+            <li id="li43">
+                <span>战术选择</span>
+                <ul>
+                    @if (TacDic.Any())
+                    {
+                        for (int m = 0; m < 4; m++)
+                        {
+                            var str = "";
+                            if (m == 0)
+                            {
+                                str = "北线-";
+                            }
+                            else if (m == 1)
+                            {
+                                str = "东线-";
+                            }
+                            else if (m == 2)
+                            {
+                                str = "南线-";
+                            }
+                            else
+                            {
+                                str = "西线-";
+                            }
+
+                            foreach (var item in TacDic)
+                            {
+                                var strtitle = str + @item.Value;
+                                <li class="title " onclick="createTextLable('@strtitle')" style="cursor:pointer"><img src='/images/ico/right.png' style="width:16px;height:16px;" />@strtitle</li>
+                                strtitle = "";
+                            }
+
+                        }
+                    }
+                    else
+                    {
+                        <li class="title ">暂无战略</li>
+                    }
+                </ul>
+            </li>
+            <li id="li5">
+                <span onclick="window.open('/DataCenter/Archival_NEWIIndex')">火灾档案</span>
+            </li>
+        </ul>
+
+    </div>
+    <div data-options="region:'east',title:''" style="width:50px;">
+        <div class="hhz_r_xf">
+            <ul class="xf_butt">
+                <li><a onclick="excCommand(1057,0)"><img src="~/Images/skyline/ioc/r_icon_xz.png" style="height:42px;width:40px" title="旋转" /></a></li>
+                <li><a onclick="excCommand(1035, 0)"><img src="~/Images/skyline/ioc/r_icon_cj.png" style="height:42px;width:40px" title="测距" /></a></li>
+                <li><a onclick="excCommand(1165, 0)"><img src="~/Images/skyline/ioc/r_icon_cm.png" style="height:42px;width:40px" title="测面" /></a></li>
+                <li><a onclick="excCommand(2217, 0)"><img src="~/Images/skyline/ioc/r_icon_pd.png" style="height:42px;width:40px" title="坡度分析" /></a></li>
+                <li><a onclick="excCommand(2216, 0)"><img src="~/Images/skyline/ioc/r_icon_dx.png" style="height:42px;width:40px" title="地行分析" /></a></li>
+                <li><a onclick="excCommand(1067,0)"><img src="~/Images/skyline/ioc/r_icon_kz.png" style="height:42px;width:40px" title="快照" /></a></li>
+                <li><a onclick="selectMove(1)"><img src="~/Images/skyline/ioc/r_icon_xzh.png" style="height:42px;width:40px" title="选中" /></a></li>
+                <li><a onclick="qrueyHTML_tckz()"><img src="~/Images/skyline/ioc/r_icon_tc.png" style="height:42px;width:40px" title="图层控制" /></a></li>
+                <li><a onclick="qrueyHTML_qr()"><img src="~/Images/skyline/ioc/r_icon_cx.png" style="height:42px;width:40px" title="图层查询" /></a></li>
+                <li><a onclick="qrueyHTML_dw()"><img src="~/Images/skyline/ioc/r_icon_dw.png" style="height:42px;width:40px" title="定位" /></a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div data-options="region:'center'" title="" style=" border:none;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'south'" style="height:20px;">
+                <div id="xx" style="padding-left:50px;position:absolute"></div>
+                <div id="sbxx" style="padding-left:50px;text-align:center">坐标信息暂未获得</div>
+            </div>
+            <div id="sgmap" data-options="region:'center'" title="" style="background:#ddceee;overflow:hidden">
+                <object id="TerraExplorer3DWindow" style="float:left;width:100%;height:100%;border:0px solid black;" classid="CLSID:3a4f9192-65a8-11d5-85c1-0001023952c1" />
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div id="divtimeset" style="display:none">
+
+    当前灭火时间： <input class="easyui-datetimebox" id="timeover" value="@DateTime.Now.ToString() " required style="width:200px">
+
+</div>
+<script type="text/javascript">
+    // changeTab1('1');
+    function changeTab1(id) {
+
+        if (id == 1) {
+            document.getElementById('li1').style.display = "";
+            document.getElementById('li2').style.display = "none";
+            document.getElementById('li3').style.display = "none";
+            document.getElementById('li4').style.display = "none";
+            document.getElementById('li41').style.display = "none";
+            document.getElementById('li42').style.display = "none";
+            document.getElementById('li43').style.display = "none";
+            document.getElementById('li5').style.display = "none";
+            menuOclick('0');
+        }
+        if (id == 2) {
+            document.getElementById('li1').style.display = "none";
+            document.getElementById('li2').style.display = "none";
+            document.getElementById('li3').style.display = "none";
+            document.getElementById('li4').style.display = "";
+            document.getElementById('li41').style.display = "none";
+            document.getElementById('li42').style.display = "none";
+            document.getElementById('li43').style.display = "none";
+            document.getElementById('li5').style.display = "none";
+            menuOclick('3');
+        }
+        if (id == 3) {
+            document.getElementById('li1').style.display = "none";
+            document.getElementById('li2').style.display = "none";
+            document.getElementById('li3').style.display = "";
+            document.getElementById('li4').style.display = "none";
+            document.getElementById('li41').style.display = "none";
+            document.getElementById('li42').style.display = "none";
+            document.getElementById('li43').style.display = "none";
+            document.getElementById('li5').style.display = "none";
+
+            menuOclick('2');
+        }
+        if (id == 4) {
+            document.getElementById('li1').style.display = "none";
+            document.getElementById('li2').style.display = "none";
+            document.getElementById('li3').style.display = "none";
+            document.getElementById('li4').style.display = "";
+            document.getElementById('li41').style.display = "";
+            document.getElementById('li42').style.display = "";
+            document.getElementById('li43').style.display = "";
+            document.getElementById('li5').style.display = "none";
+            menuOclick('3');
+        }
+        if (id == 5) {
+            document.getElementById('li1').style.display = "none";
+            document.getElementById('li2').style.display = "none";
+            document.getElementById('li3').style.display = "none";
+            document.getElementById('li4').style.display = "none";
+            document.getElementById('li41').style.display = "none";
+            document.getElementById('li42').style.display = "none";
+            document.getElementById('li43').style.display = "none";
+            document.getElementById('li5').style.display = "";
+            menuOclick('7');
+        }
+    }
+
+    //当前火情态势分析
+    function setJWValue(jd, wd) {
+        $('#jd').val(jd);
+        $('#wd').val(wd);
+    }
+
+    function menuOclick(id) {
+        $(".page-menu>li:eq(" + id + ")>span").click();
+    }
+    function menuEvent(id) {
+        var $parent_li, $ul, $span;
+        $(".page-menu li>span").click(function () {
+            $span = $(this);
+            $parent_li = $span.parent();
+            $parent_li.siblings().children("ul").slideUp();
+            $ul = $span.next("ul");
+            $ul.slideToggle();
+            //alert('a');
+        });
+        $(".page-menu>li:eq(" + id + ")>span").click();
+    }
+    $(function () {
+        menuEvent('0');
+    })
+
+
+
+    ///是否火已灭
+    function FireOver(id) {
+
+        //询问框
+        //layer.confirm("编号(" + id + ")是否标记已灭?", {
+        //    offset: ['10px', '100px'],
+        //    shade: 0,
+        //    btn: ['确定', '取消'] //按钮
+        //}, function () {
+        //    alert('111');
+        //    layer.open({
+        //        type: 1,
+        //        shade: 0,
+        //        offset: ['10px', '100px'],
+        //        title: false, //不显示标题
+        //        content: $('#divtimeset') //捕获的元素
+        //    });
+        //}, function (index) {
+        //    alert('22');
+        //    layer.close(index);
+        //});
+        //yes: function(index, layero){ //或者使用btn1
+        //        //捕获页
+        //        layer.open({
+        //            type: 1,
+        //            shade: false,
+        //            offset: ['10px', '100px'],
+        //            title: false, //不显示标题
+        //            content: $('divtimeset'), //捕获的元素
+
+        //        });
+        //    },cancel: function(index){ //或者使用btn2
+        //        //按钮【按钮二】的回调
+        //    });
+
+
+        if (confirm("编号(" + id + ")是否标记已灭")) {
+            //setFireOverHtml_settimeover();
+            $.ajax({
+                type: 'post',
+                url: '/EmergencyHand/FireOverMethod',
+                data: { jcfid: id },
+                dataType: "json",
+                success: function (data) {
+                    if (data != null && data.Success) {
+                        alert("火情标记成功");
+                        GetCurFireHtml();
+                    }
+                    else {
+                        alert("火情标记失败");
+                    }
+                }
+            });
+        }
+    }
+
+    //Ajax 获取当前火情
+    function GetCurFireHtml() {
+        var j = 0;
+        $.ajax({
+            type: 'post',
+            url: '/EmergencyHand/GetCurrentFireInfo',
+            dataType: "json",
+            success: function (data) {
+                if (data != null && data.Success) {
+                    html = "";
+                    if (data.DataList.length > 0) {
+                        for (var i = 0; i < data.DataList.length; i++) {
+                            html += "<li class=\"title\">" + (++j).toString() + "、";
+                            html += " <a class=\"left\" onclick=\"moveto(" + data.DataList[i].JD + "," + data.DataList[i].WD + "," + data.DataList[i].FIRENAME + ")\">（" + data.DataList[i].JCFID + "）" + data.DataList[i].FIRENAME + "</a>";
+                            html += "<a onclick=\"DangYAShow('火情信息', 'http://localhost:33844/EmergencyHand/FireSXIndex?jcfid='" + data.DataList[i].JCFID + "', 850, 450)\">火情信息</a>";
+                            html += " <a onclick=\"DangYAShow('预案展示', 'http://localhost:33844/EmergencyHand/YAIndex?level='" + data.DataList[i].FIRELEVEL + "', 400, 400)\">预案</a>";
+                            html += "  <a onclick=\"FireOver(" + data.DataList[i].JCFID + ")\">标记已灭</a>";
+                            html += " </li>";
+                        }
+                    }
+                    else {
+                        html = " <li><em>暂无火情</em></li>";
+                    }
+                    $('#curfireul').html(html);
+                }
+                else {
+                    $('#curfireul').html('加载当前火情出错');
+                }
+            }
+        });
+        //curfire
+    }
+
+    //火险蔓延分析
+    $('#analysebtn').click(function () {
+        var bo = checkAnalyse();
+        if (bo) {
+            var jd = $('#jd').val();
+            var wd = $('#wd').val();
+            var dWindDirection = $('#dWindDirection').val();//风向角度值
+            var dWindSpeed = $('#dWindSpeed').val();//风力
+            var dHumidity = $('#dHumidity').val();//湿度值
+            var dTemperature = $('#dTemperature').val();//温度值
+            var dTime = $('#dTime').val();//分段
+            var index = layer.load(0, { offset: ['350px', '80px'], shade: 0.4 });
+            $.ajax({
+                type: "Post",
+                url: "/EmergencyHand/GetAnalysysResult",
+                data: {
+                    jd: jd, wd: wd, dWindDirection: dWindDirection, dWindSpeed: dWindSpeed, dHumidity: dHumidity,
+                    dTemperature: dTemperature, dTime: dTime
+                },
+                dataType: "json",
+                success: function (data) {
+                    if (data != null && data.Success) {
+                        //关闭
+                        layer.close(index);
+                        var datalist = data.Data;
+                        createPolygon_hqmy(datalist);
+
+                    }
+                    else {
+                        layer.close(index);
+                        alert("蔓延分析失败，请检查分析参数是否合理");
+                    }
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    //通常情况下textStatus和errorThrown只有其中一个包含信息
+                    //this;   //调用本次ajax请求时传递的options参数
+                    layer.close(index);
+                    alert("ajax调取出错，textStatus==" + textStatus);
+                }
+            });
+        }
+
+    })
+
+    //蔓延参数 check
+    function checkAnalyse() {
+        var jd = $('#jd').val();
+        var wd = $('#wd').val();
+        var dWindDirection = $('#dWindDirection').val();//风向角度值
+        var dWindSpeed = $('#dWindSpeed').val();//风力
+        var dHumidity = $('#dHumidity').val();//湿度值
+        var dTemperature = $('#dTemperature').val();//温度值
+        var dTime = $('#dTime').val();//分段
+        if ($.trim(jd) == "") {
+            alert('经度不可为空');
+            $('#jd').focus();
+            return false;
+        }
+        if ($.trim(wd) == "") {
+            alert('纬度不可为空');
+            $('#wd').focus();
+            return false;
+        }
+        if ($.trim(dWindDirection) == "") {
+            alert('风向角度值不可为空');
+            $('#dWindDirection').focus();
+            return false;
+        }
+        if ($.trim(dWindSpeed) == "") {
+            alert('风力不可为空');
+            $('#dWindSpeed').focus();
+            return false;
+        }
+        if ($.trim(dHumidity) == "") {
+            alert('湿度值不可为空');
+            $('#dHumidity').focus();
+            return false;
+        }
+        if ($.trim(dTemperature) == "") {
+            alert('温度值不可为空');
+            $('#dTemperature').focus();
+            return false;
+        }
+        if ($.trim(dTime) == "") {
+            alert('分段值不可为空');
+            $('#dTime').focus();
+            return false;
+        }
+        return true;
+    };
+
+    //数字验证
+    function validate(id, type) {
+        var txt = $.trim($("#" + id + "").val());
+        if (txt != "") {
+
+            if (type == "1") {
+                var reg = new RegExp("^[0-9]*$");//数字
+                if (!reg.test($.trim($("#" + id + "").val()))) {
+                    alert("输入不正确，请输入数字!");
+                    // $("#" + id + "").focus();
+                    return false;
+                }
+                return true;
+            }
+            else if (type == "2") {
+                var reg = new RegExp("^(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*))$");//小数
+                if (!reg.test($.trim($("#" + id + "").val()))) {
+                    alert("输入不正确，请输入正确小数!");
+                    //$("#" + id + "").focus();
+                    return false;
+                }
+                return true;
+            }
+            else {
+                var reg = new RegExp("^[0-9]+\.{0,1}[0-9]{0,2}$");//整数或者小数
+                if (!reg.test($.trim($("#" + id + "").val()))) {
+                    alert("输入不正确，请输入正确数!");
+                    $("#" + id + "").focus();
+                    return false;
+                }
+            }
+            return true;
+        }
+        return true;
+    }
+</script>

@@ -1,0 +1,196 @@
+﻿@{
+    ViewBag.Title = "ReportIndex";
+    Layout = null;
+}
+@Scripts.Render("~/bundles/jquery")
+<link href="~/Content/themes/assets/css/bootstrap.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="~/Content/themes/assets/css/font-awesome.min.css" />
+<link rel="stylesheet" href="~/Content/themes/assets/css/ace.min.css" />
+<link rel="stylesheet" href="~/Content/themes/assets/css/ace-rtl.min.css" />
+<link rel="stylesheet" href="~/Content/themes/assets/css/ace-skins.min.css" />
+<link href="~/Content/themes/assets/css/jquery.gritter.css" rel="stylesheet" />
+<script src="~/Content/themes/assets/js/ace-extra.min.js"></script>
+<script src="~/Content/themes/assets/js/bootstrap.min.js"></script>
+<script src="~/Content/themes/assets/js/jquery.gritter.min.js"></script>
+<script src="~/Content/themes/assets/js/bootbox.min.js"></script>
+<script src="~/Content/themes/assets/js/ace-elements.min.js"></script>
+<script src="~/Content/themes/assets/js/ace.min.js"></script>
+<script src="~/Content/themes/assets/js/date-time/bootstrap-datepicker.min.js"></script>
+<script src="~/Content/themes/assets/js/date-time/daterangepicker.min.js"></script>
+<script src="~/Scripts/layer/layer.js"></script>
+<script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+<script src="~/Scripts/Springer.js"></script>
+<script src="~/Scripts/Springer/SpringerMapCommon.js"></script>
+<script src="~/Scripts/skyline/3dMapTest.js"></script>
+
+
+<style type="text/css">
+    #sample-table-1 {
+        font-size: 12px;
+    }
+</style>
+<script>
+    $(function ($) {
+        $('.date-picker').datepicker({ autoclose: true, language: 'cn' }).next().on(ace.click_event, function () {
+            $(this).prev().focus();
+        });
+    });
+</script>
+
+@*数据上报管理列表*@
+<div class="widget-box bottomDiv" id="divreport">
+    <input type="hidden" id="tid" value="@ViewBag.type">
+    <div class="widget-header">
+        <table style="font-size:14px">
+            <tr>
+                <td>开始： <input id="txtReportStartTime" value="@DateTime.Now.AddDays(-7).ToString("yyyy-MM-dd")" type="text" onclick="WdatePicker()" /></td>
+                <td>
+                    结束：
+                    <input id="txtReportEndTime" value="@DateTime.Now.ToString("yyyy-MM-dd")" type="text" onclick="WdatePicker()" />
+                </td>
+            </tr>
+            <tr style="text-align:center">
+                <td>
+                    <button type="button" class="btn btn-info btn-sm" onclick="searchReportData()">
+                        <i class="icon-search bigger-110 green"></i>
+                        查 询
+                    </button>
+                </td>
+            </tr>
+            <tr>
+                <td style="display:none ">
+                    处理结果：
+                </td>
+                <td>
+                    <select style="width:100px;display:none" id="reportstatus">
+                        <option value="0">未处理</option>
+                        <option value="1">已处理</option>
+                        <option value="2">全部</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="widget-body">
+        <div class="widget-main">
+            <div style="width:100%; overflow:auto" id="divreportinfo">
+                <p>请按条件查询</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<object id="SGWorld" classid="CLSID:3a4f91b1-65a8-11d5-85c1-0001023952c1" style="visibility:hidden;height:0 "></object>
+
+<script type="text/javascript">
+
+    $(function () {
+        var stime = $('#txtReportStartTime').val();
+        var etime = $('#txtReportEndTime').val();
+        //检索
+        $.ajax({
+            type: "Post",
+            url: "/DataReport/GetReportDataListAjax",
+            data: { state: "0", starttime: stime, endtime: etime, tid: $('#tid').val(), type: 'Skyline' },
+            dataType: "json",
+            success: function (obj) {
+                if (obj != null && obj.Success) {
+                    $('#divreportinfo').empty();
+                    $('#divreportinfo').html(obj.Msg);
+
+                }
+                else {
+                    alert('检索信息失败！');
+                }
+            }
+        });
+    });
+
+
+
+    //查询上报数据
+    function searchReportData() {
+        var bo = checkReportSerach();
+        if (bo == true) {
+            $.ajax({
+                type: "Post",
+                url: "/DataReport/GetReportDataListAjax",
+                data: { state: $('#reportstatus').val(), starttime: $('#txtReportStartTime').val(), endtime: $('#txtReportEndTime').val(), tid: $('#tid').val(), type: "Skyline" },
+                dataType: "json",
+                success: function (obj) {
+                    if (obj != null && obj.Success) {
+                        $('#divreportinfo').empty();
+                        $('#divreportinfo').html(obj.Msg);
+
+                    }
+                    else {
+                        alert('检索信息失败！');
+                    }
+                }
+            });
+        }
+    }
+
+
+    function checkReportSerach() {
+        var state = $('#reportstatus').val();
+        var starttime = $('#txtReportStartTime').val();
+        var endtime = $('#txtReportEndTime').val();
+        //if ($.trim(starttime) == "") {
+        //    alert("开始时间不可为空！", { icon: 2 });
+        //    return false;
+        //}
+        //if ($.trim(endtime) == "") {
+        //    alert("结束时间不可为空！", { icon: 2 });
+        //    return false;
+        //}
+        if ($.trim(state) == "") {
+            alert("处理结果不可为空！");
+            return false;
+        }
+        if ($.trim(starttime) != "" && $.trim(endtime) != "") {
+            var bo = checkEndTime(starttime, endtime);
+            if (bo == false) {
+                alert('开始时间不能大于结束时间！');
+                return false;
+            }
+        }
+        return true;
+    }
+
+    //上报定位
+    function getLocaReport(reportid) {
+        $.ajax({
+            type: "Post",
+            url: "/DataReport/GetReportDataInfoAjax",
+            data: { reportid: reportid, maptype: "Skyline" },
+            dataType: "json",
+            success: function (obj) {
+                if (obj != null && obj.Success) {
+                    var data = obj.Data;
+                    delRealLocTemp();
+                    createImageLoc(data.LONGITUDE, data.LATITUDE, "");
+                }
+            }
+        });
+    }
+
+    //上报人详细信息查看
+    //title:标题url
+    //url:地址
+    //x:弹出框位置x
+    //y:弹出框位置y
+    //width:宽度
+    //height:高度
+    function PopUrl(url, hid) {
+        var popurl = url + "?hid=" + hid;
+        showPopuopByUrl("人员详细信息查看", popurl, 40, 80, 820, 380);
+    }
+    //上报信息查看
+    function getReportView(url, repid) {
+        var popurl = url + "?repid=" + repid;
+        showPopuopByUrl("信息查看", popurl, 40, 80, 820, 480);
+    }
+
+
+</script>

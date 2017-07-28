@@ -1,0 +1,191 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+}
+@section Header{
+}
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+    <div data-options="region:'west'" title="" style=" width:220px; border: none;">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="" style=" border: none; ">
+
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="homeUL">
+                        <input type="button" value="保存" onclick="Save()" id="btnSave">
+                        <input type="button" value="默认值" onclick="Cancel()" id="btnCancel">
+                        <input type="button" value="返回" onclick="javascript: history.go(-1);">
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <div class="divTable" style="text-align:left;">
+                    <table cellpadding="0" cellspacing="0">
+                        <tr class='row1'>
+                            <td style="display:none">
+                                呼救号码:
+                            </td>
+                            <td style="display:none">
+                                <input type="text" id="tbxNumber" value="" style="width:180px" />
+                            </td>
+                            <td>
+                                回传频率:
+                            </td>
+                            <td>
+                                <input type="text" id="tbxFrequence" value="" style="width:80px" />秒
+                            </td>
+                            <td>
+                                回传开始时间:
+                            </td>
+                            <td>
+                                <input type="text" id="tbxStartTime" value="" style="width:180px" />
+                            </td>
+                            <td>
+                                回传结束时间:
+                            </td>
+                            <td>
+                                <input type="text" id="tbxEndTime" value="" style="width:180px" />
+                            </td>
+                        </tr>
+                        <tr>
+                            @*<td>
+                                回传结束时间:
+                            </td>
+                            <td>
+                                <input type="text" id="tbxEndTime" value="" style="width:180px" />
+                            </td>*@
+                            <td style="display:none">
+                                Web Service地址:
+                            </td>
+                            <td style="display:none">
+                                <input type="text" id="tbxAddr" value="" style="width:180px" />
+                            </td>
+                            <td style="display:none">
+                                回传有效日期:
+                            </td>
+                            <td style="display:none">
+                                <input type="text" id="tbxDate" value="" style="width:180px" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="6" style="text-align:center;color:red">注意:开始时间和结束时间类似于7：30,20:30这种格式。</td>
+                        </tr>
+                    </table>
+                    @*<p style="text-align:center;color:red;">注意:开始时间和结束时间类似于7：30,20:30这种格式</p>*@
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $.ajax({
+        url: '/System/getHlyParameter',
+        cache: false,
+        timeout: 10000, //10秒后超时，如果为0则永不超时
+        data: {
+            ID: '@ViewBag.ID',
+            MOBILEPARAMLIST: '@ViewBag.MOBILEPARAMLIST',
+            ORGNO: '@ViewBag.ORGNO'
+        },
+        success: function (data, ioArgs) {
+            var ar = eval('(' + data + ')');
+            if (ar == null || ar == "") {
+                return;
+            }
+            var arr = ar.split('$');
+            if (arr.length > 1) {
+                document.getElementById("tbxNumber").value = arr[0];
+                document.getElementById("tbxFrequence").value = arr[1];
+                document.getElementById("tbxStartTime").value = arr[2];
+                document.getElementById("tbxEndTime").value = arr[3];
+                document.getElementById("tbxAddr").value = arr[4];
+                document.getElementById("tbxDate").value = arr[5];
+            }
+        },
+        error: function (err, ioArgs) {
+            alert('登录异常');
+        }
+    })
+
+
+    function Save() {
+        tbxNumber = document.getElementById("tbxNumber").value;
+        tbxFrequence = document.getElementById("tbxFrequence").value;
+        tbxStartTime = document.getElementById("tbxStartTime").value;
+        tbxEndTime = document.getElementById("tbxEndTime").value;
+        tbxAddr = document.getElementById("tbxAddr").value;
+        tbxDate = document.getElementById("tbxDate").value;
+        if (tbxNumber == "" || tbxFrequence == "" || tbxStartTime == "" || tbxEndTime == "" || tbxAddr == "" || tbxDate == "") {
+            alert('请输入参数值！');
+            return;
+        }
+        $.ajax({
+            url: '/System/Save',
+            cache: false,
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: {
+                tbxNumber: tbxNumber.trim(),
+                tbxFrequence: tbxFrequence.trim(),
+                tbxStartTime: tbxStartTime.trim(),
+                tbxEndTime: tbxEndTime.trim(),
+                tbxAddr: tbxAddr.trim(),
+                tbxDate: tbxDate.trim(),
+                ID: '@ViewBag.ID',
+                Method: '@ViewBag.Method'
+            },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    if (confirm(ar.Msg + ' 请返回！')) {
+                        self.location = document.referrer;//返回上一页并刷新
+                    }
+                }
+                else {
+                    alert(ar.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                alert('保存异常');
+            }
+        });
+    }
+
+
+    function Cancel() {
+        if (confirm('要把参数设置默认值吗?')) {
+            $.ajax({
+                url: '/System/Save',
+                cache: false,
+                data: {
+                    ID: @ViewBag.ID,
+                    Method: ''
+                    , returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)'
+                },
+                type: 'post',
+                error: function () {
+                    alert('错误:异常!', 'error');
+                },
+                success: function (re) {
+                    var ar = eval('(' + re + ')');
+                    if (ar.Success) {
+                        layer.msg('操作成功');
+                        self.location = document.referrer;//返回上一页并刷新
+                    }
+                    else {
+                        alert(ar.Msg, "Error");
+                    }
+                }
+            });
+        }
+    }
+</script>
+
+

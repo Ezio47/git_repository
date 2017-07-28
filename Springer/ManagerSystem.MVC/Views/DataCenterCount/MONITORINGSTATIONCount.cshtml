@@ -1,0 +1,121 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+}
+@section Header{
+    <script src="~/Scripts/scroll.js"></script>
+    <style type="text/css">
+        table tbody td {
+            word-break: break-all;
+            word-wrap: break-word;
+        }
+    </style>
+
+}
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        单位：<select id="tbxBYORGNO">
+                            @Html.Raw(@ViewBag.vdOrg)
+                        </select>
+                        <input type="button" value="查询" onclick="query()" class="btnSearchCss" />
+                        <input type="button" value="导出" onclick="exportExcel()" class="btnOutputCss" />
+                        <input type="button" value="图形展示" onclick="Echarts()" class="btnEchartsCss" />
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; ">
+
+                <div class="divTable" id="tableContainer" style="height:100%;margin:0 0;">
+                    @*@Html.Raw(@ViewBag.pageList)*@
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="divMan" id="BYORGNOadd" style="display:none;margin-left:5px;margin-top:8px">
+
+</div>
+<script type="text/javascript">
+    //$(document).ready(function () {
+    //    $("#tableContainer").FixedHead({ tableLayout: "fixed" });
+    //});
+    function exportExcel() {
+        var url = '/DataCenterCount/MONITORINGSTATIONCountExportExcel?BYORGNO=' + document.getElementById("tbxBYORGNO").value;
+        window.location = url;
+    }
+    function query() {
+        $.ajax({
+            url: '/DataCenterCount/getMONITORINGSTATIONCountStr',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: {
+                BYORGNO: document.getElementById("tbxBYORGNO").value,
+            },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#tableContainer').html(ar.Msg);
+                }
+                else {
+                    layer.msg(ar.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('登录异常');
+            }
+        });
+    }
+    function Echarts() {
+        layer.open({
+            type: 2,
+            title: '图形展示',
+            area: ['70%', '80%'],
+            fix: false, //不固定
+            maxmin: true,
+            content: '/DataCenterCount/MONITORINGSTATIONCountMan',
+        });
+    }
+    function Layer(BYORGNO, ORGNAME) {
+        $.ajax({
+            url: '/DataCenterCount/getMONITORINGSTATIONRidDetailStr',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: {
+                BYORGNO: BYORGNO,
+            },
+            dataType: "json",
+            success: function (data) {
+                if (data.Success) {
+                    $('#BYORGNOadd').html(data.Msg);
+                    layer.open({
+                        type: 1,
+                        title: ORGNAME + '监测站详细',
+                        area: ['80%', '80%'],
+                        fix: false, //不固定
+                        maxmin: true,
+                        shade: 0,
+                        offset: ['3%'],
+                        content: $('#BYORGNOadd'),
+                    });
+                }
+                else {
+                    layer.msg(ar.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('登录异常');
+            }
+
+        });
+    }
+</script>
+

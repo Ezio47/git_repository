@@ -1,0 +1,358 @@
+﻿@{
+    ViewBag.Title = "数据采集详细查看界面";
+    Layout = "~/Views/Shared/_LayoutIndexNoMenu.cshtml";
+}
+@model ManagerSystemModel.T_IPSCOL_COLLECT_Model
+@section Header{
+    <script src="~/Scripts/jquery.poshytip.js"></script>
+    <script src="~/Scripts/skyline/3DMapTotal.js"></script>
+    <link href="~/Content/tip-yellow/tip-yellow.css" rel="stylesheet" />
+    <style>
+        li.list {
+            list-style: none;
+            position: relative;
+            height: 25px;
+            line-height: 25px;
+        }
+
+            li.list a:hover {
+                width: 60px;
+                height: 20px;
+                line-height: 20px;
+                border: 1px solid #3c7814;
+                display: inline-block;
+                color: #ffffff;
+                background-color: #3c7814;
+                border-radius: 2px;
+                text-align: left;
+            }
+
+
+            li.list img {
+                vertical-align: middle;
+            }
+
+            li.list b {
+                position: absolute;
+                top: 3px;
+                left: 7px;
+                color: #fff;
+            }
+
+            li.list a {
+                color: #000000;
+                font-size: 12px;
+                padding: 0px 0 2px 5px;
+                font-family: "微软雅黑";
+            }
+
+        .tip {
+            /*width: 150px;*/
+        }
+    </style>
+
+}
+<div class="cxjg_info">
+    <div class="info_tex">
+        <table border="0" cellspacing="0" cellpadding="0" align="center" style="width:100%;height:100%">
+            <tbody>
+                <tr>
+                    <td class="bg1">采集人：</td>
+                    <td style="width:46%" class="text_01">@Model.HName</td>
+                    <td class="bg1">手机号：</td>
+                    <td class="text_01">@Model.Phone</td>
+                </tr>
+                <tr>
+                    <td class="bg1">采集点：</td>
+                    <td colspan="3">
+                        <input type="hidden" id="cid" value="@Model.COLLECTID" />
+                        <input type="hidden" id="hid" value="@Model.HID" />
+                        <textarea style="height:40px;width:100%" id="collectzb" readonly="readonly"></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="bg1">采集描述：</td>
+                    <td colspan="3">
+                        <textarea style="height:50px;width:100%" readonly>@Model.COLLECTNAME</textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="bg1">采集时间：</td>
+                    <td colspan="3" class="text_01">@Model.COLLECTTIME </td>
+                </tr>
+                <tr>
+                    <td class="bg1">图层转换：</td>
+                    <td colspan="3">
+                        @if (@Model.SYSTYPEVALUE == "1" || @Model.SYSTYPEVALUE == "2")
+                        {
+                            <a title="转为点图层" id="pointLayer">点图层</a>
+                        }
+
+                        @if (@Model.SYSTYPEVALUE == "3" || @Model.SYSTYPEVALUE == "4")
+                        {
+                            <a title="转为线图层" id="lineLayer">线图层</a>
+                            <a title="转为面图层" id="polyonLayer">面图层</a>
+                        }
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<object id="SGWorld" classid="CLSID:3a4f91b1-65a8-11d5-85c1-0001023952c1" style="visibility:hidden;height:0 "></object>
+
+<script type="text/javascript">
+    var jdwdlist = "";
+    $(function () {
+        detailPoints();
+
+        //点图层初始化
+        $('#pointLayer').poshytip({
+            alignTo: 'target',
+            alignX: 'right',
+            alignY: 'center',
+            offsetX: 5,
+            content: function () {
+                return showPointDiv();
+            }
+        });
+        //线图层初始化
+        $('#lineLayer').poshytip({
+            alignTo: 'target',
+            alignX: 'right',
+            alignY: 'center',
+            offsetX: 5,
+            content: function () {
+                return showLineDiv();
+            }
+        });
+        //面图层初始化
+        $('#polyonLayer').poshytip({
+            alignTo: 'target',
+            alignX: 'right',
+            alignY: 'center',
+            offsetX: 5,
+            content: function () {
+                return showPolyonDiv();
+            }
+        });
+
+    });
+    //点图层
+    function showPointDiv() {
+        var html = '<div class="tip">' +
+            '<ul>' +
+                '<li class="list">' +
+                    '<img src="../images/circle.png">' +
+                    '<b>1</b><a href="#" onclick=\"ConvertDWLayer()\">队伍</a>' +
+                '</li>' +
+                '<li class="list">' +
+                    '<img src="../images/circle.png">' +
+                    '<b>2</b><a href="#" onclick=\"ConvertCKLayer()\">仓库</a>' +
+                '</li>' +
+                '<li class="list">' +
+                    '<img src="../images/circle.png">' +
+                    '<b>3</b><a href="#" onclick=\"ConvertYFLayer()\">营房</a>' +
+                '</li>' +
+                '<li class="list">' +
+                    '<img src="../images/circle.png">' +
+                    '<b>4</b><a href="#"  onclick=\"ConvertLWTLayer()\">瞭望台</a>' +
+                '</li>' +
+                '<li class="list">' +
+                    '<img src="../images/circle.png">' +
+                    '<b>5</b><a href="#"  onclick=\"ConvertXCBPLayer()\">宣传碑牌</a>' +
+                '</li>' +
+                '<li class="list">' +
+                    '<img src="../images/circle.png">' +
+                    '<b>6</b><a href="#"  onclick=\"ConvertZJZLayer()\">中继站</a>' +
+                '</li>' +
+                '<li class="list">' +
+                    '<img src="../images/circle.png">' +
+                    '<b>7</b><a href="#"  onclick=\"ConvertJCZLayer()\">监测站</a>' +
+                '</li>' +
+                '<li class="list">' +
+                    '<img src="../images/circle.png">' +
+                    '<b>8</b><a href="#"  onclick=\"ConvertYZCJZLayer()\">因子采集站</a>' +
+                '</li>' +
+            '</ul>' +
+        '</div>';
+        return html;
+    }
+    //线图层
+    function showLineDiv() {
+        var html = '<div class="tip">' +
+            '<ul>' +
+                '<li class="list">' +
+                    '<img src="../images/circle.png">' +
+                    '<b>1</b><a href="#" onclick=\"ConvertGLDLayer()\">隔离带</a>' +
+                '</li>' +
+                '<li class="list">' +
+                    '<img src="../images/circle.png">' +
+                    '<b>2</b><a href="#" onclick=\"ConvertFHTDLayer()\">防火通道</a>' +
+                '</li>' +
+                '<li class="list">' +
+                    '<img src="../images/circle.png">' +
+                    '<b>3</b><a href="#" onclick=\"ConvertXJXLayer()\">巡检线</a>' +
+                '</li>' +
+            '</ul>' +
+        '</div>';
+        return html;
+    }
+
+    //面图层
+    function showPolyonDiv() {
+        var html = '<div class="tip">' +
+            '<ul>' +
+                '<li class="list">' +
+                    '<img src="../images/circle.png">' +
+                    '<b>1</b><a href="#" onclick=\"ConvertZYLayer()\">资源</a>' +
+                '</li>' +
+                '<li class="list">' +
+                    '<img src="../images/circle.png">' +
+                    '<b>2</b><a href="#"  onclick=\"ConvertLXSCLayer()\">林下烧除</a>' +
+                '</li>' +
+                '<li class="list">' +
+                    '<img src="../images/circle.png">' +
+                    '<b>3</b><a href="#"  onclick=\"ConvertZRQLayer()\">责任区</a>' +
+                '</li>' +
+            '</ul>' +
+        '</div>';
+        return html;
+    }
+
+    //队伍
+    function ConvertDWLayer() {
+        var detailcid = $.trim($('#cid').val());
+        DangYAShow("队伍图层", "http://"+window.location.host+"/SkylineManger/DWIndex?detailid=" + detailcid, 630, 300);
+    }
+
+    //仓库
+    function ConvertCKLayer() {
+        var detailcid = $.trim($('#cid').val());
+        DangYAShow("仓库图层", "http://"+window.location.host+"/SkylineManger/CKIndex?detailid=" + detailcid, 600, 300);
+    }
+    //营房
+    function ConvertYFLayer() {
+        var detailcid = $.trim($('#cid').val());
+        DangYAShow("营房图层", "http://"+window.location.host+"/SkylineManger/YFIndex?detailid=" + detailcid, 630, 320);
+    }
+    //瞭望台
+    function ConvertLWTLayer() {
+        var detailcid = $.trim($('#cid').val());
+        DangYAShow("瞭望台图层", "http://"+window.location.host+"/SkylineManger/LWTIndex?detailid=" + detailcid, 630, 320);
+    }
+    //宣传碑牌
+    function ConvertXCBPLayer() {
+        var detailcid = $.trim($('#cid').val());
+        DangYAShow("宣传碑牌图层", "http://"+window.location.host+"/SkylineManger/XCBPIndex?detailid=" + detailcid, 630, 376);
+    }
+
+    //中继站
+    function ConvertZJZLayer() {
+        var detailcid = $.trim($('#cid').val());
+        DangYAShow("中继站图层", "http://"+window.location.host+"/SkylineManger/ZJZIndex?detailid=" + detailcid, 630, 350);
+    }
+    //监测站
+    function ConvertJCZLayer() {
+        var detailcid = $.trim($('#cid').val());
+        DangYAShow("监测站图层", "http://"+window.location.host+"/SkylineManger/JCZIndex?detailid=" + detailcid, 610, 350);
+    }
+    //因子采集站
+    function ConvertYZCJZLayer() {
+        var detailcid = $.trim($('#cid').val());
+        DangYAShow("因子采集站图层", "http://"+window.location.host+"/SkylineManger/YZCJZIndex?detailid=" + detailcid, 630, 350);
+    }
+
+    //隔离带
+    function ConvertGLDLayer() {
+        var detailcid = $.trim($('#cid').val());
+        DangYAShow("隔离带图层", "http://"+window.location.host+"/SkylineManger/GLDIndex?detailid=" + detailcid, 600, 350);
+    }
+    //防火通道
+    function ConvertFHTDLayer() {
+        var detailcid = $.trim($('#cid').val());
+        DangYAShow("防火通道图层", "http://"+window.location.host+"/SkylineManger/FHTDIndex?detailid=" + detailcid, 600, 350);
+    }
+
+    //巡检线
+    function ConvertXJXLayer() {
+        var detailcid = $.trim($('#cid').val());//采集ID
+        var detailhid = $.trim($('#hid').val());//护林员ID
+        ConvertType(detailcid, detailhid, 0);
+    }
+
+
+    //资源
+    function ConvertZYLayer() {
+        var detailcid = $.trim($('#cid').val());
+        DangYAShow("资源图层", "http://"+window.location.host+"/SkylineManger/ZYIndex?detailid=" + detailcid, 630, 350);
+    }
+
+    //林下烧除
+    function ConvertLXSCLayer() {
+        var detailcid = $.trim($('#cid').val());
+        DangYAShow("林下烧除图层", "http://"+window.location.host+"/SkylineManger/LXSCIndex?detailid=" + detailcid, 660, 350);
+    }
+
+    //责任区
+    function ConvertZRQLayer() {
+        var detailcid = $.trim($('#cid').val());//采集ID
+        var detailhid = $.trim($('#hid').val());//护林员ID
+        ConvertType(detailcid, detailhid, 1);
+    }
+
+    //详细点
+    function detailPoints() {
+        var detailcid = $('#cid').val();
+        $.ajax({
+            type: "Post",
+            url: "/SkylineManger/DataCollectDetailList",
+            data: { cid: detailcid },
+            dataType: "json",
+            success: function (obj) {
+                //console.info(obj);
+                if (obj != null) {
+                    var html = "经度/纬度：";
+                    $('#collectzb').html("");
+                    for (var i = 0; i < obj.length; i++) {
+                        html += obj[i].LONGITUDE + "," + obj[i].LATITUDE + "|";
+                    }
+                    $('#collectzb').html(html);
+                }
+                else {
+                    layer.alert('获取采集点失败！', { icon: 5 });
+                }
+            }
+        });
+    }
+
+    //巡检线 责任区转换
+    function ConvertType(cid, hid, htype) {
+        //alert("cid" + cid + "hid" + hid + "htype" + htype);
+        var str = "是否转换为";
+        if (htype == "0") {
+            str += "该护林员巡检线";
+        }
+        else if (htype == "1") {
+            str += "该护林员责任区";
+        }
+        if (confirm(str + '?')) {
+            var index = layer.load(0, { offset: ['350px', '80px'], shade: false }); //0代表加载的风格，支持0-2
+            $.ajax({
+                type: "Post",
+                url: "/DataCollect/ConvertHlyLineArea",
+                data: { cid: cid, hid: hid, htype: htype },
+                dataType: "json",
+                success: function (obj) {
+                    if (obj != null && obj.Success) {
+                        alert("采集点转换成功!");
+                    }
+                    else {
+                        alert("采集点转换成功失败!");
+                    }
+                }
+            });
+            layer.close(index);
+        }
+    }
+</script>

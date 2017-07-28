@@ -1,0 +1,63 @@
+﻿@{
+    ViewBag.Title = "MapToolsIndex";
+    Layout = null;
+}
+<link href="~/Content/themes/default/Public.css" rel="stylesheet" />
+<link href="~/Content/themes/default/Default.css" rel="stylesheet" />
+@*<script src="~/Scripts/skyline/3dMapTest.js"></script>*@
+<script src="~/Scripts/jquery-1.8.2.min.js"></script>
+<script src="~/Scripts/skyline/3DMapTotal.js"></script>
+<style type="text/css">
+    body, * {
+        margin: 0;
+        padding: 0;
+    }
+</style>
+<div class="indexToolDiv">
+    <div class="toolsInfo border_ty6">
+        <ul>
+            <li class="li_first"><a onclick="excCommand(1056, 0)" class="north">指北</a></li>
+            <li><a onclick="excCommand(1057,0)" class="rotate">旋转</a></li>
+            <li><a onclick="excCommand(1035, 0)" class="ranging">测距</a></li>
+            <li><a onclick="excCommand(1165, 0)" class="Surface">测面</a></li>
+            <li><a onclick="excCommand(2217, 0)" class="slope">坡度</a></li>
+            <li><a onclick="excCommand(2216, 0)" class="terrain">地形</a></li>
+            @*<li><a onclick="excCommand(2216, 0)" class="terrain">放大</a></li>*@
+            @*<li><a onclick="excCommand(2216, 0)" class="terrain">缩小</a></li>*@
+            <li><a onclick="excCommand(1067, 0)" class="snapshot">快照</a></li>
+            @*<li><a href="#" class="Selected">选中</a></li>*@
+            <li><a onclick="qrueyHTML_tckz()" class="layer">图层</a></li>
+            <li><a onclick="qrueyHTML_qr()" class="query">查询</a></li>
+            <li><a onclick="qrueyHTML_dw()" class="location">定位</a></li>
+            <li class="li_end"><a onclick="clearMap();" class="clear">清空</a></li>
+        </ul>
+    </div>
+    <div class="fireInfo border_ty6">
+        <ul style="padding:1px 1px 1px">
+            <li class="olassOne">一级</li>
+            <li class="olassTwo">二级</li>
+            <li class="olassThree">三级</li>
+            <li class="olassFour">四级</li>
+            <li class="olassFive">五级</li>
+        </ul>
+    </div>
+</div>
+<div class="clear"></div>
+<object id="SGWorld" classid="CLSID:3a4f91b1-65a8-11d5-85c1-0001023952c1" style="visibility:hidden;height:0 "></object>
+
+<script type="text/javascript">
+
+    ///清空--工具
+    function clearMap() {
+        try {
+            delRealLocTemp();
+            delRealLocTemp_Around();
+            delRealLocTemp_map()//删除地图定位临时组
+            delRealLocTemp_zb();//删除坐标定位临时组
+            delRealLocTemp_Range();
+            delRealLocTemp_Range1();
+        } catch (e) {
+            //
+        }
+    }
+</script>

@@ -1,0 +1,592 @@
+﻿@using ManagerSystemClassLibrary;
+@{
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+    var curorgno = SystemCls.getCurUserOrgNo();
+    if (curorgno.Substring(6, 3) == "000" && curorgno.Substring(4, 2) != "00")
+    {
+        curorgno = curorgno.Substring(0, 6) + "xxx";
+    }
+    else
+    {
+        curorgno = SystemCls.getCurUserOrgNo();
+    }
+}
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+    <div data-options="region:'west'" title="" style=" width:220px; border: none;">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="" style=" border: none;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                @*单位名：<div id="tt" class="easyui-tree"></div>*@
+                <div class="divOP">
+                  
+                        <ul>
+                            <li class="homeUL">
+                                单位：<div id="tbxORGNOS" class="easyui-tree"></div>
+                                资源类型：<select id="tbxRESOURCETYPE">
+                                    @Html.Raw(@ViewBag.resourcetype)
+                                </select>
+                                林龄：<select id="tbxAGETYPE">
+                                    @Html.Raw(@ViewBag.agetype)
+                                </select>
+                                @*起源类型：<select id="tbxORIGINTYPE">
+                                        @Html.Raw(@ViewBag.originttype)
+                                    </select>*@
+                                @*可燃类型：<select id="tbxBURNTYPE">
+                                        @Html.Raw(@ViewBag.burntype)
+                                    </select>*@
+                                林木类型：<select id="tbxTREETYPE">
+                                    @Html.Raw(@ViewBag.treetype)
+                                </select>
+                                名称：<input id="tbxNAME" type="text" class="input-small" style="width:80px" value="" />
+                                    @*编号：<input id="tbxNUMBER" type="text" class="input-small" style="width:100px" value="" />*@
+                                <input type="button" value="查询" onclick="query('1')" class="btnSearchCss" />
+                                <input type="button" value="添加" id="btnAdd" onclick="Manager('Add','','')" style="display:none;" class="btnAddCss" />
+                            </li>
+                            <li class="active">
+                                @using (@Html.BeginForm("RESOURCEList", "DataCenter", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                                {
+                                    <input name="file" style="width:80px;" type="file" id="file" class="btn btn-info btn-sm" />
+
+                                    <button type="submit" name="Upload" value="导入" class="btnInputCss">
+                                        导 入
+                                    </button>
+                                }
+                            </li>
+                            <li class="active">
+                                <a href="~/UploadFile/DataCenterExcel/资源模板.xls" target="_blank" title="右键，另存为">下载模板</a>
+                            </li>
+                        </ul>
+                    </div>
+                
+            </div>
+            <div data-options="region:'center'" title="" class="LayoutCenterBG">
+
+                <div class="divTable" id="divTable">
+
+                </div>
+            </div>
+            <div data-options="region:'south'" title="" style=" height:40px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
+
+                <div class="divPager" id="divPager">
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="divMan" id="tableadd" style="display:none;margin-left:5px;margin-top:8px">
+    <table cellpadding="0" cellspacing="0">
+        <tr>
+            <td style="width:80px;">
+                单位名称：
+            </td>
+            <td>
+                <select id="ORGNOS" class="easyui-combotree" style="width:200px;"></select>
+            </td>
+            <td style="width:80px;">
+                资源类型：
+            </td>
+            <td>
+                <select id="RESOURCETYPE">
+                    @Html.Raw(@ViewBag.resourcetypeadd)
+                </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td style="width:80px;">
+                <span style="color:red;">*</span>
+                名称：
+            </td>
+            <td>
+                <input type="text" id="NAME" class="input-small" value="" />
+            </td>
+            <td style="width:80px;">
+                <span style="color:red;">*</span>
+                编号：
+            </td>
+            <td>
+                <input id="NUMBER" type="text" class="input-small" value="" />
+            </td>
+        </tr>
+
+        <tr>
+            <td style="width:80px;">
+                林龄类型：
+            </td>
+            <td>
+                <select id="AGETYPE">
+                    @Html.Raw(@ViewBag.agetypeadd)
+                </select>
+            </td>
+            <td style="width:80px;">
+                起源类型：
+            </td>
+            <td>
+                <select id="ORIGINTYPE">
+                    @Html.Raw(@ViewBag.originttypeadd)
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td style="width:80px;">
+                可燃类型：
+            </td>
+            <td>
+                <select id="BURNTYPE">
+                    @Html.Raw(@ViewBag.burntypeadd)
+                </select>
+            </td>
+            <td style="width:80px;">
+                林木类型：
+            </td>
+            <td>
+                <select id="TREETYPE">
+                    @Html.Raw(@ViewBag.treetypeadd)
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td style="width:160px;">
+                <span style="color:red;">*</span>
+                经纬度点：
+            </td>
+            <td colspan="2">
+                <input id="JWDLIST" type="text" style="width:97%" value="" readonly />
+            </td>
+            <td>
+                <input type="button" value="地图定位" onclick="setLine()" class="btnMapLoaclCss" />
+            </td>
+        </tr>
+        <tr>
+            <td style="width:80px;">
+                树种：
+            </td>
+            <td>
+                <input id="KINDTYPE" type="text" class="input-small" value="" />
+            </td>
+            <td style="width:80px;">
+                面积：
+            </td>
+            <td>
+                <input id="AREA" type="text" class="input-small" value="" />公顷
+            </td>
+        </tr>
+        <tr>
+            <td style="width:80px;">
+                坡向：
+            </td>
+            <td>
+                <input id="ASPECT" type="text" class="input-small" value="" />
+            </td>
+            <td style="width:80px;">
+                坡度：
+            </td>
+            <td>
+                <input id="ANGLE" type="text" class="input-small" value="" />
+            </td>
+        </tr>
+        <tr>
+            <td style="width:80px;">
+                挂钩领导：
+            </td>
+            <td>
+                <input id="POTHOOKLEADER" type="text" class="input-small" value="" />
+            </td>
+            <td style="width:80px;">
+                职务：
+            </td>
+            <td>
+                <input id="POTHOOKLEADERJOB" type="text" class="input-small" value="" />
+            </td>
+        </tr>
+        <tr>
+            <td style="width:80px;">
+                领导电话：
+            </td>
+            <td colspan="3">
+                <input id="POTHOOKLEADERTLEE" type="text" class="input-small" value="" />
+            </td>
+        </tr>
+        <tr>
+            <td style="width:80px;">
+                责任人：
+            </td>
+            <td>
+                <input id="DUTYPERSON" type="text" class="input-small" value="" />
+            </td>
+            <td style="width:80px;">
+                责任人电话：
+            </td>
+            <td>
+                <input id="DUTYPERSONTELL" type="text" class="input-small" value="" />
+            </td>
+        </tr>
+        <tr>
+            <td style="width:80px;">
+                备注：
+            </td>
+            <td colspan="3">
+                <input id="MARK" type="text" class="input-small" value="" />
+            </td>
+        </tr>
+    </table>
+</div>
+<script type="text/javascript">
+    var bln = '@ViewBag.isAdd';
+    if (bln == "1") {
+        document.getElementById('btnAdd').style.display = "";
+    }
+    $(function () {
+        $('#tbxORGNOS').combotree({
+            url: '/DataCenter/OrgTreeget',
+            editable: false,
+            required: true,
+            panelHeight: 300,
+            onLoadSuccess: function (node, data) {
+                var t = $("#tbxORGNOS").combotree('tree');//获取tree
+                t.tree("collapseAll");
+                node = t.tree("find", data[0].id);
+                t.tree("expand", node.target);//展开节点 expandTo
+            }
+        });
+        $('#tbxORGNOS').combotree('setValue', "@curorgno");
+        query('1');
+    });
+    $(function () {
+        $('#ORGNOS').combotree({
+            url: '/DataCenter/OnlyOrgTreeget',
+            editable: false,
+            required: true,
+            panelHeight: 300,
+            onLoadSuccess: function (node, data) {
+                var t = $("#ORGNOS").combotree('tree');//获取tree
+                t.tree("collapseAll");
+                node = t.tree("find", data[0].id);
+                t.tree("expand", node.target);//展开节点 expandTo
+            }
+        });
+        $('#ORGNOS').combotree('setValue', "@curorgno");
+    });
+    function query(Page) {
+        var pagesize = '0';
+        if (document.getElementById("selPageSize") != null) {
+            pagesize = document.getElementById("selPageSize").value;
+        }
+        var ORGNOS = $('#tbxORGNOS').combotree('getValue');
+        $.ajax({
+            url: '/DataCenter/getRESOURCE_NEWlist',
+            data: {
+                //ORGNOS: document.getElementById("tbxORGNOS").value,
+                ORGNOS:ORGNOS,
+                RESOURCETYPE: document.getElementById("tbxRESOURCETYPE").value,
+                AGETYPE: document.getElementById("tbxAGETYPE").value,
+                //ORIGINTYPE: document.getElementById("tbxORIGINTYPE").value,
+                //BURNTYPE: document.getElementById("tbxBURNTYPE").value,
+                TREETYPE: document.getElementById("tbxTREETYPE").value,
+                NAME: document.getElementById("tbxNAME").value,
+                //NUMBER: document.getElementById("tbxNUMBER").value,
+                PageSize: pagesize,
+                Page: Page,
+            },
+            type: 'post',
+            success: function (data) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#divTable').html(ar.tableInfo);
+                    $('#divPager').html(ar.pagerInfo);
+                }
+                else {
+                    layer.msg('登录异常');
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('登录异常');
+            }
+        });
+    }
+
+    //地图定位
+    function setLine() {
+        var name = document.getElementById("NAME").value;
+        var str = document.getElementById("JWDLIST").value;
+        layer.open({
+            type: 2,
+            title:name+ '地图位置设置',
+            btn: ['保存', '关闭'],
+            area: ['70%', '80%'],
+            fix: false, //不固定
+            maxmin: true,
+            // content: '/MapCommon/GetMapPontIndex?LINE=2' + "&jwdlist=" + str,
+            content: '/MapCommon/GetMapPontIndex?LINE=2',
+            success: function (layero, index) {
+                var body = layer.getChildFrame('body', index);
+                body.find('#editcollecttxt').text(str);
+                window["layui-layer-iframe" + index].getLocaCollectPolygon();//面
+                //getLocaCollectLine() 线
+            },
+            yes: function (index, layero) { //或者使用btn1
+                //按钮【按钮一】的回调
+                var ptxt = layer.getChildFrame("#editcollecttxt", index);
+                var lm = layer.getChildFrame("#MjACdtxt", index)
+                //if (str == ptxt.html()) {
+                //    layer.msg('线没有编辑！', { icon: 5 });
+                //    return;
+                //}
+                $('#AREA').val(lm.html());//面积
+                $('#JWDLIST').val(ptxt.html());//经纬度
+
+                //var arr = ptxt.html().split(',');
+                //var jd = parseFloat(arr[0]).toFixed(6);
+                //var wd = parseFloat(arr[1]).toFixed(6);
+                //$('#tbxWD').val(wd);
+                layer.close(index);
+            }, cancel: function (index) {
+                layer.close(index);
+            }
+        });
+
+    }
+
+    function Manager(Method, ID, page) {
+        if (Method == 'Del') {
+            if (confirm('确实要删除该内容吗?')) {
+                $.ajax({
+                    type: "Post",
+                    url: "/DataCenter/RESOURCE_NEWManager",
+                    data: {
+                        DC_RESOURCE_NEW_ID: ID,
+                        Method: Method,
+                    },
+                    dataType: "json",
+                    error: function () {
+                        alert('错误:异常!', 'error');
+                    },
+                    success: function (re) {
+                        if (re.Success) {
+                            layer.msg('删除成功', { icon: 6 });
+                            query(page);
+                        }
+                        else {
+                            layer.msg('删除失败', { icon: 5 });
+                        }
+                    }
+                });
+            }
+        }
+        else {
+            if (Method == 'Mdy' || Method == 'See') {
+                $.ajax({
+                    type: "Post",
+                    url: "/DataCenter/GetRESOURCE_NEWjson",
+                    data: {
+                        DC_RESOURCE_NEW_ID: ID,
+                    },
+                    dataType: "json",
+                    error: function () {
+                        alert('错误:异常!', 'error');
+                    },
+                    success: function (data) {
+                        if (data.DC_RESOURCE_NEW_ID != '') {
+                            document.getElementById("RESOURCETYPE").value = data.RESOURCETYPE;
+                            document.getElementById("NUMBER").value = data.NUMBER;
+                            document.getElementById("NAME").value = data.NAME;
+                            //document.getElementById("ORGNOS").value = data.ORGNOS;
+                            $('#ORGNOS').combotree('setValue', data.ORGNOS);
+                            document.getElementById("KINDTYPE").value = data.KINDTYPE;
+                            document.getElementById("AGETYPE").value = data.AGETYPE;
+                            document.getElementById("ORIGINTYPE").value = data.ORIGINTYPE;
+                            document.getElementById("AREA").value = data.AREA;
+                            document.getElementById("BURNTYPE").value = data.BURNTYPE;
+                            document.getElementById("TREETYPE").value = data.TREETYPE;
+                            document.getElementById("ASPECT").value = data.ASPECT;
+                            document.getElementById("ANGLE").value = data.ANGLE;
+                            document.getElementById("MARK").value = data.MARK;
+                            //document.getElementById("JD").value = data.JD;
+                            //document.getElementById("WD").value = data.WD;
+                            var str = data.JWDLIST;
+                            if (str.substring(str.length - 1) != ";") {
+                                document.getElementById("JWDLIST").value = str + ";";
+                            } else {
+                                document.getElementById("JWDLIST").value = str;
+                            }
+                            document.getElementById("POTHOOKLEADER").value = data.POTHOOKLEADER;
+                            document.getElementById("POTHOOKLEADERJOB").value = data.POTHOOKLEADERJOB;
+                            document.getElementById("POTHOOKLEADERTLEE").value = data.POTHOOKLEADERTLEE;
+                            document.getElementById("DUTYPERSON").value = data.DUTYPERSON;
+                            document.getElementById("DUTYPERSONTELL").value = data.DUTYPERSONTELL;
+                        }
+                    }
+                });
+            }
+            if (Method == 'Add') {
+                document.getElementById("RESOURCETYPE").value = "";
+                document.getElementById("NUMBER").value = "";
+                document.getElementById("NAME").value = "";
+                //document.getElementById("ORGNOS").value = "";
+                $('#ORGNOS').combotree('setValue', "@curorgno");
+                document.getElementById("KINDTYPE").value = "";
+                document.getElementById("AGETYPE").value = "";
+                document.getElementById("ORIGINTYPE").value = "";
+                document.getElementById("AREA").value = "";
+                document.getElementById("BURNTYPE").value = "";
+                document.getElementById("TREETYPE").value = "";
+                document.getElementById("ASPECT").value = "";
+                document.getElementById("ANGLE").value = "";
+                document.getElementById("MARK").value = "";
+                document.getElementById("JWDLIST").value = "";
+                //document.getElementById("JD").value = "";
+                //document.getElementById("WD").value = "";
+                document.getElementById("POTHOOKLEADER").value = "";
+                document.getElementById("POTHOOKLEADERJOB").value = "";
+                document.getElementById("POTHOOKLEADERTLEE").value = "";
+                document.getElementById("DUTYPERSON").value = "";
+                document.getElementById("DUTYPERSONTELL").value = "";
+
+            }
+            var btnInfo = ['保存', '取消'];
+            if (Method == "See")
+                btnInfo = [];
+            var str = "资源添加";
+            if (Method == "Mdy")
+                str = "资源修改";
+            if (Method == "See")
+                str = "资源查看";
+            layer.open({
+                type: 1,
+                title: str,
+                area: ['52%', '87%'],
+                btn: btnInfo,
+                shade: 0,
+                maxmin: true,
+                content: $('#tableadd'),
+                yes: function (index, layero) {
+                    var t1 = $('#AREA ').val();
+                    var t2 = $('#NAME ').val();
+                    var t3 = $('#NUMBER ').val();
+                    var t4 = $('#KINDTYPE ').val();
+                    if ($.trim(t1) != "") {
+                        if (CheckNUM($.trim(t1)) == false) {
+                            layer.msg('面积请填写数字！', { icon: 5 });
+                            $('#AREA').focus();
+                            return;
+                        }
+                    }
+                    if ($.trim(t2) == "") {
+                        layer.msg('请填写名称！', { icon: 5 });
+                        $('#NAME').focus();
+                        return;
+                    }
+                    if ($.trim(t3) == "") {
+                        layer.msg('请填写编号！', { icon: 5 });
+                        $('#NUMBER').focus();
+                        return;
+                    }
+                    if ($.trim(t4) != "") {
+                        if (checkStr($.trim(t4)) == false) {
+                            layer.msg('林种字数不得超过50！', { icon: 5 });
+                            $('#KINDTYPE').focus();
+                            return;
+                        }
+                    }
+                    var tt = document.getElementById("JWDLIST").value;
+                    if (tt.split('|').length == 1) {
+                        layer.msg('请在地图上画出面！', { icon: 5 });
+                        return;
+                    }
+                    $.ajax({
+                        type: "Post",
+                        url: "/DataCenter/RESOURCE_NEWManager",
+                        data: {
+                            DC_RESOURCE_NEW_ID: ID,
+                            Method: Method,
+                            RESOURCETYPE: document.getElementById("RESOURCETYPE").value,
+                            NUMBER: document.getElementById("NUMBER").value,
+                            NAME: document.getElementById("NAME").value,
+                            //ORGNOS: document.getElementById("ORGNOS").value,
+                            ORGNOS:$('#ORGNOS').combotree('getValue'),
+                            KINDTYPE: document.getElementById("KINDTYPE").value,
+                            AGETYPE: document.getElementById("AGETYPE").value,
+                            ORIGINTYPE: document.getElementById("ORIGINTYPE").value,
+                            AREA: document.getElementById("AREA").value,
+                            BURNTYPE: document.getElementById("BURNTYPE").value,
+                            TREETYPE: document.getElementById("TREETYPE").value,
+                            ASPECT: document.getElementById("ASPECT").value,
+                            ANGLE: document.getElementById("ANGLE").value,
+                            MARK: document.getElementById("MARK").value,
+                            JWDLIST: document.getElementById("JWDLIST").value,
+                            //JD: document.getElementById("JD").value,
+                            //WD: document.getElementById("WD").value,
+                            POTHOOKLEADER: document.getElementById("POTHOOKLEADER").value,
+                            POTHOOKLEADERJOB: document.getElementById("POTHOOKLEADERJOB").value,
+                            POTHOOKLEADERTLEE: document.getElementById("POTHOOKLEADERTLEE").value,
+                            DUTYPERSON: document.getElementById("DUTYPERSON").value,
+                            DUTYPERSONTELL: document.getElementById("DUTYPERSONTELL").value,
+                        },
+                        dataType: "json",
+                        error: function () {
+                            alert('错误:异常!', 'error');
+                        },
+                        success: function (re) {
+                            if (re.Success) {
+                                layer.close(index);
+                                layer.msg('操作成功', { icon: 6 });
+                                query('1');
+                            }
+                            else {
+                                layer.msg(re.Msg, { icon: 5 });
+                            }
+                        }
+                    });
+
+                }, cancel: function (index) {
+                    layer.close(index);
+                }
+            })
+        }
+    }
+    //地图定位展示
+    function PositionLine(tablename, id,name, type) {
+        layer.open({
+            type: 2,
+            title: name+'地图定位',
+            area: ['70%', '80%'],
+            //shade: 0,
+            fix: true,
+            maxmin: true,
+            content: '/MapCommon/MapPostionCommonIndex?tablename=' + tablename + "&id=" + id + "&type=" + type
+        })
+    }
+    ///查看
+    function See(ID, tablename) {
+        layer.open({
+            type: 2,
+            title: '资源查看',
+            area: ['50%', '80%'],
+            fix: true,
+            maxmin: true,
+            content: '/DataCenter/SeeIndex?tablename=' + tablename + "&ID=" + ID
+        })
+    }
+    function Photo(PRID, PHOTOTYPE) {
+        layer.open({
+            type: 2,
+            title: '图片管理',
+            area: ['70%', '60%'],
+            fix: true,
+            maxmin: true,
+            content: '/DataCenter/PhotoIndex?PHOTOTYPE=' + PHOTOTYPE + "&PRID=" + PRID
+        })
+    }
+    //选中改变颜色
+    function setColor(obj) {
+        $(obj).css("background-color", "#FFDAB9");
+        $("tr").not($(obj)).css("background-color", "");
+    }
+</script>

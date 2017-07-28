@@ -1,0 +1,697 @@
+﻿@using ManagerSystem.MVC.HelpCom;
+@using ManagerSystemClassLibrary;
+@using ManagerSystemSearchWhereModel;
+@model IEnumerable<ManagerSystem.MVC.Models.EHCurFireMode>
+@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+    //首页
+    var result = T_SYS_MENUCls.getT_SYS_MENUModel(new T_SYS_MENU_SW { UID = SystemCls.getUserID(), SYSFLAG = ConfigCls.getSystemFlag(), MenuCodeList = "008,013" });
+    var msy = result.Where(p => p.MENUCODE == "008").FirstOrDefault();//获取该页面对应的菜单信息
+    //三维护林员
+    var online = ManagerSystemClassLibrary.ConfigCls.getInLineColor();
+    var outline = ManagerSystemClassLibrary.ConfigCls.getOutLineColor();
+    var outrail = ManagerSystemClassLibrary.ConfigCls.getOutRailColor();
+    //系统参数读取坐标上传时间点
+    var stime = StateSwitch.GetParamenterByKey("STATR_TIME");
+    var edtime = StateSwitch.GetParamenterByKey("END_TIME");
+    var dicLonLatstr = T_SYS_ORGCls.GetOrgLonLat(new T_SYS_ORGSW { ORGNO = SystemCls.getCurUserOrgNo() });//获取当前用户所处市县的经纬度
+    String Rightstr = T_SYSSEC_RIGHTCls.getRightStrByUID(new T_SYSSEC_IPSUSER_SW { USERID = SystemCls.getUserID() });
+}
+@section Header{
+    <link href="~/Content/MapStyle.css" rel="stylesheet" />
+    <script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+    <script src="~/Scripts/skyline/3DMapTotal.js"></script>
+    <script src="~/Scripts/NPPInterface.js"></script>
+    <script src="~/Scripts/NPPInterlayer.js"></script>
+    <script src="~/Scripts/npp_examples_config.js"></script>
+    <script src="~/Scripts/jquery.snippet.js"></script>
+}
+
+<ul class="ulhlytree" style="width:99%" id="hlyid">
+    @if (Rightstr.Contains(",020003001,"))
+    {
+        <li id="li1">
+            <label><h1><span>护林员</span></h1></label>
+            <ul>
+                <li>
+                    <div class="warnPanel">
+                        <input type="hidden" value="@dicLonLatstr" id="lonlathide" />
+                        <dl class="hly">
+                            <dt class="center">
+                                手机号码：<input type="text" class="textBox_01 border_ty5" id="txtphonehname" placeholder="手机号码/姓名"><input type="button" class="btnSearchCss" value="查询" onclick="searchUser()">
+                            </dt>
+                            <dd style="width:100%;">
+                                <div id="tthly" class="easyui-tree" style="overflow: hidden;" checkbox="true">
+
+                                </div>
+                            </dd>
+                            <dd>
+                                <input type="button" id="btnLoca" value="实时定位" class="btnCss" />
+                                <input type="button" id="btnCon" value="开始监控" class="btnCss" />
+                                <input type="button" id="btnConOver" value="结束监控" class="btnCss" style="display:none" />
+                                <input type="button" id="btnHis" value="历史轨迹" class="btnCss" />
+                                <input type="button" id="btnReset" value="消除定位" class="btnCss" style="left:10px" />
+                                <input type="button" id="btnPower" value="电量查询" class="btnCss" style="left:10px" />
+                            </dd>
+                            <dd>
+                                <p id="hlystateid">
+                                    *说明：
+                                    <font color="@online" style="font-size:25px">■</font><a onclick="showHlyPerson(0)">在线</a>
+                                    <font color="@outline" style="font-size:25px">■</font><a onclick="showHlyPerson(1)">离线</a>
+                                    <font color="@outrail" style="font-size:25px">■</font><a onclick="showHlyPerson(2)">出围</a>
+                                </p>
+                            </dd>
+                        </dl>
+                        <div class="clear"></div>
+                    </div>
+                </li>
+            </ul>
+        </li>
+    }
+    @if (Rightstr.Contains(",020003002,"))
+    {
+        <li id="li2">
+            <label><h1><span>数据上报</span> </h1></label>
+            <ul>
+                <li>
+                    <div class="warnPanel">
+                        @foreach (var item in @ViewBag.reportlist)
+                        {
+                            <dl class="yjjc center">
+                                <dt><a href="javascript:void(0)" onclick='showPopuopReportindex(@item.DICTVALUE,"@item.MENUNAME")'><p class="@item.LICLASS"></p></a></dt>
+                                <dd><a href="javascript:void(0)" onclick='showPopuopReportindex(5,"@item.MENUNAME")'>@item.MENUNAME</a></dd>
+                            </dl>
+                        }
+                        <div class="clear"></div>
+                    </div>
+                </li>
+            </ul>
+        </li>
+    }
+    @if (Rightstr.Contains(",020003003,"))
+    {
+        <li id="li4">
+            <label><h1><span>数据采集</span></h1></label>
+            <ul>
+                <li>
+                    <div class="warnPanel">
+                        @foreach (var item in @ViewBag.collectList)
+                        {
+                            <dl class="yjjc center">
+                                <dt><a href="javascript:void(0)" onclick='showPopuopCollectindex(@item.DICTVALUE,"@item.MENUNAME")'><p class="@item.LICLASS"></p></a></dt>
+                                <dd><a href="javascript:void(0)" onclick='showPopuopCollectindex(4,"@item.MENUNAME")'>@item.MENUNAME</a></dd>
+                            </dl>
+                        }
+                        <div class="clear"></div>
+                    </div>
+                </li>
+            </ul>
+        </li>
+    }
+    @if (Rightstr.Contains(",020003004,"))
+    {
+        <li id="li5">
+            <label><h1><span>车辆管理</span></h1></label>
+            <ul>
+                <li>
+                    <div class="warnPanel">
+                        <dl class="hly">
+                            <dd style="width:100%;">
+                                <div id="ttcar" class="easyui-tree" style=" overflow: hidden;">
+
+                                </div>
+                            </dd>
+                        </dl>
+                    </div>
+                </li>
+            </ul>
+        </li>
+    }
+    <li id="li3" style="height:75%;">
+        <label><h1><span id="namespan">结果展示</span></h1></label>
+        <ul>
+            <li>
+                <div id="reportdiv">
+                    <input type="hidden" id="tid" value="">
+                    <input type="hidden" id="datatype" value="0">
+                    姓名：<input type="text" id="persontxt" style="width:160px;" />
+                    <br />
+                    开始 <input id="txtReportStartTime" value="@DateTime.Now.AddDays(-7).ToString("yyyy-MM-dd")" type="text" onclick="WdatePicker()" style="width:80px" />
+                    结束 <input id="txtReportEndTime" value="@DateTime.Now.ToString("yyyy-MM-dd")" type="text" onclick="WdatePicker()" style="width:80px" />
+                    <input type="button" class="btnSearchCss" value="查询" style="width:50px;" onclick="searchReportData()" />
+                </div>
+                <div id="hisdiv" style="display:none;margin-left:30px;">
+                    <input type="hidden" id="userid" value="">
+                    开始 <input id="txtHisStartTime" value="@DateTime.Now.AddDays(-7).ToString("yyyy-MM-dd")" type="text" onclick="WdatePicker()" style="width:80px" />
+                    <input type="text" id="timepickerStart" onfocus="WdatePicker({dateFmt:'HH:mm'})" style="width:40px;" value="@stime" />
+                    <br />
+                    结束 <input id="txtHisEndTime" value="@DateTime.Now.ToString("yyyy-MM-dd")" type="text" onclick="WdatePicker()" style="width:80px" />
+                    <input type="text" id="timepickerEnd" onfocus="WdatePicker({dateFmt:'HH:mm'})" style="width:40px;" value="@edtime" />
+                    <input type="button" value="查询" class="btnSearchCss" onclick="searchHisData()" />
+                </div>
+                <div style="width:100%; overflow:auto" id="divreportinfo" class="displayBox">
+                    <p><em>请按条件查询</em></p>
+                </div>
+            </li>
+        </ul>
+    </li>
+</ul>
+<object id="SGWorld" classid="CLSID:3a4f91b1-65a8-11d5-85c1-0001023952c1" style="visibility:hidden;height:0 "></object>
+<script>
+    $(function () {
+        $('#tthly').tree({
+            url: '/Home/TreeGet',
+            checked: false,
+            animate: true,
+            lines: true,
+            cache: false
+        });
+        menuEvent('0');
+        //护林员在离出围状态信息
+        getHlyStateCount();
+        //车辆管理
+        $('#ttcar').tree({
+            url: '/Home/CarTreeGet',
+            checked: false,
+            animate: true,
+            lines: true,
+            cache: false
+        });
+    });
+    //每两分钟刷新一次护林员tree
+    window.setInterval(treefresh, 1000 * 2 * 60);
+    //每两分钟刷新一次护林员在线，离线，出围状态
+    window.setInterval(getHlyStateCount, 1000 * 2 * 60);
+    //护林员刷新
+    function treefresh() {
+        $('#tthly').tree({
+            url: '/Home/TreeGet',
+            checked: false,
+            animate: true,
+            lines: true,
+            cache: false,
+        });
+    }
+    //检索护林员
+    function searchUser() {
+        var phonehname = $('#txtphonehname').val();
+        name = escape(phonehname);//escape 编码 防止汉字乱码
+        $('#tthly').tree({ url: '/Home/TreeGet?phonehname=' + name });
+    }
+    //ajax获取护林员个数
+    function getHlyStateCount() {
+        $.ajax({
+            type: "Post",
+            url: "/MainDefault/GetHlyInfoCountJson",
+            data: {},
+            dataType: "json",
+            success: function (obj) {
+                var html = " *说明：";
+                if (obj != null) {
+                    if (obj.Success) {
+                        var data = obj.Data;
+                        if (data != null) {
+                            $('#hlystateid').html("");
+                            html += " <font color=\"@online\" style=\"font-size:25px\">■</font>在线<a style=\"color:@online\" onclick=\"showHlyPerson(0)\">(" + data.LineInCount + ")</a>";
+                            html += " <font color=\"@outline\" style=\"font-size:25px\">■</font>离线<a style=\"color:@outline\" onclick=\"showHlyPerson(1)\">(" + data.LineOutCount + ")</a>";
+                            html += " <font color=\"@outrail\" style=\"font-size:25px\">■</font>出围<a style=\"color:@outrail\" onclick=\"showHlyPerson(2)\">(" + data.LineOutRouteCount + ")</a>";
+                            $('#hlystateid').html(html);
+                        }
+                    }
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert("处理出现错误!状态码：" + textStatus);
+            },
+        });
+    }
+
+    function menuEvent(id) {
+        var $parent_li, $ul, $span;
+        $(".ulhlytree li>label").click(function () {
+            $span = $(this);
+            $parent_li = $span.parent();
+            $parent_li.siblings().children("ul").slideUp();
+            $ul = $span.next("ul");
+            $ul.slideToggle();
+        });
+        $(".ulhlytree>li:eq(" + id + ")>label").click();
+    }
+    //实时定位
+    var arrlist;
+    $('#btnLoca').click(function () {
+        var nodes = $('#tthly').tree('getChecked');
+        if (nodes.length > 0) {
+            var arr = [];
+            var arro = [];
+            var arrHlyList = [];
+            for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].treeType == 'hly') {
+                    arr.push(nodes[i].id);
+                }
+                if (nodes[i].treeType == 'org') {
+                    arro.push(nodes[i].id);
+                }
+            }
+            var str = getOrgHly(arro);
+            var arrHlyList = str.split(",");
+            if (arrHlyList.length > 0) {
+                for (var i = 0; i < arrHlyList.length; i++) {
+                    if (arrHlyList[i] != "") {
+                        arr.push(arrHlyList[i]);
+                    }
+                }
+                arr = $.unique(arr);
+            }
+            arrlist = arr.toString();
+            getLonLat(arr.toString());
+        }
+        else {
+            alert('请选择护林员!');
+        }
+    });
+    //获取护林员列表
+    function getOrgHly(arro) {
+        var str = "";
+        if (arro.length > 0) {
+            $.ajax({
+                url: '/System/getFRUIDListByOrgs',
+                data: { orgs: arro.toString() },
+                async: false,
+                dataType: "json",
+                success: function (obj) {
+                    if (obj != null && obj.Success) {
+                        str = obj.Msg;
+                    } else {
+                        alert('获取护林员列表失败!');
+                    }
+                },
+                error: function (err, ioArgs) {
+                    alert('获取护林员列表失败!');
+                }
+            });
+        }
+        return str;
+    }
+    //开始实时监控
+    $('#btnCon').click(function () {
+        var nodes = $('#tthly').tree('getChecked');
+        if (nodes.length > 0) {
+            var arr = [];
+            for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].id.length > 0) {
+                    arr.push(nodes[i].id);
+                }
+            }
+            if (arr.length > 1) {
+                alert('请选择1个护林员!');
+                return false;
+            }
+            RealLocation('', arr.toString());
+            //按钮变化
+            $('#btnLoca').hide();
+            $('#btnHis').hide();
+            $('#btnCon').hide();
+            $('#btnConOver').show();
+        }
+        else {
+            alert('请选择护林员!');
+        }
+    });
+    //实时监控结束按钮
+    $('#btnConOver').click(function () {
+        //按钮变化
+        $('#btnLoca').show();
+        $('#btnHis').show();
+        $('#btnCon').show();
+        $('#btnConOver').hide();
+        clearIntervalFun();//清除定时事情
+        getLonLat(arrlist.toString());
+    });
+    //重置
+    $('#btnReset').click(function () {
+        delRealLocTemp();
+        $('#tthly').tree("reload");
+    });
+    //历史轨迹
+    $('#btnHis').click(function () {
+        var nodes = $('#tthly').tree('getChecked');
+        if (nodes.length > 0) {
+            var arr = [];
+            var arro = [];
+            var arrname = [];
+            for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].treeType == 'hly') {
+                    arr.push(nodes[i].id);
+                    var name = $('<p>' + nodes[i].text + '</p>').text();
+                    arrname.push(name);
+                }
+                if (nodes[i].treeType == 'org') {
+                    arro.push(nodes[i].id);
+                }
+            }
+            if (arro != "") {
+                var str = getOrgHly(arro);
+                var arrHlyList = str.split(",");
+                if (arrHlyList.length > 0) {
+                    for (var i = 0; i < arrHlyList.length; i++) {
+                        if (arrHlyList[i] != "") {
+                            arr.push(arrHlyList[i]);
+                        }
+                    }
+                    arr = $.unique(arr);
+                }
+            }
+            if (arr.length > 1) {
+                alert('请选择1个护林员!');
+                return false;
+            }
+            menuOclick('4');
+            $('#hisdiv').show();//历史轨迹检索条件展示
+            $('#reportdiv').hide();//上报结果检索条件隐藏
+            $('#userid').val(arr[0]);
+            $('#namespan').text('【' + arrname[0].replace(/<[^>]+>/g, "") + '】' + '历史轨迹展示');
+            searchHisData();
+        }
+        else {
+            alert('请选择护林员!');
+        }
+    });
+    //查询历史轨迹数据
+    function searchHisData() {
+        var starttime = $('#txtHisStartTime').val();
+        var endtime = $('#txtHisEndTime').val();
+        var uid = $('#userid').val();
+        if ($.trim(starttime) == "" || $.trim(endtime) == "") {
+            alert('时间段不可为空!');
+            return false;
+        }
+        if ($.trim(starttime) != "" && $.trim(endtime) != "") {
+            var bo = checkEndTime(starttime, endtime);
+            if (bo == false) {
+                alert('开始时间不能大于结束时间!');
+                return false;
+            }
+        }
+        if ($.trim(uid) == "") {
+            alert('请先选中一个护林员!');
+            return false;
+        }
+        $.ajax({
+            type: "Post",
+            url: "/RealSupervision/GetHisGJAjax",
+            data: { uid: uid, starttime: starttime, endtime: endtime, maptype: "Skyline" },
+            dataType: "json",
+            success: function (obj) {
+                if (obj != null && obj.Success) {
+                    $('#divreportinfo').empty();
+                    $('#divreportinfo').html(obj.Msg);
+                }
+                else {
+                    alert('执行失败!');
+                }
+            }
+        });
+    }
+    //common
+    function menuOclick(id) {
+        $(".ulhlytree>li:eq(" + id + ")>label").click();
+    }
+    //电量查询
+    $('#btnPower').click(function () {
+        var nodes = $('#tthly').tree('getChecked');
+        if (nodes.length > 0) {
+            var arr = [];
+            var arro = [];
+            for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].treeType == 'hly') {
+                    arr.push(nodes[i].id);
+                }
+                if (nodes[i].treeType == 'org') {
+                    arro.push(nodes[i].id);
+                }
+            }
+
+            var str = getOrgHly(arro);
+            var arrHlyList = str.split(",");
+            if (arrHlyList.length > 0) {
+                for (var i = 0; i < arrHlyList.length; i++) {
+                    if (arrHlyList[i] != "") {
+                        arr.push(arrHlyList[i]);
+                    }
+                }
+            }
+            var uid = arr.toString();
+            qrueyHTML_power(uid);
+        }
+    });
+    //数据上报
+    function showPopuopReportindex(value, str) {
+        menuOclick('4');
+        $('#tid').val(value);
+        $('#datatype').val('0');//0 数据上报 1 数据采集
+        $('#hisdiv').hide();//历史轨迹检索条件隐藏
+        $('#reportdiv').show();//上报结果检索条件展示
+        LoadSBData(value);
+        $('#namespan').text("【" + str + '】数据上报结果展示');
+    }
+    //上报数据展示
+    function LoadSBData(value) {
+        var person = $('#persontxt').val();
+        var stime = $('#txtReportStartTime').val();
+        var etime = $('#txtReportEndTime').val();
+        var index = layer.load(0, { offset: ['350px', '80px'], shade: 0.4 });
+        //检索
+        $.ajax({
+            type: "Post",
+            url: "/DataReport/GetReportDataListAjax",
+            data: { state: "0", person: person, starttime: stime, endtime: etime, tid: value, type: 'Skyline' },
+            dataType: "json",
+            success: function (obj) {
+                if (obj != null && obj.Success) {
+                    layer.close(index);
+                    $('#divreportinfo').empty();
+                    $('#divreportinfo').html(obj.Msg);
+                }
+                else {
+                    layer.close(index);
+                    alert('检索信息失败!');
+                }
+            }
+        });
+    }
+    //上报信息查看
+    function getReportView(url, repid) {
+        var popurl = url + "?repid=" + repid;
+        showPopuopByUrl("上报信息查看", popurl, 40, 35, 800, 450);
+    }
+    //采集信息查看
+    function getCollectView(url, cid) {
+        var popurl = url + "?cid=" + cid;
+        showPopuopByUrl("采集信息查看", popurl, 70, 65, 800, 300);
+    }
+    //上报定位
+    function getLocaReport(reportid) {
+        $.ajax({
+            type: "Post",
+            url: "/DataReport/GetReportDataInfoAjax",
+            data: { reportid: reportid, maptype: "Skyline" },
+            dataType: "json",
+            success: function (obj) {
+                if (obj != null && obj.Success) {
+                    var data = obj.Data;
+                    if (data.LONGITUDE == null || data.LATITUDE == null) {
+                        alert('没有经纬度,无法定位!');
+                        return false;
+                    }
+                    delRealLocTemp();
+                    createImageLoc(data.LONGITUDE, data.LATITUDE, "");
+                }
+                else {
+                    alert('没有经纬度,无法定位!');
+                }
+            }
+        });
+    }
+    //数据采集定位
+    function getLocaCollect(collectid) {
+        $.ajax({
+            type: "Post",
+            url: "/DataCollect/GetCollectInfoAjax",
+            data: { cid: collectid, maptype: "Skyline" },
+            dataType: "json",
+            success: function (obj) {
+                if (obj != null && obj.Success) {
+                    var data = obj.DataList;
+                    if (data.length > 0) {
+                        delRealLocTemp();
+                        for (var i = 0; i < data.length; i++) {
+                            var cid = data[i].COLLECTID;
+                            if (data.length == 1) {
+                                createImageLocConvert(data[i].LONGITUDE, data[i].LATITUDE, "", cid);
+                            }
+                            else {
+                                if (i > 0) {
+                                    CreatePolyline(parseFloat(data[i - 1].LONGITUDE), parseFloat(data[i - 1].LATITUDE),
+                                        parseFloat(data[i].LONGITUDE), parseFloat(data[i].LATITUDE));
+                                    if (parseInt(data.length / 2) == i) {
+                                        createImageLocConvert(data[i].LONGITUDE, data[i].LATITUDE, "", cid);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else {
+                    alert('没有经纬度，无法定位!');
+                }
+            }
+        });
+    }
+    //查询上报数据
+    function searchReportData() {
+        var datatype = $('#datatype').val();
+        var tid = $('#tid').val();
+        if ($.trim(datatype) == "") {
+            alert('数据类型错误!');
+            return false;
+        }
+        if ($.trim(tid) == "") {
+            alert('请先选择需要结果展示的数据类型!');
+            return false;
+        }
+        var bo = checkReportSerach();
+        if (bo == true) {
+            if ($.trim(datatype) == "0") {//数据上报
+                LoadSBData(tid)
+            }
+            else if ($.trim(datatype) == "1") {//数据采集
+                LoadCollectData(tid);
+            }
+        }
+    }
+    //上报数据展示
+    function LoadSBData(value) {
+        var person = $('#persontxt').val();
+        var stime = $('#txtReportStartTime').val();
+        var etime = $('#txtReportEndTime').val();
+        var index = layer.load(0, { offset: ['350px', '80px'], shade: 0.4 });
+        //检索
+        $.ajax({
+            type: "Post",
+            url: "/DataReport/GetReportDataListAjax",
+            data: { state: "0", person: person, starttime: stime, endtime: etime, tid: value, type: 'Skyline' },
+            dataType: "json",
+            success: function (obj) {
+                if (obj != null && obj.Success) {
+                    layer.close(index);
+                    $('#divreportinfo').empty();
+                    $('#divreportinfo').html(obj.Msg);
+                }
+                else {
+                    layer.close(index);
+                    alert('检索信息失败!');
+                }
+            }
+        });
+    }
+    //结果展示 时间check
+    function checkReportSerach() {
+        var starttime = $('#txtReportStartTime').val();
+        var endtime = $('#txtReportEndTime').val();
+        if ($.trim(starttime) != "" && $.trim(endtime) != "") {
+            var bo = checkEndTime(starttime, endtime);
+            if (bo == false) {
+                alert('开始时间不能大于结束时间!');
+                return false;
+            }
+        }
+        return true;
+    }
+    //数据采集
+    function showPopuopCollectindex(value, str) {
+        menuOclick('4');
+        $('#tid').val(value);
+        $('#datatype').val('1');//0 数据上报 1 数据采集
+        $('#hisdiv').hide();//历史轨迹检索条件隐藏
+        $('#reportdiv').show();//上报结果检索条件展示
+        LoadCollectData(value);
+        $('#namespan').text("【" + str + '】数据采集结果展示');
+    }
+    //采集数据展示
+    function LoadCollectData(value) {
+        var person = $('#persontxt').val();
+        var stime = $('#txtReportStartTime').val();
+        var etime = $('#txtReportEndTime').val();
+        var index = layer.load(0, { offset: ['350px', '80px'], shade: 0.4 });
+        //检索
+        $.ajax({
+            type: "Post",
+            url: "/DataCollect/GetCollectDataHtmlAjax",
+            data: { state: "0", person: person, strarttime: stime, endtime: etime, cid: value, type: 'Skyline' },
+            dataType: "json",
+            success: function (obj) {
+                if (obj != null && obj.Success) {
+                    layer.close(index);
+                    $('#divreportinfo').empty();
+                    $('#divreportinfo').html(obj.Msg);
+                }
+                else {
+                    layer.close(index);
+                    alert('检索信息失败!');
+                }
+            }
+        });
+    }
+    //巡检线 责任区转换
+    function ConvertType(cid, hid, htype) {
+        var str = "是否转换为";
+        if (htype == "0") {
+            str += "该护林员巡检线";
+        }
+        else if (htype == "1") {
+            str += "该护林员责任区";
+        }
+        if (confirm(str + '?')) {
+            var index = layer.load(0, { offset: ['350px', '80px'], shade: false }); //0代表加载的风格，支持0-2
+            $.ajax({
+                type: "Post",
+                url: "/DataCollect/ConvertHlyLineArea",
+                data: { cid: cid, hid: hid, htype: htype },
+                dataType: "json",
+                success: function (obj) {
+                    if (obj != null && obj.Success) {
+                        alert("采集点转换成功!");
+                    }
+                    else {
+                        alert("采集点转换成功失败!");
+                    }
+                }
+            });
+            layer.close(index);
+        }
+    }
+    //护林员
+    function showHlyPerson(obj) {
+        var titlestr = "";
+        if (obj == "0") {
+            titlestr = "在线护林员信息";
+        }
+        else if (obj == "1") {
+            titlestr = "离线护林员信息";
+        }
+        else if (obj == "2") {
+            titlestr = "出围护林员信息";
+        }
+        //layer.open({
+        //    type: 2,
+        //    offset: ['50px', '150px'],
+        //    title: titlestr,
+        //    maxmin: true, //开启最大化最小化按钮
+        //    shade: 0,
+        //    area: ['55%', '60%'], //宽高
+        //    content: '/MainDefault/HlyOnLineIndex?obj=' + obj  //注意，如果str是object，那么需要字符拼接。
+        //});
+        qrueyHTML_showHlyPerson(obj, titlestr);
+    }
+</script>

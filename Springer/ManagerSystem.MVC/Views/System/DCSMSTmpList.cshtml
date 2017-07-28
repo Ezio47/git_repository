@@ -1,0 +1,122 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+}
+@section Header{
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        火灾等级：
+                        <select id="tbxDANGERCLASS"> @Html.Raw(@ViewBag.vdDANGERCLASS)</select>
+                        <input type="button" value="查询" onclick="query()" class="btnSearchCss" />
+                        <input type="button" value="添加" onclick="Add()" class="btnAddCss" />
+                        <input type="button" value="删除" onclick="Mdy1('', 'Del')" class="btnDelCss" />
+                        <input type="button" value="不启用" onclick="Mdy1('0', 'MdyISENABLE')" class="btnUnEnableCss" />
+                        <input type="button" value="启用" onclick="Mdy1('1', 'MdyISENABLE')" class="btnEnableCss" />
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <div class="divTable" id="tableList">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    //function Add() {
+    //    window.location.assign('/System/DCSMSTmpMan');
+    //}
+
+    function Add() {
+        layer.open({
+            type: 2,
+            title: '添加',
+            fix: false, //不固定
+            area: ['60%', '75%'],
+            maxmin: true,
+            content: '/System/DCSMSTmpMan',
+            end: function () {
+                query();
+            }
+        });
+    }
+    function Mdy(YJ_DCSMS_TMPID, Method) {
+        layer.open({
+            type: 2,
+            title: '修改',
+            fix: false, //不固定
+            area: ['60%', '75%'],
+            maxmin: true,
+            content: '/System/DCSMSTmpMan?YJ_DCSMS_TMPID=' + YJ_DCSMS_TMPID + "&Method=" + Method,
+            end: function () {
+               query();
+            }
+        });
+    }
+    function Mdy1(isenable, method) {
+        if (method == "Del") {
+            if (confirm('确实要删除该内容吗?') == false)
+                return false;
+        }
+        var IDList = $("input:checkbox[name='chk']:checked").map(function (index, elem) {
+            return $(elem).val();
+        }).get().join(',');
+        $.ajax({
+            url: '/System/DCSMSManager',
+            cache: false,
+            data: {
+                YJ_DCSMS_TMPID: IDList,
+                ISENABLE: isenable,
+                Method: method,
+                returnUrl: ''
+            },
+            type: 'post',
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    layer.msg('操作成功');
+                    query();
+                }
+                else {
+                    layer.msg(ar.Msg);
+                    query();
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('系统错误，请重试');
+                query();
+            }
+        });
+    }
+    function query() {
+        $.ajax({
+            url: '/System/getDCSMSListJson',
+            cache: false,
+            data: { FIRELEVEL: document.getElementById("tbxDANGERCLASS").value},
+            type: 'post',
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    //$('#msgClass').html('').removeAttr("style");
+                    $('#tableList').html(ar.Msg);
+                }
+                else {
+                }
+            },
+            error: function (err, ioArgs) {
+                alert("系统错误！");
+            }
+        });
+    }
+    query();
+</script>

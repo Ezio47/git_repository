@@ -1,0 +1,376 @@
+﻿@{
+    ViewBag.Title = "地图展示";
+    Layout = null;
+
+    //配置文件经纬度读取
+    var lon = System.Configuration.ConfigurationManager.AppSettings["Longitude"];
+    var lat = System.Configuration.ConfigurationManager.AppSettings["Latitude"];
+    var maptype = System.Configuration.ConfigurationManager.AppSettings["mapType"];//地图类型
+    var lonlatchange = System.Configuration.ConfigurationManager.AppSettings["lonLatChange"];//经纬度转换
+    var lonlattype = System.Configuration.ConfigurationManager.AppSettings["lonLatType"];//经纬度转换--度分秒
+    var ZoomLayer = System.Configuration.ConfigurationManager.AppSettings["ZoomLayer"];//默认放大级别--度分秒
+}
+@model IEnumerable<ManagerSystem.MVC.Models.MapShowModel>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.8.2.min.js")"></script>
+@*layer*@
+<script src="~/Scripts/layer/layer.js"></script>
+@*map*@
+<link rel="stylesheet" href="~/js/esri/css/esri.css" />
+<link rel="stylesheet" href="~/Content/themes/dijit/themes/tundra/tundra.css" />
+<script src="~/js/init.js"></script>
+
+@*ace*@
+@*<link href="~/Content/themes/assets/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/Content/themes/assets/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="~/Content/themes/assets/css/ace.min.css" />
+    <link rel="stylesheet" href="~/Content/themes/assets/css/ace-rtl.min.css" />
+    <link rel="stylesheet" href="~/Content/themes/assets/css/ace-skins.min.css" />*@
+<link href="/Content/themes/default/Default.css" rel="stylesheet" />
+<link href="/Content/themes/default/Public.css" rel="stylesheet" />
+@*springer*@
+<link href="~/Content/MapStyle.css" rel="stylesheet" />
+<script src="~/Scripts/Springer.js"></script>
+<script src="~/Scripts/Springer/SpringerMapCommon.js"></script>
+<script src="~/Scripts/Springer/SpringerMapShow.js"></script>
+<script src="~/Scripts/Springer/SpringerMap.js"></script>
+
+<style type="text/css">
+    body, html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+    }
+
+    td {
+        font-size: 12px;
+    }
+
+    .bottomNav1 {
+        margin-left: 25%;
+        position: absolute;
+        bottom: 10%;
+        color:white;
+    }
+</style>
+
+<script type="text/javascript">
+    //layer plugin
+    layer.config({
+        extend: 'extend/layer.ext.js'
+    });
+
+    var nav;
+    dojoConfig = {
+        parseOnLoad: true,
+        packages: [{
+            name: 'bdlib',
+            location: this.location.pathname.replace(/\/[^/]+$/, "") + "/js/bdlib"
+        }]
+    };
+    var intervalMethod;
+    var map, toolbar, graphicLayer;
+    var editToolbar;
+    var measurement;//测距
+    bevent = require("dojo/_base/event");
+    //用来记录显示图层的id用
+    var visible = [];
+    var dynamicMapServiceLayer = [];
+    //var list;
+    require(["esri/map",
+           "dojo/dom","esri/units",
+    "bdlib/GoogleLayer",
+     "bdlib/TDTLayer",
+   "bdlib/TDTAnnoLayer",
+     "esri/layers/FeatureLayer",
+     "esri/geometry/Point",
+     "esri/symbols/SimpleFillSymbol",
+     "esri/symbols/SimpleLineSymbol",
+     "dojo/_base/Color", "dojo/parser", "esri/toolbars/draw", "esri/symbols/SimpleMarkerSymbol", "esri/graphic", "esri/dijit/Scalebar", "esri/dijit/OverviewMap",
+     "esri/toolbars/navigation", "dijit/registry", "esri/symbols/TextSymbol", "esri/dijit/HomeButton", "esri/toolbars/edit",
+     "esri/tasks/GeometryService","esri/dijit/Measurement",
+     "dojo/domReady!"],
+     function (Map,dom,Units, GoogleLayer, TDTLayer, TDTAnnoLayer, FeatureLayer, Point, SimpleFillSymbol, SimpleLineSymbol, Color, parser, Draw, SimpleMarkerSymbol, Graphic, Scalebar, OverviewMap, Navigation
+         , registry, TextSymbol, HomeButton, Edit,GeometryService,Measurement) {
+         // parser.parse();
+         map = new Map("map", { logo: false, sliderStyle: "large" });
+         //autoResize: false
+         this.map_type = "img_y";
+         //2 天地图
+         if (@maptype=="2") {
+             var basemap = new TDTLayer(this.map_type);
+             map.addLayer(basemap);
+             var annolayer = new TDTAnnoLayer();
+             map.addLayer(annolayer);
+         }
+         else
+         {
+             var basemap = new GoogleLayer(this.map_type);
+             map.addLayer(basemap);
+         }
+
+         //var MapServer = "http://192.168.5.249:6080/arcgis/rest/services/HHZ/MapHHZ/MapServer";
+         //36.7.68.79
+         // dynamicMapServiceLayer = new esri.layers.ArcGISDynamicMapServiceLayer(MapServer);
+         ////添加图层载入后监听方法loadLayerList
+         //dojo.connect(dynamicMapServiceLayer, "onLoad", loadLayerList);
+         // map.addLayer(dynamicMapServiceLayer);
+
+         var pt = new Point(parseFloat(@lon), parseFloat(@lat));
+         //var pt = new Point(117.18182, 31.8448);//合肥
+         // var pt=new Point(103.354065,23.367718);//红河州
+         map.centerAndZoom(pt, @ZoomLayer);
+
+         nav = new esri.toolbars.Navigation(map);
+
+         graphicLayer = new esri.layers.GraphicsLayer();
+         map.addLayer(graphicLayer);
+
+         //比例尺
+         var scalebar = new Scalebar({
+             map: map,
+             attachTo: "bottom-center"
+         });
+
+         ////给地图控件添加视图变化监听事件
+         // dojo.connect(map, "onExtentChange", showExtent);
+         //给地图控件添加载鼠标移动监听事件
+         dojo.connect(map, "onMouseMove",function(evt){
+             showChangeCoordinates(evt,@lonlatchange,@lonlattype);
+         });
+         //给地图控件添加载鼠标拖拽监听事件
+         dojo.connect(map, "onMouseDrag", function(evt){
+             showChangeCoordinates(evt,@lonlatchange,@lonlattype);
+         });
+
+         measurement = new Measurement({
+             map: map,
+             defaultAreaUnit: Units.SQUARE_KILOMETERS,
+             defaultLengthUnit: Units.KILOMETERS
+         }, dom.byId("measurementDiv"));
+         measurement.startup();
+         //  changeDisplay();
+         //在地图初始化的时候添加监听画图的事件：
+         toolbar = new esri.toolbars.Draw(map);
+         // dojo.connect(toolbar, "onDrawEnd", doMeasure);
+         //地图切换
+         $('#switchmap').toggle(function () {
+             this.map_type = "img_p";//地图
+             $('#imgtype').attr('class', 'yxType');
+             $('#imgname').text("影像");
+             if (@maptype=="2") {
+                 var basemap = new TDTLayer(this.map_type);
+                 var annolayer = new TDTAnnoLayer();
+                 map.addLayer(basemap);
+                 map.addLayer(annolayer);
+             }
+             else{
+                 var basemap = new GoogleLayer(this.map_type);
+                 map.addLayer(basemap);
+             }
+
+             $('#info2').css('color', 'red');
+             // var MapServer = "http://192.168.5.249:6080/arcgis/rest/services//HHZ/MapHHZ/MapServer";
+             //var MapServer = "http://192.168.5.249:6080/arcgis/rest/services/points1/MapServer";
+             // dynamicMapServiceLayer = new esri.layers.ArcGISDynamicMapServiceLayer(MapServer);
+             ////添加图层载入后监听方法loadLayerList
+             //dojo.connect(dynamicMapServiceLayer, "onLoad", loadLayerList);
+             // map.addLayer(dynamicMapServiceLayer);
+
+
+         }, function () {
+
+             this.map_type = "img_c11";//卫星
+             $('#imgtype').attr('class', 'vecType');
+             $('#imgname').text("地图");
+             if (@maptype=="2") {
+                 var basemap = new TDTLayer(this.map_type);
+                 var annolayer = new TDTAnnoLayer();
+                 map.addLayer(basemap);
+                 map.addLayer(annolayer);
+             }
+             else
+             {
+                 var basemap = new GoogleLayer(this.map_type);
+                 map.addLayer(basemap);
+             }
+
+             $('#info2').css('color', 'white');
+             //var MapServer = "http://192.168.5.249:6080/arcgis/rest/services//HHZ/MapHHZ/MapServer";
+             //var MapServer = "http://192.168.5.249:6080/arcgis/rest/services/points1/MapServer";
+             // dynamicMapServiceLayer = new esri.layers.ArcGISDynamicMapServiceLayer(MapServer);
+             ////添加图层载入后监听方法loadLayerList
+             //dojo.connect(dynamicMapServiceLayer, "onLoad", loadLayerList);
+             //map.addLayer(dynamicMapServiceLayer);
+         });
+     });
+
+    //量算
+    function doMeasure(geometry) {
+        //更加类型设置显示样式
+        // measuregeometry = geometry;
+        toolbar.deactivate();
+        switch (geometry.type) {
+            case "polyline":
+                var symbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([255,0,0]), 2);
+                break;
+            case "polygon":
+                var symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID, new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_DASHDOT, new dojo.Color([255, 0, 0]), 2), new dojo.Color([255, 255, 0, 0.25]));
+                break;
+        }
+        //设置样式
+        var graphic = new esri.Graphic(geometry,symbol);
+        //清除上一次的画图内容
+        map.graphics.clear();
+        map.graphics.add(graphic);
+        GetLenthorArea(geometry);
+    }
+
+</script>
+
+<body class="tundra">
+    <div id="mainWindow" data-dojo-type="dijit.layout.BorderContainer" data-dojo-props="design:'headline'"
+         style="width:100%;">
+        <div style="float:left;width:300px;">
+            <div style="height:100%;overflow:auto">
+                <table class="divtable" style="width:100%;margin-top:2px;" cellpadding="0" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>编号</th>
+                            <th>热点区域</th>
+                            <th>反馈状态</th>
+                            <th>距离(公里)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr onclick="getLocal(@item.JCFID);">
+                                    <td>@item.BH</td>
+                                    <td>@item.AREA</td>
+                                    <td>@item.FKSTATE</td>
+                                    <td>
+                                        <select id="areaselect_@item.JCFID" style="width:70px;" onchange="GetHlyInfos(@item.JD,@item.WD,@item.JCFID)">
+                                            <option value="0">请选择</option>
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5">5</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4">暂无火情记录</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'center'" style="height:100%">
+            <div id="map" style="height:100%">
+            </div>
+
+            @*<div class="rightNav" id="maptool">
+                    <input id="Button1" type="button" style="font-weight:bold;color:green;" value="距离测量" onclick="toolbar.activate(esri.toolbars.Draw.POLYLINE);map.hideZoomSlider();" />
+                    <input id="Button2" type="button" style="font-weight:bold;color:green;" value="面积测量" onclick="toolbar.activate(esri.toolbars.Draw.POLYGON);map.hideZoomSlider();" />
+                    <input id="Button3" type="button" style="font-weight:bold;color:green;" value="清空划线" onclick=" map.graphics.clear(); map.infoWindow.hide();" />
+                </div>*@
+            <div class="roundedCorners" id="measureWindow" style="z-index:1;top:1%">
+                <div class="innerDiv roundedCorners" style="opacity:0.8;">
+                    <div id="measurementDiv"></div>
+                </div>
+            </div>
+            @*地理坐标，屏幕坐标*@
+            <div>
+                <p id="info2" class="bottomNav1"></p>
+            </div>
+
+            @*地图切换*@
+            <div class="pub_path1" id="switchmap" style="position: absolute; bottom: 80px; right: 20px; z-index: 1100;">
+                <div class="hoverType">
+                    <div class="map_top">
+                        <div class="vecType" id="imgtype"></div>
+                    </div>
+                    <div class="map_bom" id="imgname">地图</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script type="text/javascript">
+    $(function(){
+        //检索点
+        $.ajax({
+            type: "Post",
+            url: "/MapCommon/GetMapDataListInfoAjax",
+            data: { jcfid: '@ViewBag.strjcfid'},
+            dataType: "json",
+            success: function (obj) {
+                if (obj != null && obj.Success) {
+                    var datalist = obj.DataList;
+                    for (var i = 0; i < datalist.length; i++) {
+                        showMapInfoWindows(datalist[i]);
+                        //console.info(datalist[i]);
+                    }
+                }
+            }
+        });
+    });
+
+    ///获取周边护林员
+    function GetHlyInfos(jd,wd,jcfid)
+    {
+        //加载层
+        var index = layer.load(0, {shade: false}); //0代表加载的风格，支持0-2
+        var area= $('#areaselect_'+jcfid).val();//获取选择区域的值
+        if (area !="0" && area!="") {
+            $.ajax({
+                type: "Post",
+                url: "/MapCommon/GetHlyByArea",
+                data: { jd: jd,wd:wd,area:area},
+                dataType: "json",
+                success: function (obj) {
+                    if (obj != null ) {
+                        layer.close(index);
+                        if (obj.Success) {
+                            getLonLat(obj.Msg);
+                            //alert(obj.Msg);
+                        }
+                        else {
+                            layer.msg('未检索到周边护林员！', {
+                                icon: 5,time: 1000
+                            });
+                        }
+                    }
+                },
+                error:  function(XMLHttpRequest, textStatus, errorThrown){
+                    //通常情况下textStatus和errorThrown只有其中一个包含信息
+                    // this;   //调用本次ajax请求时传递的options参数
+                    layer.msg('处理出现错误！状态码：'+textStatus, {
+                        icon: 5,time: 1000
+                    });
+                    layer.close(index);
+                }
+            });
+        }
+        else
+        {
+            layer.close(index);
+            layer.msg('请选择周边距离！', {
+                icon: 5,time: 1000
+            });
+        }
+    }
+</script>

@@ -1,0 +1,277 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+您 Web 项目的发布/打包进程将使用此文件。您可以通过编辑此 MSBuild 文件
+来自定义该进程的行为。若要了解与此相关的详细信息，请访问 http://go.microsoft.com/fwlink/?LinkID=208121。
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+    <_PublishTargetUrl>D:\FABU\SpringerCloud</_PublishTargetUrl>
+  </PropertyGroup>
+  <ItemGroup>
+    <File Include="bin/Antlr3.Runtime.dll">
+      <publishTime>07/18/2017 11:37:30</publishTime>
+    </File>
+    <File Include="bin/EntityFramework.dll">
+      <publishTime>07/18/2017 11:37:43</publishTime>
+    </File>
+    <File Include="bin/EntityFramework.SqlServer.dll">
+      <publishTime>07/18/2017 11:37:43</publishTime>
+    </File>
+    <File Include="bin/ManagerSystem.MVC.CloudPlatForm.dll">
+      <publishTime>07/28/2017 14:12:12</publishTime>
+    </File>
+    <File Include="bin/Microsoft.AspNet.Identity.Core.dll">
+      <publishTime>07/18/2017 11:37:47</publishTime>
+    </File>
+    <File Include="bin/Microsoft.AspNet.Identity.EntityFramework.dll">
+      <publishTime>07/18/2017 11:37:49</publishTime>
+    </File>
+    <File Include="bin/Microsoft.AspNet.Identity.Owin.dll">
+      <publishTime>07/18/2017 11:37:48</publishTime>
+    </File>
+    <File Include="bin/Microsoft.Owin.dll">
+      <publishTime>07/18/2017 11:37:51</publishTime>
+    </File>
+    <File Include="bin/Microsoft.Owin.Host.SystemWeb.dll">
+      <publishTime>07/18/2017 11:37:51</publishTime>
+    </File>
+    <File Include="bin/Microsoft.Owin.Security.Cookies.dll">
+      <publishTime>07/18/2017 11:37:54</publishTime>
+    </File>
+    <File Include="bin/Microsoft.Owin.Security.dll">
+      <publishTime>07/18/2017 11:37:52</publishTime>
+    </File>
+    <File Include="bin/Microsoft.Owin.Security.Facebook.dll">
+      <publishTime>07/18/2017 11:37:53</publishTime>
+    </File>
+    <File Include="bin/Microsoft.Owin.Security.Google.dll">
+      <publishTime>07/18/2017 11:37:55</publishTime>
+    </File>
+    <File Include="bin/Microsoft.Owin.Security.MicrosoftAccount.dll">
+      <publishTime>07/18/2017 11:37:57</publishTime>
+    </File>
+    <File Include="bin/Microsoft.Owin.Security.OAuth.dll">
+      <publishTime>07/18/2017 11:37:54</publishTime>
+    </File>
+    <File Include="bin/Microsoft.Owin.Security.Twitter.dll">
+      <publishTime>07/18/2017 11:37:56</publishTime>
+    </File>
+    <File Include="bin/Microsoft.Web.Infrastructure.dll">
+      <publishTime>06/22/2017 08:44:33</publishTime>
+    </File>
+    <File Include="bin/Newtonsoft.Json.dll">
+      <publishTime>07/18/2017 11:37:38</publishTime>
+    </File>
+    <File Include="bin/Owin.dll">
+      <publishTime>07/18/2017 11:37:50</publishTime>
+    </File>
+    <File Include="bin/System.Web.Helpers.dll">
+      <publishTime>07/18/2017 11:37:28</publishTime>
+    </File>
+    <File Include="bin/System.Web.Mvc.dll">
+      <publishTime>07/18/2017 11:37:29</publishTime>
+    </File>
+    <File Include="bin/System.Web.Optimization.dll">
+      <publishTime>07/18/2017 11:37:27</publishTime>
+    </File>
+    <File Include="bin/System.Web.Razor.dll">
+      <publishTime>07/18/2017 11:37:26</publishTime>
+    </File>
+    <File Include="bin/System.Web.WebPages.Deployment.dll">
+      <publishTime>07/18/2017 11:37:28</publishTime>
+    </File>
+    <File Include="bin/System.Web.WebPages.dll">
+      <publishTime>07/18/2017 11:37:28</publishTime>
+    </File>
+    <File Include="bin/System.Web.WebPages.Razor.dll">
+      <publishTime>07/18/2017 11:37:28</publishTime>
+    </File>
+    <File Include="bin/WebGrease.dll">
+      <publishTime>07/18/2017 11:37:31</publishTime>
+    </File>
+    <File Include="bin/zh-Hans/EntityFramework.resources.dll">
+      <publishTime>07/18/2017 11:37:58</publishTime>
+    </File>
+    <File Include="bin/zh-Hans/EntityFramework.SqlServer.resources.dll">
+      <publishTime>07/18/2017 11:37:58</publishTime>
+    </File>
+    <File Include="bin/zh-Hans/Microsoft.AspNet.Identity.Core.resources.dll">
+      <publishTime>07/18/2017 11:37:59</publishTime>
+    </File>
+    <File Include="bin/zh-Hans/Microsoft.AspNet.Identity.EntityFramework.resources.dll">
+      <publishTime>07/18/2017 11:37:59</publishTime>
+    </File>
+    <File Include="bin/zh-Hans/Microsoft.AspNet.Identity.Owin.resources.dll">
+      <publishTime>07/18/2017 11:38:00</publishTime>
+    </File>
+    <File Include="bin/zh-Hans/Microsoft.Owin.Host.SystemWeb.resources.dll">
+      <publishTime>07/18/2017 11:38:02</publishTime>
+    </File>
+    <File Include="bin/zh-Hans/Microsoft.Owin.resources.dll">
+      <publishTime>07/18/2017 11:38:01</publishTime>
+    </File>
+    <File Include="bin/zh-Hans/Microsoft.Owin.Security.Facebook.resources.dll">
+      <publishTime>07/18/2017 11:38:04</publishTime>
+    </File>
+    <File Include="bin/zh-Hans/Microsoft.Owin.Security.Google.resources.dll">
+      <publishTime>07/18/2017 11:38:05</publishTime>
+    </File>
+    <File Include="bin/zh-Hans/Microsoft.Owin.Security.MicrosoftAccount.resources.dll">
+      <publishTime>07/18/2017 11:38:06</publishTime>
+    </File>
+    <File Include="bin/zh-Hans/Microsoft.Owin.Security.resources.dll">
+      <publishTime>07/18/2017 11:38:03</publishTime>
+    </File>
+    <File Include="bin/zh-Hans/Microsoft.Owin.Security.Twitter.resources.dll">
+      <publishTime>07/18/2017 11:38:05</publishTime>
+    </File>
+    <File Include="bin/zh-Hans/System.Web.Helpers.resources.dll">
+      <publishTime>07/18/2017 11:37:35</publishTime>
+    </File>
+    <File Include="bin/zh-Hans/System.Web.Mvc.resources.dll">
+      <publishTime>07/18/2017 11:37:36</publishTime>
+    </File>
+    <File Include="bin/zh-Hans/System.Web.Optimization.resources.dll">
+      <publishTime>07/18/2017 11:37:37</publishTime>
+    </File>
+    <File Include="bin/zh-Hans/System.Web.Razor.resources.dll">
+      <publishTime>07/18/2017 11:37:34</publishTime>
+    </File>
+    <File Include="bin/zh-Hans/System.Web.WebPages.Deployment.resources.dll">
+      <publishTime>07/18/2017 11:37:35</publishTime>
+    </File>
+    <File Include="bin/zh-Hans/System.Web.WebPages.Razor.resources.dll">
+      <publishTime>07/18/2017 11:37:35</publishTime>
+    </File>
+    <File Include="bin/zh-Hans/System.Web.WebPages.resources.dll">
+      <publishTime>07/18/2017 11:37:35</publishTime>
+    </File>
+    <File Include="Content/default/CSS.css">
+      <publishTime>07/26/2017 14:39:20</publishTime>
+    </File>
+    <File Include="Content/default/font-awesome.css">
+      <publishTime>07/18/2017 12:16:02</publishTime>
+    </File>
+    <File Include="Content/default/jbox.css">
+      <publishTime>07/18/2017 12:17:21</publishTime>
+    </File>
+    <File Include="favicon.ico">
+      <publishTime>07/18/2017 11:37:19</publishTime>
+    </File>
+    <File Include="Global.asax">
+      <publishTime>07/18/2017 11:37:19</publishTime>
+    </File>
+    <File Include="Images/Index/1.png">
+      <publishTime>07/24/2017 11:28:58</publishTime>
+    </File>
+    <File Include="Images/Index/2.png">
+      <publishTime>07/24/2017 11:30:00</publishTime>
+    </File>
+    <File Include="Images/Index/3.png">
+      <publishTime>07/24/2017 10:41:21</publishTime>
+    </File>
+    <File Include="Images/Index/4.png">
+      <publishTime>07/24/2017 11:35:44</publishTime>
+    </File>
+    <File Include="Images/Index/footer_bg.jpg">
+      <publishTime>06/22/2017 08:29:07</publishTime>
+    </File>
+    <File Include="Images/Index/index_icon.png">
+      <publishTime>07/18/2017 15:20:33</publishTime>
+    </File>
+    <File Include="Images/Index/quitBtn.png">
+      <publishTime>07/18/2017 15:11:51</publishTime>
+    </File>
+    <File Include="Images/Index/select_bodybg.png">
+      <publishTime>07/26/2017 09:45:36</publishTime>
+    </File>
+    <File Include="Images/Index/skin.png">
+      <publishTime>07/18/2017 15:11:21</publishTime>
+    </File>
+    <File Include="Images/Index/sysallbg.png">
+      <publishTime>07/18/2017 15:19:58</publishTime>
+    </File>
+    <File Include="Images/Index/sys_log_tt.png">
+      <publishTime>07/18/2017 17:38:18</publishTime>
+    </File>
+    <File Include="Images/Index/user_bzicon.png">
+      <publishTime>07/18/2017 15:10:33</publishTime>
+    </File>
+    <File Include="Images/Login/loginlogo_tt.png">
+      <publishTime>07/26/2017 10:38:40</publishTime>
+    </File>
+    <File Include="Images/Login/log_botbg.png">
+      <publishTime>07/18/2017 14:21:18</publishTime>
+    </File>
+    <File Include="Images/Login/log_img_tt.png">
+      <publishTime>07/26/2017 11:44:19</publishTime>
+    </File>
+    <File Include="packages.config">
+      <publishTime>07/18/2017 11:38:06</publishTime>
+    </File>
+    <File Include="Scirpts/Chart/echarts.js">
+      <publishTime>06/27/2017 08:34:00</publishTime>
+    </File>
+    <File Include="Scirpts/Chart/echarts.min.js">
+      <publishTime>06/27/2017 08:34:00</publishTime>
+    </File>
+    <File Include="Scirpts/jquery-1.8.3.min.js">
+      <publishTime>07/18/2017 14:15:59</publishTime>
+    </File>
+    <File Include="Scirpts/jquery.jBox-2.3.min.js">
+      <publishTime>07/18/2017 12:18:23</publishTime>
+    </File>
+    <File Include="Scirpts/jquery.jBox-zh-CN.js">
+      <publishTime>07/18/2017 12:18:34</publishTime>
+    </File>
+    <File Include="Scirpts/jquery.jsonp.js">
+      <publishTime>05/15/2012 17:59:32</publishTime>
+    </File>
+    <File Include="Scirpts/layer/extend/layer.ext.js">
+      <publishTime>06/22/2017 08:27:00</publishTime>
+    </File>
+    <File Include="Scirpts/layer/layer.js">
+      <publishTime>06/22/2017 08:27:00</publishTime>
+    </File>
+    <File Include="Scirpts/layer/skin/default/icon-ext.png">
+      <publishTime>06/22/2017 08:27:00</publishTime>
+    </File>
+    <File Include="Scirpts/layer/skin/default/icon.png">
+      <publishTime>06/22/2017 08:27:00</publishTime>
+    </File>
+    <File Include="Scirpts/layer/skin/default/loading-0.gif">
+      <publishTime>06/22/2017 08:27:00</publishTime>
+    </File>
+    <File Include="Scirpts/layer/skin/default/loading-1.gif">
+      <publishTime>06/22/2017 08:27:00</publishTime>
+    </File>
+    <File Include="Scirpts/layer/skin/default/loading-2.gif">
+      <publishTime>06/22/2017 08:27:00</publishTime>
+    </File>
+    <File Include="Scirpts/layer/skin/layer.css">
+      <publishTime>06/22/2017 08:27:00</publishTime>
+    </File>
+    <File Include="Scirpts/layer/skin/layer.ext.css">
+      <publishTime>06/22/2017 08:27:00</publishTime>
+    </File>
+    <File Include="Views/Home/Index.cshtml">
+      <publishTime>07/28/2017 08:40:04</publishTime>
+    </File>
+    <File Include="Views/Shared/_Layout.cshtml">
+      <publishTime>07/19/2017 09:03:56</publishTime>
+    </File>
+    <File Include="Views/System/Login.cshtml">
+      <publishTime>07/24/2017 14:28:38</publishTime>
+    </File>
+    <File Include="Views/Web.config">
+      <publishTime>07/18/2017 11:37:19</publishTime>
+    </File>
+    <File Include="Views/_ViewStart.cshtml">
+      <publishTime>07/18/2017 11:37:19</publishTime>
+    </File>
+    <File Include="Web.config">
+      <publishTime>07/24/2017 11:38:30</publishTime>
+    </File>
+  </ItemGroup>
+</Project>

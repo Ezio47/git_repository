@@ -1,0 +1,341 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+}
+<script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="" class="LayoutCenterBG">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <ul>
+                        <li class="homeUL">
+                            @using (@Html.BeginForm("FireLevelIndex", "FireSatellite", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                            {
+                                <label>日期：</label>
+                                <input class="Wdate" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd'})" id="tbxQueryTime" name="tbxQueryTime" type="text" value="@ViewBag.Time" />
+                                <input type="button" value="查询" onclick="query()" class="btnSearchCss" />
+                                <input type="button" value="添加" onclick="Add()" class="btnAddCss" />
+                                <input name="file" style="width:130px;" type="file" id="file" class="btn btn-info btn-sm" />
+                                <button type="submit" name="Upload" value="导入" class="btnInputCss"> 导 入</button>
+                            }
+                        <li class="active">
+                            <a href="~/UploadFile/HXDJExcel/火险等级模板.xls" target="_blank" title="右键，另存为">下载模板</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+                <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+                    <div data-options="region:'center'" title="" style=" border: none; ">
+                        <div class="divTable">
+                            @Html.Raw(@ViewBag.pageList)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    window.onload = function () {
+        var a = getQueryString("QUERY");
+        var date = new Date();
+        var seperator1 = "-";
+        var seperator2 = ":";
+        var month = date.getMonth() + 1;
+        var strDate = date.getDate();
+        if (month >= 1 && month <= 9) {
+            month = "0" + month;
+        }
+        if (strDate >= 0 && strDate <= 9) {
+            strDate = "0" + strDate;
+        }
+        var currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate
+        if (a == "query") {
+            $('#addWeather').hide();//查询出来的天气情况只能看 不能保存
+            var _len = $("#Satellite tr").length - 3;//行数           
+            for (var i = 1; i <= _len; i++) {
+                var text = $('#tbxNum_' + i + '').attr('codee');
+                $('#tbxBYORGNO_' + i + '').val(text); 
+            }
+            if ($('#tbxQueryTime').val() != currentdate) { //查询的不是当天的 只能查看 不能保存 删除 添加
+                $('#addHot').hide();
+                $('#delHot').hide();
+                $('#saveHot').hide();
+            }
+        }             
+    };
+
+    function addTr() {
+        var _len = $("#Satellite tr").length - 2;
+        var date = new Date();
+        var seperator1 = "-";
+        var seperator2 = ":";
+        var month = date.getMonth() + 1;
+        var strDate = date.getDate();
+        if (month >= 1 && month <= 9) {
+            month = "0" + month;
+        }
+        if (strDate >= 0 && strDate <= 9) {
+            strDate = "0" + strDate;
+        }
+        var h = date.getHours();
+        if (h >= 0 && h <= 9) {
+            h = "0" + h;
+        }
+        var m = date.getMinutes();
+        if (m >= 0 && m <= 9) {
+            m = "0" + m;
+        }
+        var s = date.getSeconds();
+        if (s >= 0 && s <= 9) {
+            s = "0" + s;
+        }
+        var currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate + " " + h + seperator2 + m + seperator2 + s;
+        $("#Satellite tr:eq(" + _len + ")").after("<tr id=" + _len + " align='center'>"
+          + "<td><select id='tbxBYORGNO_"+_len +"' style='width:98%;'></select></td>"
+          + "<td><input id='tbxNum_"+_len +"' type='text' style='width:98%;' /></td>"
+          + "<td><input id='tbxJD_" + _len + "' type='text' style='width:98%;' /></td>"
+          + "<td><input id='tbxWD_" + _len + "' type='text' style='width:98%;' /></td>"
+          + "<td><input class='Wdate' onclick=\"WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss', maxDate: '%y-%M-%d %H:%m:%s' })\" id='tbxHotTime_" + _len + "' type='text' style='width:98%;' /></td>"
+          + "</tr>");
+
+        $("#tbxBYORGNO_" + _len + "").append('"+@Html.Raw(@ViewBag.vdOrg)+"');
+        $("#tbxHotTime_" + _len + "").val(currentdate);
+    }
+
+    function delTr() {
+        var _len = $("#Satellite tr").length - 3;
+        if (_len > 1) {//删除最后一行
+            $("tr[id='" + _len + "']").remove();//删除当前行
+        } else {
+            layer.msg('已经是第一行了!', { icon: 5 });
+        }
+    }
+
+    function Add() {
+        var DATE = $('#tbxQueryTime').val();
+        if ($.trim(DATE) == "") {
+            layer.msg('请选择添加的日期！', { icon: 5 });
+            $('#tbxQueryTime').focus();
+            return;
+        }
+        window.location.assign('/FireSatellite/FireLevelIndex?Add=add&DCDATE=' + DATE);
+    }
+
+    function query() {
+        var DATE = $('#tbxQueryTime').val();
+        if ($.trim(DATE) == "") {
+            layer.msg('请选择需要查询的日期！', { icon: 5 });
+            $('#tbxQueryTime').focus();
+            return;
+        }
+        $.ajax({
+            url: '/FireSatellite/FireLevelQuery',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: {DCDATE: DATE,},
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    window.location.assign(ar.Url);
+                }
+                else {
+                    layer.msg(ar.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("查询异常！");
+            }
+        });
+    }
+
+    //保存火险等级
+    function SaveFireLevel() {
+        var strAddr = "";
+        var strOrgno = "";
+        var strWeather = "";
+        var strTemp = "";
+        var strWindy = "";
+        var strDangerClass = "";
+        var strDate = "";
+        for (var i = 1; i <= 13; i++) {
+            var tbxAddr = $('#tbxAddr_' + i + '').val();//区域名称
+            var BYORGNO = $('#tbxAddr_' + i + '').attr('code');//组织机构编码
+            var WEATHER = $('#tbxWeather_' + i + '').val();//天气
+            var TEMPREATURE = $('#tbxTemp_' + i + '').val();//温度
+            var WINDYSPEED = $('#tbxWind_' + i + '').val();//风速
+            var DANGERCLASS = $('#tbxDangerClass_' + i + '').val();//火险等级
+            var DATE = $('#tbxTime_' + i + '').val();//日期
+
+            if ($.trim(DANGERCLASS) == "") {
+                layer.msg('火险等级不可为空！', { icon: 5 });
+                $('#tbxDangerClass_' + i + '').focus();
+                return;
+            }
+            else {
+                var reg = new RegExp("^[0-9]*[1-9][0-9]*$");
+                if (!reg.test(DANGERCLASS)) {
+                    layer.msg('火险等级请输入数字！', { icon: 5 });
+                    $('#tbxDangerClass_' + i + '').focus();
+                    return;
+                }
+                if (parseInt(DANGERCLASS) > 5 || parseInt(DANGERCLASS) < 1) {
+                    layer.msg('火险等级请输入1-5！', { icon: 5 });
+                    $('#tbxDangerClass_' + i + '').focus();
+                    return;
+                }
+            }
+            strAddr = strAddr + tbxAddr + ",";
+            strOrgno = strOrgno + BYORGNO + ",";
+            strWeather = strWeather + WEATHER + ",";
+            strTemp = strTemp + TEMPREATURE + ",";
+            strWindy = strWindy + WINDYSPEED + ",";
+            strDangerClass = strDangerClass + DANGERCLASS + ",";
+            strDate = strDate + DATE + ",";
+        }
+
+        $.ajax({
+            url: '/FireSatellite/FireLevelSave',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: {
+                BYORGNO: strOrgno,
+                BYORGNAME: strAddr,
+                WEATHER: strWeather,
+                TEMPREATURE: strTemp,
+                WINDYSPEED: strWindy,
+                DCDATE: strDate,
+                DANGERCLASS: strDangerClass
+            },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    layer.alert("保存成功!", { icon: 6 }, function (index) {
+                        if (window.location.href.indexOf("?") > 0) {//不带url参数刷新
+                            window.location.href = window.location.href.substring(0, window.location.href.indexOf("?"));
+                        } else {
+                            window.location.href = window.location.href;
+                        }
+                    });
+                }
+                else {
+                    layer.msg(ar.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("保存异常！");
+            }
+        });
+    }
+
+    //保存卫星热点
+    function SaveSatelliteHot() {
+        var _len = $("#Satellite tr").length - 3;//行数
+        var strBYORGNO = "";
+        var strOrgname = "";
+        var strNum = "";
+        var strJD = "";
+        var strWD = "";
+        var strHottime = "";
+
+        for (var i = 1; i <= _len; i++) {
+            var str = $('#tbxBYORGNO_' + i + '').val();//orgno
+            var reg = new RegExp("-", "g");
+            var text = $('#tbxBYORGNO_' + i + '').find("option:selected").text().replace(reg, '');//orgname
+            //alert("text" + text);
+            var t2 = $('#tbxNum_' + i + '').val();
+            //alert("t2" + t2);
+            var t3 = $('#tbxJD_' + i + '').val();
+            var t4 = $('#tbxWD_' + i + '').val();
+            var time = $('#tbxHotTime_' + i + '').val();
+
+            if ($.trim(text) == "") {
+                layer.msg('卫星热点地点不可为空！', { icon: 5 });
+                $('#tbxBYORGNO').focus();
+                return;
+            }
+            if ($.trim(t2) == "") {
+                layer.msg('火点个数不可为空！', { icon: 5 });
+                $('#tbxNum').focus();
+                return;
+            }
+            else {
+                var reg = new RegExp("^[0-9]*[1-9][0-9]*$");
+                if (!reg.test(t2)) {
+                    layer.msg('火点个数请输入数字！', { icon: 5 });
+                    $('#tbxXS').focus();
+                    return;
+                }
+            }
+            if ($.trim(t3) == "") {
+                layer.msg('经度不可为空！', { icon: 5 });
+                $('#tbxJD').focus();
+                return;
+            } else {
+                reg = /^-?\d+\.\d{1,6}$/;
+                if (!reg.test(t3)) {
+                    layer.msg('经度格式不正确！', { icon: 5 });
+                    $('#tbxJD').focus();
+                    return;
+                }
+            }
+            if ($.trim(t4) == "") {
+                layer.msg('纬度不可为空！', { icon: 5 });
+                $('#tbxWD').focus();
+                return;
+            } else {
+                reg = /^-?\d+\.\d{1,6}$/;
+                if (!reg.test(t4)) {
+                    layer.msg('纬度格式不正确！', { icon: 5 });
+                    $('#tbxWD').focus();
+                    return;
+                }
+            }
+            strBYORGNO = strBYORGNO + str + ",";
+            strOrgname = strOrgname + text + ",";
+            strNum = strNum + t2 + ",";
+            strJD = strJD + t3 + ",";
+            strWD = strWD + t4 + ",";
+            strHottime = strHottime + time + ",";
+        }
+        $.ajax({
+            url: '/FireSatellite/SatelliteHotSave',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: {
+                BYORGNAME: strOrgname,
+                BYORGNO: strBYORGNO,
+                RSMJ: strNum,
+                JD: strJD,
+                WD: strWD,
+                FIRETIME: strHottime
+            },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    layer.alert("保存成功!", { icon: 6 }, function (index) {
+                        window.location.assign(ar.Url);
+                    });
+                }
+                else {
+                    layer.msg(ar.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("保存异常！");
+            }
+        });
+    }
+
+    //前台获取url参数
+    function getQueryString(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return unescape(r[2]); return null;
+    }
+
+</script>

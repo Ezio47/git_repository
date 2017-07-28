@@ -1,0 +1,498 @@
+﻿@using ManagerSystemClassLibrary;
+@{
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+    var curorgno = SystemCls.getCurUserOrgNo();
+    if (curorgno.Substring(6, 3) == "000" && curorgno.Substring(4, 2) != "00")
+    {
+        curorgno = curorgno.Substring(0, 6) + "xxx";
+    }
+    else
+    {
+        curorgno = SystemCls.getCurUserOrgNo();
+    }
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+    <div data-options="region:'west'" title="" style=" width:220px; border: none;">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="" style=" border: none;">
+
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                        <ul>
+                            <li class="homeUL">
+                                单位：<div id="tbxORGNOS" class="easyui-tree"></div>
+                                通道等级：<select id="tbxFIRECHANNELLEVELTYPE">
+                                    @Html.Raw(@ViewBag.fireleveltype)
+                                </select>
+                                使用性质：<select id="tbxFIRECHANNELUSERTYPE">
+                                    @Html.Raw(@ViewBag.fireusetype)
+                                </select>
+                                @*使用现状：<select id="tbxUSESTATE">
+                                    @Html.Raw(@ViewBag.usestate)
+                                </select>*@
+                                @*维护类型：<select id="tbxMANAGERSTATE">
+                                    @Html.Raw(@ViewBag.managerstate)
+                                </select>*@
+                                名称：<input id="tbxNAME" type="text" class="input-small" style="width:100px" value="" />
+                                @*编号：<input id="tbxNUMBER" type="text" class="input-small" style="width:60px" value="" />*@
+                                <input type="button" value="查询" onclick="query('1')" class="btnSearchCss" />
+                                <input type="button" value="添加" id="btnAdd" onclick="Manager('Add','','')" style="display:none;" class="btnAddCss" />
+                            </li>
+                            <li class="active">
+                                @using (@Html.BeginForm("FIRECHANNELList", "DataCenter", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                                {
+                                    <input name="file" style="width:90px;" type="file" id="file" class="btn btn-info btn-sm" />
+
+                                    <button type="submit" name="Upload" value="导入" class="btnInputCss">
+                                        导 入
+                                    </button>
+                                }
+                            <li class="active">
+                                <a href="~/UploadFile/DataCenterExcel/防火通道模板.xls" target="_blank" title="右键，另存为">下载模板</a>
+                            </li>
+                        </ul>
+                    </div>
+            </div>
+            <div data-options="region:'center'" title="" class="LayoutCenterBG">
+
+                <div class="divTable" id="divTable">
+
+                </div>
+            </div>
+            <div data-options="region:'south'" title="" style=" height:40px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
+
+                <div class="divPager" id="divPager">
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="divMan" id="tableadd" style="display:none;margin-left:5px;margin-top:8px">
+    <table cellpadding="0" cellspacing="0">
+        <tr>
+            <td style="width:100px;">
+                单位：
+            </td>
+            <td>
+                <select id="BYORGNO" class="easyui-combotree" style="width:180px;"></select>
+            </td>
+            <td style="width:100px;">
+                长度：
+            </td>
+            <td>
+                <input id="LENGTH" type="text" class="input-small" value="" />米
+            </td>
+        </tr>
+
+        <tr>
+            <td style="width:100px;">
+                <span style="color:red;">*</span>
+                名称：
+            </td>
+            <td>
+                <input type="text" id="NAME" class="input-small" value="" />
+            </td>
+            <td style="width:100px;">
+                <span style="color:red;">*</span>
+                编号：
+            </td>
+            <td>
+                <input id="NUMBER" type="text" class="input-small" value="" />
+            </td>
+        </tr>
+        <tr>
+            <td style="width:100px;">
+                使用现状类型：
+            </td>
+            <td>
+                <select id="USESTATE">
+                    @Html.Raw(@ViewBag.usestateadd)
+                </select>
+            </td>
+            <td style="width:100px;">
+                维护管理类型：
+            </td>
+            <td>
+                <select id="MANAGERSTATE">
+                    @Html.Raw(@ViewBag.managerstateadd)
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td style="width:120px;">
+                防火通道等级类型：
+            </td>
+            <td>
+                <select id="FIRECHANNELLEVELTYPE">
+                    @Html.Raw(@ViewBag.fireleveltypeadd)
+                </select>
+            </td>
+            <td style="width:120px;">
+                防火通道使用性质：
+            </td>
+            <td>
+                <select id="FIRECHANNELUSERTYPE">
+                    @Html.Raw(@ViewBag.fireusetypeadd)
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td style="width:100px;">
+                经纬度点：
+            </td>
+            <td colspan="2">
+                <input id="JWDLIST" type="text" style="width:85%" value="" readonly />
+            </td>
+            <td>
+                <input type="button" value="地图定位" onclick="setLine()" class="btnMapLoaclCss" />
+            </td>
+        </tr>
+        <tr>
+            <td style="width:100px;">
+                规划建设日期：
+            </td>
+            <td>
+               开始时间: <input class="easyui-datebox" id="BUILDDATEBEGIN" type="text" style="width:100px;height:28px;" value="" />&nbsp;&nbsp;&nbsp;
+               结束时间: <input class="easyui-datebox" id="BUILDDATEEND" type="text" style="width:100px;height:28px;" value="" />
+            </td>
+            <td style="width:100px;">
+                建成日期：
+            </td>
+            <td >
+                <input class="easyui-datebox" id="BUILDDATE" type="text" style="width:100px;height:28px;" value="" />
+            </td>
+        </tr>
+        <tr>
+            <td style="width:100px;">
+                总价：
+            </td>
+            <td colspan="3">
+                <input id="WORTH" type="text" class="input-small" value="" />元
+            </td>
+        </tr>
+    </table>
+</div>
+
+<script type="text/javascript">
+    var bln = '@ViewBag.isAdd';
+    if (bln == "1") {
+        document.getElementById('btnAdd').style.display = "";
+    }
+    $(function () {
+        $('#tbxORGNOS').combotree({
+            url: '/DataCenter/OrgTreeget',
+            editable: false,
+            required: true,
+            panelHeight: 300,
+            onLoadSuccess: function (node, data) {
+                var t = $("#tbxORGNOS").combotree('tree');//获取tree
+                t.tree("collapseAll");
+                node = t.tree("find", data[0].id);
+                t.tree("expand", node.target);//展开节点 expandTo
+            }
+        });
+        $('#tbxORGNOS').combotree('setValue', "@curorgno");
+        query('1');
+    });
+    $(function () {
+        $('#BYORGNO').combotree({
+            url: '/DataCenter/OnlyOrgTreeget',
+            editable: false,
+            required: true,
+            panelHeight: 300,
+            onLoadSuccess: function (node, data) {
+                var t = $("#BYORGNO").combotree('tree');//获取tree
+                t.tree("collapseAll");
+                node = t.tree("find", data[0].id);
+                t.tree("expand", node.target);//展开节点 expandTo
+            }
+        });
+        $('#BYORGNO').combotree('setValue', "@curorgno");
+    });
+    function query(Page) {
+        var pagesize = '0';
+        if (document.getElementById("selPageSize") != null) {
+            pagesize = document.getElementById("selPageSize").value;
+        }
+        var ORGNOS = $('#tbxORGNOS').combotree('getValue');
+        $.ajax({
+            url: '/DataCenter/getFIRECHANNELlist',
+            data: {
+                BYORGNO:ORGNOS,
+                FIRECHANNELLEVELTYPE: document.getElementById("tbxFIRECHANNELLEVELTYPE").value,
+                FIRECHANNELUSERTYPE: document.getElementById("tbxFIRECHANNELUSERTYPE").value,
+                //USESTATE: document.getElementById("tbxUSESTATE").value,
+                //MANAGERSTATE: document.getElementById("tbxMANAGERSTATE").value,
+                NAME: document.getElementById("tbxNAME").value,
+                //NUMBER: document.getElementById("tbxNUMBER").value,
+                PageSize: pagesize,
+                Page: Page,
+            },
+            type: 'post',
+            success: function (data) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#divTable').html(ar.tableInfo);
+                    $('#divPager').html(ar.pagerInfo);
+                }
+                else {
+                    layer.msg('登录异常');
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('登录异常');
+            }
+        });
+    }
+
+    //地图定位
+    function setLine() {
+        var name = document.getElementById("NAME").value;
+        var str = document.getElementById("JWDLIST").value;
+        layer.open({
+            type: 2,
+            title:name+ '地图位置设置',
+            btn: ['保存', '关闭'],
+            area: ['70%', '80%'],
+            fix: false, //不固定
+            maxmin: true,
+            //content: '/MapCommon/GetMapPontIndex?LINE=1' + "&jwdlist=" + str,
+            content: '/MapCommon/GetMapPontIndex?LINE=1',
+            success: function (layero, index) {
+                var body = layer.getChildFrame('body', index);
+                body.find('#editcollecttxt').text(str);
+                window["layui-layer-iframe" + index].getLocaCollectLine();//线
+                //getLocaCollectLine() 线
+            },
+            yes: function (index, layero) { //或者使用btn1
+                //按钮【按钮一】的回调
+
+                var ptxt = layer.getChildFrame("#editcollecttxt", index);
+                $('#JWDLIST').val(ptxt.html());
+                var lm = layer.getChildFrame("#MjACdtxt", index)//长度
+                $('#LENGTH').val(lm.html());//长度
+                layer.close(index);
+            }, cancel: function (index) {
+                layer.close(index);
+            }
+        });
+
+    }
+
+    function Manager(Method, ID, page) {
+        if (Method == 'Del') {
+            if (confirm('确实要删除该内容吗?')) {
+                $.ajax({
+                    type: "Post",
+                    url: "/DataCenter/FIRECHANNELManager",
+                    data: {
+                        DC_UTILITY_FIRECHANNEL_ID: ID,
+                        Method: Method,
+                    },
+                    dataType: "json",
+                    error: function () {
+                        alert('错误:异常!', 'error');
+                    },
+                    success: function (re) {
+                        if (re.Success) {
+                            layer.msg('删除成功', { icon: 6 });
+                            query(page);
+                        }
+                        else {
+                            layer.msg('删除失败', { icon: 5 });
+                        }
+                    }
+                });
+            }
+        }
+        else {
+            if (Method == 'Mdy' || Method == 'See') {
+                $.ajax({
+                    type: "Post",
+                    url: "/DataCenter/GetFIRECHANNELjson",
+                    data: {
+                        DC_UTILITY_FIRECHANNEL_ID: ID,
+                    },
+                    dataType: "json",
+                    error: function () {
+                        layer.msg('错误:异常!', 'error');
+                    },
+                    success: function (data) {
+                        if (data.DC_UTILITY_FIRECHANNEL_ID != '') {
+                            document.getElementById("NUMBER").value = data.NUMBER;
+                            document.getElementById("NAME").value = data.NAME;
+                            //document.getElementById("BYORGNO").value = data.BYORGNO;
+                            $('#BYORGNO').combotree('setValue', data.BYORGNO);
+                            document.getElementById("USESTATE").value = data.USESTATE;
+                            document.getElementById("MANAGERSTATE").value = data.MANAGERSTATE;
+                            document.getElementById("FIRECHANNELLEVELTYPE").value = data.FIRECHANNELLEVELTYPE;
+                            document.getElementById("FIRECHANNELUSERTYPE").value = data.FIRECHANNELUSERTYPE;
+                            document.getElementById("LENGTH").value = data.LENGTH;
+                            var str = data.JWDLIST;
+                            if (str.substring(str.length - 1) != ";") {
+                                document.getElementById("JWDLIST").value = str + ";";
+                            } else {
+                                document.getElementById("JWDLIST").value = str;
+                            }
+                            document.getElementById("WORTH").value = data.WORTH;
+                            //document.getElementById("JDEND").value = data.JDEND;
+                            //document.getElementById("WDEND").value = data.WDEND;
+                            $('#BUILDDATE').datebox('setValue', data.BUILDDATE);
+                            $('#BUILDDATEBEGIN').datebox('setValue', data.BUILDDATEBEGIN);
+                            $('#BUILDDATEEND').datebox('setValue', data.BUILDDATEEND);
+                        }
+                    }
+                });
+            }
+            if (Method == 'Add') {
+                document.getElementById("NUMBER").value = "";
+                document.getElementById("NAME").value = "";
+                $('#BYORGNO').combotree('setValue', "@curorgno");
+                document.getElementById("USESTATE").value = "";
+                document.getElementById("MANAGERSTATE").value = "";
+                document.getElementById("FIRECHANNELLEVELTYPE").value = "";
+                document.getElementById("FIRECHANNELUSERTYPE").value = "";
+                document.getElementById("LENGTH").value = "";
+                document.getElementById("JWDLIST").value = "";
+                document.getElementById("WORTH").value = "";
+                //document.getElementById("WDBEGIN").value = "";
+                //document.getElementById("JDEND").value = "";
+                //document.getElementById("WDEND").value = "";
+                $('#BUILDDATE').datebox('setValue', "");
+                $('#BUILDDATEBEGIN').datebox('setValue', "");
+                $('#BUILDDATEEND').datebox('setValue', "");
+            }
+            var btnInfo = ['保存', '取消'];
+            if (Method == "See")
+                btnInfo = [];
+            var str = "防火通道添加";
+            if (Method == "Mdy")
+                str = "防火通道修改";
+            if (Method == "See")
+                str = "防火通道查看";
+            layer.open({
+                type: 1,
+                title: str,
+                area: ['60%', '62%'],
+                btn: btnInfo,
+                shade: 0,
+                maxmin: true,
+                content: $('#tableadd'),
+                yes: function (index, layero) {
+                    var t1 = $('#WORTH').val();
+                    var t2 = $('#LENGTH').val();
+                    var t3 = $('#NAME').val();
+                    var t4 = $('#NUMBER').val();
+                    if ($.trim(t1) != "") {
+                        if (CheckNUM($.trim(t1)) == false) {
+                            layer.msg('总价请填写数字！', { icon: 5 });
+                            $('#WORTH').focus();
+                            return;
+                        }
+                    }
+                    if ($.trim(t2) != "") {
+                        if (CheckNUM($.trim(t2)) == false) {
+                            layer.msg('长度请填写数字！', { icon: 5 });
+                            $('#LENGTH').focus();
+                            return;
+                        }
+                    }
+                    var tt = document.getElementById("JWDLIST").value;
+                    if (tt.split('|').length == 1) {
+                        layer.msg('请在地图上画出线！', { icon: 5 });
+                        return;
+                    }
+                    if ($.trim(t3) == "") {
+                        layer.msg('请填写名称！', { icon: 5 });
+                        $('#NAME').focus();
+                        return;
+                    }
+                    if ($.trim(t4) == "") {
+                        layer.msg('请填写编号！', { icon: 5 });
+                        $('#NUMBER').focus();
+                        return;
+                    }
+                    $.ajax({
+                        type: "Post",
+                        url: "/DataCenter/FIRECHANNELManager",
+                        data: {
+                            DC_UTILITY_FIRECHANNEL_ID: ID,
+                            Method: Method,
+                            NUMBER: document.getElementById("NUMBER").value,
+                            NAME: document.getElementById("NAME").value,
+                            //BYORGNO: document.getElementById("BYORGNO").value,
+                            BYORGNO: $('#BYORGNO').combotree('getValue'),
+                            USESTATE: document.getElementById("USESTATE").value,
+                            MANAGERSTATE: document.getElementById("MANAGERSTATE").value,
+                            FIRECHANNELLEVELTYPE: document.getElementById("FIRECHANNELLEVELTYPE").value,
+                            FIRECHANNELUSERTYPE: document.getElementById("FIRECHANNELUSERTYPE").value,
+                            LENGTH: document.getElementById("LENGTH").value,
+                            JWDLIST: document.getElementById("JWDLIST").value,
+                            WORTH: document.getElementById("WORTH").value,
+                            //WDBEGIN: document.getElementById("WDBEGIN").value,
+                            //JDEND: document.getElementById("JDEND").value,
+                            //WDEND: document.getElementById("WDEND").value,
+                            BUILDDATE: $('#BUILDDATE').datebox('getValue'),
+                            BUILDDATEBEGIN: $('#BUILDDATEBEGIN').datebox('getValue'),
+                            BUILDDATEEND: $('#BUILDDATEEND').datebox('getValue'),
+                        },
+                        dataType: "json",
+                        error: function () {
+                            layer.msg('错误:异常!', 'error');
+                        },
+                        success: function (re) {
+                            if (re.Success) {
+                                layer.close(index);
+                                layer.msg('操作成功', { icon: 6 });
+                                query('1');
+                            }
+                            else {
+                                layer.msg(re.Msg, { icon: 5 });
+                            }
+                        }
+                    });
+
+                }, cancel: function (index) {
+                    layer.close(index);
+                }
+            })
+        }
+    }
+
+
+    ///地图定位(线)
+    function PositionLine(tablename, id,name, type) {
+        layer.open({
+            type: 2,
+            title:name+ '地图定位',
+            area: ['70%', '80%'],
+            //shade: 0,
+            fix: true,
+            maxmin: true,
+            content: '/MapCommon/MapPostionCommonIndex?tablename=' + tablename + "&id=" + id + "&type=" + type
+        })
+    }
+    function See(ID, tablename) {
+        layer.open({
+            type: 2,
+            title: '防火通道查看',
+            area: ['55%', '60%'],
+            fix: true,
+            maxmin: true,
+            content: '/DataCenter/SeeIndex?tablename=' + tablename + "&ID=" + ID
+        })
+    }
+    //选中改变颜色
+    function setColor(obj) {
+        $(obj).css("background-color", "#FFDAB9");
+        $("tr").not($(obj)).css("background-color", "");
+    }
+</script>

@@ -1,0 +1,15 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'center'" title="" class="LayoutCenterBG">
+
+        <div class="divTable" id="divTable">
+            @Html.Raw(@ViewBag.photo)
+        </div>
+    </div>
+</div>
+
+
+

@@ -1,0 +1,333 @@
+﻿@{
+    //ViewBag.Title =  "首页";
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+    // Layout = null;
+}
+@section Header{
+
+    <script src="~/Scripts/SpringerCommonValidate.js"></script>
+
+}
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'east'" title="" style=" width:380px; border: none; ">
+
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="homeUL">
+                        通讯录管理
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none;">
+                <div class="divMan">
+                    <table cellpadding="0" cellspacing="0">
+                        <tr class='row1'>
+                            <td style="width:80px;">姓名:</td>
+                            <td><input id="tbxADNAME" type="text" value="" style="width:180px;" /></td>
+                        </tr>
+                        <tr>
+                            <td>手机号码:</td>
+                            <td><input id="tbxPHONE" type="text" value="" style="width:180px;" /></td>
+                        </tr>
+                        <tr>
+                            <td>职务: </td>
+                            <td><input id="tbxUSERJOB" type="text" value="" style="width:180px;" /></td>
+                        </tr>
+                        <tr class='row1'>
+                            <td>办公电话:</td>
+                            <td colspan="3"><input id="tbxTell" type="text" value="" style="width:180px;" /></td>
+                        </tr>
+                        <tr class='row1'>
+                            <td>排序号:</td>
+                            <td colspan="3"><input id="tbxORDERBY" type="text" value="" style="width:180px;" /></td>
+                        </tr>
+                        <tr class=''>
+                            <td colspan="3" style="text-align:center;">
+                                <input id="tbxADID" type="hidden" value="" style="" />
+                                <input id="tbxATID" type="hidden" value="" style="" />
+                                <input id="tbxRATID" type="hidden" value="" style="" />
+                                <input type="button" value="增加" id="btnAdd" onclick="Manager('Add')" style="display :none;" class="btnAddCss" />
+                                <input type="button" value="修改" id="btnMdy" onclick="Manager('Mdy')" style="display :none;" class="btnMdyCss" />
+                                <input type="button" value="删除" id="btnDel" onclick="Manager('Del')" style="display :none;" class="btnDelCss" />
+                            </td>
+                        </tr>
+
+                        <tr class='row1'>
+                            <td style="width:80px;">类别名称:</td>
+                            <td><input id="tbxRTNAME" type="text" value="" style="width:180px;" /> </td>
+                        </tr>
+                        <tr class='row1'>
+                            <td style="width:80px;">类别排序号:</td>
+                            <td><input id="tbxRTORDERBY" type="text" value="" style="width:180px;" /></td>
+                        </tr>
+                        <tr class=''>
+                            <td colspan="3" style="text-align:center;">
+                                <input type="button" value="增加" id="btnTAdd" onclick="ManagerT('Add')" class="btnAddCss" />
+                                <input type="button" value="增加子类" id="btnTAddS" onclick="ManagerT('AddS')" class="btnAddClassCss" />
+                                <input type="button" value="修改" id="btnTMdy" onclick="ManagerT('Mdy')" class="btnMdyCss" />
+                                <input type="button" value="删除" id="btnTDel" onclick="ManagerT('Del')" class="btnMdyCss" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div data-options="region:'center'" title="" style=" border: none;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="homeUL">
+                        通讯录人员信息
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <div id="tt" style="overflow: hidden;" class="easyui-tree">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script type="text/javascript">
+    function bindTree(AddressID, typeID) {
+        $('#tt').tree({
+            url: '/System/AddressTreeget',
+            data: { nameForMat: "{ADNAME}[{USERJOB}] [电话：{PHONE}] 排序号：[{ORDERBY}]" },
+            checked: false,
+            animate: true,
+            lines: true,
+            cache: false,
+            checkbox: false,
+            onLoadSuccess: function (data) {
+                //$('#tt').tree('collapseAll');
+                if (AddressID != '') {
+                    //alert(AddressID);
+                    var node = $('#tt').tree('find', AddressID);
+                    if (node != null) {
+                        $('#tt').tree('expandTo', node.target);
+                    }
+                }
+                if (typeID != '') {
+                    //alert(typeID);
+                    var node = $('#tt').tree('find', typeID);//.tree('getChildren');
+                    if (node != null) {
+                        var children = $('#tt').tree('getChildren', node.target);
+                        if (children.length > 0) {
+                            var node1 = $('#tt').tree('find', children[0].id);
+                            if (node1 != null) {
+                                $('#tt').tree('expandTo', node1.target);
+                            }
+                        }
+                        else {
+                            $('#tt').tree('expandTo', node.target);
+                        }
+                    }
+                    //var node = $('#tt2').tree('getSelected');
+                    //if (node) {
+                    //    var children = $('#tt2').tree('getChildren', node.target);
+                    //}
+                    //else {
+                    //    var children = $('#tt2').tree('getChildren');
+                    //}
+                    //var s = '';
+                    //for (var i = 0; i < children.length; i++) {
+                    //    s += children[i].text + ',';
+                    //}
+                }
+            },
+            onClick: function (node) {
+                if ($.trim(node.id) == "") {
+                    layer.alert('node.id出错', { icon: 2 });
+                    return false;
+                }
+                else {
+                    show(node.id, node.text, node.rid, node.flag);
+                }
+            }
+        });
+    }
+    bindTree('', '');
+    function Manager(Method) {
+        var t3 = $('#tbxPHONE').val();
+        var t4 = $('#tbxTell').val();
+        if ($.trim(t3) != "") {
+            if (checkPhone(t3) == false) {
+                layer.msg('手机号码格式不正确！', { icon: 5 });
+                $('#tbxPHONE').focus();
+                return;
+            }
+        }
+        if ($.trim(t4) != "") {
+            if (checkTel(t4) == false) {
+                layer.msg('办公电话不正确！', { icon: 5 });
+                $('#tbxTell').focus();
+                return;
+            }
+        }
+        if (Method == "Del") {
+            if (confirm('确实要删除该内容吗?') == false)
+                return false;
+        }
+        $.ajax({
+            url: '/System/ADDREDDBOOKManger',
+            cache: false,
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: {
+                ADID: document.getElementById("tbxADID").value,
+                ATID: document.getElementById("tbxATID").value,
+                PHONE: document.getElementById("tbxPHONE").value,
+                ADNAME: document.getElementById("tbxADNAME").value,
+                Tell: document.getElementById("tbxTell").value,
+                USERJOB: document.getElementById("tbxUSERJOB").value,
+                ORDERBY: document.getElementById("tbxORDERBY").value,
+                Method: Method
+            },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    layer.msg(ar.Msg);//   alert('保存成功!！');
+                    //$('#tt').tree('reload');
+                    if (Method == 'Mdy') {
+                        bindTree(document.getElementById("tbxADID").value, '');
+                    }
+                    else {
+                        bindTree('', 'typeid' + document.getElementById("tbxATID").value);
+                        //该类别ID为去除了typeid的，所以此处需要加上
+                    }
+                    clear();
+                }
+                else {
+                    alert(ar.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                alert('保存异常');
+            }
+        });
+    }
+    function ManagerT(Method) {
+        if (Method == "Del") {
+            if (confirm('确实要删除该内容吗?') == false)
+                return false;
+        }
+        var ratid = document.getElementById("tbxRATID").value;
+        if (Method == "AddS") {
+            ratid = document.getElementById("tbxATID").value;
+            Method = "Add";
+        }
+        $.ajax({
+            url: '/System/ADTYPEManager',
+            cache: false,
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: {
+                ATID: document.getElementById("tbxATID").value,
+                RATID: ratid,// document.getElementById("tbxRATID").value,
+                RTNAME: document.getElementById("tbxRTNAME").value,
+                ORDERBY: document.getElementById("tbxRTORDERBY").value,
+                Method: Method
+            },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    layer.msg(ar.Msg);
+                    clear();
+                    bindTree('', 'typeid' + ratid);
+                    $('#tt').tree('reload');
+                }
+                else {
+                    layer.msg(ar.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('保存异常');
+            }
+        });
+    }
+    clear();
+    function clear() {
+        document.getElementById('btnMdy').style.display = "none";
+        document.getElementById('btnDel').style.display = "none";
+        document.getElementById('btnAdd').style.display = "none";
+        document.getElementById('btnTAdd').style.display = "none";
+        document.getElementById('btnTMdy').style.display = "none";
+        document.getElementById('btnTDel').style.display = "none";
+        document.getElementById('btnTAddS').style.display = "none";
+        document.getElementById("tbxADID").value = '';
+        document.getElementById("tbxATID").value = '';
+        document.getElementById("tbxPHONE").value = '';
+        document.getElementById("tbxADNAME").value = '';
+        document.getElementById("tbxUSERJOB").value = '';
+        document.getElementById("tbxTell").value = '';
+        document.getElementById("tbxORDERBY").value = '';
+        document.getElementById("tbxRTNAME").value = '';
+        document.getElementById("tbxRTORDERBY").value = '';
+    }
+    function show(id, text, rid, flag) {
+        clear();
+        if (flag == "type") {
+            id = id.replace('typeid', '');
+            document.getElementById("tbxATID").value = id;
+            document.getElementById('btnAdd').style.display = "";
+            document.getElementById('btnTAdd').style.display = "";
+            document.getElementById('btnTMdy').style.display = "";
+            document.getElementById('btnTDel').style.display = "";
+            document.getElementById('btnTAddS').style.display = "";
+            $.ajax({
+                url: '/System/getADTYPEJson',
+                cache: false,
+                timeout: 10000, //10秒后超时，如果为0则永不超时
+                data: { ID: id },
+                success: function (data) {
+                    var ar = eval('(' + data + ')');
+                    if (ar.ATID != null) {
+                        document.getElementById("tbxRTNAME").value = ar.RTNAME;
+                        document.getElementById("tbxRTORDERBY").value = ar.ORDERBY;
+                        document.getElementById("tbxRATID").value = ar.RATID;
+                    }
+                    else alert("erro");
+                },
+                error: function (err, ioArgs) {
+                    alert('登录异常');
+                }
+            });
+        }
+        if (flag == "user") {
+            document.getElementById('btnMdy').style.display = "";
+            document.getElementById('btnDel').style.display = "";
+            $.ajax({
+                url: '/System/GetADDREDDBOOKJson',
+                cache: false,
+                timeout: 10000, //10秒后超时，如果为0则永不超时
+                data: { ID: id, },
+                success: function (data, ioArgs) {
+                    var ar = eval('(' + data + ')');
+                    if (ar.ADID != null) {
+                        document.getElementById("tbxADID").value = ar.ADID;
+                        document.getElementById("tbxATID").value = ar.ATID;
+                        document.getElementById("tbxPHONE").value = ar.PHONE;
+                        document.getElementById("tbxADNAME").value = ar.ADNAME;
+                        document.getElementById("tbxUSERJOB").value = ar.USERJOB;
+                        document.getElementById("tbxTell").value = ar.Tell;
+                        document.getElementById("tbxORDERBY").value = ar.ORDERBY;
+                    }
+                },
+                error: function (err, ioArgs) {
+                    alert('登录异常');
+                }
+            });
+        }
+    }
+</script>

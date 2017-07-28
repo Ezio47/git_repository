@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManagerSystem.MVC", "ManagerSystem.MVC\ManagerSystem.MVC.csproj", "{C93105D6-047E-4F96-97CE-A406220B35C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataBaseClassLibrary", "DataBaseClassLibrary\DataBaseClassLibrary.csproj", "{A580C4FE-94D3-4D8B-9111-396E5E7257B1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManagerSystemClassLibrary", "ManagerSystemClassLibrary\ManagerSystemClassLibrary.csproj", "{4531BEC1-57C7-49FF-BEAE-947FD6813643}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManagerSystemModel", "ManagerSystemModel\ManagerSystemModel.csproj", "{AE48B06F-E03B-4897-A82F-073AE747D20E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManagerSystemSearchWhereModel", "ManagerSystemSearchWhereModel\ManagerSystemSearchWhereModel.csproj", "{1B70188A-C959-4760-8BAB-25FC669E0C3B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PublicClassLibrary", "PublicClassLibrary\PublicClassLibrary.csproj", "{D4BFF15B-ADFD-4600-ADE9-1F236B93B509}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManagerSystem.MVC.CloudPlatForm", "ManagerSystem.MVC.CloudPlatForm\ManagerSystem.MVC.CloudPlatForm.csproj", "{082CB170-5B83-41F8-AEEE-DD5E86216E03}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C93105D6-047E-4F96-97CE-A406220B35C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C93105D6-047E-4F96-97CE-A406220B35C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C93105D6-047E-4F96-97CE-A406220B35C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C93105D6-047E-4F96-97CE-A406220B35C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A580C4FE-94D3-4D8B-9111-396E5E7257B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A580C4FE-94D3-4D8B-9111-396E5E7257B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A580C4FE-94D3-4D8B-9111-396E5E7257B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A580C4FE-94D3-4D8B-9111-396E5E7257B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4531BEC1-57C7-49FF-BEAE-947FD6813643}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4531BEC1-57C7-49FF-BEAE-947FD6813643}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4531BEC1-57C7-49FF-BEAE-947FD6813643}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4531BEC1-57C7-49FF-BEAE-947FD6813643}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE48B06F-E03B-4897-A82F-073AE747D20E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE48B06F-E03B-4897-A82F-073AE747D20E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE48B06F-E03B-4897-A82F-073AE747D20E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE48B06F-E03B-4897-A82F-073AE747D20E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B70188A-C959-4760-8BAB-25FC669E0C3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B70188A-C959-4760-8BAB-25FC669E0C3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B70188A-C959-4760-8BAB-25FC669E0C3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B70188A-C959-4760-8BAB-25FC669E0C3B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4BFF15B-ADFD-4600-ADE9-1F236B93B509}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4BFF15B-ADFD-4600-ADE9-1F236B93B509}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4BFF15B-ADFD-4600-ADE9-1F236B93B509}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4BFF15B-ADFD-4600-ADE9-1F236B93B509}.Release|Any CPU.Build.0 = Release|Any CPU
+		{082CB170-5B83-41F8-AEEE-DD5E86216E03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{082CB170-5B83-41F8-AEEE-DD5E86216E03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{082CB170-5B83-41F8-AEEE-DD5E86216E03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{082CB170-5B83-41F8-AEEE-DD5E86216E03}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

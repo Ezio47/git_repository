@@ -1,0 +1,116 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="">
+
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+
+                    <ul>
+                        <li class="homeUL"><a href="/SystemConfig/TypeList">数据中心类别管理</a></li>
+                        @Html.Raw(@ViewBag.navList)
+                    </ul>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; " class="LayoutCenterBG">
+
+                <div class="divTable">
+                    @Html.Raw(@ViewBag.ADTYPEList)
+                </div>
+            </div>
+            <div data-options="region:'south'" title="" style=" height:40px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
+
+                <div class="divOP" style="text-align:left;">
+                    <div class="home">
+                        <input id="tbxATID" type="hidden" value="" style="width:70px;" />
+                        <input id="tbxRATID" type="hidden" style="width:70px;" value="@ViewBag.T_ID" />
+                        名称：
+                        <input id="tbxRTNAME" type="text" value="" style="width:70px;" />
+                        排序号：
+                        <input id="tbxORDERBY" type="text" value="" style="width:70px;" />
+
+                        <input type="button" value="添 加" onclick="Manager('Add')" />
+                        <input type="button" value="修 改" onclick="Manager('Mdy')" />
+                        <input type="button" value="删 除" onclick="Manager('Del')" />
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script type="text/javascript">
+
+    function showValue(ID) {
+        $.ajax({
+            url: '/SystemConfig/getADTYPEJson',
+            cache: false,
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+
+            data: {
+                ID: ID
+            },
+            success: function (data) {
+                var ar = eval('(' + data + ')');
+                if (ar.ATID != null) {
+                    document.getElementById("tbxATID").value = ar.ATID;
+                    document.getElementById("tbxRATID").value = ar.RATID;
+                    document.getElementById("tbxRTNAME").value = ar.RTNAME;
+                    document.getElementById("tbxORDERBY").value = ar.ORDERBY;
+                }
+                else alert("erro");
+            },
+            error: function (err, ioArgs) {
+                alert('登录异常');
+            }
+        });
+    }
+
+    function Manager(Method) {
+        
+        if (Method == "Del") {
+
+            if (confirm('确实要删除该内容吗?') == false)
+                return false;
+        }
+
+        $.ajax({
+            url: '/SystemConfig/ADTYPEManager',
+            cache: false,
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: {
+                ATID: document.getElementById("tbxATID").value,
+                RATID: document.getElementById("tbxRATID").value,
+                RTNAME: document.getElementById("tbxRTNAME").value,
+                ORDERBY: document.getElementById("tbxORDERBY").value,
+                Method: Method
+                , returnUrl: ' @Html.Raw(@ViewBag.T_UrlReferrer)'
+            },
+            success: function (data) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    if (confirm(ar.Msg + ' 请返回！'))
+                        window.location.assign(ar.Url);
+                }
+                else {
+                    alert(ar.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                alert('保存异常');
+            }
+        });
+    }
+</script>

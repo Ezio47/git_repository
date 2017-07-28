@@ -1,0 +1,65 @@
+﻿@{
+    //ViewBag.Title =  "首页";
+    //Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+    Layout = null;
+}
+@model IEnumerable<ManagerSystem.MVC.Models.EHCurFireMode>
+
+<script src="~/Scripts/jquery-easyui-1.4/jquery.min.js"></script>
+<script src="~/Scripts/jquery-easyui-1.4/jquery.easyui.min.js"></script>
+<script src="~/Scripts/skyline/3dMapTest.js"></script>
+<link href="~/Content/themes/easyui/easyui.css" rel="stylesheet" />
+<link href="~/Content/themes/easyui/color.css" rel="stylesheet" />
+<link href="~/Content/themes/easyui/icon.css" rel="stylesheet" />
+<link href="~/Content/themes/easyui/Default.css" rel="stylesheet" />
+<html>
+<body>
+    <div>
+        <div style="padding-left:3px;padding-top:3px">
+            <font style="font-size:14px">名称：</font>
+            <input class="easyui-textbox" type="text" name="name" id="name" style="width:200px" /><br />
+            <div style="padding-top:3px">
+                <font style="font-size:14px">类型：</font>
+                <select id="cc" class="easyui-combobox" multiple="true" multiline="true" name="state" labelposition="top" style="width:65%;height:50px;white-space:nowrap;" data-options="editable:false" animate="true">
+                    <option value="117">乡镇驻地</option>
+                    <option value="113">村驻地</option>
+                    <option value="112">加油站</option>
+                    <option value="126">消防队伍</option>
+                    <option value="120">仓库</option>
+                    <option value="119">营房</option>
+                    <option value="129">停车场</option>
+                    <option value="121">瞭望台</option>
+                    <option value="122">宣传碑牌</option>
+                    <option value="123">中继站</option>
+                    <option value="124">监测站</option>
+                    <option value="125">因子采集站</option>
+                    <option value="221">责任路线</option>
+                    <option value="219">隔离带</option>
+                    <option value="220">防火通道</option>
+                    <option value="315">资源</option>
+                    <option value="311">责任区</option>
+                </select>
+
+                &nbsp;<a href="javascript:void(0)" class="easyui-linkbutton" onclick="qrueyByName()">查询</a>
+            </div>
+
+
+        </div>
+        <div style="padding-left:3px;padding-top:3px;text-align:center;">
+            <table class="easyui-datagrid" id="dg" style="width:95%;height:295px;" title="结果展示" data-options="singleSelect:true,collapsible:true">
+                <thead>
+                    <tr>
+                        <th data-options=" field:'Name'" width="38%">
+                            名称
+                        </th>
+                        <th data-options="field:'LayerName'" width="25%">类型</th>
+                        @*<th data-options="field:'Flag'" width="25%">Flag</th>*@
+                        <th data-options="field:'_operate',width:80,align:'center',formatter:formatOper" width="32%">操作</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+    <object id="SGWorld" classid="CLSID:3a4f91b1-65a8-11d5-85c1-0001023952c1" style="visibility:hidden;height:0 "></object>
+</body>
+</html> 

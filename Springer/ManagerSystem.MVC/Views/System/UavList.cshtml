@@ -1,0 +1,280 @@
+﻿@using ManagerSystemClassLibrary;
+@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+    var curorgno = SystemCls.getCurUserOrgNo();
+    if (curorgno.Substring(6, 3) == "000" && curorgno.Substring(4, 2) != "00")
+    {
+        curorgno = curorgno.Substring(0, 6) + "xxx";
+    }
+    else
+    {
+        curorgno = SystemCls.getCurUserOrgNo();
+    }
+}
+<script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+<script src="~/Scripts/test.js"></script>
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <ul>
+                        <li class="homeUL">
+                            单位：<div id="tbxBYORGNO" class="easyui-combotree"></div>
+                            无人机名称： <input id="tbxTASKTITLE" type="text" value="" />
+                            <input id="btnQuery" type="button" value="查询" onclick="query('1')" class="btnSearchCss" />
+                            <input id="btnAdd" type="button" value="添加" style="display:none;" onclick="Manager('','Add')" class="btnAddCss" />
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <div class="divTable" id="divTable">
+                    @*@Html.Raw(ViewBag.UserList)*@
+                </div>
+            </div>
+            <div data-options="region:'south'" title="" style=" height:40px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
+                <div class="divPager" id="divPager">
+                    @*@Html.Raw(@ViewBag.PagerInfo)*@
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="divMan" id="tableadd" style="display:none;margin-left:5px;margin-top:8px">
+    <table cellpadding="0" cellspacing="0">
+        <tr>
+            <td style="width:80px;">
+                单位名称：
+            </td>
+            <td>
+                <select id="BYORGNO" class="easyui-combotree" style="width:180px"></select>
+            </td>
+            <td style="width:80px;">
+                无人机名称：
+            </td>
+            <td style="width:35%">
+                <input type="text" id="NAME" style="width:80%" class="input-small" value="" />
+            </td>
+        </tr>
+        <tr>
+            <td style="width:80px;">
+                设备名称：
+            </td>
+            <td colspan="3">
+                <input type="text" id="EQUIPNAME" style="width:40%" class="input-small" value="" />
+            </td>
+        </tr>
+    </table>
+
+</div>
+
+
+<script type="text/javascript">
+
+    $(function () {
+        var bln = '@ViewBag.isAdd';
+        if (bln == "1") {
+            document.getElementById('btnAdd').style.display = "";
+        }
+
+        $('#tbxBYORGNO').combotree({
+            url: '/System/OnlyOrgTreeget',
+            editable: false,
+            required: false,
+            panelHeight: 'auto',
+            onLoadSuccess: function (node, data) {
+                var t = $("#tbxBYORGNO").combotree('tree');//获取tree
+                t.tree("collapseAll");
+                node = t.tree("find", data[0].id);
+                t.tree("expand", node.target);//展开节点 expandTo
+            }
+        });
+
+        $('#BYORGNO').combotree({
+            url: '/System/OnlyOrgTreeget',
+            editable: false,
+            required: true,
+            panelHeight: 'auto',
+            onLoadSuccess: function (node, data) {
+                var t = $("#BYORGNO").combotree('tree');//获取tree
+                t.tree("collapseAll");
+                node = t.tree("find", data[0].id);
+                t.tree("expand", node.target);//展开节点 expandTo
+                $('#BYORGNO').combotree('setValue', node.id);
+            }
+        });
+        query('1');
+    });
+
+    function query(Page) {
+        var pagesize = '0';
+        if (document.getElementById("selPageSize") != null) {
+            pagesize = document.getElementById("selPageSize").value;
+        }
+        var orgno = $('#tbxBYORGNO').combotree('getValue');
+        $.ajax({
+            url: '/System/getUavList',
+            data: {
+                BYORGNO: orgno,
+                NAME: $("#tbxTASKTITLE").val(),
+                PageSize: pagesize,
+                Page: Page,
+            },
+            type: 'post',
+            success: function (data) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#divTable').html(ar.tableInfo);
+                    $('#divPager').html(ar.pagerInfo);
+                }
+                else {
+                    layer.msg('查询异常');
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('查询异常');
+            }
+        });
+    }
+
+
+
+    function Manager(ID, Method, page) {
+        if (Method == 'Del') {
+            if (Method == 'Del') {
+                if (confirm('确定要删除该无人机信息吗?')) {
+                    $.ajax({
+                        type: "Post",
+                        url: "/System/UavManager",
+                        data: {
+                            UAVID: ID,
+                            METHOD: Method,
+                        },
+                        dataType: "json",
+                        error: function () {
+                            layer.msg('错误:异常!', 'error');
+                        },
+                        success: function (re) {
+                            if (re.Success) {
+                                layer.msg('删除成功', { icon: 6 });
+                                query(page);
+                            }
+                            else {
+                                layer.msg('删除失败', { icon: 5 });
+                            }
+                        }
+                    });
+                }
+            } 
+        }
+        else {
+            if (Method == "Add") {
+                $('#BYORGNO').combotree('setValue', "@curorgno");
+                $('#NAME').val(''); 
+                $('#EQUIPNAME').val('');
+            } else if (Method == "Mdy") {
+                $.ajax({
+                    type: "Post",
+                    url: "/system/GetUavjson",
+                    data: {
+                        UAVID: ID,
+                    },
+                    dataType: "json",
+                    error: function () {
+                        layer.msg('错误:异常!', 'error');
+                    },
+                    success: function (data) {
+                        if (data.UAVID != '') {
+                            document.getElementById("NAME").value = data.UAVNAME;
+                            $('#BYORGNO').combotree('setValue', data.BYORGNO);
+                            document.getElementById("EQUIPNAME").value = data.UAVEQUIPNAME;
+                        }
+                    }
+                });
+            }
+
+            var str = "新增无人机信息";
+            if (Method == "Mdy")
+                str = "修改无人机信息";
+
+            layer.open({
+                type: 1,
+                title: str,
+                area: ['50%', '40%'],
+                btn: ['保存', '取消'],
+                shade: 0,
+                maxmin: true,
+                content: $('#tableadd'),
+                yes: function (index, layero) {
+                    var name = $('#NAME').val();
+                    var equipname = $('#EQUIPNAME').val();
+
+                    if ($.trim(name) == "") {
+                        layer.msg('无人机名称不可为空！', { icon: 5 });
+                        $('#NAME').focus();
+                        return;
+                    }
+
+                    if ($.trim(equipname) == "") {
+                        layer.msg('设备名称不可为空！', { icon: 5 });
+                        $('#EQUIPNAME').focus();
+                        return;
+                    }
+                   
+                    $.ajax({
+                        type: "Post",
+                        url: "/System/UavManager",
+                        data: {
+                            BYORGNO: $('#BYORGNO').combotree('getValue'),
+                            NAME: name,
+                            EQUIPNAME:equipname,
+                            UAVID: ID,
+                            METHOD: Method
+                        },
+                        dataType: "json",
+                        error: function () {
+                            alert('错误:异常!', 'error');
+                        },
+                        success: function (re) {
+                            if (re.Success) {
+                                layer.close(index);
+                                layer.msg('操作成功', { icon: 6 });
+                                query('1');
+                            }
+                            else {
+                                layer.msg(re.Msg, { icon: 5 });
+                            }
+                        }
+                    });
+                }, cancel: function (index) {
+                    layer.close(index);
+                }
+            })
+        }
+
+    }
+
+    //查看
+    function See(ID, tablename) {
+        layer.open({
+            type: 2,
+            title: '无人机信息查看',
+            area: ['50%', '40%'],
+            fix: true,
+            maxmin: true,
+            content: '/System/SeeUav?tablename=' + tablename + "&ID=" + ID
+        })
+    }
+
+
+
+</script>
+

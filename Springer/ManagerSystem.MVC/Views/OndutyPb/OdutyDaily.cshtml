@@ -1,0 +1,73 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+}
+@section Header{
+}
+<div class="easyui-layout" data-options="fit:true" style="border: 0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style="height: 35px; border: none; overflow: hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        查询日期：<input class="easyui-datebox" id="tbxTIMEBegin" value="@ViewBag.Date" type="text" style="width: 90px; height: 28px;" />
+                        <input type="button" value="查 询" onclick="query()" class="btnSearchCss">
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" class="LayoutCenterBG">
+
+                <div id="msg" class="divTable">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+        <script type="text/javascript">
+
+            $(function () {
+                query();
+            });
+
+            function query() {
+                //if (document.getElementById("tbxTIMEBegin").value == "") {
+                //    alert("时间不能为空");
+                //    document.getElementById("tbxTIMEBegin").focus();
+                //    return false;
+                //};
+                $.ajax({
+                    url: '/OndutyPb/OdutyDailyQuery',
+                    timeout: 10000, //10秒后超时，如果为0则永不超时
+                    type: 'post',
+                    data: {
+                        //TTBH: document.getElementById("tbxTIMEBegin").value//开始日期
+                        TTBH: $('#tbxTIMEBegin').datebox('getValue')
+                        //BYORGNO: document.getElementById("tbxTIMEEnd").value//结束日期
+                    },
+                    success: function (data, ioArgs) {
+                        var ar = eval('(' + data + ')');
+                        if (ar.Success) {
+                            $('#msg').html('').removeAttr("style");
+                            //$('#sp').html(document.getElementById("tbxTIMEEnd").value).css("color", "red");
+                            $('#msg').html(ar.Msg);
+                        }
+                        else {
+                            $('#msg').html('');
+                            $('#msg').html(ar.Msg).css("color", "red");
+
+                        }
+                    },
+                    error: function (err, ioArgs) {
+                        $('#msg').html("系统异常，请重试或与管理员联系").css("color", "red");
+                    }
+                });
+            }
+        </script>

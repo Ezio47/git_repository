@@ -1,0 +1,706 @@
+﻿@using ManagerSystemClassLibrary;
+@using ManagerSystem.MVC.HelpCom;
+@using ManagerSystemSearchWhereModel;
+@{
+    ViewBag.Title = "MapPostionCommonIndex";
+    Layout = null;
+    //配置文件经纬度读取
+    var lon = System.Configuration.ConfigurationManager.AppSettings["Longitude"];
+    var lat = System.Configuration.ConfigurationManager.AppSettings["Latitude"];
+    var maptype = System.Configuration.ConfigurationManager.AppSettings["mapType"];//地图类型
+    var lonlatchange = System.Configuration.ConfigurationManager.AppSettings["lonLatChange"];//经纬度转换
+    var DGXUrl = System.Configuration.ConfigurationManager.AppSettings["DGXUrl"];
+    var ORGNO = SystemCls.getCurUserOrgNo();//获取当前用户所处市县的
+    var ORGNOSub = "";
+    if (!string.IsNullOrEmpty(ORGNO))
+    {
+        ORGNOSub = ORGNO.Substring(0, 6);
+    }
+    var LAYERNAME = T_SYS_ORG_EXTENDIDCls.getModel(new T_SYS_ORG_EXTENDID_SW { ORGNO = ORGNOSub }).DGXLAYERNAME;
+}
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.8.2.min.js")"></script>
+@*layer*@
+<script src="~/Scripts/layer/layer.js"></script>
+@*map*@
+<link rel="stylesheet" href="~/js/esri/css/esri.css" />
+<link rel="stylesheet" href="~/Content/themes/dijit/themes/tundra/tundra.css" />
+<script src="~/js/init.js"></script>
+
+<link href="~/Content/MapStyle.css" rel="stylesheet" />
+<script src="~/Scripts/Springer.js"></script>
+<script src="~/Scripts/Springer/SpringerMapCommon.js"></script>
+<script src="~/Scripts/Springer/SpringerMapCollect.js"></script>
+
+<style type="text/css">
+    body, html, #map {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+    }
+
+    td {
+        font-size: 10px;
+    }
+</style>
+
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=wYCjPb9rxUueQP8xcNwqGLFw"></script>
+<script type="text/javascript">
+    dojoConfig = {
+        parseOnLoad: true,
+        packages: [{
+            name: 'bdlib',
+            location: this.location.pathname.replace(/\/[^/]+$/, "") + "/js/bdlib"
+        }]
+    };
+    var strxy = "";
+    var LAYERNAME='@LAYERNAME';
+    var DGXUrl='@DGXUrl';
+    var tiled;
+    var map, graphicLayer,tb;
+    var editToolbar;
+    var editid;
+    bevent=require("dojo/_base/event");
+    require(["esri/map",
+      "bdlib/GoogleLayer",
+   "bdlib/TDTLayer",
+   "bdlib/TDTAnnoLayer",
+   "esri/layers/FeatureLayer",
+   "esri/geometry/Point",
+   "esri/symbols/SimpleFillSymbol",
+   "esri/symbols/SimpleLineSymbol",
+   "dojo/_base/Color", "dojo/_base/event","dojo/parser", "esri/toolbars/draw", "esri/symbols/SimpleMarkerSymbol", "esri/graphic", "esri/dijit/Scalebar", "esri/dijit/OverviewMap",
+   "esri/toolbars/navigation", "dijit/registry", "esri/symbols/TextSymbol", "esri/dijit/HomeButton","esri/toolbars/edit",
+   "dojo/domReady!"],
+   function (Map, GoogleLayer,TDTLayer,TDTAnnoLayer, FeatureLayer, Point, SimpleFillSymbol, SimpleLineSymbol, Color,event, parser, Draw, SimpleMarkerSymbol, Graphic, Scalebar, OverviewMap, Navigation
+       , registry, TextSymbol, HomeButton,Edit) {
+       //  parser.parse();
+       map = new Map("map", { logo:false, sliderStyle: "large",autoResize:false });
+       this.map_type="img_yp";
+       //2 天地图
+       if (@maptype=="2") {
+           var basemap = new TDTLayer();
+           map.addLayer(basemap);
+           var annolayer = new TDTAnnoLayer();
+           map.addLayer(annolayer);
+       }
+       else
+       {
+           var basemap = new GoogleLayer(this.map_type);
+           map.addLayer(basemap);
+       }
+       var btn = dojo.byId("dakai");
+       var btn1 = dojo.byId("guanbi");
+       dojo.connect(btn, "onclick", openDGX);
+       dojo.connect(btn1, "onclick", closeDGX);
+       var pt = new Point(@lon, @lat);
+       map.centerAndZoom(pt, 14);
+
+       nav = new esri.toolbars.Navigation(map);
+
+       graphicLayer = new esri.layers.GraphicsLayer();
+       map.addLayer(graphicLayer);
+       //加载等高线
+       function DGX(LAYERNAME) {
+           tiled = new esri.layers.ArcGISDynamicMapServiceLayer(DGXUrl+LAYERNAME+"/MapServer");
+       }
+
+       function loadDGX(value) {
+           if (value == "1") {
+               map.addLayer(tiled);
+           } else {
+               map.removeLayer(tiled);
+           }
+       }
+       //比例尺
+       var scalebar = new Scalebar({
+           map: map,
+           attachTo: "bottom-center"
+       });
+
+       //取最新经纬度定位
+       @ViewBag.method;
+
+       var type = getQueryString("type");
+       createToolbar(type);
+       // createToolbarPoint();
+       ////给地图控件添加视图变化监听事件
+       // dojo.connect(map, "onExtentChange", showExtent);
+       //给地图控件添加载鼠标移动监听事件
+       dojo.connect(map, "onMouseMove", function(evt){
+           showChangeCoordinates(evt,@lonlatchange);
+       });
+       //给地图控件添加载鼠标拖拽监听事件
+       dojo.connect(map, "onMouseDrag",function(evt){
+           showChangeCoordinates(evt,@lonlatchange);
+       });
+
+       tb = new esri.toolbars.Draw(map);
+       dojo.connect(tb, "onDrawEnd", doDraw);
+       //地图切换
+       $('#switchmap').toggle(function () {
+           this.map_type = "img_p";//地图
+           $('#imgtype').attr('class', 'yxType');
+           $('#imgname').text("影像");
+           if (@maptype=="2") {
+               var basemap = new TDTLayer(this.map_type);
+               var annolayer = new TDTAnnoLayer();
+               map.addLayer(basemap);
+               map.addLayer(annolayer);
+           }
+           else{
+               var basemap = new GoogleLayer(this.map_type);
+               map.addLayer(basemap);
+           }
+
+           $('#info2').css('color', 'red');
+
+       }, function () {
+           this.map_type = "img_c11";//卫星
+           $('#imgtype').attr('class', 'vecType');
+           $('#imgname').text("地图");
+           if (@maptype=="2") {
+               var basemap = new TDTLayer(this.map_type);
+               var annolayer = new TDTAnnoLayer();
+               map.addLayer(basemap);
+               map.addLayer(annolayer);
+           }
+           else
+           {
+               var basemap = new GoogleLayer(this.map_type);
+               map.addLayer(basemap);
+           }
+
+           $('#info2').css('color', 'white');
+
+       });
+       function openDGX() {
+           $('#dakai').hide();
+           $('#guanbi').show();
+           DGX(LAYERNAME);
+           loadDGX("1");
+       }
+       function closeDGX() {
+           $('#guanbi').hide();
+           $('#dakai').show();
+           loadDGX("0");
+       }
+   });
+
+    $(function(){
+        SavebtnShowfun();
+    })
+
+    //隐藏和禁用保存按钮
+    function SavebtnShowfun() {
+        var tablename = getQueryString("tablename");
+        if(tablename =="DC_CAR" || tablename =="JC_FIRE"){
+            $('#Save').hide();
+        }else{
+            $('#Save').show();
+        }
+        if(tablename =="DC_UTILITY_ISOLATIONSTRIP" || tablename =="DC_UTILITY_FIRECHANNEL"){
+            $('#Point').hide();
+        }else{
+            $('#Point').show();
+        }
+        var jdwd= $('#editcollecttxt').text();
+
+        if ($.trim(jdwd)=="") {
+            $('#Save').attr("disabled","disabled");
+        }
+        else
+        {
+            $('#Save').removeAttr("disabled");
+        }
+    }
+
+
+    //画图
+    function doDraw(geometry)
+    {
+        //根据图形的类型定义显示样式
+        switch (geometry.type)
+        {
+            case "point":
+                var symbol = new esri.symbol.SimpleMarkerSymbol(esri.symbol.SimpleMarkerSymbol.STYLE_CIRCLE, 10, new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([255,0,0]), 1), new dojo.Color("red"));
+                break;
+            case "polyline":
+                var symbol=new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([255,0,0]),3);
+                // var symbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_DASH,new esri.symbol.TextSymbol("111",new dojo.Color([255,0,0]), new dojo.Color([255,0,0]), 1));
+                break;
+            case "polygon":
+                var symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID, new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([0,0,0]), 1), new dojo.Color([255,0,0,0.25]));
+                break;
+        }
+        //把绘制的图形添加到map.graphics进行显示
+        map.graphics.clear();
+        graphicLayer.clear();
+        var graphic = new esri.Graphic(geometry, symbol);
+        var normalizedVal = new esri.geometry.xyToLngLat(geometry.x, geometry.y);//google地图转换坐标
+        var strxy=normalizedVal[0]+","+normalizedVal[1];
+        $('#editcollecttxt').text(strxy);
+        if ($('#editcollecttxt').text()!="") {
+            $('#Save').removeAttr("disabled");
+        }
+        else
+        {
+            $('#Save').attr("disabled","disabled");
+        }
+
+        map.graphics.add(graphic);
+
+        var font = new esri.symbol.Font("10px", esri.symbol.Font.STYLE_NORMAL, esri.symbol.Font.VARIANT_NORMAL, esri.symbol.Font.WEIGHT_BOLD, "微软雅黑");
+        var textSymbol = new esri.symbol.TextSymbol("");
+        textSymbol.setColor(new dojo.Color("red"));
+        textSymbol.setFont(font);
+        textSymbol.setOffset(0, 10);
+        var graphicText = esri.Graphic(geometry, textSymbol);
+        graphicLayer.add(graphicText);
+
+    }
+
+    //定位类型
+    function getLocaEditCollect(cid,type)
+    {
+        editid=cid;
+        if (type=="0") {
+            getLocaCollectPont(cid);
+        }
+        if(type =="1")
+        {
+
+            getLocaCollectLine(cid);
+
+        }
+        else
+        {
+            getLocaCollectPolygon(cid);
+        }
+    }
+    //(点)定位
+    function getLocaCollectPont(jd,wd) {
+        document.getElementById("Point").style.display="none";//点定位中，点隐藏
+        document.getElementById("Button5").style.display="none";//点定位中，清除隐藏
+        document.getElementById("Save").style.display="none";//点定位中，保存隐藏
+        map.graphics.clear();
+        graphicLayer.clear();
+        if ($.trim(jd)!=""&& $.trim(wd)!="") {
+            ptPositionTitle(jd,wd,"");
+        }
+        else
+        {
+            layer.msg("经纬度缺失");
+        }
+
+    }
+
+    //编辑类型
+    function createToolbar(type)
+    {
+        if (type =="0") {
+            createToolbarPoint();
+        }
+        else if(type=="1")
+        {
+            createToolbarLine();
+        }else{
+            createToolbarPolygon();
+        }
+    }
+
+
+    //编辑(点)
+    function createToolbarPoint() {
+        //禁止双击放大
+        map.disableDoubleClickZoom();
+        editToolbar = new esri.toolbars.Edit(map);
+        // Activate the toolbar when you click on a graphic
+        var editingEnalble=false;
+        var i=0;
+        var options = {
+            allowAddVertices: true,
+            allowDeleteVertices: true
+        };
+
+        map.graphics.on("click", function(evt) {
+            editToolbar.activate(esri.toolbars.Edit.MOVE ,evt.graphic,options);
+            dojo.connect(map.graphics, "onMouseOut", showInfoWindow);
+
+
+        });
+
+    }
+
+
+    //线编辑
+    function createToolbarLine() {
+        //禁止双击放大
+        map.disableDoubleClickZoom();
+        editToolbar = new esri.toolbars.Edit(map);
+        // Activate the toolbar when you click on a graphic
+        var editingEnalble=false;
+        var i=0;
+        map.graphics.on("click", function(evt) {
+            bevent.stop(evt);
+            if (editingEnalble==false) {
+                editToolbar.activate(esri.toolbars.Edit.EDIT_VERTICES ,evt.graphic);
+                editingEnalble=true;
+                $('#Save').attr("disabled","disabled");
+            }
+            else
+            {
+                editToolbar.deactivate();
+                editingEnalble=false;
+                $('#Save').removeAttr("disabled");
+            }
+            // console.info(evt.graphic.geometry.paths[0]);
+            var strxy="";
+            $('#editcollecttxt').text('');
+            var paths=evt.graphic.geometry.paths[0];
+            for (var i = 0; i < paths.length; i++) {
+                if (isNaN(paths[i][0]) || isNaN(paths[i][1])) {
+
+                }else{
+                    strxy += parseFloat(paths[i][0]).toFixed(6).toString()+ "," +parseFloat(paths[i][1]).toFixed(6).toString() + "|";
+                }
+            }
+            $('#editcollecttxt').text(strxy);
+        });
+    }
+
+
+    function createToolbarPolygon() {
+        //禁止双击放大
+        map.disableDoubleClickZoom();
+        //  GetFRRailPoints();
+        editToolbar = new esri.toolbars.Edit(map);
+        // Activate the toolbar when you click on a graphic
+        var editingEnalble=false;
+        var i=0;
+        map.graphics.on("click", function(evt) {
+            bevent.stop(evt);
+            if (editingEnalble==false) {
+                editToolbar.activate(esri.toolbars.Edit.EDIT_VERTICES ,evt.graphic);
+                editingEnalble=true;
+                $('#Save').attr("disabled","disabled");
+            }
+            else
+            {
+                editToolbar.deactivate();
+                editingEnalble=false;
+                $('#Save').removeAttr("disabled");
+            }
+            // console.info(evt.graphic.geometry.rings[0]);
+            var strxy="";
+            var rings=evt.graphic.geometry.rings[0];
+
+            for (var i = 0; i < rings.length; i++) {
+                if ( !isNaN(rings[i][0]) && !isNaN(rings[i][1])) {
+                    strxy += parseFloat(rings[i][0]).toFixed(6).toString() + "," + parseFloat(rings[i][1]).toFixed(6).toString() + ", , |";
+                    $('#editcollecttxt').text(strxy);
+                }
+            }
+        });
+
+    }
+
+
+
+    function showInfoWindow(evt){
+        evt.stopPropagation();
+
+        var geoPt = evt.mapPoint;
+        var normalizedVal = new esri.geometry.xyToLngLat(geoPt.x, geoPt.y);
+        var str=normalizedVal[0]+","+normalizedVal[1];
+        $('#editcollecttxt').html(str);
+        // console.info(str);
+        if ($('#editcollecttxt').html()!="") {
+            $('#BtnSavePoints').attr('disabled',false);
+            $('#Save').removeAttr("disabled");
+
+        }
+
+        // map.infoWindow.setTitle("新标注");
+        //map.infoWindow.setContent("<b>X坐标: </b>" + normalizedVal[0].toFixed(4)
+        // + "<br><b>Y坐标: </b>" + normalizedVal[1].toFixed(4)
+        // + "<table></table>"
+        //     + "<br><input type='button' value='添加广告' onclick='map.infoWindow.hide();add(" + geoPt.x + "," + geoPt.y + ")'>"
+
+        //);
+        //map.infoWindow.show(evt.mapPoint,map.getInfoWindowAnchor(evt.screenPoint));
+    }
+
+    //（线定位）
+    function getLocaCollectLine()
+    {
+        document.getElementById("Point").style.display="none";//线定位中，点隐藏
+        document.getElementById("Button5").style.display="none";//线定位中，清除隐藏
+        document.getElementById("Save").style.display="none";//线定位中，保存隐藏
+        var str='@ViewBag.jwdlist';
+        if ($.trim(str)!="") {
+            if (str.substring(str.length,str.length-1)==";") {
+                var arrStr=str.split('|;');
+                if (arrStr.length>0) {
+                    for (var j = 0; j < arrStr.length-1; j++) {
+                        var ring = [];
+                        var ss=arrStr[j].split('|');
+                        if (ss.length>0) {
+                            for (var i = 0; i < ss.length; i++) {
+                                var lng=ss[i].split(',')[0];
+                                var lat=ss[i].split(',')[1];
+                                var latlng = new esri.geometry.Point(parseFloat(lng), parseFloat(lat));
+                                ring.push(latlng);
+                            }
+                            var lineSymbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([255, 0, 0]), 5);
+                            //获取线的点
+                            var polyline = new esri.geometry.Polyline(new esri.SpatialReference({ wkid: 4326 }));
+                            polyline.addPath(ring);
+                            var graphic = new esri.Graphic(polyline, lineSymbol);
+                            map.graphics.add(graphic);
+                            var point = new esri.geometry.Point(parseFloat(ss[0].split(',')[0]), parseFloat(ss[0].split(',')[1]));
+                            map.centerAndZoom(point, 14);
+                        }
+                    }
+                }
+            }else {
+                var ring = [];
+                var ss=str.split('|');
+                if (ss.length>0) {
+                    for (var i = 0; i < ss.length; i++) {
+                        var lng=ss[i].split(',')[0];
+                        var lat=ss[i].split(',')[1];
+                        var latlng = new esri.geometry.Point(parseFloat(lng), parseFloat(lat));
+                        ring.push(latlng);
+                    }
+                    var lineSymbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([255, 0, 0]), 5);
+                    //获取线的点
+                    var polyline = new esri.geometry.Polyline(new esri.SpatialReference({ wkid: 4326 }));
+                    polyline.addPath(ring);
+                    var graphic = new esri.Graphic(polyline, lineSymbol);
+                    map.graphics.add(graphic);
+                    var point = new esri.geometry.Point(parseFloat(ss[0].split(',')[0]), parseFloat(ss[0].split(',')[1]));
+                    map.centerAndZoom(point, 14);
+                }
+            }  
+        }
+        else {
+            layer.alert('未获取经纬度！', { icon: 5 });
+        }
+    }
+    //(面定位)
+    function getLocaCollectPolygon()  {
+        document.getElementById("Point").style.display="none";//面定位中，点隐藏
+        document.getElementById("Button5").style.display="none";//面定位中，清除隐藏
+        document.getElementById("Save").style.display="none";//面定位中，保存隐藏
+        var str='@ViewBag.jwdlist';
+        $('#editcollecttxt').text(str);
+        if ($.trim(str)!="") {
+            if (str.substring(str.length,str.length-1)==";") {
+                var arrStr=str.split('|;');
+                if (arrStr.length>0) {
+                    for (var j = 0; j < arrStr.length-1; j++) {
+                        var ring = [];
+                        var ss=arrStr[j].split('|');
+                        for (var i = 0; i < ss.length; i++) {
+                            var lng=ss[i].split(',')[0];
+                            var lat=ss[i].split(',')[1];
+                            var latlng = new esri.geometry.Point(parseFloat(lng), parseFloat(lat));
+                            ring.push(latlng);
+                        }
+                        var polygonSymbol  = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_DASHDOTDOT,new dojo.Color([255, 0, 0]), 3), new dojo.Color([255, 255, 0, 0.25]));
+                        //获取面的点
+                        var polygon = new esri.geometry.Polygon(new esri.SpatialReference({wkid:4326}));
+                        polygon.addRing(ring);
+                        var graphic = new esri.Graphic(polygon,polygonSymbol);
+                        map.graphics.add(graphic);
+                        var point = new esri.geometry.Point(parseFloat(ss[0].split(',')[0]), parseFloat(ss[0].split(',')[1]));
+                        map.centerAndZoom(point, 14);
+                    }
+                }
+            }
+            else {
+                var ring = [];
+                var ss=str.split('|');
+                for (var i = 0; i < ss.length; i++) {
+                    var lng=ss[i].split(',')[0];
+                    var lat=ss[i].split(',')[1];
+                    var latlng = new esri.geometry.Point(parseFloat(lng), parseFloat(lat));
+                    ring.push(latlng);
+                }
+                var polygonSymbol  = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_DASHDOTDOT,new dojo.Color([255, 0, 0]), 3), new dojo.Color([255, 255, 0, 0.25]));
+                //获取面的点
+                var polygon = new esri.geometry.Polygon(new esri.SpatialReference({wkid:4326}));
+                polygon.addRing(ring);
+                var graphic = new esri.Graphic(polygon,polygonSymbol);
+                map.graphics.add(graphic);
+                var point = new esri.geometry.Point(parseFloat(ss[0].split(',')[0]), parseFloat(ss[0].split(',')[1]));
+                map.centerAndZoom(point, 14);
+            }
+        }
+        else {
+            layer.msg('未获取经纬度！');
+        }
+    }
+    function ShowMsg() {
+        layer.msg("经度纬度错误，请确认经纬度", { icon: 5 });
+    }
+
+    function getQueryString(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return unescape(r[2]); return null;
+    }
+
+
+    function save(){
+        var type = getQueryString("type");
+        if (type =="0") //点
+        {
+            var tablename = getQueryString("tablename");
+            var id = getQueryString("id");
+            var str = $('#editcollecttxt').text();
+            var arr = str.split(',');
+            var jd = parseFloat(arr[0]).toFixed(6);
+            var wd = parseFloat(arr[1]).toFixed(6);
+            $.ajax({
+                type: "Post",
+                url: "/MapCommon/SaveMapPoint",
+                data: { jd: jd, wd: wd ,tablename:tablename,id:id},
+                dataType: "json",
+                success: function (obj) {
+                    if (obj != null && obj.Success) {
+                        layer.msg('保存成功！', { icon: 6, time: 2000 });
+                    }
+                    else {
+                        layer.msg('保存失败！');
+                    }
+                }
+            });
+        }
+        else
+        {
+            var tablename = getQueryString("tablename");
+            var id = getQueryString("id");
+            var str = $('#editcollecttxt').text();
+            $.ajax({
+                type: "Post",
+                url: "/MapCommon/SaveMapLine",
+                data: { JWDLIST:str,tablename:tablename,id:id},
+                dataType: "json",
+                success: function (obj) {
+                    if (obj != null && obj.Success) {
+                        layer.msg('保存成功！', { icon: 6, time: 2000 });
+                    }
+                    else {
+                        layer.msg('保存失败！');
+                    }
+                }
+            });
+        }
+    }
+
+
+    //搜索框 百度地图js调用
+
+    function G(id) {
+        return document.getElementById(id);
+    }
+
+    var BDmap = new BMap.Map("map");
+    //map.centerAndZoom("北京",12);                   // 初始化地图,设置城市和地图级别。
+    var ac = new BMap.Autocomplete(    //建立一个自动完成的对象
+		{"input" : "suggestId"
+		,"location" : BDmap
+		});
+
+    ac.addEventListener("onhighlight", function(e) {  //鼠标放在下拉列表上的事件
+        var str = "";
+        var _value = e.fromitem.value;
+        var value = "";
+        if (e.fromitem.index > -1) {
+            value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+        }
+        str = "FromItem<br />index = " + e.fromitem.index + "<br />value = " + value;
+
+        value = "";
+        if (e.toitem.index > -1) {
+            _value = e.toitem.value;
+            value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+        }
+        str += "<br />ToItem<br />index = " + e.toitem.index + "<br />value = " + value;
+        G("searchResultPanel").innerHTML = str;
+    });
+
+    var myValue;
+    ac.addEventListener("onconfirm", function(e) {    //鼠标点击下拉列表后的事件
+        var _value = e.item.value;
+        myValue = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+        G("searchResultPanel").innerHTML ="onconfirm<br />index = " + e.item.index + "<br />myValue = " + myValue;
+        setPlace();
+    });
+
+    function setPlace(){
+        //   map.graphics.clear();
+        function myFun(){
+            var pp = local.getResults().getPoi(0).point;    //获取第一个智能搜索的结果
+            console.info(pp);
+            var lng=pp.lng;
+            var lat=pp.lat;
+            //BDmap.centerAndZoom(pp, 18);
+            //BDmap.addOverlay(new BMap.Marker(pp));    //添加标注
+            if(lng  && lat){
+                getLocaCollectPont(lng,lat);   //添加标注
+            }else{
+                layer.msg("未查询到该地经纬度");
+            }
+        }
+        var local = new BMap.LocalSearch(BDmap, { //智能搜索
+            onSearchComplete: myFun
+        });
+        local.search(myValue);
+    }
+
+
+</script>
+
+
+
+<div data-dojo-type="dijit.layout.ContentPane" id="map" data-dojo-props="region:'center'">
+    <p id="editcollecttxt" style="display:none;"></p>
+    <p id="MjACdtxt" style="display:none"></p>
+    <div class="rightNav">
+        @*<label style="color:yellow">区域：</label><select id="location" onchange="getPointByQy()">
+                @Html.Raw(ViewBag.vdOrg)
+            </select>*@
+        @*<div id="l-map"></div>
+            <label style="color:yellow">地名：</label><input type="text" id="suggestId" size="20" value="百度" style="width:150px;" />
+            <div id="searchResultPanel" style="border:1px solid #C0C0C0;width:150px;height:auto; display:none;"></div>*@
+
+        <input id="Point" type="button" value=" 点 " onclick="tb.activate(esri.toolbars.Draw.POINT);map.hideZoomSlider();" />
+        &nbsp;&nbsp;
+        @*<input id="Line" type="button" value=" 线 " onclick="tb.activate(esri.toolbars.Draw.FREEHAND_POLYLINE);map.hideZoomSlider();" />
+            &nbsp;&nbsp;*@
+        <input id="Save" type="button" value="保存" onclick="save();" />
+        &nbsp;&nbsp;
+        <input id="Button5" type="button" value="清除" onclick="map.graphics.clear();$('#editcollecttxt').text('');" />
+        &nbsp;&nbsp;
+        <input id="BtnRefresh" type="button" value="刷新" onclick=" window.location.reload();" />
+        &nbsp;&nbsp;
+        <input id="dakai" type="button" value="打开等高线" style="" />
+        <input id="guanbi" type="button" value="关闭等高线" style="display:none" />
+    </div>
+
+    <p id="info2" class="bottomNav" style="color:white"></p>
+    @*地图切换*@
+    <div class="pub_path1" id="switchmap" style="position: absolute; bottom: 80px; right: 20px; z-index: 1100;">
+        <div class="hoverType">
+            <div class="map_top">
+                <div class="vecType" id="imgtype"></div>
+            </div>
+            <div class="map_bom" id="imgname">地图</div>
+        </div>
+    </div>
+</div>

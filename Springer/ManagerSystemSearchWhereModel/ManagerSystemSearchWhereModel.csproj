@@ -1,0 +1,207 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{1B70188A-C959-4760-8BAB-25FC669E0C3B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ManagerSystemSearchWhereModel</RootNamespace>
+    <AssemblyName>ManagerSystemSearchWhereModel</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\ManagerSystemSearchWhereModel.XML</DocumentationFile>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ART_DOCUMENT_SW.cs" />
+    <Compile Include="ART_TYPE_SW.cs" />
+    <Compile Include="DC_ARMY_EQUIP_SW.cs" />
+    <Compile Include="DC_ARMY_MEMBER_SW.cs" />
+    <Compile Include="DC_ARMY_SW.cs" />
+    <Compile Include="DC_CAR_SW.cs" />
+    <Compile Include="DC_DETAILS_SW.cs" />
+    <Compile Include="DC_EQUIP_NEW_SW.cs" />
+    <Compile Include="DC_EQUIP_SW.cs" />
+    <Compile Include="DC_FACILITY_SW.cs" />
+    <Compile Include="DC_FULLTIMEUSER_SW.cs" />
+    <Compile Include="DC_PHOTO_SW.cs" />
+    <Compile Include="DC_PROTEAM_SW.cs" />
+    <Compile Include="DC_REPOSITORY_SW.cs" />
+    <Compile Include="DC_RESOURCE_NEW_SW.cs" />
+    <Compile Include="DC_RESOURCE_SW.cs" />
+    <Compile Include="DC_SUPPLIESPROP_SW.cs" />
+    <Compile Include="DC_SUPPLIES_SW.cs" />
+    <Compile Include="DC_TYPE_SW.cs" />
+    <Compile Include="DC_UTILITY_CAMP_SW.cs" />
+    <Compile Include="DC_UTILITY_FACTORCOLLECTSTATION_SW.cs" />
+    <Compile Include="DC_UTILITY_FIRECHANNEL_SW.cs" />
+    <Compile Include="DC_UTILITY_ISOLATIONSTRIP_SW.cs" />
+    <Compile Include="DC_UTILITY_MONITORINGSTATION_SW.cs" />
+    <Compile Include="DC_UTILITY_OVERWATCH_SW.cs" />
+    <Compile Include="DC_UTILITY_PROPAGANDASTELE_SW.cs" />
+    <Compile Include="DC_UTILITY_RELAY_SW.cs" />
+    <Compile Include="DC_WATCHTOWERUSER_SW.cs" />
+    <Compile Include="DC_WATCHTOWER_SW.cs" />
+    <Compile Include="DUTY_CLASS_SW.cs" />
+    <Compile Include="DUTY_HANDOVER_SW.cs" />
+    <Compile Include="DUTY_USER_SW.cs" />
+    <Compile Include="EM_Message_SW.cs" />
+    <Compile Include="E_File_SW.cs" />
+    <Compile Include="E_GROUP_SW.cs" />
+    <Compile Include="E_RECEIVE_SW.cs" />
+    <Compile Include="E_SUBJECT_SW.cs" />
+    <Compile Include="FIRELOST_FIREINFO_SW.cs" />
+    <Compile Include="FIRELOST_LOSTTYPECOUNT_SW.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_ATTACK_P1_SW.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_ATTACK_P2_SW.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_ATTACK_P3_SW.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_ATTACK_P4_SW.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_ATTACK_P5_SW.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_ATTACK_P6_SW.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_CASUALTYDETAIL_SW.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_CASUALTY_SW.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_CURRENTASSETS_SW.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_FARMPASTUREPRODUCT_SW.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_FIXEDASSETS_SW.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_LOSTPROCESS_SW.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_NTFP_SW.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_RESIDENTPROPERTY_SW.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_STOPREDUCTION_SW.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_WILDANIMAL_SW.cs" />
+    <Compile Include="FIRELOST_LOSTTYPE_WOOD_SW.cs" />
+    <Compile Include="FIRERECORD_ARMY_SW.cs" />
+    <Compile Include="FIRERECORD_REPORT12_SW.cs" />
+    <Compile Include="FIRERECORD_REPORT11_SW.cs" />
+    <Compile Include="FIRERECORD_REPORT10_SW.cs" />
+    <Compile Include="FIRERECORD_REPORT9_SW.cs" />
+    <Compile Include="FIRERECORD_REPORT8_SW.cs" />
+    <Compile Include="FIRERECORD_FIREINFO_SW.cs" />
+    <Compile Include="HUCheck_SW.cs" />
+    <Compile Include="JC_FIRETICKLING_SW.cs" />
+    <Compile Include="JC_FIRE_PLAN_SW.cs" />
+    <Compile Include="JC_FIRE_PLOTTING_SW.cs" />
+    <Compile Include="JC_FIRE_PROP_SW.cs" />
+    <Compile Include="JC_FIRE_REPORT_SW.cs" />
+    <Compile Include="JC_FIRE_SW.cs" />
+    <Compile Include="JC_INFRAREDCAMERA_BASICINFO_SW.cs" />
+    <Compile Include="JC_MONITOR_SW.cs" />
+    <Compile Include="JC_PERALARM_SW.cs" />
+    <Compile Include="JC_UAV_SW.cs" />
+    <Compile Include="LogicModel\CollectDataSW.cs" />
+    <Compile Include="HUReport_SW.cs" />
+    <Compile Include="LogicModel\HlyAreaDataSW.cs" />
+    <Compile Include="LogicModel\QueryLayerDataSW.cs" />
+    <Compile Include="OD_CLASS_SW.cs" />
+    <Compile Include="OD_HANDOVER_SW.cs" />
+    <Compile Include="OD_ODTYPE_SW.cs" />
+    <Compile Include="OD_DATE_SW.cs" />
+    <Compile Include="OD_USER_SW.cs" />
+    <Compile Include="PEST_COLLECTDATA_SW.cs" />
+    <Compile Include="PEST_COLLECT_DATAUPLOAD_SW.cs" />
+    <Compile Include="PEST_CONSULREPLY_SW.cs" />
+    <Compile Include="PEST_CONSULTATION_SW.cs" />
+    <Compile Include="PEST_LOCALTREESPECIES_SW.cs" />
+    <Compile Include="PEST_MONITORINGSTATION_SW.cs" />
+    <Compile Include="PEST_PHOTO_SW.cs" />
+    <Compile Include="PEST_REMOTEDIAGN_SW.cs" />
+    <Compile Include="PEST_REPORT_ASSESSINGTARGET_SW.cs" />
+    <Compile Include="PEST_REPORT_CONTROL_SW.cs" />
+    <Compile Include="PEST_REPORT_DIEPINESURVEY_SW.cs" />
+    <Compile Include="PEST_REPORT_FORECAST_SW.cs" />
+    <Compile Include="PEST_REPORT_HAPPEN_SW.cs" />
+    <Compile Include="PEST_REPORT_HARM_SW.cs" />
+    <Compile Include="PEST_REPORT_QUARANTINE_SW.cs" />
+    <Compile Include="PEST_REPORT_RCWTYPE_SW.cs" />
+    <Compile Include="PEST_REPORT_RCW_SW.cs" />
+    <Compile Include="PEST_REPORT_SCXCBFZMX_SW.cs" />
+    <Compile Include="PEST_REPORT_SCXCBFZ_SW.cs" />
+    <Compile Include="PEST_REPORT_SCXCBPC_SW.cs" />
+    <Compile Include="TASK_FEEDBACK_SW.cs" />
+    <Compile Include="TASK_INFO_SW.cs" />
+    <Compile Include="TASK_TURNOVER_SW.cs" />
+    <Compile Include="TD_MOUNTAIN_SW.cs" />
+    <Compile Include="TD_POINTMARK_SW.cs" />
+    <Compile Include="TREES_TREEGROUPINFO_DATAUPLOAD_SW.cs" />
+    <Compile Include="TREES_TREEGROUPINFO_SW.cs" />
+    <Compile Include="TREES_TREESINFO_DATAUPLOAD_SW.cs" />
+    <Compile Include="TREES_TREESINFO_SW.cs" />
+    <Compile Include="T_ALL_AREA_SW.cs" />
+    <Compile Include="T_COLLECTLINES_SW.cs" />
+    <Compile Include="T_COLLECTPOINTS_SW.cs" />
+    <Compile Include="T_IPSCOL_COLLECTDETAIL_SW.cs" />
+    <Compile Include="T_IPSCOL_COLLECT_SW.cs" />
+    <Compile Include="T_IPSFR_ROUTERAIL_PATROL_SW.cs" />
+    <Compile Include="T_IPSFR_ROUTERAIL_SW.cs" />
+    <Compile Include="T_IPSRPT_REPORT_SW.cs" />
+    <Compile Include="T_IPS_ALARM_SW.cs" />
+    <Compile Include="T_IPS_HOTS_SW.cs" />
+    <Compile Include="T_IPS_REALDATASW.cs" />
+    <Compile Include="T_IPS_REALDATATEMPORARYSW.cs" />
+    <Compile Include="PagerSW.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="T_IPSFR_USER_SW.cs" />
+    <Compile Include="T_SYSSEC_IPSUSER_SW.cs" />
+    <Compile Include="T_SYSSEC_ROLE_RIGHT_SW.cs" />
+    <Compile Include="T_SYSSEC_ROLE_SW.cs" />
+    <Compile Include="T_SYSSEC_USER_ROLE_SW.cs" />
+    <Compile Include="T_SYSSEC_RIGHT_SW.cs" />
+    <Compile Include="T_SYS_ADDREDDBOOK_SW.cs" />
+    <Compile Include="T_SYS_ADDREDDTYPE_SW.cs" />
+    <Compile Include="T_SYS_DICTSW.cs" />
+    <Compile Include="T_SYS_LAYER_SW.cs" />
+    <Compile Include="T_SYS_LOG_SW.cs" />
+    <Compile Include="T_SYS_MENU_SW.cs" />
+    <Compile Include="T_SYS_NOTICE_SW.cs" />
+    <Compile Include="T_SYS_ORGSW.cs" />
+    <Compile Include="T_SYS_ORG_CWH_SW.cs" />
+    <Compile Include="T_SYS_ORG_EXTENDID_SW.cs" />
+    <Compile Include="T_SYS_ORG_LINK_SW.cs" />
+    <Compile Include="T_SYS_PARAMETER_SW.cs" />
+    <Compile Include="T_SYS_PEST_OBSERVEAREA_SW.cs" />
+    <Compile Include="T_SYS_PEST_SW.cs" />
+    <Compile Include="T_SYS_TREESPECIES_PEST_SW.cs" />
+    <Compile Include="T_SYS_TREESPECIES_SW.cs" />
+    <Compile Include="YJ_DANGERCLASS_SW.cs" />
+    <Compile Include="YJ_DCSMS_SEND_SW.cs" />
+    <Compile Include="YJ_DCSMS_TMP_SW.cs" />
+    <Compile Include="YJ_SATELLITECLOUD_SW.cs" />
+    <Compile Include="YJ_WEATHER_SW.cs" />
+    <Compile Include="YJ_XY_WORK_SW.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

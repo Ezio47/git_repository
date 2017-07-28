@@ -1,0 +1,178 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+    <div data-options="region:'west'" title="" style=" width:320px; border: none; background:#feeddd;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+            <div data-options="region:'north'" title="" style=" height:30px; border: none; overflow:hidden;">
+                <div class="DefaultDivTitle">队伍</div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; ">
+
+                <div id="divLeftMenu" class="LeftMenu">
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="wd_6">
+                        登录名：
+                        <input id="tbxLoginUserName" type="text" style="width:80px;" />
+                        性别：
+                        <select id="selPageSize" style="width:60px;">
+                            <option value="1">男</option>
+                            <option value="1">女</option>
+                        </select>
+                        <input type="button" value="查询" />
+                    </div>
+                    <div class="wd_1">
+                        <input type="button" value="新增" />
+                    </div>
+                    <div class="wd_3 right">
+                        导入：
+                        <input type="file" name="uploadify" id="uploadify" style="" />
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; ">
+
+                <div class="divTable">
+                    <table cellpadding="0" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>序号</th>
+                                <th>单位</th>
+                                <th>姓名</th>
+                                <th>职务</th>
+                                <th>登录名</th>
+                                <th>性别</th>
+                                <th>电话</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>合肥市</td>
+                                <td class='right'><a href="#">市管理员</a></td>
+                                <td>科员</td>
+                                <td>admin</td>
+                                <td>男</td>
+                                <td class='center'><a href='#'>超级管理员</a></td>
+                            </tr>
+                            <tr class='row1'>
+                                <td>1</td>
+                                <td>合肥市</td>
+                                <td><a href="#">市管理员</a></td>
+                                <td>科员</td>
+                                <td>admin</td>
+                                <td>男</td>
+                                <td class='center'><a href='#'>超级管理员</a></td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>合肥市</td>
+                                <td><a href="#">市管理员</a></td>
+                                <td>科员</td>
+                                <td>admin</td>
+                                <td>男</td>
+                                <td class='center'><a href='#'>超级管理员</a></td>
+                            </tr>
+                            <tr class='row1'>
+                                <td>1</td>
+                                <td>合肥市</td>
+                                <td><a href="#">市管理员</a></td>
+                                <td>科员</td>
+                                <td>admin</td>
+                                <td>男</td>
+                                <td class='center'><a href='#'>超级管理员</a></td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>合肥市</td>
+                                <td><a href="#">市管理员</a></td>
+                                <td>科员</td>
+                                <td>admin</td>
+                                <td>男</td>
+                                <td class='center'><a href='#'>超级管理员</a></td>
+                            </tr>
+                            <tr class='row1'>
+                                <td>1</td>
+                                <td>合肥市</td>
+                                <td><a href="#">市管理员</a></td>
+                                <td>科员</td>
+                                <td>admin</td>
+                                <td>男</td>
+                                <td class='center'><a href='#'>超级管理员</a></td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>合肥市</td>
+                                <td><a href="#">市管理员</a></td>
+                                <td>科员</td>
+                                <td>admin</td>
+                                <td>男</td>
+                                <td class='center'><a href='#'>超级管理员</a></td>
+                            </tr>
+                            <tr class='row1'>
+                                <td>1</td>
+                                <td>合肥市</td>
+                                <td><a href="#">市管理员</a></td>
+                                <td>科员</td>
+                                <td>admin</td>
+                                <td>男</td>
+                                <td class='center'><a href='#'>超级管理员</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+            <div data-options="region:'south'" title="" style=" height:40px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
+                @Html.Raw(@ViewBag.PagerInfo)
+            </div>
+
+        </div>
+    </div>
+
+</div>
+<script type="text/javascript">
+    showalert();
+    //window.setInterval(showalert, @ViewBag.noticeRefreshTimeInterval*1000*60);
+
+    function showalert() {
+        $.ajax({
+            url: '/Base/getPageLeftMenuStr',
+
+            data: {
+                PageCode: '@ViewBag.PageCode'
+            },
+            type: 'post',
+            error: function () {
+                //alert('错误', '删除失败!', 'error');
+            },
+            success: function (data) {
+
+                var ar = eval('(' + data + ')');
+                if (ar.Success == true) {
+                    //alert(ar.Msg);
+                    document.getElementById("divLeftMenu").innerHTML = ar.Msg;
+                }
+                else {
+                    alert(data.Msg, 'error');
+                }
+            }
+        });
+    }
+</script>

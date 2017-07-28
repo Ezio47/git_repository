@@ -1,0 +1,330 @@
+﻿@{
+    ViewBag.Title = "首页火情等级";
+    Layout = null;
+    //配置文件经纬度读取
+    var lon = System.Configuration.ConfigurationManager.AppSettings["Longitude"];
+    var lat = System.Configuration.ConfigurationManager.AppSettings["Latitude"];
+    var maptype = System.Configuration.ConfigurationManager.AppSettings["mapType"];//地图类型
+    var lonlatchange = System.Configuration.ConfigurationManager.AppSettings["lonLatChange"];//经纬度转换
+    var lonlattype = System.Configuration.ConfigurationManager.AppSettings["lonLatType"];//经纬度转换--度分秒
+    var ZoomLayer = System.Configuration.ConfigurationManager.AppSettings["ZoomLayer"];//默认放大级别
+
+}
+@model ManagerSystem.MVC.Models.FireLevelCountModel
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.8.2.min.js")"></script>
+@*layer*@
+<script src="~/Scripts/layer/layer.js"></script>
+@*map*@
+<link rel="stylesheet" href="~/js/esri/css/esri.css" />
+<link rel="stylesheet" href="~/Content/themes/dijit/themes/tundra/tundra.css" />
+<script src="~/js/init.js"></script>
+<link href="~/Content/themes/default/Public.css" rel="stylesheet" />
+<style type="text/css">
+    html, body, #map {
+        height: 100%;
+        width: auto;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        background-color: #FFF;
+        overflow: hidden;
+        font-family: "Microsoft YaHei";
+        font-size: 10px;
+    }
+    label,a {
+        color:black;
+    }
+</style>
+<script type="text/javascript">
+    $(function(){
+        //$("#levertable tr > td> label").bind("click", function () {
+        //    var hang = $(this).parent().prevAll().length + 1;//行
+        //    var lie = $(this).prevAll().length + 1;//列
+        //    loadFireLevelStr(lie);
+        //})
+        $("#levertable tr > td> label").bind("click", function () {
+            var td=this.parentNode;
+            var tr=td.parentNode;
+            loadFireLevelStr((tr.rowIndex+1));
+        })
+    });
+
+    //火险等级查看
+    function PopFireLevel(id) {
+        //iframe层-父子操作
+        layer.open({
+            type: 2,
+            title: '火险等级查看',
+            area: ['560px', '350px'],
+            fix: false, //不固定
+            maxmin: true,
+            content: '/BaseCommon/PopFireLevelIndexBY?level='+id
+        });
+    }
+</script>
+
+<script>
+    //MAP
+    var nav;
+    dojoConfig = {
+        parseOnLoad: true,
+        packages: [{
+            name: 'bdlib',
+            location: this.location.pathname.replace(/\/[^/]+$/, "") + "/js/bdlib"
+        }]
+    };
+    var map, toolbar, graphicLayer;
+    bevent = require("dojo/_base/event");
+    require(["esri/map",
+    "bdlib/GoogleLayer",
+    "bdlib/TDTLayer",
+    "bdlib/TDTAnnoLayer",
+    "esri/layers/FeatureLayer",
+    "esri/geometry/Point",
+    "esri/symbols/SimpleFillSymbol",
+    "esri/symbols/SimpleLineSymbol",
+    "dojo/_base/Color", "dojo/parser", "esri/toolbars/draw", "esri/symbols/SimpleMarkerSymbol", "esri/graphic", "esri/dijit/Scalebar", "esri/dijit/OverviewMap",
+    "esri/toolbars/navigation", "dijit/registry", "esri/symbols/TextSymbol", "esri/dijit/HomeButton", "esri/toolbars/edit",
+    "esri/tasks/GeometryService","esri/dijit/Measurement",
+    "dojo/domReady!"],
+    function (Map, GoogleLayer, TDTLayer, TDTAnnoLayer, FeatureLayer, Point, SimpleFillSymbol, SimpleLineSymbol, Color, parser, Draw, SimpleMarkerSymbol, Graphic, Scalebar, OverviewMap, Navigation
+        , registry, TextSymbol, HomeButton, Edit,GeometryService,Measurement) {
+        // parser.parse();
+        map = new Map("map", { logo: false, sliderStyle: "large" });
+        //autoResize: false
+        var MapServer = '@ViewBag.url';
+        // var MapServer = "http://192.168.5.244:6080/arcgis/rest/services//HHZ/HHZMapCaching1/MapServer";
+        //36.7.68.79 ArcGISDynamicMapServiceLayer
+        dynamicMapServiceLayer = new esri.layers.ArcGISTiledMapServiceLayer(MapServer);
+        ////添加图层载入后监听方法loadLayerList
+        //dojo.connect(dynamicMapServiceLayer, "onLoad", loadLayerList);
+        map.addLayer(dynamicMapServiceLayer);
+        @ViewBag.loadFunc;
+        var pt = new Point(parseFloat(@lon), parseFloat(@lat));
+        //var pt = new Point(117.18182, 31.8448);//合肥
+        // var pt=new Point(103.354065,23.367718);//红河州
+        map.centerAndZoom(pt, @ZoomLayer);
+
+        nav = new esri.toolbars.Navigation(map);
+
+        graphicLayer = new esri.layers.GraphicsLayer();
+        map.addLayer(graphicLayer);
+
+        ////比例尺
+        //var scalebar = new Scalebar({
+        //    map: map,
+        //    attachTo: "bottom-center"
+        //});
+        //在地图初始化的时候添加监听画图的事件：
+        toolbar = new esri.toolbars.Draw(map);
+        dojo.connect(toolbar, "onDrawEnd", doMeasure);
+    });
+
+    //量算面积和长度方法：
+    function GetLenthorArea(geometry) {
+        //画图完毕后计算距离或者面积
+        if (geometry.type == "polyline") {
+            var geo = esri.geometry.webMercatorToGeographic(geometry);
+            if (@maptype=="2") {
+                geo=geometry;
+            }
+            var Length = esri.geometry.geodesicLengths([geo], esri.Units.METERS);
+            map.infoWindow.setTitle("距离测量");
+            if (parseFloat(Length)<1000) {
+                map.infoWindow.setContent("距离： <strong>" + parseFloat(Length).toFixed(2)+ "米 </strong>");
+            }
+            else
+            {
+                map.infoWindow.setContent("距离： <strong>" +  parseFloat(Length/1000).toFixed(2)+ "千米 </strong>");
+            }
+            map.infoWindow.show();
+        }
+        else if(geometry.type == "polygon") {
+            var geo = esri.geometry.webMercatorToGeographic(geometry);
+            if (@maptype=="2") {
+                geo=geometry;
+            }
+            var Area = esri.geometry.geodesicAreas([geo], esri.Units.SQUARE_METERS);
+            map.infoWindow.setTitle("面积测量");
+            if (parseFloat(Area)<1000000) {
+                map.infoWindow.setContent("面积： <strong>" + parseFloat(Area).toFixed(2) + "平方米 </strong>");
+            }
+            else
+            {
+                map.infoWindow.setContent("面积： <strong>" +  parseFloat(Area/1000000).toFixed(2) + "平方公里 </strong>");
+            }
+            map.infoWindow.show();
+        }
+    }
+
+    //量算
+    function doMeasure(geometry) {
+        //更加类型设置显示样式
+        // measuregeometry = geometry;
+        toolbar.deactivate();
+        switch (geometry.type) {
+            case "polyline":
+                var symbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([255,0,0]), 2);
+                break;
+            case "polygon":
+                var symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID, new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_DASHDOT, new dojo.Color([255, 0, 0]), 2), new dojo.Color([255, 255, 0, 0.25]));
+                break;
+        }
+        //设置样式
+        var graphic = new esri.Graphic(geometry,symbol);
+        //清除上一次的画图内容
+        map.graphics.clear();
+        map.graphics.add(graphic);
+        GetLenthorArea(geometry);
+    }
+
+    //载入火险等级
+    function loadFireLevel()
+    {
+        var url = "@ViewBag.url"+"4";
+        var featureLayer = new esri.layers.FeatureLayer(url,
+            {
+                mode: esri.layers.FeatureLayer.MODE_ONDEMAND,
+                outFields: ["*"]
+            });
+
+        var fillsymbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,
+                         new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_DASHDOT,
+                                new dojo.Color("black"), 1), new dojo.Color([0,0,0,0]));
+
+        var renderer = new esri.renderer.UniqueValueRenderer(fillsymbol,"NAME");
+        $.ajax({
+            type: "Post",
+            url: "/EarlyMonitor/GetFireLevelList",
+            dataType: "json",
+            success: function (obj) {
+                if (obj != null && obj.Success) {
+                    var datalist = obj.DataList;
+                    var buf=[];
+                    for (var i = 0; i < datalist.length; i++) {
+                        var str=LevelColor(datalist[i].DANGERCLASS);
+                        renderer.addValue(datalist[i].TOWNNAME, new esri.symbol.SimpleFillSymbol().setColor(str));
+                        if (datalist[i].DANGERCLASS>=5) {
+                            buf.push(datalist[i].TOWNNAME+"("+datalist[i].DANGERCLASS+")");
+                        }
+                    }
+                    $('#msg').html(buf.join(','));
+                    featureLayer.setRenderer(renderer);
+                    map.addLayer(featureLayer);
+                }
+            }
+        });
+    }
+
+    //载入火险等级传参
+    function loadFireLevelStr(level)
+    {
+        //map.graphics.clear();
+        // graphicLayer.clear();
+        var url = "@ViewBag.url"+"4";
+        var featureLayer = new esri.layers.FeatureLayer(url,
+            {
+                mode: esri.layers.FeatureLayer.MODE_ONDEMAND,
+                outFields: ["*"]
+            });
+        //featureLayer.clear();
+        var fillsymbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,
+                         new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_DASHDOT,
+                                new dojo.Color("black"), 1), new dojo.Color("white"));
+        var renderer = new esri.renderer.UniqueValueRenderer(fillsymbol,"NAME");
+        $.ajax({
+            type: "Post",
+            url: "/EarlyMonitor/GetFireLevelList",
+            dataType: "json",
+            success: function (obj) {
+                if (obj != null && obj.Success) {
+                    $('#msg').html('');
+                    var datalist = obj.DataList;
+                    var buf = [];;//定义一个数组
+                    for (var i = 0; i < datalist.length; i++) {
+                        if (level!=""&&level!=null) {
+                            if ( parseInt(level)<=parseInt(datalist[i].DANGERCLASS)) {
+                                var str=LevelColor(datalist[i].DANGERCLASS);
+                                renderer.addValue(datalist[i].TOWNNAME, new esri.symbol.SimpleFillSymbol().setColor(str));
+                                buf.push(datalist[i].TOWNNAME+"("+datalist[i].DANGERCLASS+")");
+                            }
+
+                        }
+                    }
+                    $('#msg').html(buf.join(','));
+                    featureLayer.setRenderer(renderer);
+                    featureLayer.refresh();
+                    map.addLayer(featureLayer);
+                }
+            }
+        });
+    }
+    //颜色
+    function LevelColor(value)
+    {
+        var strColor="";
+        if (value=="1") {
+            strColor = new dojo.Color("green");
+        }
+        if (value=="2") {
+            strColor = new dojo.Color("blue");
+        }
+        if (value=="3") {
+            strColor = new dojo.Color("yellow");
+        }
+        if (value=="4") {
+            strColor = new dojo.Color("#FFA500");
+        }
+        if (value=="5") {
+            strColor = new dojo.Color("red");
+        }
+        return strColor;
+    }
+
+</script>
+<div class="tundra">
+    <div id="map">
+    </div>
+    <div style="float:right; width:25%;top:20px;right:1px; position:absolute; height:150px;text-align:center;">
+        <p style="font-size: 15px;color:red">@Model.Time 火险等级信息：</p><p id="msg" style="font-size: 15px; color: red"></p>
+
+    </div>
+    <div style="float:right; width:25%;bottom:20px;right:1px; position:absolute; height:150px;text-align:center">
+        <table style=" width:70%;height:150px;margin-top:2px" id="levertable">
+            <tr>
+                <td style=" background-color:green;text-align:center;cursor:pointer;border-radius: 15px;">
+                    <label>一级 </label><a onclick="PopFireLevel('1')">(@Model.CountA)</a>
+                </td>
+            </tr>
+            <tr>
+                <td style=" background-color:blue;text-align:center; cursor:pointer;border-radius: 15px;"><label>二级 </label><a  onclick="PopFireLevel('2')">(@Model.CountB)</a></td>
+            </tr>
+            <tr>
+                <td style=" background-color:yellow;text-align:center;cursor:pointer;border-radius: 15px;"><label>三级 </label><a  onclick="PopFireLevel('3')">(@Model.CountC)</a></td>
+            </tr>
+            <tr>
+                <td style=" background-color:orange;text-align:center;cursor:pointer;border-radius: 15px;"><label>四级 </label><a  onclick="PopFireLevel('4')">(@Model.CountD)</a></td>
+            </tr>
+            <tr>
+                <td style=" background-color:red;text-align:center;cursor:pointer;border-radius: 15px;"><label>五级 </label><a  onclick="PopFireLevel('5')">(@Model.CountE)</a></td>
+            </tr>
+        </table>
+    </div>
+    @*<div style="bottom:10px;position:absolute;width:100%;background-color: #4daf7c;height:35px;text-align:center">
+            <table style=" width:100%;height:30px;margin-top:2px" id="levertable">
+                <tr>
+                    <td style="width:20%;background-color:green;text-align:center;cursor:pointer;border-radius: 15px;">
+                        <label>一级 没有危险</label><a onclick="PopFireLevel('1')">(@Model.CountA)</a>
+                    </td>
+                    <td style="width:20%;background-color:blue;text-align:center; cursor:pointer;border-radius: 15px;"><label>二级 中度危险</label><a onclick="PopFireLevel('2')">(@Model.CountB)</a></td>
+                    <td style="width:20%;background-color:yellow;text-align:center;cursor:pointer;border-radius: 15px;"><label>三级 较高危险</label><a onclick="PopFireLevel('3')">(@Model.CountC)</a></td>
+                    <td style="width:20%;background-color:orange;text-align:center;cursor:pointer;border-radius: 15px;"><label>四级 高度危险</label><a onclick="PopFireLevel('4')">(@Model.CountD)</a></td>
+                    <td style="width:20%;background-color:red;text-align:center;cursor:pointer;border-radius: 15px;"><label>五级 极度危险</label><a onclick="PopFireLevel('5')">(@Model.CountE)</a></td>
+                </tr>
+            </table>
+        </div>*@
+</div>

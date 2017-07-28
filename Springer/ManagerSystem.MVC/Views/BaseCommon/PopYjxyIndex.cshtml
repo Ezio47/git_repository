@@ -1,0 +1,36 @@
+﻿@{
+    ViewBag.Title = "预警响应";
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+
+}
+
+@*<script src="~/Scripts/jquery-1.8.2.min.js"></script>
+<script src="~/Scripts/layer/layer.js"></script>
+
+<link href="~/Content/themes/easyui/Default.css" rel="stylesheet" />*@
+
+
+
+<div class="divTable" id="DivTableList" style="float:left"></div>
+<script type="text/javascript">
+
+    $(function () {
+        $.ajax({
+            url: '/System/getYJ_XY_WORKTable',
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#DivTableList').html(ar.Msg);
+                }
+                else {
+                    alert(ar.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('获取异常，请刷新重试');
+            }
+        });
+    });
+    function show(i, j)
+    { }
+</script>
