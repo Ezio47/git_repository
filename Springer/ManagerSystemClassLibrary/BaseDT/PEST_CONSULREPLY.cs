@@ -131,8 +131,7 @@ namespace ManagerSystemClassLibrary.BaseDT
                 sb.AppendFormat(" AND REPLYTIME = '{0}'", ClsSql.EncodeSql(DateTime.Parse(sw.REPLYTIME).ToString()));
                 sb.AppendFormat(" AND REPLYTIME = '{0}'", ClsSql.EncodeSql(DateTime.Parse(sw.REPLYTIME).AddDays(1).AddSeconds(-1).ToString()));
             }
-            string sql = "SELECT PEST_CONSULREPLYID, PEST_CONSULTATIONID, REPLYUID, REPLYTIME, REPLYCONTENT"
-                + sb.ToString() + " ORDER BY REPLYTIME ";
+            string sql = "SELECT PEST_CONSULREPLYID, PEST_CONSULTATIONID, REPLYUID, REPLYTIME, REPLYCONTENT" + sb.ToString() + " ORDER BY REPLYTIME ";
             DataSet ds = DataBaseClass.FullDataSet(sql);
             return ds.Tables[0];
         }
@@ -161,8 +160,7 @@ namespace ManagerSystemClassLibrary.BaseDT
                 sb.AppendFormat(" AND REPLYTIME = '{0}'", ClsSql.EncodeSql(DateTime.Parse(sw.REPLYTIME).ToString()));
                 sb.AppendFormat(" AND REPLYTIME = '{0}'", ClsSql.EncodeSql(DateTime.Parse(sw.REPLYTIME).AddDays(1).AddSeconds(-1).ToString()));
             }
-            string sql = "SELECT PEST_CONSULREPLYID, PEST_CONSULTATIONID, REPLYUID, REPLYTIME, REPLYCONTENT"
-                + sb.ToString() + " ORDER BY REPLYTIME ";
+            string sql = "SELECT PEST_CONSULREPLYID, PEST_CONSULTATIONID, REPLYUID, REPLYTIME, REPLYCONTENT" + sb.ToString() + " ORDER BY REPLYTIME ";
             string sqlC = "select count(1) " + sb.ToString();
             total = int.Parse(DataBaseClass.ReturnSqlField(sqlC));
             sw.CurPage = PagerCls.getCurPage(new PagerSW { curPage = sw.CurPage, pageSize = sw.PageSize, rowCount = total });

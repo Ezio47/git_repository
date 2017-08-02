@@ -1455,7 +1455,7 @@ namespace ManagerSystem.MVC.Controllers
             //角色复选框
             ViewBag.RoleChk = getRoleUId(new T_SYSSEC_ROLE_SW { USERID = ViewBag.T_USERID });
             ViewBag.vdSex = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTFLAG = "性别" });
-            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = SystemCls.getCurUserOrgNo() });
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = SystemCls.getCurUserOrgNo(), OnlyGetShiXianXZ = "1" });
             string sysorgFlag = "1";//1 州  2 市县 3 乡镇
             var bxz = PublicCls.OrgIsZhen(SystemCls.getCurUserOrgNo());//乡镇
             var bsx = PublicCls.OrgIsXian(SystemCls.getCurUserOrgNo());//市县
@@ -1518,7 +1518,7 @@ namespace ManagerSystem.MVC.Controllers
         {
             pubViewBag("006001", "006001", "");
             if (ViewBag.isPageRight == false) { return View(); }
-            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { TopORGNO = SystemCls.getCurUserOrgNo(), SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = SystemCls.getCurUserOrgNo() });
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { TopORGNO = SystemCls.getCurUserOrgNo(), SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = SystemCls.getCurUserOrgNo(), OnlyGetShiXianXZ="1" });
             ViewBag.depart = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "46", isShowAll = "1" });
             return View();
         }
@@ -1613,16 +1613,15 @@ namespace ManagerSystem.MVC.Controllers
                 sysorgNo = orgNo;
 
             string sysorgFlag = "1";
+            var bxc = PublicCls.OrgIsCun(sysorgNo); //村
             var bxz = PublicCls.OrgIsZhen(sysorgNo);//乡镇
             var bsx = PublicCls.OrgIsXian(sysorgNo);//市县
+            if (bxc)
+                sysorgFlag = "4";
             if (bxz)
-            {
                 sysorgFlag = "3";
-            }
             else if (bsx)
-            {
                 sysorgFlag = "2";
-            }
             List<T_SYS_DICTModel> _list = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "46", STANDBY1 = sysorgFlag }).ToList();
             StringBuilder sb = new StringBuilder();
             string Options = "<option></option>";
@@ -1656,7 +1655,7 @@ namespace ManagerSystem.MVC.Controllers
                 return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), "")), "text/html;charset=UTF-8");
             }
             else
-                return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), "")), "text/html;charset=UTF-8");
+                return Content(JsonConvert.SerializeObject(new Message(false, sb.ToString(), "")), "text/html;charset=UTF-8");
         }
 
         /// <summary>
@@ -1672,7 +1671,7 @@ namespace ManagerSystem.MVC.Controllers
                 return Content(JsonConvert.SerializeObject(new Message(true, OACls.FindOADeptBySysDept(sysORGNO, sysDeptIdList), "")), "text/html;charset=UTF-8");
             }
             else
-                return Content(JsonConvert.SerializeObject(new Message(true, "", "")), "text/html;charset=UTF-8");
+                return Content(JsonConvert.SerializeObject(new Message(false, "", "")), "text/html;charset=UTF-8");
         }
 
         /// <summary>
@@ -3018,7 +3017,7 @@ namespace ManagerSystem.MVC.Controllers
             string nr = Request.Params["nr"];
             string TypeID = Request.Params["TypeID"];
             string chwID = Request.Params["chwID"];
-            if (string.IsNullOrEmpty(BYORGNO)) { BYORGNO = ConfigCls.getTopOrgCode() + "00000"; }
+            if (string.IsNullOrEmpty(BYORGNO)) { BYORGNO = ConfigCls.getTopOrgCode() + "00000000000"; }
             StringBuilder sb = new StringBuilder();
 
             #region 市级，显示市、县、乡

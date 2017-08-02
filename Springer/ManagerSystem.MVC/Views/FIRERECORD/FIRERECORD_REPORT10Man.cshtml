@@ -90,6 +90,14 @@
 </div>
 
 <script type="text/javascript">
+    //验证整数
+    function CheckINT1(number) {
+        var filter = /^\+?[0-9][0-9]*$/;
+        if (filter.test($.trim(number))) return true;
+        else {
+            return false;
+        }
+    }
     function Manager() {
         var dic312Value = $('#dic312Value').val().split(',');
         var dic312Count = $('#dic312Count').val();
@@ -102,13 +110,24 @@
             var temp = x.toString();
             var s = $('#tbx' + temp + '').val();
             if ($.trim(s) != "") {
-                if (!CheckNUM2(s)) {
-                    layer.msg('请输入整数!', { icon: 5 });
-                    $('#tbx' + temp + '').focus();
-                    return;
+                if (temp !== "5" &&temp!==(dic312Count - 1).toString()) {
+                    if (!CheckINT1(s)) {
+                        layer.msg('请输入整数!', { icon: 5 });
+                        $('#tbx' + temp + '').focus();
+                        return;
+                    }
+                    else {
+                        if (s == "0" ) {
+                            continue;
+                        }
+                        else {
+                            strREPORTCODE = strREPORTCODE + dic312Value[x] + ",";
+                            strREPORTVALUE = strREPORTVALUE + $('#tbx' + temp + '').val() + ",";
+                        }
+                    }
                 }
                 else {
-                    if (s == "0" || s == "") {
+                    if (s == "0") {
                         continue;
                     }
                     else {

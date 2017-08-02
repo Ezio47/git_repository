@@ -97,8 +97,13 @@ namespace ManagerSystem.MVC.Controllers
             string PHONE = Request.Params["PHONE"];
             //string INFRAREDCAMERANAME = Request.Params["INFRAREDCAMERANAME"];
             string BYORGNO = Request.Params["BYORGNO"];
+            string PageSize = Request.Params["PageSize"];
+            if (PageSize == "0")
+                PageSize = ConfigCls.getTableDefaultPageSize();
+            string Page = Request.Params["Page"];
             //string str = ClsStr.EncryptA01(INFRAREDCAMERANAME + "|" + PHONE + "|" + BYORGNO, "kkkkkkkk");
-
+            int total = 0;
+            JC_INFRAREDCAMERA_BASICINFO_SW sw = new JC_INFRAREDCAMERA_BASICINFO_SW { curPage = int.Parse(Page), pageSize = int.Parse(PageSize), BYORGNO = BYORGNO, PHONE = PHONE };
             ///return Content(JsonConvert.SerializeObject(new Message(true, "", "/YJJC/INFRAREDCAMERA_BASICINFOList?trans=" + str + "&BYORGNO=" + BYORGNO)), "text/html;charset=UTF-8");
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<table id=\"sample-table-2\" class=\"table table-striped table-bordered table-hover dataTable\" aria-describedby=\"sample-table-2_info\">");
@@ -116,7 +121,7 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("    </tr>");
             sb.AppendFormat("</thead>");
             sb.AppendFormat("<tbody role=\"alert\" aria-live=\"polite\" aria-relevant=\"all\">");
-            var result = JC_INFRAREDCAMERACls.getListModel(new JC_INFRAREDCAMERA_BASICINFO_SW { PHONE = PHONE, BYORGNO = BYORGNO });
+            var result = JC_INFRAREDCAMERACls.getListModel(sw,out total);
             int i = 0;
             foreach (var v in result)
             {
@@ -156,7 +161,8 @@ namespace ManagerSystem.MVC.Controllers
             }
             sb.AppendFormat("</tbody>");
             sb.AppendFormat("</table>");
-            return Content(JsonConvert.SerializeObject(new MessagePagerAjax(true, sb.ToString(), "")), "text/html;charset=UTF-8");
+            string pageInfo = PagerCls.getPagerInfoAjax(new PagerSW { curPage = sw.curPage, pageSize = sw.pageSize, rowCount = total });
+            return Content(JsonConvert.SerializeObject(new MessagePagerAjax(true, sb.ToString(), pageInfo)), "text/html;charset=UTF-8"); ;
         }
         public ActionResult INFRAREDCAMERA_BASICINFOList()
         {

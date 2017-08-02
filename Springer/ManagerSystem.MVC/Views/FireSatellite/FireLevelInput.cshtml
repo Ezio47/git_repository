@@ -1,7 +1,9 @@
 ﻿@{
     Layout = "~/Views/Shared/_LayoutIndex.cshtml";
 }
-<script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+@section Header{
+    <script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+}
 
 <div class="easyui-layout" data-options="fit:true" style=" border:0;">
     <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
@@ -20,6 +22,7 @@
                                 <input type="button" value="查询" onclick="query()" class="btnSearchCss" />
                                 <input id="btnSave" type="button" value="保存" onclick="SaveFireLevelInput()" class="btnSaveCss" style="display:none;" />
                             }
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -58,13 +61,13 @@
             url: '/FireSatellite/FireLevelInputQuery',
             timeout: 10000, //10秒后超时，如果为0则永不超时
             data: { DCDATE: date, AreaCode: areacode },
+            dataType:'json',
             success: function (data, ioArgs) {
-                var ar = eval('(' + data + ')');
-                if (ar.Success) {
-                    window.location.assign(ar.Url);
+                if (data.Success) {
+                    window.location.assign(data.Url);
                 }
                 else {
-                    layer.msg(ar.Msg);
+                    layer.msg(data.Msg, { icon: 5 });
                 }
             },
             error: function (err, ioArgs) {
@@ -89,14 +92,14 @@
             url: '/FireSatellite/AreaChange',
             timeout: 10000, //10秒后超时，如果为0则永不超时
             data: { DCDATE: date, AreaCode: areacode },
+            dataType: 'json',
             success: function (data, ioArgs) {
-                var ar = eval('(' + data + ')');
-                if (ar.Success) {
+                if (data.Success) {
                     $('#tcontent').html("");
-                    $('#tcontent').html(ar.tableInfo);
+                    $('#tcontent').html(data.tableInfo);
                 }
                 else {
-                    layer.msg(ar.Msg);
+                    layer.msg(data.Msg, { icon: 5 });
                 }
             },
             error: function (err, ioArgs) {
@@ -168,18 +171,18 @@
                     DANGERCLASS: strDangerClass,
                     DCDATE: strTime
                 },
+                dataType: 'json',
                 success: function (data, ioArgs) {
-                    var ar = eval('(' + data + ')');
-                    if (ar.Success) {
-                        layer.msg(ar.Msg, { icon: 6 });
+                    if (data.Success) {
+                        layer.msg(data.Msg, { icon: 6 });
                         query();
                     }
                     else {
-                        layer.msg(ar.Msg);
+                        layer.msg(data.Msg, { icon: 5 });
                     }
                 },
                 error: function (err, ioArgs) {
-                    layer.msg("保存异常!");
+                    layer.msg("保存异常!", { icon: 5 });
                 }
             });
         }

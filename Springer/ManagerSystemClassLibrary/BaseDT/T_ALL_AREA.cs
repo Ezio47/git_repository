@@ -187,27 +187,29 @@ namespace ManagerSystemClassLibrary.BaseDT
             if (string.IsNullOrEmpty(sw.SubAREACODE) == false)
             {
                 if (sw.SubAREACODE == "0")
-                    sb.AppendFormat(" AND Substring(AREACODE,3, 7) ='0000000'");
-                else if (sw.SubAREACODE.Substring(2, 7) == "0000000")
-                    sb.AppendFormat(" AND Substring(AREACODE,5, 5) = '00000' AND Substring(AREACODE,3, 2) != '00' AND Substring(AREACODE,1, 2)='{0}'", sw.SubAREACODE.Substring(0, 2));
-                else if (sw.SubAREACODE.Substring(4, 5) == "00000" && sw.SubAREACODE.Substring(2, 2) != "00")
-                    sb.AppendFormat(" AND Substring(AREACODE,7, 3) = '000' AND Substring(AREACODE,5, 2) != '00'AND Substring(AREACODE,1,4)='{0}'", sw.SubAREACODE.Substring(0, 4));
-                else if (sw.SubAREACODE.Substring(6, 3) == "000")
-                    sb.AppendFormat(" AND Substring(AREACODE,7, 3) != '000' AND Substring(AREACODE,1,6)='{0}'", sw.SubAREACODE.Substring(0, 6));
+                    sb.AppendFormat(" AND Substring(AREACODE,3, 13) ='0000000000000'");
+                else if (sw.SubAREACODE.Substring(2, 13) == "0000000000000")
+                    sb.AppendFormat(" AND Substring(AREACODE,5, 11) = '00000000000' AND Substring(AREACODE,3, 2) != '00' AND Substring(AREACODE,1, 2)='{0}'", sw.SubAREACODE.Substring(0, 2));
+                else if (sw.SubAREACODE.Substring(4, 11) == "00000000000" && sw.SubAREACODE.Substring(2, 2) != "00")
+                    sb.AppendFormat(" AND Substring(AREACODE,7, 9) = '000000000' AND Substring(AREACODE,5, 2) != '00'AND Substring(AREACODE,1,4)='{0}'", sw.SubAREACODE.Substring(0, 4));
+                else if (sw.SubAREACODE.Substring(6, 9) == "000000000" && sw.SubAREACODE.Substring(4, 2) != "00")
+                    sb.AppendFormat("AND Substring(AREACODE,10, 6) = '000000' AND Substring(AREACODE,7, 3) != '000' AND Substring(AREACODE,1,6)='{0}'", sw.SubAREACODE.Substring(0, 6));
+                else if (sw.SubAREACODE.Substring(9, 6) == "000000" && sw.SubAREACODE.Substring(6, 3) != "000")
+                    sb.AppendFormat("AND Substring(AREACODE,13, 3) = '000' AND Substring(AREACODE,10, 6) != '000' AND Substring(AREACODE,1,9)='{0}'", sw.SubAREACODE.Substring(0, 6));
                 else
-                    sb.AppendFormat(" AND Substring(AREACODE,1, 9) = '{0}' ", sw.SubAREACODE.Substring(0, 9));
+                    sb.AppendFormat(" AND Substring(AREACODE,1, 15) = '{0}' ", sw.SubAREACODE.Substring(0, 15));
             }
             if (!string.IsNullOrEmpty(sw.GetContyORGNOByCity))//市获取所有县
             {
-                sb.AppendFormat(" AND (SUBSTRING(AREACODE,1,4)='{0}' and SUBSTRING(AREACODE,5,2)<>'00' and SUBSTRING(AREACODE,7,3) = '000' )", ClsSql.EncodeSql(sw.GetContyORGNOByCity.Substring(0, 4)));
+                sb.AppendFormat(" AND (SUBSTRING(AREACODE,1,4)='{0}' and SUBSTRING(AREACODE,5,2)<>'00' and SUBSTRING(AREACODE,7,9) = '000000000' )", ClsSql.EncodeSql(sw.GetContyORGNOByCity.Substring(0, 4)));
             }
             if (!string.IsNullOrEmpty(sw.GetXZOrgNOByConty))
             {
-                sb.AppendFormat(" AND (SUBSTRING(AREACODE,1,6)='{0}' and SUBSTRING(AREACODE,7,3) != '000')", ClsSql.EncodeSql(sw.GetXZOrgNOByConty.Substring(0, 6)));
+                sb.AppendFormat(" AND (SUBSTRING(AREACODE,1,6)='{0}' and SUBSTRING(AREACODE,7,3) != '000'and SUBSTRING(AREACODE,10,6) = '000000')", ClsSql.EncodeSql(sw.GetXZOrgNOByConty.Substring(0, 6)));
             }
             if (string.IsNullOrEmpty(sw.OnlyGetShiXian) == false)
             {
-                sb.AppendFormat(" AND (SUBSTRING(AREACODE,1,4)='{0}' and SUBSTRING(AREACODE,7,3) = '000' and  SUBSTRING(AREACODE,5,5)<>'00000' )", ClsSql.EncodeSql(sw.TOPAREACODE.Substring(0, 4)));
+                sb.AppendFormat(" AND (SUBSTRING(AREACODE,1,4)='{0}' and SUBSTRING(AREACODE,7,3) = '000' and  SUBSTRING(AREACODE,5,11)<>'00000000000' )", ClsSql.EncodeSql(sw.TOPAREACODE.Substring(0, 4)));
             }
             sb.AppendFormat(" ORDER BY AREACODE ");
             DataSet ds = DataBaseClass.FullDataSet(sb.ToString());

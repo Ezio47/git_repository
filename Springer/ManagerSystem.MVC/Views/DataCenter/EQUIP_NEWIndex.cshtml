@@ -2,9 +2,9 @@
 @{
     Layout = "~/Views/Shared/_LayoutIndex.cshtml";
     var curorgno = SystemCls.getCurUserOrgNo();
-    if (curorgno.Substring(6, 3) == "000" && curorgno.Substring(4, 2) != "00")
+    if (curorgno.Substring(6, 9) == "000000000" && curorgno.Substring(4, 2) != "00")
     {
-        curorgno = curorgno.Substring(0, 6) + "xxx";
+        curorgno = curorgno.Substring(0, 6) + "xxxxxxxxx";
     }
     else
     {

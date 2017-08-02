@@ -12,7 +12,7 @@ using PublicClassLibrary;
 namespace ManagerSystemClassLibrary.BaseDT
 {
     /// <summary>
-    /// 火情档案管理
+    /// 森林防火组织机构统计
     /// </summary>
     public class FIRERECORD_REPORT8
     {
@@ -24,7 +24,6 @@ namespace ManagerSystemClassLibrary.BaseDT
         /// <returns>参见模型</returns>
         public static Message Add(FIRERECORD_REPORT8_Model m)
         {
-            #region 添加数据至FIRERECORD_REPORT8表中
             List<string> sqllist = new List<string>();
             string[] arrREPORTCODE = m.REPORTCODE.Split(',');
             string[] arrSSXTYPELEVELCODE = m.SSXTYPELEVELCODE.Split(',');
@@ -52,15 +51,7 @@ namespace ManagerSystemClassLibrary.BaseDT
                 return new Message(false, "保存失败，事物回滚机制！", "");
             }
         }
-            #endregion
-        //    bool bln = DataBaseClass.ExeSql(sb.ToString());
-        //    #endregion;
-        //    if (bln == true)
-        //        return new Message(true, "添加成功!", m.returnUrl);
-        //    else
-        //        return new Message(false, "添加失败，请检查各输入框是否正确!", m.returnUrl);
-        //}
-
+       
         #endregion
 
         #region 获取报表数据列表

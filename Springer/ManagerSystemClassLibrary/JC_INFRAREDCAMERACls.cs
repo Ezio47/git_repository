@@ -144,6 +144,44 @@ namespace ManagerSystemClassLibrary
 
         #endregion
 
+        #region 获取相机列表
+        /// <summary>
+        /// 获取列表
+        /// </summary>
+        /// <param name="sw">参见模型</param>
+        /// <returns>参见模型</returns>
+
+        public static IEnumerable<JC_INFRAREDCAMERA_BASICINFO_Model> getListModel(JC_INFRAREDCAMERA_BASICINFO_SW sw, out int total)
+        {
+            DataTable dtORG = BaseDT.T_SYS_ORG.getDT(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag() });//获取单位
+            DataTable dt = BaseDT.JC_INFRAREDCAMERA_BASICINFO.getDT(sw, out total);//列表
+            var result = new List<JC_INFRAREDCAMERA_BASICINFO_Model>();
+
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                JC_INFRAREDCAMERA_BASICINFO_Model m = new JC_INFRAREDCAMERA_BASICINFO_Model();
+                m.INFRAREDCAMERAID = dt.Rows[i]["INFRAREDCAMERAID"].ToString();
+                m.BYORGNO = dt.Rows[i]["BYORGNO"].ToString();
+                m.PHONE = dt.Rows[i]["PHONE"].ToString();
+                m.INFRAREDCAMERANAME = dt.Rows[i]["INFRAREDCAMERANAME"].ToString();
+                m.PHONE = dt.Rows[i]["PHONE"].ToString();
+                m.JD = dt.Rows[i]["JD"].ToString();
+                m.WD = dt.Rows[i]["WD"].ToString();
+                m.GC = dt.Rows[i]["GC"].ToString();
+                m.ADDRESS = dt.Rows[i]["ADDRESS"].ToString();
+                m.PHONE = dt.Rows[i]["PHONE"].ToString();
+                m.ORGNAME = BaseDT.T_SYS_ORG.getName(dtORG, dt.Rows[i]["BYORGNO"].ToString());
+                result.Add(m);
+            }
+            dtORG.Clear();
+            dtORG.Dispose();
+            dt.Clear();
+            dt.Dispose();
+            return result;
+        }
+
+        #endregion
+
         #region 彩信图片增、删、改、管理
 
         /// <summary>
@@ -552,7 +590,7 @@ namespace ManagerSystemClassLibrary
                 }
                 else
                 {
-                    str = PublicCls.GetOrgNameByOrgNO(curUserOrg.Substring(0, 6) + "000");
+                    str = PublicCls.GetOrgNameByOrgNO(curUserOrg.Substring(0, 6) + "000000000");
                 }
                 JObject root = new JObject
                      {
@@ -563,7 +601,7 @@ namespace ManagerSystemClassLibrary
                 var resultlist = JC_MONITORCls.getListModel(new JC_MONITOR_BASICINFO_SW { BYORGNO = curUserOrg }); //获取所有有权限的监控摄像
                 if (resultlist.Any())
                 {
-                    var devOrgSXList = resultlist.Select(p => p.BYORGNO.Substring(0, 6) + "000").Distinct();
+                    var devOrgSXList = resultlist.Select(p => p.BYORGNO.Substring(0, 6) + "00000000").Distinct();
                     if (devOrgSXList.Any())
                     {
                         JArray devSXArrary = new JArray();
@@ -576,7 +614,7 @@ namespace ManagerSystemClassLibrary
                                 //{"state","closed"} 
                             };
                             var devOrgXZList = resultlist.Select(p => new { p.BYORGNO, p.ORGNAME }).Distinct()
-                                .Where(p => p.BYORGNO.Substring(0, 6) + "000" == orgsx);
+                                .Where(p => p.BYORGNO.Substring(0, 6) + "00000000" == orgsx);
                             if (devOrgXZList.Any())
                             {
                                 JArray devXZArrary = new JArray();

@@ -71,8 +71,7 @@ namespace ManagerSystemClassLibrary.BaseDT
             if (isExists(new PEST_COLLECTDATA_SW { PESTCOLLDATAID = m.PESTCOLLDATAID }) == false)
                 return new Message(false, "修改失败，采集数据不存在!", "");
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("update PEST_COLLECTDATA");
-            sb.AppendFormat(" set ");
+            sb.AppendFormat("update PEST_COLLECTDATA SET ");
             sb.AppendFormat(" HID='{0}'", ClsSql.EncodeSql(m.HID));
             sb.AppendFormat(",BYORGNO='{0}'", ClsSql.EncodeSql(m.BYORGNO));
             sb.AppendFormat(",COLLECTRESOURCE='{0}'", ClsSql.EncodeSql(m.COLLECTRESOURCE));
@@ -174,10 +173,14 @@ namespace ManagerSystemClassLibrary.BaseDT
             //根据组织机构查询
             if (!string.IsNullOrEmpty(sw.BYORGNO))
             {
-                if (sw.BYORGNO.Substring(4, 5) == "00000")//获取所有市的
-                    sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,4) = '{0}' or BYORGNO is null or BYORGNO='')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 4)));
-                else if (sw.BYORGNO.Substring(6, 3) == "000")//获取所有县的
-                    sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,6) = '{0}' or BYORGNO is null or BYORGNO='')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 6)));
+                if (sw.BYORGNO.Substring(4, 11) == "00000000000")  //获取所有市的
+                    sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,4) = '{0}')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 4)));
+                else if (sw.BYORGNO.Substring(6, 9) == "000000000" && sw.BYORGNO.Substring(4, 11) != "00000000000") //获取所有县的
+                    sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,6) = '{0}')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 6)));
+                else if (sw.BYORGNO.Substring(9, 6) == "000000" && sw.BYORGNO.Substring(6, 9) != "000000000")   //获取所有乡镇的
+                    sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,9) = '{0}')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 9)));
+                else if (sw.BYORGNO.Substring(9, 6) != "000000")   //获取所有村的
+                    sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,12) = '{0}')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 12)));
                 else
                     sb.AppendFormat(" AND BYORGNO = '{0}'", ClsSql.EncodeSql(sw.BYORGNO));
             }
@@ -219,10 +222,14 @@ namespace ManagerSystemClassLibrary.BaseDT
             //根据组织机构查询
             if (!string.IsNullOrEmpty(sw.BYORGNO))
             {
-                if (sw.BYORGNO.Substring(4, 5) == "00000")//获取所有市的
-                    sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,4) = '{0}' or BYORGNO is null or BYORGNO='')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 4)));
-                else if (sw.BYORGNO.Substring(6, 3) == "000")//获取所有县的
-                    sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,6) = '{0}' or BYORGNO is null or BYORGNO='')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 6)));
+                if (sw.BYORGNO.Substring(4, 11) == "00000000000")  //获取所有市的
+                    sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,4) = '{0}')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 4)));
+                else if (sw.BYORGNO.Substring(6, 9) == "000000000" && sw.BYORGNO.Substring(4, 11) != "00000000000") //获取所有县的
+                    sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,6) = '{0}')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 6)));
+                else if (sw.BYORGNO.Substring(9, 6) == "000000" && sw.BYORGNO.Substring(6, 9) != "000000000")   //获取所有乡镇的
+                    sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,9) = '{0}')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 9)));
+                else if (sw.BYORGNO.Substring(9, 6) != "000000")   //获取所有村的
+                    sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,12) = '{0}')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 12)));
                 else
                     sb.AppendFormat(" AND BYORGNO = '{0}'", ClsSql.EncodeSql(sw.BYORGNO));
             }

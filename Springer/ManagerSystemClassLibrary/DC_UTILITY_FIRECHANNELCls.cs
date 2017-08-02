@@ -230,7 +230,7 @@ namespace ManagerSystemClassLibrary
                 m.JDEND = dt.Rows[i]["JDEND"].ToString();
                 m.WDEND = dt.Rows[i]["WDEND"].ToString();
                 m.WORTH = dt.Rows[i]["WORTH"].ToString();
-                if (m.BYORGNO.Substring(6, 3) != "000")
+                if (m.BYORGNO.Substring(6, 3) != "000" && m.BYORGNO.Substring(9, 6) == "000000")
                 {
                     m.ORGName = BaseDT.T_SYS_ORG.getName(dtORG, m.BYORGNO);
 

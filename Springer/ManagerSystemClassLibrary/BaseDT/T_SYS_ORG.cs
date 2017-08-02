@@ -106,18 +106,22 @@ namespace ManagerSystemClassLibrary.BaseDT
             sb.AppendFormat("UPDATE T_SYS_ORG");
             sb.AppendFormat(" set ");
             sb.AppendFormat("MOBILEPARAMLIST='{0}'", ClsSql.EncodeSql(m.MOBILEPARAMLIST));
-            if (orgNo.Substring(4, 5) == "00000")//获取所有市的
+            if (orgNo.Substring(4, 11) == "00000000000")//获取所有市的
             {
                 var str = orgNo.Substring(0, 4) + "%";
                 sb.AppendFormat(" where ORGNO LIKE '{0}'", str);
             }
-            else if (orgNo.Substring(6, 3) == "000")//获取所有县的
+            else if (orgNo.Substring(6, 9) == "000000000")//获取所有县的
             {
                 var str = orgNo.Substring(0, 6) + "%";
                 sb.AppendFormat(" where ORGNO LIKE '{0}'", str);
             }
-            else
+            else if (orgNo.Substring(9,6)=="0000000")//获取所有乡镇的
             {
+                var str = orgNo.Substring(0, 9) + "%";
+                sb.AppendFormat(" where ORGNO LIKE '{0}'", str);
+            }
+            else{
                 sb.AppendFormat(" where ORGNO='{0}'", ClsSql.EncodeSql(m.ORGNO));
             }
             bool bln = DataBaseClass.ExeSql(sb.ToString());
@@ -187,39 +191,55 @@ namespace ManagerSystemClassLibrary.BaseDT
                 sb.AppendFormat(" AND ORGNAME like '%{0}%'", ClsSql.EncodeSql(sw.ORGNAME));
             if (string.IsNullOrEmpty(sw.TopORGNO) == false)
             {
-                if (sw.TopORGNO.Substring(4, 5) == "00000")//获取所有市的
+                if (sw.TopORGNO.Substring(4, 11) == "00000000000")//获取所有市的
                     sb.AppendFormat(" AND SUBSTRING(ORGNO,1,4) = '{0}'", ClsSql.EncodeSql(sw.TopORGNO.Substring(0, 4)));
-                else if (sw.TopORGNO.Substring(6, 3) == "000")//获取所有县的
+                else if (sw.TopORGNO.Substring(6, 9) == "000000000")//获取所有县的
                     sb.AppendFormat(" AND SUBSTRING(ORGNO,1,6) = '{0}'", ClsSql.EncodeSql(sw.TopORGNO.Substring(0, 6)));
+                else if (sw.TopORGNO.Substring(9, 6) == "0000000")//获取所有乡镇的
+                    sb.AppendFormat(" AND SUBSTRING(ORGNO,1,9) = '{0}'", ClsSql.EncodeSql(sw.TopORGNO.Substring(0, 9)));
                 else
                     sb.AppendFormat(" AND ORGNO = '{0}'", ClsSql.EncodeSql(sw.TopORGNO));
             }
             if (string.IsNullOrEmpty(sw.TopSXORGNO) == false)
             {
-                if (sw.TopSXORGNO.Substring(4, 5) == "00000")//获取所有市下面的县
+                if (sw.TopSXORGNO.Substring(4, 11) == "00000000000")//获取所有市下面的县
                     sb.AppendFormat(" AND (SUBSTRING(ORGNO,1,4)='{0}' and SUBSTRING(ORGNO,5,2)<>'00' and SUBSTRING(ORGNO,7,3) = '000')", ClsSql.EncodeSql(sw.TopSXORGNO.Substring(0, 4)));
                 else
                     sb.AppendFormat(" AND (SUBSTRING(ORGNO,1,6)='{0}' and SUBSTRING(ORGNO,7,3) = '000')", ClsSql.EncodeSql(sw.TopSXORGNO.Substring(0, 6)));
             }
             if (string.IsNullOrEmpty(sw.TopEchartORGNO) == false)
             {
-                if (sw.TopEchartORGNO.Substring(4, 5) == "00000")//获取所有市下面的县以及市
+                if (sw.TopEchartORGNO.Substring(4, 11) == "00000000000")//获取所有市下面的县以及市
                     sb.AppendFormat(" AND (SUBSTRING(ORGNO,1,4)='{0}' and SUBSTRING(ORGNO,7,3) = '000')", ClsSql.EncodeSql(sw.TopEchartORGNO.Substring(0, 4)));
-                else if (sw.TopEchartORGNO.Substring(6, 3) == "000")//获取县以及县下面的镇
+                else if (sw.TopEchartORGNO.Substring(6, 9) == "000000000")//获取县以及县下面的镇
                     sb.AppendFormat(" AND (SUBSTRING(ORGNO,1,6)='{0}')", ClsSql.EncodeSql(sw.TopEchartORGNO.Substring(0, 6)));
+                else if (sw.TopORGNO.Substring(9, 6) == "0000000")//获取所有乡镇的
+                    sb.AppendFormat(" AND SUBSTRING(ORGNO,1,9) = '{0}'", ClsSql.EncodeSql(sw.TopEchartORGNO.Substring(0, 9)));
                 else
                     sb.AppendFormat(" AND ORGNO='{0}'", ClsSql.EncodeSql(sw.TopEchartORGNO));
             }
             if (!string.IsNullOrEmpty(sw.GetContyORGNOByCity))//市获取所有县
-                sb.AppendFormat(" AND (SUBSTRING(ORGNO,1,4)='{0}' and SUBSTRING(ORGNO,5,2)<>'00' and SUBSTRING(ORGNO,7,3) = '000')", ClsSql.EncodeSql(sw.GetContyORGNOByCity.Substring(0, 4)));
+                sb.AppendFormat(" AND (SUBSTRING(ORGNO,1,4)='{0}' and SUBSTRING(ORGNO,5,2)<>'00' and SUBSTRING(ORGNO,7,9) = '000000000')", ClsSql.EncodeSql(sw.GetContyORGNOByCity.Substring(0, 4)));
             if (!string.IsNullOrEmpty(sw.GetXZOrgNOByConty)) //县获取所有乡镇
-                sb.AppendFormat(" AND (SUBSTRING(ORGNO,1,6)='{0}' and SUBSTRING(ORGNO,7,3) != '000')", ClsSql.EncodeSql(sw.GetXZOrgNOByConty.Substring(0, 6)));
+                sb.AppendFormat(" AND (SUBSTRING(ORGNO,1,6)='{0}' and SUBSTRING(ORGNO,7,9) != '000000000')", ClsSql.EncodeSql(sw.GetXZOrgNOByConty.Substring(0, 6)));
             if (string.IsNullOrEmpty(sw.OnlyGetShi) == false) //只获取市
-                sb.AppendFormat(" AND (SUBSTRING(ORGNO,1,4)='{0}' and SUBSTRING(ORGNO,5,5) = '00000')", ClsSql.EncodeSql(sw.OnlyGetShi.Substring(0, 4)));
+                sb.AppendFormat(" AND (SUBSTRING(ORGNO,1,4)='{0}' and SUBSTRING(ORGNO,5,11) = '00000000000')", ClsSql.EncodeSql(sw.OnlyGetShi.Substring(0, 4)));
             if (string.IsNullOrEmpty(sw.OnlyGetShiXian) == false) //只获取市、县
-                sb.AppendFormat(" AND (SUBSTRING(ORGNO,1,4)='{0}' and SUBSTRING(ORGNO,7,3) = '000')", ClsSql.EncodeSql(sw.TopORGNO.Substring(0, 4)));
+                sb.AppendFormat(" AND (SUBSTRING(ORGNO,1,4)='{0}' and SUBSTRING(ORGNO,7,9) = '000000000')", ClsSql.EncodeSql(sw.TopORGNO.Substring(0, 4)));
             if (string.IsNullOrEmpty(sw.OnlyGetXianXZ) == false) //只获取县、乡镇
-                sb.AppendFormat(" AND (SUBSTRING(ORGNO,1,6)='{0}')", ClsSql.EncodeSql(sw.TopORGNO.Substring(0, 6)));
+                sb.AppendFormat(" AND (SUBSTRING(ORGNO,1,6)='{0}' and SUBSTRING(ORGNO,7,9) = '000000000')", ClsSql.EncodeSql(sw.TopORGNO.Substring(0, 6)));
+            if (string.IsNullOrEmpty(sw.OnlyGetShiXianXZ) == false) //获取市/县/乡镇
+            {
+                if (PublicCls.OrgIsShi(sw.TopORGNO)||PublicCls.OrgIsXian(sw.TopORGNO))
+                {
+                     sb.AppendFormat(" AND (SUBSTRING(ORGNO,1,4)='{0}'and SUBSTRING(ORGNO,10,6) = '000000')", ClsSql.EncodeSql(sw.TopORGNO.Substring(0, 4)));
+                }
+                if (PublicCls.OrgIsZhen(sw.TopORGNO))
+                {
+                    sb.AppendFormat(" AND (SUBSTRING(ORGNO,1,6)='{0}'and SUBSTRING(ORGNO,10,6) = '000000')", ClsSql.EncodeSql(sw.TopORGNO.Substring(0, 6)));
+                }
+                
+            }
             sb.AppendFormat(" ORDER BY ORGNO");
             DataSet ds = DataBaseClass.FullDataSet(sb.ToString());
             return ds.Tables[0];
@@ -270,17 +290,17 @@ namespace ManagerSystemClassLibrary.BaseDT
         {
             if (dt == null)
                 return "";
-            if (string.IsNullOrEmpty(value) || value.Length != 9)
+            if (string.IsNullOrEmpty(value) || value.Length != 15)
                 return "";
             string str = "";
             string ogntrans = "";
-            if (value.Substring(6, 3) == "00000")
+            if (value.Substring(6, 9) == "00000000000")
             {
                 ogntrans = value;
             }
             else
             {
-                ogntrans = value.Substring(0, 6) + "000";
+                ogntrans = value.Substring(0, 6) + "000000000";
             }
             DataRow[] dr = dt.Select("ORGNO='" + ogntrans + "'");
             if (dr.Length > 0)

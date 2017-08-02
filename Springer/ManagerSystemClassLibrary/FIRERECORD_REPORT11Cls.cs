@@ -31,20 +31,7 @@ namespace ManagerSystemClassLibrary
                     return new Message(msgMENU.Success, msgMENU.Msg, "");
                 return new Message(msgMENU.Success, msgMENU.Msg, m.returnUrl);
             }
-            //if (m.opMethod == "Mdy")
-            //{
-            //    Message msgMENU = BaseDT.FIRERECORD_REPORT8.Mdy(m);
-            //    if (msgMENU.Success == false)
-            //        return new Message(msgMENU.Success, msgMENU.Msg, "");
-            //    return new Message(msgMENU.Success, msgMENU.Msg, m.returnUrl);
-            //}
-            //if (m.opMethod == "Del")
-            //{
-            //    Message msgMENU = BaseDT.FIRERECORD_REPORT8.Del(m);
-            //    if (msgMENU.Success == false)
-            //        return new Message(msgMENU.Success, msgMENU.Msg, "");
-            //    return new Message(msgMENU.Success, msgMENU.Msg, m.returnUrl);
-            //}
+           
             return new Message(false, "无效操作", m.returnUrl);
         }
 

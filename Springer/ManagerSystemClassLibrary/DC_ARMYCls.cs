@@ -185,7 +185,7 @@ namespace ManagerSystemClassLibrary
                 m.MARK = dt.Rows[i]["MARK"].ToString();
                 m.JD = dt.Rows[i]["JD"].ToString();
                 m.WD = dt.Rows[i]["WD"].ToString();
-                if (m.BYORGNO.Substring(6,3)!="000")
+                if (m.BYORGNO.Substring(6,9)!="000000000")
                 {
                     m.ORGName = BaseDT.T_SYS_ORG.getName(dtORG, m.BYORGNO);
                     

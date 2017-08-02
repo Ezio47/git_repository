@@ -34,31 +34,27 @@
                         <td colspan="10" style="height:40px"><h1>基本信息</h1></td>
                     </tr>
                     <tr>
-                        <td style="width:80px;">起火单位:</td>
+                        <td style="width:78px;">森林火灾编号:</td>
+                        <td style="width:80px;">@ViewBag.FIRECODE</td>
+                        <td style="width:78px;">起火单位:</td>
                         <td style="width:80px;">@ViewBag.ORGNAME</td>
                         <td style="width:80px;">起火时间:</td>
                         <td style="width:80px;">@ViewBag.FIRETIME</td>
-                        <td style="width:80px;">森林总面积:</td>
-                        <td style="width:100px;">
+                        <td style="width:84px;">森林总面积:</td>
+                        <td style="width:110px;">
                             <input id="TOTALAREA" type="text" value="@Model.TOTALAREA" style="width:42%;" />
                             <span style="color: gray;">hm²</span>
                             <input id="TOTALAREAJWDLIST" type="hidden" value="@Model.TOTALAREAJWDLIST" />
                             <input type="button" value="定位" onclick="SetLine('TOTAL')" class="searchBox_01 LinkLocation" />
                         </td>
-                        <td style="width:80px;">火场面积:</td>
-                        <td style="width:100px;">
+                        <td style="width:70px;">火场面积:</td>
+                        <td style="width:120px;">
                             <input id="FIREAREA" type="text" value="@Model.FIREAREA" style="width:42%;" />
                             <span style="color: gray;">hm²</span>
                             <input id="FIREAREAJWDLIST" type="hidden" value="@Model.FIREAREAJWDLIST" />
                             <input type="button" value="定位" onclick="SetLine('FIRE')" class="searchBox_01 LinkLocation" />
                         </td>
-                        <td style="width:100px;">火灾受害面积:</td>
-                        <td style="width:100px;">
-                            <input id="FIRELOSEAREA" type="text" value="@Model.FIRELOSEAREA" style="width:42%;" />
-                            <span style="color: gray;">hm²</span>
-                            <input id="FIRELOSEAREAJWDLIST" type="hidden" value="@Model.FIRELOSEAREAJWDLIST" />
-                            <input type="button" value="定位" onclick="SetLine('FIRELOSE')" class="searchBox_01 LinkLocation" />
-                        </td>
+
                     </tr>
                     <tr>
                         <td>灾区森林总蓄积量:</td>
@@ -81,13 +77,20 @@
                             <input id="CASUALTYCOUNT" type="text" value="@Model.CASUALTYCOUNT" style="width:80%;" />
                             <span style="color: gray;">人</span>
                         </td>
+                        <td style="width:100px;">火灾受害面积:</td>
+                        <td style="width:110px;">
+                            <input id="FIRELOSEAREA" type="text" value="@Model.FIRELOSEAREA" style="width:42%;" />
+                            <span style="color: gray;">hm²</span>
+                            <input id="FIRELOSEAREAJWDLIST" type="hidden" value="@Model.FIRELOSEAREAJWDLIST" />
+                            <input type="button" value="定位" onclick="SetLine('FIRELOSE')" class="searchBox_01 LinkLocation" />
+                        </td>
+                    </tr>
+                    <tr>
                         <td>建筑物(或构建物)损失量:</td>
                         <td>
                             <input id="BUILDINGLOSECOUNT" type="text" value="@Model.BUILDINGLOSECOUNT" style="width:80%;" />
                             <span style="color: gray;">m²</span>
                         </td>
-                    </tr>
-                    <tr>
                         <td>机械设备损失量:</td>
                         <td>
                             <input id="MACHINERYLOSECOUNT" type="text" value="@Model.MACHINERYLOSECOUNT" style="width:65%;" />
@@ -106,21 +109,24 @@
                                 string sMoney = "";
                                 string sMark = "";
                                 string sMx = "";
+                                string sId = "";
                                 if (dicCount > 0)
                                 {
                                     title = dicType501.DICTTYPEListModel[i].DICTTYPENAME + "-" + dicType501.DICTTYPEListModel[i].DICTListModel[0].DICTNAME;
                                     sMoney = "tbxMoney" + dicType501.DICTTYPEListModel[i].DICTListModel[0].DICTVALUE;
                                     sMark = "tbxMark" + dicType501.DICTTYPEListModel[i].DICTListModel[0].DICTVALUE;
                                     sMx = "div" + dicType501.DICTTYPEListModel[i].DICTListModel[0].DICTVALUE;
+                                    sId = "a" + dicType501.DICTTYPEListModel[i].DICTListModel[0].DICTVALUE;
                                     <tr style="width:95%;">
-                                        <td colspan="10" style="height:40px"><h1 style="width:200px">@title</h1></td>
-                                    </tr>
-                                    <tr>
-                                        <td>损失金额(元)</td>
-                                        <td><input id="@sMoney" type="text" value="" style="width:98%;" /></td>
-                                        <td>备注</td>
+                                        <td colspan="2" style="height:40px"><h1 style="width:200px">@title</h1></td>
+                                        <td>损失金额:</td>
+                                        <td>
+                                            <input id="@sMoney" type="text" value="" style="width:75%;" />
+                                            <span style="color: gray;">(元)</span>
+                                        </td>
+                                        <td>备注:</td>
                                         <td><input id="@sMark" type="text" value="" style="width:98%;" /></td>
-                                        <td colspan="7"><a href="#" onclick="ManagerLostType('@dicType501.DICTTYPEListModel[i].DICTListModel[0].DICTNAME','@dicType501.DICTTYPEListModel[i].DICTListModel[0].DICTVALUE')" title='管 理' class="searchBox_01 LinkMdy">管 理</a></td>
+                                        <td colspan="5"><a id="@sId" href="#" onclick="ManagerLostType('@dicType501.DICTTYPEListModel[i].DICTListModel[0].DICTNAME','@dicType501.DICTTYPEListModel[i].DICTListModel[0].DICTVALUE')" title='管 理' class="searchBox_01 LinkDel">管 理</a></td>
                                     </tr>
                                     <tr>
                                         <td class="center" colspan="10" id="@sMx"></td>
@@ -131,15 +137,17 @@
                                         sMoney = "tbxMoney" + dicType501.DICTTYPEListModel[i].DICTListModel[j].DICTVALUE;
                                         sMark = "tbxMark" + dicType501.DICTTYPEListModel[i].DICTListModel[j].DICTVALUE;
                                         sMx = "div" + dicType501.DICTTYPEListModel[i].DICTListModel[j].DICTVALUE;
+                                        sId = "a" + dicType501.DICTTYPEListModel[i].DICTListModel[j].DICTVALUE;
                                         <tr style="width:95%;">
-                                            <td colspan="10" style="height:40px;width:100px;"><h1 style="width:200px">@title</h1></td>
-                                        </tr>
-                                        <tr>
-                                            <td>损失金额(元)</td>
-                                            <td><input id="@sMoney" type="text" value="" style="width:98%;" /></td>
-                                            <td>备注</td>
+                                            <td colspan="2" style="height:40px;width:100px;"><h1 style="width:200px">@title</h1></td>
+                                            <td>损失金额:</td>
+                                            <td>
+                                                <input id="@sMoney" type="text" value="" style="width:75%;" />
+                                                <span style="color: gray;">(元)</span>
+                                            </td>
+                                            <td>备注:</td>
                                             <td><input id="@sMark" type="text" value="" style="width:98%;" /></td>
-                                            <td colspan="7"><a href="#" onclick="ManagerLostType('@dicType501.DICTTYPEListModel[i].DICTListModel[j].DICTNAME','@dicType501.DICTTYPEListModel[i].DICTListModel[j].DICTVALUE')" title='管 理' class="searchBox_01 LinkMdy">管 理</a></td>
+                                            <td colspan="5"> <a id="@sId" href="#" onclick="ManagerLostType('@dicType501.DICTTYPEListModel[i].DICTListModel[j].DICTNAME','@dicType501.DICTTYPEListModel[i].DICTListModel[j].DICTVALUE')" title='管 理' class="searchBox_01 LinkDel">管 理</a></td>
                                         </tr>
                                         <tr>
                                             <td colspan="10" id="@sMx"></td>
@@ -150,31 +158,27 @@
                         }
                     }
                     <tr style="width:95%;">
-                        <td colspan="10" style="height:40px"><h1>评估统计</h1></td>
+                        <td colspan="10" style="height:40px"><h1>评估指标</h1></td>
                     </tr>
                     <tr>
                         <td>损失总计:<input id="HidLOSSCOUNT" name="HidLOSSCOUNT" type="hidden" value="" /></td>
                         <td id="LOSSCOUNT" class="center">@Model.LOSSCOUNT 元</td>
-                        <td>森林资源损失率:</td>
-                        <td>
-                            <input id="FORESTRESOURCELOSSRATIO" type="text" value="@Model.FORESTRESOURCELOSSRATIO" style="width:80%;" />
-                            <span style="color: gray;">%</span>
-                        </td>
-                        <td>人均损失价值:</td>
-                        <td>
-                            <input id="AVGLOSSPERCATITAVALUE" type="text" value="@Model.AVGLOSSPERCATITAVALUE" style="width:70%;" />
-                            <span style="color: gray;">元/人</span>
-                        </td>
-                        <td>林地损失平均价值量:</td>
-                        <td>
-                            <input id="WOODLANDLOSSAVGVALUE" type="text" value="@Model.WOODLANDLOSSAVGVALUE" style="width:65%;" />
-                            <span style="color: gray;">元/hm²</span>
-                        </td>
-                        <td>扑火成效比:</td>
-                        <td>
-                            <input id="FIRESUPPEFFECTTHAN" type="text" value="@Model.FIRESUPPEFFECTTHAN" style="width:80%;" />
-                            <span style="color: gray;">%</span>
-                        </td>
+                        <td>森林资源损失率:<input id="HidFORESTRESOURCELOSSRATIO" name="HidFORESTRESOURCELOSSRATIO" type="hidden" value="" /></td>
+                        <td id="FORESTRESOURCELOSSRATIO" class="center">@Model.FORESTRESOURCELOSSRATIO</td>
+                        <td>人均损失价值:<input id="HidAVGLOSSPERCATITAVALUE" name="HidAVGLOSSPERCATITAVALUE" type="hidden" value="" /></td>
+                        <td id="AVGLOSSPERCATITAVALUE" class="center">@Model.AVGLOSSPERCATITAVALUE 元/人</td>
+                        <td>林地损失平均价值量:<input id="HidWOODLANDLOSSAVGVALUE" name="HidWOODLANDLOSSAVGVALUE" type="hidden" value="" /></td>
+                        <td id="WOODLANDLOSSAVGVALUE" class="center">@Model.WOODLANDLOSSAVGVALUE 元/hm² </td>
+                        <td>扑火成效比:<input id="HidFIRESUPPEFFECTTHAN" name="HidFIRESUPPEFFECTTHAN" type="hidden" value="" /></td>
+                        <td id="FIRESUPPEFFECTTHAN" class="center">@Model.FIRESUPPEFFECTTHAN</td>
+                        @*<input id="FORESTRESOURCELOSSRATIO" type="text" value="@Model.FORESTRESOURCELOSSRATIO" style="width:80%;" />
+                            <span style="color: gray;">%</span>*@
+                        @*<input id="AVGLOSSPERCATITAVALUE" type="text" value="@Model.AVGLOSSPERCATITAVALUE" style="width:70%;" />
+                            <span style="color: gray;">元/人</span>*@
+                        @*<input id="WOODLANDLOSSAVGVALUE" type="text" value="@Model.WOODLANDLOSSAVGVALUE" style="width:65%;" />
+                            <span style="color: gray;">元/hm²</span>*@
+                        @*<input id="FIRESUPPEFFECTTHAN" type="text" value="@Model.FIRESUPPEFFECTTHAN" style="width:80%;" />
+                            <span style="color: gray;">%</span>*@
                     </tr>
                 </table>
             </div>
@@ -190,7 +194,12 @@
 </div>
 
 <script type="text/javascript">
-    queryMX();
+    $(function () {
+        $('#a001').hide();
+        $('#a103').hide();
+        queryMX();
+    });
+
     //加载损失明细
     function queryMX() {
         var arrDicCount = $('#dicCount').val().split(';');
@@ -207,10 +216,14 @@
                     success: function (result) {
                         if (result.Success) {
                             $('#div' + arrDic[j] + '').html(result.Msg)
-                            $('#tbxMoney' + arrDic[j] + '').val(result.Url);
+                            var arrUrl = result.Url.split(',');
+                            $('#tbxMoney' + arrDic[j] + '').val(arrUrl[0]);
+                            $('#tbxMark' + arrDic[j] + '').val(arrUrl[1]);
                         }
                         else {
                             $('#div' + arrDic[j] + '').html('');
+                            $('#tbxMoney' + arrDic[j] + '').val('');
+                            $('#tbxMark' + arrDic[j] + '').val('');
                         }
                     },
                     error: function () {
@@ -296,6 +309,77 @@
         else {
             $('#HidLOSSCOUNT').val('0')
             $('#LOSSCOUNT').html('元');
+        }
+    }
+
+    //计算评估指标
+    function calEvalStandard() {
+        var xjlLose = $('#XJLLOSE').val();
+        var totalXjl = $('#TOTALXJL').val();
+        var totalAttack = $('#tbxMoney007').val();
+        var totalLossCount = $('#HidLOSSCOUNT').val();
+        var totolPerson = $('#TOTALPERSON').val();
+        var totalArea = $('#TOTALAREA').val();
+        var FORESTRESOURCELOSSRATIO = "";
+        var AVGLOSSPERCATITAVALUE = "";
+        var WOODLANDLOSSAVGVALUE = "";
+        var FIRESUPPEFFECTTHAN = "";
+        if (xjlLose != "" && totalXjl != "") {
+            FORESTRESOURCELOSSRATIO = parseFloat(xjlLose) / parseFloat(totalXjl);
+        }
+        if (FORESTRESOURCELOSSRATIO > 0) {
+            var s1 = FORESTRESOURCELOSSRATIO.toFixed(2).toString();
+            $('#HidFORESTRESOURCELOSSRATIO').val(s1)
+            var s2 = (parseFloat(s1) * 100).toString();
+            s2 = s2 + "%";
+            $('#FORESTRESOURCELOSSRATIO').html(s2);
+        }
+        else {
+            $('#HidFORESTRESOURCELOSSRATIO').val('0')
+            $('#FORESTRESOURCELOSSRATIO').html('%');
+        }
+
+        if (totalLossCount != "") {
+            if (totolPerson != "") {
+                AVGLOSSPERCATITAVALUE = parseFloat(totalLossCount) / parseFloat(totolPerson);
+            }
+            if (totalArea != "") {
+                WOODLANDLOSSAVGVALUE = parseFloat(totalLossCount) / parseFloat(totalArea);
+            }
+            FIRESUPPEFFECTTHAN = parseFloat(totalAttack) / parseFloat(totalLossCount);
+        }
+        if (AVGLOSSPERCATITAVALUE > 0) {
+            var s3 = AVGLOSSPERCATITAVALUE.toFixed(2).toString();
+            $('#HidAVGLOSSPERCATITAVALUE').val(s3)
+            s3 = s3 + "元/人";
+            $('#AVGLOSSPERCATITAVALUE').html(s3);
+        }
+        else {
+            $('#HidAVGLOSSPERCATITAVALUE').val('0')
+            $('#AVGLOSSPERCATITAVALUE').html('元/人');
+        }
+
+        if (WOODLANDLOSSAVGVALUE > 0) {
+            var s4 = WOODLANDLOSSAVGVALUE.toFixed(2).toString();
+            $('#HidWOODLANDLOSSAVGVALUE').val(s4)
+            s4 = s4 + "元/hm²";
+            $('#WOODLANDLOSSAVGVALUE').html(s4);
+        }
+        else {
+            $('#HidWOODLANDLOSSAVGVALUE').val('0')
+            $('#WOODLANDLOSSAVGVALUE').html('元/hm²');
+        }
+
+        if (FIRESUPPEFFECTTHAN > 0) {
+            var s5 = FIRESUPPEFFECTTHAN.toFixed(2).toString();
+            $('#HidFIRESUPPEFFECTTHAN').val(s5)
+            var s6 = (parseFloat(s5) * 100).toString();
+            s6 = s6 + "%";
+            $('#FIRESUPPEFFECTTHAN').html(s6);
+        }
+        else {
+            $('#HidFIRESUPPEFFECTTHAN').val('0')
+            $('#FIRESUPPEFFECTTHAN').html('%');
         }
     }
 
@@ -413,7 +497,6 @@
                 return;
             }
         }
-
         var FIREAREA = $('#FIREAREA').val();
         if ($.trim(FIREAREA) == "") {
             layer.msg('请输入火场面积!', { icon: 5 });
@@ -455,7 +538,6 @@
                 return;
             }
         }
-
         var XJLLOSE = $('#XJLLOSE').val();
         if ($.trim(XJLLOSE) == "") {
             layer.msg('请输入森林蓄积损失量!', { icon: 5 });
@@ -468,6 +550,11 @@
                 $('#XJLLOSE').focus();
                 return;
             }
+        }
+        if (parseFloat(XJLLOSE) > parseFloat(TOTALXJL)) {
+            layer.msg('森林蓄积损失量>灾区森林总蓄积量!', { icon: 5 });
+            $('#XJLLOSE').focus();
+            return;
         }
 
         var TOTALPERSON = $('#TOTALPERSON').val();
@@ -483,7 +570,6 @@
                 return;
             }
         }
-
         var CASUALTYCOUNT = $('#CASUALTYCOUNT').val();
         if ($.trim(CASUALTYCOUNT) == "") {
             layer.msg('请输入伤(亡)人数!', { icon: 5 });
@@ -496,6 +582,11 @@
                 $('#CASUALTYCOUNT').focus();
                 return;
             }
+        }
+        if (parseInt(CASUALTYCOUNT) > parseInt(TOTALPERSON)) {
+            layer.msg('伤(亡)人数>灾区总人数!', { icon: 5 });
+            $('#CASUALTYCOUNT').focus();
+            return;
         }
 
         var BUILDINGLOSECOUNT = $('#BUILDINGLOSECOUNT').val();
@@ -525,77 +616,7 @@
                 return;
             }
         }
-
-        var FORESTRESOURCELOSSRATIO = $('#FORESTRESOURCELOSSRATIO').val();
-        if ($.trim(FORESTRESOURCELOSSRATIO) == "") {
-            layer.msg('请输入森林资源损失率!', { icon: 5 });
-            $('#FORESTRESOURCELOSSRATIO').focus();
-            return;
-        }
-        else {
-            if (!CheckNUM2(FORESTRESOURCELOSSRATIO)) {
-                layer.msg('森林资源损失率请输入数字,且最多保留2位有效数字!', { icon: 5 });
-                $('#FORESTRESOURCELOSSRATIO').focus();
-                return;
-            }
-            else {
-                if (parseFloat(FORESTRESOURCELOSSRATIO) / 100 >= 1) {
-                    layer.msg('森林资源损失率输入非法!', { icon: 5 });
-                    $('#FORESTRESOURCELOSSRATIO').focus();
-                    return;
-                }
-            }
-        }
-
-        var AVGLOSSPERCATITAVALUE = $('#AVGLOSSPERCATITAVALUE').val();
-        if ($.trim(AVGLOSSPERCATITAVALUE) == "") {
-            layer.msg('请输入人均损失价值!', { icon: 5 });
-            $('#AVGLOSSPERCATITAVALUE').focus();
-            return;
-        }
-        else {
-            if (!CheckNUM2(AVGLOSSPERCATITAVALUE)) {
-                layer.msg('人均损失价值请输入数字,且最多保留2位有效数字!', { icon: 5 });
-                $('#AVGLOSSPERCATITAVALUE').focus();
-                return;
-            }
-        }
-
-        var WOODLANDLOSSAVGVALUE = $('#WOODLANDLOSSAVGVALUE').val();
-        if ($.trim(WOODLANDLOSSAVGVALUE) == "") {
-            layer.msg('请输入林地损失平均价值量!', { icon: 5 });
-            $('#WOODLANDLOSSAVGVALUE').focus();
-            return;
-        }
-        else {
-            if (!CheckNUM2(WOODLANDLOSSAVGVALUE)) {
-                layer.msg('林地损失平均价值量请输入数字,且最多保留2位有效数字!', { icon: 5 });
-                $('#WOODLANDLOSSAVGVALUE').focus();
-                return;
-            }
-        }
-
-        var FIRESUPPEFFECTTHAN = $('#FIRESUPPEFFECTTHAN').val();
-        if ($.trim(FIRESUPPEFFECTTHAN) == "") {
-            layer.msg('请输入扑火成效比!', { icon: 5 });
-            $('#FIRESUPPEFFECTTHAN').focus();
-            return;
-        }
-        else {
-            if (!CheckNUM2(FIRESUPPEFFECTTHAN)) {
-                layer.msg('扑火成效比请输入数字,且最多保留2位有效数字!', { icon: 5 });
-                $('#FIRESUPPEFFECTTHAN').focus();
-                return;
-            }
-            else {
-                if (parseFloat(FIRESUPPEFFECTTHAN) / 100 >= 1) {
-                    layer.msg('扑火成效比输入非法!', { icon: 5 });
-                    $('#FIRESUPPEFFECTTHAN').focus();
-                    return;
-                }
-            }
-        }
-
+        calEvalStandard();
         $.ajax({
             type: "post",
             url: "/DamageAssess/FIRELOSTINFManager",
@@ -612,13 +633,13 @@
                 FIREAREAJWDLIST: $('#FIREAREAJWDLIST').val(),
                 FIRELOSEAREA: FIRELOSEAREA,
                 FIRELOSEAREAJWDLIST: $('#FIRELOSEAREAJWDLIST').val(),
-                LOSSCOUNT: $('#HidLOSSCOUNT').val(),
                 BUILDINGLOSECOUNT: BUILDINGLOSECOUNT,
                 MACHINERYLOSECOUNT: MACHINERYLOSECOUNT,
-                FORESTRESOURCELOSSRATIO: FORESTRESOURCELOSSRATIO,
-                AVGLOSSPERCATITAVALUE: AVGLOSSPERCATITAVALUE,
-                WOODLANDLOSSAVGVALUE: WOODLANDLOSSAVGVALUE,
-                FIRESUPPEFFECTTHAN: FIRESUPPEFFECTTHAN,
+                LOSSCOUNT: $('#HidLOSSCOUNT').val(),
+                FORESTRESOURCELOSSRATIO: $('#HidFORESTRESOURCELOSSRATIO').val(),
+                AVGLOSSPERCATITAVALUE: $('#HidAVGLOSSPERCATITAVALUE').val(),
+                WOODLANDLOSSAVGVALUE: $('#HidWOODLANDLOSSAVGVALUE').val(),
+                FIRESUPPEFFECTTHAN: $('#HidFIRESUPPEFFECTTHAN').val(),
                 Method: 'Save'
             },
             dataType: "json",
@@ -627,10 +648,7 @@
                     $('#FIREINFOID').val(re.Url);
                     SaveLostType();
                     if (type == 'Save') {
-                        layer.confirm(re.Msg + ' 请返回?', { icon: 3, title: '提示' }, function (index2) {
-                            layer.close(index2);
-                            layer.close(index);
-                        });
+                        layer.msg(re.Msg, { icon: 6 });
                     }
                 }
                 else {

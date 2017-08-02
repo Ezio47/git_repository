@@ -22,7 +22,7 @@
                 <tr style="width:95%;">
                     <td style="width:150px;"> 年份：</td>
                     <td><input id="tbxREPORTYEAR" type="text" class="Wdate" value="@ViewBag.REPORTYEAR" onclick="WdatePicker({ dateFmt: 'yyyy'})" /></td>
-                    <td style="width:150px;"> 单位：</td>
+                    <td style="width:140px;"> 单位：</td>
                     <td><select id="tbxBYORGNO">@Html.Raw(@ViewBag.vdOrg)</select>&nbsp;&nbsp;&nbsp;</td>
                 </tr>
                 <tr>
@@ -39,7 +39,7 @@
                     <td><input id="tbx2" type="text" value="0" style="width: 70%;" />(公里)</td>
                     <td> 防火公路：</td>
                     <td><input id="tbx3" type="text" value="0" style="width: 70%;" />(公里)</td>
-                    
+
                 </tr>
                 <tr>
                     <td colspan=" 4"> 森林消防车辆（台）</td>
@@ -51,7 +51,7 @@
                     <td><input id="tbx5" type="text" value="0" style="width: 70%;" />(台)</td>
                 </tr>
                 <tr style="width:95%;">
-                  
+
                     <td> 运输车：</td>
                     <td><input id="tbx6" type="text" value="0" style="width: 70%;" />(台)</td>
                     <td> 摩托车：</td>
@@ -74,7 +74,7 @@
                     <td> 数量：</td>
                     <td><input id="tbx10" type="text" value="0" style="width: 70%;" />(座)</td>
                     <td> 面积：</td>
-                    <td><input id="tbx11" type="text" value="0" style="width: 70%;" />（平方米）</td>
+                    <td><input id="tbx11" type="text" value="0" style="width: 70%;" />(平方米)</td>
 
                 </tr>
                 <tr>
@@ -84,7 +84,7 @@
                     <td>合计</td>
                     <td><input id="tbx12" type="text" value="0" style="width: 70%;" /></td>
                     <td>风力灭火机：</td>
-                    <td><input id="tbx13" type="text" value="0" style="width: 70%;" />（台、把、套）</td>
+                    <td><input id="tbx13" type="text" value="0" style="width: 60%;" />(台、把、套)</td>
                 </tr>
                 <tr style="width:95%;">
                     <td>备注：</td>
@@ -99,6 +99,13 @@
 </div>
 
 <script type="text/javascript">
+    function CheckINT1(number) {
+        var filter = /^\+?[0-9][0-9]*$/;
+        if (filter.test($.trim(number))) return true;
+        else {
+            return false;
+        }
+    }
     function Manager() {
         var dic313Value = $('#dic313Value').val().split(',');
         var dic313Count = $('#dic313Count').val();
@@ -111,13 +118,24 @@
             var temp = x.toString();
             var s = $('#tbx' + temp + '').val();
             if ($.trim(s) != "") {
-                if (!CheckNUM2(s)) {
-                    layer.msg('请输入整数!', { icon: 5 });
-                    $('#tbx' + temp + '').focus();
-                    return;
+                if (temp !== (dic313Count - 1).toString()) {
+                    if (!CheckNUM2(s)) {
+                        layer.msg('请输入整数!', { icon: 5 });
+                        $('#tbx' + temp + '').focus();
+                        return;
+                    }
+                    else {
+                        if (s == "0") {
+                            continue;
+                        }
+                        else {
+                            strREPORTCODE = strREPORTCODE + dic313Value[x] + ",";
+                            strREPORTVALUE = strREPORTVALUE + $('#tbx' + temp + '').val() + ",";
+                        }
+                    }
                 }
                 else {
-                    if (s == "0" || s == "") {
+                    if (s == "0") {
                         continue;
                     }
                     else {

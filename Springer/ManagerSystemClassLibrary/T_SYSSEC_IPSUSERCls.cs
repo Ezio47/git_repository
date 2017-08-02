@@ -233,7 +233,7 @@ namespace ManagerSystemClassLibrary
         }
 
         /// <summary>
-        /// 获取用户列表（分页）
+        /// 获取OA用户列表（分页）
         /// </summary>
         /// <param name="sw">参见模型</param>
         /// <param name="total">记录总数</param>
@@ -242,21 +242,8 @@ namespace ManagerSystemClassLibrary
         {
             var result = new List<T_SYSSEC_IPSUSER_Pager_Model>();
             DataTable dtORG = BaseDT.T_SYS_ORG.getDT(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag() });//获取单位
-            DataTable dtSex = BaseDT.T_SYS_DICT.getDT(new T_SYS_DICTSW { DICTFLAG = "性别" });//性别
             DataTable dt = BaseDT.T_SYSSEC_IPSUSER.getDT2(sw, out total);//用户列表
             DataTable dt46 = BaseDT.T_SYS_DICT.getDT(new T_SYS_DICTSW { DICTTYPEID = "46" });//科室
-            string uidList = "";
-            for (int i = 0; i < dt.Rows.Count; i++)
-            {
-                if (string.IsNullOrEmpty(uidList))
-                    uidList += dt.Rows[i]["USERID"].ToString();
-                else
-                    uidList += "," + dt.Rows[i]["USERID"].ToString();
-            }
-            //获取角色信息
-            DataTable dtRole = BaseDT.T_SYSSEC_ROLE.getDT(new T_SYSSEC_ROLE_SW { SYSFLAG = ConfigCls.getSystemFlag() });
-            //获取所有用户的角色信息
-            DataTable dtUserRole = BaseDT.T_SYSSEC_USER_ROLE.getDT(new T_SYSSEC_USER_ROLE_SW { USERID = uidList });
             for (int i = 0; i < dt.Rows.Count; i++)
             {
                 T_SYSSEC_IPSUSER_Pager_Model m = new T_SYSSEC_IPSUSER_Pager_Model();
@@ -266,33 +253,18 @@ namespace ManagerSystemClassLibrary
                 m.USERNAME = dt.Rows[i]["USERNAME"].ToString();//用户姓名
                 m.USERJOB = dt.Rows[i]["USERJOB"].ToString();//职务
                 m.LOGINUSERNAME = dt.Rows[i]["LOGINUSERNAME"].ToString();//登录名
-                m.GID = dt.Rows[i]["GID"].ToString();//用户扩展护林员ID
-                m.SEXNAME = BaseDT.T_SYS_DICT.getName(dtSex, dt.Rows[i]["SEX"].ToString());//性别名称
                 m.PHONE = dt.Rows[i]["PHONE"].ToString();//电话
                 m.DEPARTMENT = dt.Rows[i]["DEPARTMENT"].ToString();
                 m.DEPARTMENTName = BaseDT.T_SYS_DICT.getName(dt46, dt.Rows[i]["DEPARTMENT"].ToString());
                 m.IsOpenOA = dt.Rows[i]["IsOpenOA"].ToString() == "" ? "0" : dt.Rows[i]["IsOpenOA"].ToString();
-                string roleNameList = "";
-                DataRow[] drUR = dtUserRole.Select("USERID=" + dt.Rows[i]["USERID"].ToString());
-                for (int k = 0; k < drUR.Length; k++)
-                {
-                    if (string.IsNullOrEmpty(roleNameList) == false)
-                        roleNameList += ",";
-                    roleNameList += BaseDT.T_SYSSEC_ROLE.getName(dtRole, drUR[k]["ROLEID"].ToString());
-                }
-                m.RoleNameList = roleNameList;//注意此处用ROLEIDList代替角色中文名
                 result.Add(m);
             }
             dtORG.Clear();
             dtORG.Dispose();
-            dtSex.Clear();
-            dtSex.Dispose();
             dt.Clear();
             dt.Dispose();
-            dtRole.Clear();
-            dtRole.Dispose();
-            dtUserRole.Clear();
-            dtUserRole.Dispose();
+            dt46.Clear();
+            dt46.Dispose();
             return result;
         }
         #endregion
@@ -551,7 +523,6 @@ namespace ManagerSystemClassLibrary
         #endregion
 
         #region 根据用户ID获取用户名称
-
         /// <summary>
         /// 根据用户ID获取用户用户名称
         /// </summary>
@@ -565,7 +536,6 @@ namespace ManagerSystemClassLibrary
         #endregion
 
         #region 根据用户ID获取用户手机号码
-
         /// <summary>
         /// 根据用户ID获取用户手机号码
         /// </summary>

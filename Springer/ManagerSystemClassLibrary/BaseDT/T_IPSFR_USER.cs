@@ -30,8 +30,8 @@ namespace ManagerSystemClassLibrary.BaseDT
                return new Message(false, "添加失败，电话号码重复！", "");
            if (isExists(new T_IPSFR_USER_SW { SN = m.SN }))
                return new Message(false, "添加失败，终端编号重复！", "");
-           if (PublicCls.OrgIsZhen(m.BYORGNO )==false)
-               return new Message(false, "添加失败，所属单位必须为乡镇！", "");
+           //if (PublicCls.OrgIsZhen(m.BYORGNO )==false)
+           //    return new Message(false, "添加失败，所属单位必须为乡镇！", "");
            StringBuilder sb = new StringBuilder();
            sb.AppendFormat("INSERT INTO  T_IPSFR_USER(HNAME, SN, PHONE, SEX, BIRTH, ONSTATE, BYORGNO,ISENABLE)");
            sb.AppendFormat("VALUES(");
@@ -84,8 +84,8 @@ namespace ManagerSystemClassLibrary.BaseDT
        /// <returns>参见模型</returns>
        public static Message Mdy(T_IPSFR_USER_Model m)
        {
-           if (PublicCls.OrgIsZhen(m.BYORGNO) == false)
-               return new Message(false, "修改失败，所属单位必须为乡镇！", "");
+           //if (PublicCls.OrgIsZhen(m.BYORGNO) == false)
+           //    return new Message(false, "修改失败，所属单位必须为乡镇！", "");
            StringBuilder sb = new StringBuilder();
            //HID, HNAME, SN, PHONE, SEX, BIRTH, ONSTATE, BYORGNO
            sb.AppendFormat("UPDATE T_IPSFR_USER");
@@ -251,11 +251,14 @@ namespace ManagerSystemClassLibrary.BaseDT
                {
                    sb.AppendFormat(" and BYORGNO like  '{0}%'", PublicCls.getXianIncOrgNo(sw.BYORGNO));
                }
+               else if (PublicCls.OrgIsZhen(sw.BYORGNO))
+               {
+                   sb.AppendFormat(" and BYORGNO like  '{0}%'", PublicCls.getZhenIncOrgNo(sw.BYORGNO));
+               }
                else
                {
-                   sb.AppendFormat(" and BYORGNO = '{0}'", PublicCls.getZhenIncOrgNo(sw.BYORGNO));
+                   sb.AppendFormat(" and BYORGNO =  '{0}'", sw.BYORGNO);
                }
-
            }
            if (string.IsNullOrEmpty(sw.PhoneHname) == false)
            {
@@ -354,9 +357,13 @@ namespace ManagerSystemClassLibrary.BaseDT
                {
                    sb.AppendFormat(" and BYORGNO like  '{0}%'", PublicCls.getXianIncOrgNo(sw.BYORGNO));
                }
+               else if (PublicCls.OrgIsZhen(sw.BYORGNO))
+               {
+                   sb.AppendFormat(" and BYORGNO like  '{0}%'", PublicCls.getZhenIncOrgNo(sw.BYORGNO));
+               }
                else
                {
-                   sb.AppendFormat(" and BYORGNO = '{0}'", PublicCls.getZhenIncOrgNo(sw.BYORGNO));
+                   sb.AppendFormat(" and BYORGNO = '{0}'", PublicCls.getCunIncOrgNo(sw.BYORGNO));
                }
            }
            if (string.IsNullOrEmpty(sw.Orgs) == false)
@@ -365,7 +372,7 @@ namespace ManagerSystemClassLibrary.BaseDT
                string tmpOrg = "";
                for (int i = 0; i < arr.Length; i++)
                {
-                   if (arr[i].Length == 9)
+                   if (arr[i].Length == 15)
                    {
                        if (tmpOrg != "")
                            tmpOrg += ",";
@@ -391,9 +398,13 @@ namespace ManagerSystemClassLibrary.BaseDT
                        {
                            sb.AppendFormat("  BYORGNO like  '{0}%'", PublicCls.getXianIncOrgNo(arr1[i]));
                        }
+                       else if (PublicCls.OrgIsZhen(arr1[i]))
+                       {
+                           sb.AppendFormat("  BYORGNO like  '{0}%'", PublicCls.getZhenIncOrgNo(arr1[i]));
+                       }
                        else
                        {
-                           sb.AppendFormat("  BYORGNO = '{0}'", PublicCls.getZhenIncOrgNo(arr1[i]));
+                           sb.AppendFormat("  BYORGNO = '{0}'", PublicCls.getCunIncOrgNo(arr1[i]));
                        }
                    }
                    sb.AppendFormat(" )");

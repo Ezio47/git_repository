@@ -37,7 +37,7 @@ namespace ManagerSystem.MVC.Controllers
 
             #region 天气预报
             sb.AppendFormat("<h1 style=\"margin-left:20px\"><b>天气预报</b></h1>");
-            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
+            sb.AppendFormat("<table id=\"tableweather\" cellpadding=\"0\" cellspacing=\"0\">");
             sb.AppendFormat("<thead>");
             sb.AppendFormat("<tr><th colspan=\"6\">红河州森林火险气象等级预报</th></tr>");
             sb.AppendFormat("<tr><th>区域</th><th>天气</th><th>气温</th><th>风向风速</th><th>火险等级</th><th>日期</th></tr>");
@@ -62,7 +62,6 @@ namespace ManagerSystem.MVC.Controllers
                 {
                     throw e;
                 }
-
                 NPOI.SS.UserModel.ISheet sheet = hssfworkbook.GetSheetAt(0);
                 int rowCount = sheet.LastRowNum;//LastRowNum = PhysicalNumberOfRows - 1
                 for (int i = (sheet.FirstRowNum + 2); i <= rowCount; i++)
@@ -113,18 +112,6 @@ namespace ManagerSystem.MVC.Controllers
                             sb.AppendFormat("<td class=\"center\">{0}</td>", "<input type=\"text\" class=\"center\" style=\"width:98%;\"  id=\"" + "tbxWind_" + j + "\" name=\"" + "tbxWind_" + j + "\"/>");
                             sb.AppendFormat("<td class=\"center\">{0}</td>", "<input type=\"text\" class=\"center\" style=\"width:98%;\"  id=\"" + "tbxDangerClass_" + j + "\" name=\"" + "tbxDangerClass_" + j + "\"/>");
                             sb.AppendFormat("<td class=\"center\">{0}</td>", "<input id=\"" + "tbxTime_" + j + "\" type=\"text\" value=\"" + Convert.ToDateTime(DCDATE).ToString("yyyy-MM-dd") + "\"  class=\"Wdate\" style=\"width:98%;\" onclick=\"WdatePicker({ dateFmt: 'yyyy-MM-dd'})\"  />");
-                            //var li = YJ_DANGERCLASSCls.getListModelArea(new YJ_DANGERCLASS_SW { TOWNNAME = item.AREAJC });
-                            //foreach (var i in li)
-                            //{
-                            //    j++;
-                            //    sb.AppendFormat("<tr class='danger'>");
-                            //    sb.AppendFormat("<td class=\"center\">{0}</td>", "<input type=\"text\" class=\"center\" style=\"width:98%;\" value=\"" + i.TOWNNAME + "\" id=\"" + "tbxAddr_" + j + "\" readonly=\"readonly\" code=\"" + item.AREACODE + "\" name=\"" + "tbxAddr_" + j + "\"/>");
-                            //    sb.AppendFormat("<td class=\"center\">{0}</td>", "<input type=\"text\" class=\"center\" style=\"width:98%;\" value=\"" + i.WEATHER + "\" id=\"" + "tbxWeather_" + j + "\" name=\"" + "tbxWeather_" + j + "\"/>");
-                            //    sb.AppendFormat("<td class=\"center\">{0}</td>", "<input type=\"text\" class=\"center\" style=\"width:98%;\" value=\"" + i.TEMPREATURE + "\" id=\"" + "tbxTemp_" + j + "\" name=\"" + "tbxTemp_" + j + "\"/>");
-                            //    sb.AppendFormat("<td class=\"center\">{0}</td>", "<input type=\"text\" class=\"center\" style=\"width:98%;\" value=\"" + i.WINDYSPEED + "\" id=\"" + "tbxWind_" + j + "\" name=\"" + "tbxWind_" + j + "\"/>");
-                            //    sb.AppendFormat("<td class=\"center\">{0}</td>", "<input type=\"text\" class=\"center\" style=\"width:98%;\" value=\"" + i.DANGERCLASS + "\" id=\"" + "tbxDangerClass_" + j + "\" name=\"" + "tbxDangerClass_" + j + "\"/>");
-                            //    sb.AppendFormat("<td class=\"center\">{0}</td>", "<input id=\"" + "tbxTime_" + j + "\" type=\"text\" class=\"Wdate\" style=\"width:98%;\" value=\"" + Convert.ToDateTime(DCDATE).ToString("yyyy-MM-dd") + "\"  onclick=\"WdatePicker({ dateFmt: 'yyyy-MM-dd'})\"  />");
-                            //}  
                         }
                         else
                         {
@@ -145,12 +132,9 @@ namespace ManagerSystem.MVC.Controllers
                     sb.AppendFormat("</tr>");
                 }
             }
-            if (Request.Params["Add"] == "add")//添加
-            {
-                sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td colspan=\"6\" class=\"cneter\">{0}</td>", "<input type=\"button\" value=\"保存\" id=\"addWeather\" onclick=\"SaveFireLevel()\" class=\"btnSaveCss\" />");
-                sb.AppendFormat("</tr>");
-            }         
+            sb.AppendFormat("<tr>");
+            sb.AppendFormat("<td colspan=\"6\" class=\"cneter\">{0}</td>", "<input type=\"button\" value=\"保存\" id=\"addWeather\" onclick=\"SaveFireLevel()\" class=\"btnSaveCss\" />");
+            sb.AppendFormat("</tr>");
             sb.AppendFormat("</tbody>");
             sb.AppendFormat("</table>");
             #endregion
@@ -238,7 +222,7 @@ namespace ManagerSystem.MVC.Controllers
             string date = Request.Form["tbxQueryTime"];
             if (date == "")
             {
-                return Content("<script>alert('请选择要导入的日期！');window.location.href='FireLevelIndex';</script>");
+                return Content("<script>alert('请选择要导入的日期!');window.location.href='FireLevelIndex';</script>");
             }
             string savePath = "";
             if (Request.Files.Count != 0)
@@ -254,15 +238,14 @@ namespace ManagerSystem.MVC.Controllers
                     int filesize = File.ContentLength;//获取上传文件的大小单位为字节byte
                     int Maxsize = 4000 * 1024;//定义上传文件的最大空间大小为4M
                     string FileType = ".xls,.xlsx";//定义上传文件的类型字符串
-
-                    string name = DateTime.Now.ToString("火险等级导入-yyyyMMddHHmmss") + extension;
+                    string name = DateTime.Now.ToString("火险等级导入-yyyyMMddHHmmss!") + extension;
                     if (!FileType.Contains(extension))
                     {
-                        return Content(@"<script>alert('文件类型不对，只能导入xls和xlsx格式的文件');history.go(-1);</script>");
+                        return Content(@"<script>alert('文件类型不对，只能导入xls和xlsx格式的文件!');history.go(-1);</script>");
                     }
                     if (filesize >= Maxsize)
                     {
-                        return Content(@"<script>alert('上传文件超过4M，不能上传');history.go(-1);</script>");
+                        return Content(@"<script>alert('上传文件超过4M，不能上传!');history.go(-1);</script>");
                     }
                     try
                     {
@@ -279,12 +262,12 @@ namespace ManagerSystem.MVC.Controllers
                     }
                     catch (Exception)
                     {
-                        return Content(@"<script>alert('上传文件模板错误，请确认后再上传！');history.go(-1);</script>");
+                        return Content(@"<script>alert('上传文件模板错误，请确认后再上传!');history.go(-1);</script>");
                     }
                 }
                 else
                 {
-                    return Content(@"<script>alert('请选择需要导入的火险等级表格');history.go(-1);</script>");
+                    return Content(@"<script>alert('请选择需要导入的火险等级表格!');history.go(-1);</script>");
                 }
             }
             return View();
@@ -296,22 +279,14 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult FireLevelSave()
         {
-            string BYORGNAME = Request.Params["BYORGNAME"];
-            string BYORGNO = Request.Params["BYORGNO"];
-            string WEATHER = Request.Params["WEATHER"];
-            string TEMPREATURE = Request.Params["TEMPREATURE"];
-            string WINDYSPEED = Request.Params["WINDYSPEED"];
-            string DANGERCLASS = Request.Params["DANGERCLASS"];
-            string DCDATE = Request.Params["DCDATE"];
-
             YJ_DANGERCLASS_Model m = new YJ_DANGERCLASS_Model();
-            m.DANGERCLASS = DANGERCLASS;
-            m.BYORGNO = BYORGNO;
-            m.DCDATE = DCDATE;
-            m.TOWNNAME = BYORGNAME;
-            m.WEATHER = WEATHER;
-            m.TEMPREATURE = TEMPREATURE;
-            m.WINDYSPEED = WINDYSPEED;
+            m.DANGERCLASS = Request.Params["DANGERCLASS"];
+            m.BYORGNO = Request.Params["BYORGNO"];
+            m.DCDATE = Request.Params["DCDATE"];
+            m.TOWNNAME = Request.Params["BYORGNAME"];
+            m.WEATHER = Request.Params["WEATHER"];
+            m.TEMPREATURE = Request.Params["TEMPREATURE"];
+            m.WINDYSPEED = Request.Params["WINDYSPEED"];
             m.opMethod = "PLAdd";
             return Content(JsonConvert.SerializeObject(YJ_DANGERCLASSCls.Manager(m)));
         }
@@ -366,29 +341,16 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult SatelliteHotSave()
         {
-            string BYORGNAME = Request.Params["BYORGNAME"];
-            string BYORGNO = Request.Params["BYORGNO"];
-            string RSMJ = Request.Params["RSMJ"];
-            string JD = Request.Params["JD"];
-            string WD = Request.Params["WD"];
-            string FIRETIME = Request.Params["FIRETIME"];
-
-            //string FIRENAME = BYORGNAME + " " + FIRETIME + " " + "气象热点火情";
-            //if (float.Parse(JD) >= 180 || float.Parse(JD) <= -180)
-            //    return Content(JsonConvert.SerializeObject(new Message(false, "经度范围在-180~180之间，请重新输入！", "")), "text/html;charset=UTF-8");
-            //if (float.Parse(WD) >= 90 || float.Parse(WD) <= -90)
-            //    return Content(JsonConvert.SerializeObject(new Message(false, "纬度范围在-90~90之间，请重新输入！", "")), "text/html;charset=UTF-8");
-
             JC_FIRE_Model m = new JC_FIRE_Model();
-            m.BYORGNO = BYORGNO;
+            m.BYORGNO = Request.Params["BYORGNO"];
             m.FIREFROM = "2";
-            m.FIRETIME = FIRETIME;
+            m.FIRETIME = Request.Params["FIRETIME"];
             m.ISOUTFIRE = "0";
-            m.JD = JD;
-            m.WD = WD;
-            m.ZQWZ = BYORGNAME;
+            m.JD = Request.Params["JD"];
+            m.WD = Request.Params["WD"];
+            m.ZQWZ = Request.Params["BYORGNAME"];
             m.WXBH = "QX-01";
-            m.RSMJ = RSMJ;
+            m.RSMJ =  Request.Params["RSMJ"];
             m.RECEIVETIME = DateTime.Now.ToString();
             m.FIREFROMWEATHER = "1"; //1 表示气象卫星接收  0 表示其他
             m.returnUrl = "/FireSatellite/FireLevelIndex";
@@ -413,8 +375,8 @@ namespace ManagerSystem.MVC.Controllers
             string defaultAreaCode = "", defaultAreaName = "";
             string areaOption = T_ALL_AREACls.getSelectOptionBYWeather(new T_ALL_AREA_SW { OnlyGetShiXian = "true", CurAREACODE = AREACODE, TOPAREACODE = ConfigCls.getTopAreaCode() }, out defaultAreaCode, out defaultAreaName);
             DCDATE = string.IsNullOrEmpty(DCDATE) ? DateTime.Now.ToString("yyyy-MM-dd") : DCDATE;
-            string cuAreaCode = !string.IsNullOrEmpty(AREACODE) ? AREACODE : defaultAreaCode;
-            List<T_ALL_AREA_Model> tempList = T_ALL_AREACls.getListModeBYAREACODE(new T_ALL_AREA_SW { CurAREACODE = cuAreaCode }).ToList();
+            AREACODE = !string.IsNullOrEmpty(AREACODE) ? AREACODE : defaultAreaCode;
+            List<T_ALL_AREA_Model> tempList = T_ALL_AREACls.getListModeBYAREACODE(new T_ALL_AREA_SW { CurAREACODE = AREACODE }).ToList();
             ViewBag.Time = DCDATE;
             int j = 0;
             StringBuilder sb = new StringBuilder();
@@ -426,12 +388,12 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("<thead>");
             sb.AppendFormat("<tr><th colspan=\"6\">红河州森林火险气象等级预报</th></tr>");
             sb.AppendFormat("<tr><th>区域</th><th>天气</th><th>气温</th><th>风向风速</th><th>火险等级</th><th>时间</th></tr>");
-            sb.AppendFormat("</thead>"); 
+            sb.AppendFormat("</thead>");
             #endregion
 
             if (areaOption.Length > 0)
             {
-                YJ_DANGERCLASS_Model m = YJ_DANGERCLASSCls.getModel(new YJ_DANGERCLASS_SW { BYORGNO = cuAreaCode, DCDATE = DCDATE });
+                YJ_DANGERCLASS_Model m = YJ_DANGERCLASSCls.getModel(new YJ_DANGERCLASS_SW { BYORGNO = AREACODE, DCDATE = DCDATE });
 
                 #region 表身
                 sb.AppendFormat("<tbody id=\"tcontent\" >");
@@ -462,7 +424,7 @@ namespace ManagerSystem.MVC.Controllers
                     sb.AppendFormat("<td class=\"center\">{0}</td>", "<input id=\"tbxTime" + j + "\"  name=\"tbxTime" + j + "\" type=\"text\" style=\"width:98%;\" class=\"Wdate\" onclick=\"WdatePicker({ dateFmt: 'yyyy-MM-dd'})\"   value=\"" + Convert.ToDateTime(DCDATE).ToString("yyyy-MM-dd") + "\" />");
                     sb.AppendFormat("</tr>");
                 }
-                sb.AppendFormat("</tbody>"); 
+                sb.AppendFormat("</tbody>");
                 #endregion
             }
             sb.AppendFormat("</table>");
@@ -535,28 +497,18 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult FireLevelInputSave()
         {
-            string TOPTOWNNAME = Request.Params["TOPTOWNNAME"];
-            string TOWNNAME = Request.Params["TOWNNAME"];
-            string BYORGNO = Request.Params["BYORGNO"];
-            string WEATHER = Request.Params["WEATHER"];
-            string TEMPREATURE = Request.Params["TEMPREATURE"];
-            string WINDYSPEED = Request.Params["WINDYSPEED"];
-            string DANGERCLASS = Request.Params["DANGERCLASS"];
-            string DCDATE = Request.Params["DCDATE"];
-
             YJ_DANGERCLASS_Model m = new YJ_DANGERCLASS_Model();
-            m.DCDATE = DCDATE;
-            m.BYORGNO = BYORGNO;
-            m.DANGERCLASS = DANGERCLASS;
-            m.TOWNNAME = TOWNNAME;
-            m.WEATHER = WEATHER;
-            m.TEMPREATURE = TEMPREATURE;
-            m.WINDYSPEED = WINDYSPEED;
-            m.TOPTOWNNAME = TOPTOWNNAME;
+            m.DCDATE = Request.Params["DCDATE"];
+            m.BYORGNO = Request.Params["BYORGNO"];
+            m.DANGERCLASS = Request.Params["DANGERCLASS"];
+            m.TOWNNAME = Request.Params["TOWNNAME"];
+            m.WEATHER = Request.Params["WEATHER"];
+            m.TEMPREATURE = Request.Params["TEMPREATURE"];
+            m.WINDYSPEED = Request.Params["WINDYSPEED"];
+            m.TOPTOWNNAME = Request.Params["TOPTOWNNAME"];
             m.opMethod = "PLAdd2";
             return Content(JsonConvert.SerializeObject(YJ_DANGERCLASSCls.Manager(m)));
         }
-
-        #endregion       
+        #endregion
     }
 }

@@ -215,7 +215,7 @@ namespace ManagerSystemClassLibrary
                 var bo = PublicCls.OrgIsShi(idorgno);//如果选择市，则列出所有县
                 if (bo)
                 {
-                    List<T_SYS_ORGModel> countylist = orgList.Where(p => p.ORGNO.EndsWith("000") && p.ORGNO != idorgno).ToList();
+                    List<T_SYS_ORGModel> countylist = orgList.Where(p => p.ORGNO.EndsWith("000000000") && p.ORGNO != idorgno).ToList();
                     foreach (var county in countylist)
                     {
                         var root = getJobejctCar(dtCar,county);
@@ -234,7 +234,7 @@ namespace ManagerSystemClassLibrary
                 var bb = PublicCls.OrgIsXian(idorgno);//如果选择县，则列出所有乡镇
                 if (bb)
                 {
-                    List<T_SYS_ORGModel> towerlist = orgList.Where(p => !p.ORGNO.EndsWith("000") && p.ORGNO != idorgno).ToList();
+                    List<T_SYS_ORGModel> towerlist = orgList.Where(p => p.ORGNO.EndsWith("000000") && p.ORGNO != idorgno).ToList();
                     foreach (var tower in towerlist)
                     {
                         var root = getJobejctCar(dtCar,tower);

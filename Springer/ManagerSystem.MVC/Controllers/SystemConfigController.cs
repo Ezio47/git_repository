@@ -59,7 +59,7 @@ namespace ManagerSystem.MVC.Controllers
                     return Content(JsonConvert.SerializeObject(new Message(false, "请输入或选择区划编码!", "")), "text/html;charset=UTF-8");
                 if (string.IsNullOrEmpty(m.AREANAME))
                     return Content(JsonConvert.SerializeObject(new Message(false, "请输入或选择区划名!", "")), "text/html;charset=UTF-8");
-                if (m.AREACODE.Length != 9)
+                if (m.AREACODE.Length != 15)
                     return Content(JsonConvert.SerializeObject(new Message(false, "区划编码错误，请重新输入!", "")), "text/html;charset=UTF-8");
             }
             return Content(JsonConvert.SerializeObject(T_ALL_AREACls.Manager(m)), "text/html;charset=UTF-8");
@@ -93,26 +93,37 @@ namespace ManagerSystem.MVC.Controllers
             ViewBag.T_UrlReferrer = "/SystemConfig/AREAList?ID=" + ID;
             //导航条
             string navStr = "";
-            if (ID != "0" && ID.Length == 9)
+            if (ID != "0" && ID.Length == 15)
             {
                 if (ID.Substring(0, 2) != "00")
                 {
-                    if (ID == ID.Substring(0, 2) + "0000000")
-                        navStr += "<li class=\"active\">" + T_ALL_AREACls.getNameByID(new T_ALL_AREA_SW { AREACODE = ID.Substring(0, 2) + "0000000" }) + "</li>";
+                    if (ID == ID.Substring(0, 2) + "0000000000000")
+                        navStr += "<li class=\"active\">" + T_ALL_AREACls.getNameByID(new T_ALL_AREA_SW { AREACODE = ID.Substring(0, 2) + "0000000000000" }) + "</li>";
                     else
-                        navStr += "<li class=\"active\"><a href=\"/SystemConfig/AREAList?ID=" + ID.Substring(0, 2) + "0000000" + "\">" + T_ALL_AREACls.getNameByID(new T_ALL_AREA_SW { AREACODE = ID.Substring(0, 2) + "0000000" }) + "</a></li>";
+                        navStr += "<li class=\"active\"><a href=\"/SystemConfig/AREAList?ID=" + ID.Substring(0, 2) + "0000000000000" + "\">" + T_ALL_AREACls.getNameByID(new T_ALL_AREA_SW { AREACODE = ID.Substring(0, 2) + "0000000000000" }) + "</a></li>";
                 }
-                if (ID.Substring(2, 2) != "00")
+                 if (ID.Substring(2, 2) != "00")
                 {
-                    if (ID == ID.Substring(0, 4) + "00000")
-                        navStr += "<li class=\"active\">" + T_ALL_AREACls.getNameByID(new T_ALL_AREA_SW { AREACODE = ID.Substring(0, 4) + "00000" }) + "</li>";
+                    if (ID == ID.Substring(0, 4) + "00000000000")
+                        navStr += "<li class=\"active\">" + T_ALL_AREACls.getNameByID(new T_ALL_AREA_SW { AREACODE = ID.Substring(0, 4) + "00000000000" }) + "</li>";
                     else
-                        navStr += "<li class=\"active\"><a href=\"/SystemConfig/AREAList?ID=" + ID.Substring(0, 4) + "00000" + "\">" + T_ALL_AREACls.getNameByID(new T_ALL_AREA_SW { AREACODE = ID.Substring(0, 4) + "00000" }) + "</a></li>";
+                        navStr += "<li class=\"active\"><a href=\"/SystemConfig/AREAList?ID=" + ID.Substring(0, 4) + "00000000000" + "\">" + T_ALL_AREACls.getNameByID(new T_ALL_AREA_SW { AREACODE = ID.Substring(0, 4) + "00000000000" }) + "</a></li>";
                 }
                 if (ID.Substring(4, 2) != "00")
                 {
-                    navStr += "<li class=\"active\">" + T_ALL_AREACls.getNameByID(new T_ALL_AREA_SW { AREACODE = ID.Substring(0, 6) + "000" }) + "</li>";
+                    if (ID == ID.Substring(0, 6) + "000000000")
+                        navStr += "<li class=\"active\">" + T_ALL_AREACls.getNameByID(new T_ALL_AREA_SW { AREACODE = ID.Substring(0, 6) + "000000000" }) + "</li>";
+                    else
+                        navStr += "<li class=\"active\"><a href=\"/SystemConfig/AREAList?ID=" + ID.Substring(0, 6) + "000000000" + "\">" + T_ALL_AREACls.getNameByID(new T_ALL_AREA_SW { AREACODE = ID.Substring(0, 6) + "000000000" }) + "</a></li>";
                 }
+                if (ID.Substring(6, 3) != "000")
+                {
+                    if (ID == ID.Substring(0, 9) + "000000")
+                        navStr += "<li class=\"active\">" + T_ALL_AREACls.getNameByID(new T_ALL_AREA_SW { AREACODE = ID.Substring(0, 9) + "000000" }) + "</li>";
+                    else
+                        navStr += "<li class=\"active\"><a href=\"/SystemConfig/AREAList?ID=" + ID.Substring(0, 9) + "000000" + "\">" + T_ALL_AREACls.getNameByID(new T_ALL_AREA_SW { AREACODE = ID.Substring(0, 9) + "000000" }) + "</a></li>";
+                }
+               
             }
             ViewBag.navList = navStr;
             ViewBag.AREAList = getAreaStr(new T_ALL_AREA_SW { SubAREACODE = ID });
@@ -150,7 +161,7 @@ namespace ManagerSystem.MVC.Controllers
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.JD);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.WD);
                 sb.AppendFormat("    <td class=\" \">");
-                if (v.AREACODE.Substring(6, 3) == "000")
+                if (v.AREACODE.Substring(6, 9) == "000000000")//只有省/市/县才有下属区域
                 {
                     sb.AppendFormat("            <a href=\"/SystemConfig/AREAList?ID={0}\">", v.AREACODE);
                     sb.AppendFormat("                下属区划");
@@ -214,9 +225,9 @@ namespace ManagerSystem.MVC.Controllers
                     return Content(JsonConvert.SerializeObject(new Message(false, "请输入单位编码！", "")), "text/html;charset=UTF-8");
                 if (string.IsNullOrEmpty(m.ORGNAME))
                     return Content(JsonConvert.SerializeObject(new Message(false, "请输入单位名称！", "")), "text/html;charset=UTF-8");
-                if (m.ORGNO.Length != 9)
+                if (m.ORGNO.Length != 15)
                     return Content(JsonConvert.SerializeObject(new Message(false, "单位编码，请重新输入！", "")), "text/html;charset=UTF-8");
-                if (m.AREACODE.Length != 9)
+                if (m.AREACODE.Length != 15)
                     return Content(JsonConvert.SerializeObject(new Message(false, "所属行政区划码错误，请重新输入！", "")), "text/html;charset=UTF-8");
             }
             return Content(JsonConvert.SerializeObject(T_SYS_ORGCls.Manager(m)), "text/html;charset=UTF-8");
@@ -333,11 +344,14 @@ namespace ManagerSystem.MVC.Controllers
                 {
                     orgName = "　　" + orgName;
                 }
+                else if (PublicCls.OrgIsZhen(v.ORGNO))
+                {
+                    orgName = "　　　　　　" + orgName;
+                }
                 else
                 {
-                    orgName = "　　　　" + orgName;
+                    orgName = "　　　　　　　　" + orgName;
                 }
-
                 if (i % 2 == 0)
                     sb.AppendFormat("<tr>");
                 else

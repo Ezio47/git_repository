@@ -107,19 +107,25 @@
             var temp = x.toString();
             var s = $('#tbx' + temp + '').val();
             if ($.trim(s) != "") {
-                if (!CheckNUM2(s)) {
-                    layer.msg('请输入整数!', { icon: 5 });
-                    $('#tbx' + temp + '').focus();
-                    return;
-                }
-                else {
-                    if (s == "0" || s == "") {
-                        continue;
+                if (temp !== (dic314Count - 1).toString()) {
+                    if (!CheckNUM2(s)) {
+                        layer.msg('请输入整数!', { icon: 5 });
+                        $('#tbx' + temp + '').focus();
+                        return;
                     }
                     else {
-                        strREPORTCODE = strREPORTCODE + dic314Value[x] + ",";
-                        strREPORTVALUE = strREPORTVALUE + $('#tbx' + temp + '').val() + ",";
+                        if (s == "0") {
+                            continue;
+                        }
+                        else {
+                            strREPORTCODE = strREPORTCODE + dic314Value[x] + ",";
+                            strREPORTVALUE = strREPORTVALUE + $('#tbx' + temp + '').val() + ",";
+                        }
                     }
+                }
+                else {
+                    strREPORTCODE = strREPORTCODE + dic314Value[x] + ",";
+                    strREPORTVALUE = strREPORTVALUE + $('#tbx' + temp + '').val() + ",";
                 }
             }
         }

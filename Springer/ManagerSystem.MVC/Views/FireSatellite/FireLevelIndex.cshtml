@@ -1,11 +1,15 @@
 ﻿@{
     Layout = "~/Views/Shared/_LayoutIndex.cshtml";
 }
-<script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+@section Header{
+    <script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+}
+
 <div class="easyui-layout" data-options="fit:true" style=" border:0;">
     <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
         @Html.Raw(@ViewBag.PageLeftMenu)
     </div>
+
     <div data-options="region:'center'" title="" class="LayoutCenterBG">
         <div class="easyui-layout" data-options="fit:true" style=" border:0;">
 
@@ -22,12 +26,14 @@
                                 <input name="file" style="width:130px;" type="file" id="file" class="btn btn-info btn-sm" />
                                 <button type="submit" name="Upload" value="导入" class="btnInputCss"> 导 入</button>
                             }
+                        </li>
                         <li class="active">
                             <a href="~/UploadFile/HXDJExcel/火险等级模板.xls" target="_blank" title="右键，另存为">下载模板</a>
                         </li>
                     </ul>
                 </div>
             </div>
+
             <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
                 <div class="easyui-layout" data-options="fit:true" style=" border:0;">
                     <div data-options="region:'center'" title="" style=" border: none; ">
@@ -43,7 +49,7 @@
 </div>
 
 <script type="text/javascript">
-    window.onload = function () {
+    $(function () {
         var a = getQueryString("QUERY");
         var date = new Date();
         var seperator1 = "-";
@@ -59,18 +65,18 @@
         var currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate
         if (a == "query") {
             $('#addWeather').hide();//查询出来的天气情况只能看 不能保存
-            var _len = $("#Satellite tr").length - 3;//行数           
+            var _len = $("#Satellite tr").length - 3;//行数
             for (var i = 1; i <= _len; i++) {
                 var text = $('#tbxNum_' + i + '').attr('codee');
-                $('#tbxBYORGNO_' + i + '').val(text); 
+                $('#tbxBYORGNO_' + i + '').val(text);
             }
             if ($('#tbxQueryTime').val() != currentdate) { //查询的不是当天的 只能查看 不能保存 删除 添加
                 $('#addHot').hide();
                 $('#delHot').hide();
                 $('#saveHot').hide();
             }
-        }             
-    };
+        }
+    });
 
     function addTr() {
         var _len = $("#Satellite tr").length - 2;
@@ -99,13 +105,12 @@
         }
         var currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate + " " + h + seperator2 + m + seperator2 + s;
         $("#Satellite tr:eq(" + _len + ")").after("<tr id=" + _len + " align='center'>"
-          + "<td><select id='tbxBYORGNO_"+_len +"' style='width:98%;'></select></td>"
-          + "<td><input id='tbxNum_"+_len +"' type='text' style='width:98%;' /></td>"
+          + "<td><select id='tbxBYORGNO_" + _len + "' style='width:98%;'></select></td>"
+          + "<td><input id='tbxNum_" + _len + "' type='text' style='width:98%;' /></td>"
           + "<td><input id='tbxJD_" + _len + "' type='text' style='width:98%;' /></td>"
           + "<td><input id='tbxWD_" + _len + "' type='text' style='width:98%;' /></td>"
           + "<td><input class='Wdate' onclick=\"WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss', maxDate: '%y-%M-%d %H:%m:%s' })\" id='tbxHotTime_" + _len + "' type='text' style='width:98%;' /></td>"
           + "</tr>");
-
         $("#tbxBYORGNO_" + _len + "").append('"+@Html.Raw(@ViewBag.vdOrg)+"');
         $("#tbxHotTime_" + _len + "").val(currentdate);
     }
@@ -122,7 +127,7 @@
     function Add() {
         var DATE = $('#tbxQueryTime').val();
         if ($.trim(DATE) == "") {
-            layer.msg('请选择添加的日期！', { icon: 5 });
+            layer.msg('请选择添加的日期!', { icon: 5 });
             $('#tbxQueryTime').focus();
             return;
         }
@@ -132,25 +137,25 @@
     function query() {
         var DATE = $('#tbxQueryTime').val();
         if ($.trim(DATE) == "") {
-            layer.msg('请选择需要查询的日期！', { icon: 5 });
+            layer.msg('请选择需要查询的日期!', { icon: 5 });
             $('#tbxQueryTime').focus();
             return;
         }
         $.ajax({
             url: '/FireSatellite/FireLevelQuery',
             timeout: 10000, //10秒后超时，如果为0则永不超时
-            data: {DCDATE: DATE,},
+            data: { DCDATE: DATE },
             success: function (data, ioArgs) {
                 var ar = eval('(' + data + ')');
                 if (ar.Success) {
                     window.location.assign(ar.Url);
                 }
                 else {
-                    layer.msg(ar.Msg);
+                    layer.msg(ar.Msg,{ icon: 5 });
                 }
             },
             error: function (err, ioArgs) {
-                layer.msg("查询异常！");
+                layer.msg("查询异常!",{ icon: 5 });
             }
         });
     }
@@ -174,19 +179,19 @@
             var DATE = $('#tbxTime_' + i + '').val();//日期
 
             if ($.trim(DANGERCLASS) == "") {
-                layer.msg('火险等级不可为空！', { icon: 5 });
+                layer.msg('火险等级不可为空!', { icon: 5 });
                 $('#tbxDangerClass_' + i + '').focus();
                 return;
             }
             else {
                 var reg = new RegExp("^[0-9]*[1-9][0-9]*$");
                 if (!reg.test(DANGERCLASS)) {
-                    layer.msg('火险等级请输入数字！', { icon: 5 });
+                    layer.msg('火险等级请输入数字!', { icon: 5 });
                     $('#tbxDangerClass_' + i + '').focus();
                     return;
                 }
                 if (parseInt(DANGERCLASS) > 5 || parseInt(DANGERCLASS) < 1) {
-                    layer.msg('火险等级请输入1-5！', { icon: 5 });
+                    layer.msg('火险等级请输入1-5!', { icon: 5 });
                     $('#tbxDangerClass_' + i + '').focus();
                     return;
                 }
@@ -199,7 +204,6 @@
             strDangerClass = strDangerClass + DANGERCLASS + ",";
             strDate = strDate + DATE + ",";
         }
-
         $.ajax({
             url: '/FireSatellite/FireLevelSave',
             timeout: 10000, //10秒后超时，如果为0则永不超时
@@ -224,11 +228,11 @@
                     });
                 }
                 else {
-                    layer.msg(ar.Msg);
+                    layer.msg(ar.Msg, { icon: 5 });
                 }
             },
             error: function (err, ioArgs) {
-                layer.msg("保存异常！");
+                layer.msg("保存异常!", { icon: 5 });
             }
         });
     }
@@ -247,51 +251,49 @@
             var str = $('#tbxBYORGNO_' + i + '').val();//orgno
             var reg = new RegExp("-", "g");
             var text = $('#tbxBYORGNO_' + i + '').find("option:selected").text().replace(reg, '');//orgname
-            //alert("text" + text);
             var t2 = $('#tbxNum_' + i + '').val();
-            //alert("t2" + t2);
             var t3 = $('#tbxJD_' + i + '').val();
             var t4 = $('#tbxWD_' + i + '').val();
             var time = $('#tbxHotTime_' + i + '').val();
 
             if ($.trim(text) == "") {
-                layer.msg('卫星热点地点不可为空！', { icon: 5 });
+                layer.msg('卫星热点地点不可为空!', { icon: 5 });
                 $('#tbxBYORGNO').focus();
                 return;
             }
             if ($.trim(t2) == "") {
-                layer.msg('火点个数不可为空！', { icon: 5 });
+                layer.msg('火点个数不可为空!', { icon: 5 });
                 $('#tbxNum').focus();
                 return;
             }
             else {
                 var reg = new RegExp("^[0-9]*[1-9][0-9]*$");
                 if (!reg.test(t2)) {
-                    layer.msg('火点个数请输入数字！', { icon: 5 });
+                    layer.msg('火点个数请输入数字!', { icon: 5 });
                     $('#tbxXS').focus();
                     return;
                 }
             }
             if ($.trim(t3) == "") {
-                layer.msg('经度不可为空！', { icon: 5 });
+                layer.msg('经度不可为空!', { icon: 5 });
                 $('#tbxJD').focus();
                 return;
             } else {
                 reg = /^-?\d+\.\d{1,6}$/;
                 if (!reg.test(t3)) {
-                    layer.msg('经度格式不正确！', { icon: 5 });
+                    layer.msg('经度格式不正确!', { icon: 5 });
                     $('#tbxJD').focus();
                     return;
                 }
             }
             if ($.trim(t4) == "") {
-                layer.msg('纬度不可为空！', { icon: 5 });
+                layer.msg('纬度不可为空!', { icon: 5 });
                 $('#tbxWD').focus();
                 return;
             } else {
                 reg = /^-?\d+\.\d{1,6}$/;
                 if (!reg.test(t4)) {
-                    layer.msg('纬度格式不正确！', { icon: 5 });
+                    layer.msg('纬度格式不正确!', { icon: 5 });
                     $('#tbxWD').focus();
                     return;
                 }
@@ -317,16 +319,16 @@
             success: function (data, ioArgs) {
                 var ar = eval('(' + data + ')');
                 if (ar.Success) {
-                    layer.alert("保存成功!", { icon: 6 }, function (index) {
+                    layer.msg("保存成功!", { icon: 6 }, function (index) {
                         window.location.assign(ar.Url);
                     });
                 }
                 else {
-                    layer.msg(ar.Msg);
+                    layer.msg(ar.Msg, { icon: 5 });
                 }
             },
             error: function (err, ioArgs) {
-                layer.msg("保存异常！");
+                layer.msg("保存异常!", { icon: 5 });
             }
         });
     }

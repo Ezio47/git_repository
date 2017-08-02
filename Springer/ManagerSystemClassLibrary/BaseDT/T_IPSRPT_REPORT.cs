@@ -147,10 +147,12 @@ namespace ManagerSystemClassLibrary.BaseDT
 
             if (string.IsNullOrEmpty(sw.TopORGNO) == false)
             {
-                if (sw.TopORGNO.Substring(4, 5) == "00000")//获取所有市的
+                if (sw.TopORGNO.Substring(4, 11) == "00000000000")//获取所有市的
                     sb.AppendFormat(" AND SUBSTRING(ORGNO,1,4) = '{0}'", ClsSql.EncodeSql(sw.TopORGNO.Substring(0, 4)));
-                else if (sw.TopORGNO.Substring(6, 3) == "000")//获取所有县的
+                else if (sw.TopORGNO.Substring(6, 9) == "000000000")//获取所有县的
                     sb.AppendFormat(" AND SUBSTRING(ORGNO,1,6) = '{0}'", ClsSql.EncodeSql(sw.TopORGNO.Substring(0, 6)));
+                else if (sw.TopORGNO.Substring(9,6)=="000000")
+                    sb.AppendFormat(" AND SUBSTRING(ORGNO,1,9) = '{0}'", ClsSql.EncodeSql(sw.TopORGNO.Substring(0, 9)));
                 else
                     sb.AppendFormat(" AND ORGNO = '{0}'", ClsSql.EncodeSql(sw.TopORGNO));
             }
@@ -261,9 +263,13 @@ namespace ManagerSystemClassLibrary.BaseDT
                 {
                     sb.AppendFormat(" and HID in (SELECT    HID FROM      T_IPSFR_USER where BYORGNO like '{0}%')", PublicCls.getXianIncOrgNo(sw.orgNo));
                 }
-                else
+                else if (PublicCls.OrgIsZhen(sw.orgNo))
                 {
                     sb.AppendFormat(" and HID in (SELECT    HID FROM      T_IPSFR_USER where BYORGNO='{0}')", PublicCls.getZhenIncOrgNo(sw.orgNo));
+                }
+                else
+                {
+                    //sb.AppendFormat(" and HID in (SELECT    HID FROM      T_IPSFR_USER where BYORGNO='{0}')", PublicCls.getZhenIncOrgNo(sw.orgNo));
                 }
 
             }

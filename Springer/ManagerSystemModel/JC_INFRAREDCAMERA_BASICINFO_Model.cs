@@ -69,6 +69,14 @@ namespace ManagerSystemModel
         /// 操作方法
         /// </summary>
         public string opMethod { get; set; }
+        /// <summary>
+        /// 页面数量
+        /// </summary>
+        public string pageSize { get; set; }
+        /// <summary>
+        /// 当前页数
+        /// </summary>
+        public string curPage { get; set; }
 
 
         /// <summary>

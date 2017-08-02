@@ -28,7 +28,7 @@ namespace ManagerSystem.MVC.Controllers
             if (ViewBag.isPageRight == false)
                 return View();
             ViewBag.FIREFROM = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "99", isShowAll = "1" });
-            ViewBag.Time = DateTime.Now.ToString("yyyy-MM");
+            ViewBag.Time = DateTime.Now.ToString("yyyy");
             return View();
         }
 
@@ -44,14 +44,16 @@ namespace ManagerSystem.MVC.Controllers
             string Page = Request.Params["Page"];
             string FIREADDRESSTOWNS = Request.Params["BYORGNO"];
             string Time = Request.Params["Time"];
+            string fireTime = !string.IsNullOrEmpty(Time) ? Convert.ToDateTime(Time + "-01-01 00:00:00").ToString() : "";
+            string fireEndTime = !string.IsNullOrEmpty(Time) ? Convert.ToDateTime(Time + "-12-31 23:59:59").ToString() : "";
             int total = 0;
             var result = FIRERECORD_FIREINFOCls.getListModel(new FIRERECORD_FIREINFO_SW
             {
                 CurPage = int.Parse(Page),
                 PageSize = int.Parse(PageSize),
                 FIREADDRESSTOWNS = FIREADDRESSTOWNS,
-                FIRETIME = !string.IsNullOrEmpty(Time) ? DateTime.Parse(Time).ToString() : "",
-                FIREENDTIME = !string.IsNullOrEmpty(Time) ? DateTime.Parse(Time).AddMonths(1).AddSeconds(-1).ToString() : ""
+                FIRETIME = fireTime,
+                FIREENDTIME = fireEndTime
             }, out total);
             int i = 0;
             bool IsSee = SystemCls.isRight("026001001") ? true : false;
@@ -70,10 +72,10 @@ namespace ManagerSystem.MVC.Controllers
                 sb.AppendFormat("<td class=\"center\">{0}</td>", s.FIREADDRESSVILLAGES);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", s.FIRETIME);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", s.LOSSCOUNT > 0 ? string.Format("{0:0.00}", s.LOSSCOUNT) : "");
-                sb.AppendFormat("<td class=\"center\">{0}</td>", s.FORESTRESOURCELOSSRATIO > 0 ? string.Format("{0:P}", s.FORESTRESOURCELOSSRATIO / 100) : "");
+                sb.AppendFormat("<td class=\"center\">{0}</td>", s.FORESTRESOURCELOSSRATIO > 0 ? string.Format("{0:P}", s.FORESTRESOURCELOSSRATIO) : "");
                 sb.AppendFormat("<td class=\"center\">{0}</td>", s.AVGLOSSPERCATITAVALUE > 0 ? string.Format("{0:0.00}", s.AVGLOSSPERCATITAVALUE) : "");
                 sb.AppendFormat("<td class=\"center\">{0}</td>", s.WOODLANDLOSSAVGVALUE > 0 ? string.Format("{0:0.00}", s.WOODLANDLOSSAVGVALUE) : "");
-                sb.AppendFormat("<td class=\"center\">{0}</td>", s.FIRESUPPEFFECTTHAN > 0 ? string.Format("{0:P}", s.FIRESUPPEFFECTTHAN / 100) : "");
+                sb.AppendFormat("<td class=\"center\">{0}</td>", s.FIRESUPPEFFECTTHAN > 0 ? string.Format("{0:P}", s.FIRESUPPEFFECTTHAN) : "");
                 sb.AppendFormat("<td class=\" \">");
                 if (IsSee)
                     sb.AppendFormat("<a href=\"#\" onclick=\"Manager('See','{0}','{1}')\"  title='查看' class=\"searchBox_01 LinkSee\">查看</a>", s.JCFID, "");
@@ -131,6 +133,7 @@ namespace ManagerSystem.MVC.Controllers
             ViewBag.dicType501 = dicType501;
             ViewBag.dicCount = dicCount;
             ViewBag.JCFID = m.JCFID;
+            ViewBag.FIRECODE = m.FIRECODE;
             ViewBag.ORGNAME = m.ORGNAME;
             ViewBag.FIRETIME = m.FIRETIME;
             return View(model);
@@ -145,7 +148,8 @@ namespace ManagerSystem.MVC.Controllers
             string FIREINFOID = Request.Params["FIREINFOID"];
             string Dic = Request.Params["Dic"];
             StringBuilder sb = new StringBuilder();
-            float louseMoney = 0;
+            FIRELOST_LOSTTYPECOUNT_Model m = new FIRELOST_LOSTTYPECOUNT_Model();
+            string louseMoney = "", mark = "";
 
             #region 直接损失
 
@@ -163,7 +167,7 @@ namespace ManagerSystem.MVC.Controllers
                 if (result.Count() > 0)
                 {
                     sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\" style=\"width:100%\">");
-                    sb.AppendFormat("<tr><td>序号</td><td>名称</td><td>损失金额</td><td>过火木材材积(m³)</td><td>市场价格(元/m³)</td><td>残值(元)</td></tr>");
+                    sb.AppendFormat("<tr><th>序号</th><th>名称</th><th>损失金额</th><th>过火木材材积(m³)</th><th>市场价格(元/m³)</th><th>残值(元)</th></tr>");
                     int i = 0;
                     foreach (var r in result)
                     {
@@ -179,7 +183,6 @@ namespace ManagerSystem.MVC.Controllers
                     }
                     sb.AppendFormat("</table>");
                 }
-                louseMoney = result.Sum(a => float.Parse(a.LOSEMONEYCOUNT));
             }
             #endregion
 
@@ -190,7 +193,7 @@ namespace ManagerSystem.MVC.Controllers
                 if (result.Count() > 0)
                 {
                     sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\" style=\"width:100%\">");
-                    sb.AppendFormat("<tr><td>序号</td><td>名称</td><td>损失金额</td><td>重置价值(元)</td><td>年平均折旧率</td><td>烧毁率</td></tr>");
+                    sb.AppendFormat("<tr><th>序号</th><th>名称</th><th>损失金额</th><th>重置价值(元)</th><th>年平均折旧率</th><th>烧毁率</th></tr>");
                     int i = 0;
                     foreach (var r in result)
                     {
@@ -206,7 +209,6 @@ namespace ManagerSystem.MVC.Controllers
                     }
                     sb.AppendFormat("</table>");
                 }
-                louseMoney = result.Sum(a => float.Parse(a.LOSEMONEYCOUNT));
             }
             #endregion
 
@@ -217,7 +219,7 @@ namespace ManagerSystem.MVC.Controllers
                 if (result.Count() > 0)
                 {
                     sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\" style=\"width:100%\">");
-                    sb.AppendFormat("<tr><td>序号</td><td>名称</td><td>损失金额(元)</td></td><td>数量</td><td>购入价格</td><td>残值(元)</td></tr>");
+                    sb.AppendFormat("<tr><th>序号</th><th>名称</th><th>损失金额(元)</th></th><th>数量</th><th>购入价格</th><th>残值(元)</th></tr>");
                     int i = 0;
                     foreach (var r in result)
                     {
@@ -233,7 +235,6 @@ namespace ManagerSystem.MVC.Controllers
                     }
                     sb.AppendFormat("</table>");
                 }
-                louseMoney = result.Sum(a => float.Parse(a.LOSEMONEYCOUNT));
             }
             #endregion
 
@@ -244,7 +245,7 @@ namespace ManagerSystem.MVC.Controllers
                 if (result.Count() > 0)
                 {
                     sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\" style=\"width:100%\">");
-                    sb.AppendFormat("<tr><td>序号</td><td>名称</td><td>损失金额(元)</td><td>损失数量(kg)</td><td>市场平均价格(元/kg)</td></tr>");
+                    sb.AppendFormat("<tr><th>序号</th><th>名称</th><th>损失金额(元)</th><th>损失数量(kg)</th><th>市场平均价格(元/kg)</th></tr>");
                     int i = 0;
                     foreach (var r in result)
                     {
@@ -259,7 +260,6 @@ namespace ManagerSystem.MVC.Controllers
                     }
                     sb.AppendFormat("</table>");
                 }
-                louseMoney = result.Sum(a => float.Parse(a.LOSEMONEYCOUNT));
             }
             #endregion
 
@@ -270,7 +270,7 @@ namespace ManagerSystem.MVC.Controllers
                 if (result.Count() > 0)
                 {
                     sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\" style=\"width:100%\">");
-                    sb.AppendFormat("<tr><td>序号</td><td>名称</td><td>损失类别</td><td>损失金额(元)</td><td>数量(面积)</td><td>市场价格(生产成本)</td></tr>");
+                    sb.AppendFormat("<tr><th>序号</th><th>名称</th><th>损失类别</th><th>损失金额(元)</th><th>数量(面积)</th><th>市场价格(生产成本)</th></tr>");
                     int i = 0;
                     foreach (var r in result)
                     {
@@ -302,7 +302,6 @@ namespace ManagerSystem.MVC.Controllers
                     }
                     sb.AppendFormat("</table>");
                 }
-                louseMoney = result.Sum(a => float.Parse(a.LOSEMONEYCOUNT));
             }
             #endregion
 
@@ -324,7 +323,7 @@ namespace ManagerSystem.MVC.Controllers
                 if (result1.Count() > 0 || result2.Count() > 0 || result3.Count() > 0 || result4.Count() > 0 || result5.Count() > 0 || result6.Count() > 0)
                 {
                     sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\" style=\"width:100%\">");
-                    sb.AppendFormat("<tr><td>序号</td><td>名称</td><td>损失类别</td><td>损失金额(元)</td></tr>");
+                    sb.AppendFormat("<tr><th>序号</td><th>名称</th><th>损失类别</th><th>损失金额(元)</th></tr>");
                     int i = 0;
                     foreach (var r in result1)
                     {
@@ -388,9 +387,6 @@ namespace ManagerSystem.MVC.Controllers
                     }
                     sb.AppendFormat("</table>");
                 }
-                louseMoney = result1.Sum(a => float.Parse(a.LOSEMONEYCOUNT)) + result2.Sum(a => float.Parse(a.LOSEMONEYCOUNT))
-                           + result3.Sum(a => float.Parse(a.LOSEMONEYCOUNT)) + result4.Sum(a => float.Parse(a.LOSEMONEYCOUNT))
-                           + result5.Sum(a => float.Parse(a.LOSEMONEYCOUNT)) + result6.Sum(a => float.Parse(a.LOSEMONEYCOUNT));
             }
             #endregion
 
@@ -401,7 +397,7 @@ namespace ManagerSystem.MVC.Controllers
                 if (result.Count() > 0)
                 {
                     sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\" style=\"width:100%\">");
-                    sb.AppendFormat("<tr><td>序号</td><td>伤亡名称</td><td>伤亡类别</td><td>损失金额(元)</td><td>伤亡人数</td></tr>");
+                    sb.AppendFormat("<tr><th>序号</th><th>伤亡名称</th><th>伤亡类别</th><th>损失金额(元)</th><th>伤亡人数</th></tr>");
                     int i = 0;
                     foreach (var r in result)
                     {
@@ -416,7 +412,6 @@ namespace ManagerSystem.MVC.Controllers
                     }
                     sb.AppendFormat("</table>");
                 }
-                louseMoney = result.Sum(a => float.Parse(a.LOSEMONEYCOUNT));
             }
             #endregion
 
@@ -427,7 +422,7 @@ namespace ManagerSystem.MVC.Controllers
                 if (result.Count() > 0)
                 {
                     sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\" style=\"width:100%\">");
-                    sb.AppendFormat("<tr><td>序号</td><td>财产名称</td><td>损失金额(元)</td><td>数量</td><td>购入价</td><td>年平均折旧率</td><td>已使用年限</td></tr>");
+                    sb.AppendFormat("<tr><th>序号</th><th>财产名称</th><th>损失金额(元)</th><th>数量</th><th>购入价</th><th>年平均折旧率</th><th>已使用年限</th></tr>");
                     int i = 0;
                     foreach (var r in result)
                     {
@@ -444,7 +439,6 @@ namespace ManagerSystem.MVC.Controllers
                     }
                     sb.AppendFormat("</table>");
                 }
-                louseMoney = result.Sum(a => float.Parse(a.LOSEMONEYCOUNT));
             }
             #endregion
 
@@ -455,7 +449,7 @@ namespace ManagerSystem.MVC.Controllers
                 if (result.Count() > 0)
                 {
                     sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\" style=\"width:100%\">");
-                    sb.AppendFormat("<tr><td>序号</td><td>野生动物名称</td><td>损失金额(元)</td><td>烧死数量(头/只)</td><td>价格(元/头或只)</td><td>残值(元)</td></tr>");
+                    sb.AppendFormat("<tr><th>序号</th><th>野生动物名称</th><th>损失金额(元)</th><th>烧死数量(头/只)</th><th>价格(元/头或只)</th><th>残值(元)</th></tr>");
                     int i = 0;
                     foreach (var r in result)
                     {
@@ -471,7 +465,6 @@ namespace ManagerSystem.MVC.Controllers
                     }
                     sb.AppendFormat("</table>");
                 }
-                louseMoney = result.Sum(a => float.Parse(a.LOSEMONEYCOUNT));
             }
             #endregion
 
@@ -486,7 +479,7 @@ namespace ManagerSystem.MVC.Controllers
                 if (result.Count() > 0)
                 {
                     sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\" style=\"width:100%\">");
-                    sb.AppendFormat("<tr><td>序号</td><td>停(减)产名称</td><td>停(减)产类别</td><td>损失金额(元)</td><td>数量</td><td>时间</td><td>价格</td></tr>");
+                    sb.AppendFormat("<tr><th>序号</th><th>停(减)产名称</th><th>停(减)产类别</th><th>损失金额(元)</th><th>数量</th><th>时间</th><th>价格</th></tr>");
                     int i = 0;
                     foreach (var r in result)
                     {
@@ -522,7 +515,6 @@ namespace ManagerSystem.MVC.Controllers
                     }
                     sb.AppendFormat("</table>");
                 }
-                louseMoney = result.Sum(a => float.Parse(a.LOSEMONEYCOUNT));
             }
             #endregion
 
@@ -533,7 +525,7 @@ namespace ManagerSystem.MVC.Controllers
                 if (result.Count() > 0)
                 {
                     sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\" style=\"width:100%\">"); ;
-                    sb.AppendFormat("<tr><td>序号</td><td>灾后处理名称</td><td>损失类别</td><td>损失金额</td></tr>");
+                    sb.AppendFormat("<tr><th>序号</th><th>灾后处理名称</th><th>损失类别</th><th>损失金额</th></tr>");
                     int i = 0;
                     foreach (var r in result)
                     {
@@ -547,7 +539,6 @@ namespace ManagerSystem.MVC.Controllers
                     }
                     sb.AppendFormat("</table>");
                 }
-                louseMoney = result.Sum(a => float.Parse(a.LOSEMONEYCOUNT));
             }
             #endregion
 
@@ -560,7 +551,14 @@ namespace ManagerSystem.MVC.Controllers
 
             #endregion
 
-            return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), louseMoney > 0 ? louseMoney.ToString() : "")), "text/html;charset=UTF-8");
+            m = FIRELOST_LOSTTYPECOUNTCls.getModel(new FIRELOST_LOSTTYPECOUNT_SW { FIRELOST_FIREINFOID = FIREINFOID, FIRELOSETYPECODE = Dic });
+            if (m != null)
+            {
+                louseMoney = !string.IsNullOrEmpty(m.LOSEMONEY) ? m.LOSEMONEY : "";
+                mark = !string.IsNullOrEmpty(m.MARK) ? m.MARK : "";
+            }
+
+            return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), louseMoney + "," + mark)), "text/html;charset=UTF-8");
         }
 
         /// <summary>
@@ -626,6 +624,13 @@ namespace ManagerSystem.MVC.Controllers
             sheet1.AddMergedRegion(new CellRangeAddress(0, 0, 0, colsCount - 1));
             index++;
             IRow row = sheet1.CreateRow(index);
+            row.CreateCell(0).SetCellValue("森林火灾编号");
+            row.GetCell(0).CellStyle = getCellStyleCenter(book);
+            row.CreateCell(1).SetCellValue(m.FIRECODE);
+            row.GetCell(1).CellStyle = getCellStyleLeft(book);
+            sheet1.AddMergedRegion(new CellRangeAddress(1, 1, 1, colsCount - 1));
+            index++;
+            row = sheet1.CreateRow(index);
             row.CreateCell(0).SetCellValue("起火单位");
             row.GetCell(0).CellStyle = getCellStyleCenter(book);
             row.CreateCell(1).SetCellValue(m.ORGNAME);
@@ -691,7 +696,7 @@ namespace ManagerSystem.MVC.Controllers
                         row.GetCell(0).CellStyle = getCellStyleCenter(book);
                         sheet1.AddMergedRegion(new CellRangeAddress(index, index + rowCount - 1, 0, 0));
                         row.CreateCell(1).SetCellValue(type.DICTListModel[0].DICTNAME);
-                        row.GetCell(1).CellStyle = getCellStyleCenter(book);
+                        row.GetCell(1).CellStyle = getCellStyleLeft(book);
                         row.CreateCell(2).SetCellValue(louseMoney1);
                         row.GetCell(2).CellStyle = getCellStyleCenter(book);
                         row.CreateCell(3).SetCellValue(mark1);
@@ -704,7 +709,7 @@ namespace ManagerSystem.MVC.Controllers
                             string mark2 = (m2 != null && !string.IsNullOrEmpty(m2.MARK)) ? m2.MARK : "";
                             row = sheet1.CreateRow(index);
                             row.CreateCell(1).SetCellValue(type.DICTListModel[i].DICTNAME);
-                            row.GetCell(1).CellStyle = getCellStyleCenter(book);
+                            row.GetCell(1).CellStyle = getCellStyleLeft(book);
                             row.CreateCell(2).SetCellValue(louseMoney2);
                             row.GetCell(2).CellStyle = getCellStyleCenter(book);
                             row.CreateCell(3).SetCellValue(mark2);
@@ -728,7 +733,7 @@ namespace ManagerSystem.MVC.Controllers
             row.CreateCell(0).SetCellValue("森林资源损失率/%");
             row.GetCell(0).CellStyle = getCellStyleCenter(book);
             sheet1.AddMergedRegion(new CellRangeAddress(index, index, 0, 1));
-            row.CreateCell(2).SetCellValue(string.Format("{0:P}", float.Parse(model.FORESTRESOURCELOSSRATIO) / 100));
+            row.CreateCell(2).SetCellValue(model.FORESTRESOURCELOSSRATIO);
             row.GetCell(2).CellStyle = getCellStyleCenter(book);
             sheet1.AddMergedRegion(new CellRangeAddress(index, index, 2, 3));
             index++;
@@ -752,7 +757,7 @@ namespace ManagerSystem.MVC.Controllers
             row.CreateCell(0).SetCellValue("扑火成效比%");
             row.GetCell(0).CellStyle = getCellStyleCenter(book);
             sheet1.AddMergedRegion(new CellRangeAddress(index, index, 0, 1));
-            row.CreateCell(2).SetCellValue(string.Format("{0:P}", float.Parse(model.FIRESUPPEFFECTTHAN) / 100));
+            row.CreateCell(2).SetCellValue(model.FIRESUPPEFFECTTHAN);
             row.GetCell(2).CellStyle = getCellStyleCenter(book);
             sheet1.AddMergedRegion(new CellRangeAddress(index, index, 2, 3));
             index++;
@@ -3020,10 +3025,16 @@ namespace ManagerSystem.MVC.Controllers
             if (model.BUILDINGLOSECOUNT == "0") { model.BUILDINGLOSECOUNT = ""; }
             if (model.MACHINERYLOSECOUNT == "0") { model.MACHINERYLOSECOUNT = ""; }
             if (model.LOSSCOUNT == "0") { model.LOSSCOUNT = ""; }
-            if (model.FORESTRESOURCELOSSRATIO == "0") { model.FORESTRESOURCELOSSRATIO = ""; }
+            if (model.FORESTRESOURCELOSSRATIO == "0")
+                model.FORESTRESOURCELOSSRATIO = "";
+            else
+                model.FORESTRESOURCELOSSRATIO = string.Format("{0:P}", float.Parse(model.FORESTRESOURCELOSSRATIO));
             if (model.AVGLOSSPERCATITAVALUE == "0") { model.AVGLOSSPERCATITAVALUE = ""; }
             if (model.WOODLANDLOSSAVGVALUE == "0") { model.WOODLANDLOSSAVGVALUE = ""; }
-            if (model.FIRESUPPEFFECTTHAN == "0") { model.FIRESUPPEFFECTTHAN = ""; }
+            if (model.FIRESUPPEFFECTTHAN == "0")
+                model.FIRESUPPEFFECTTHAN = "";
+            else
+                model.FIRESUPPEFFECTTHAN = string.Format("{0:P}", float.Parse(model.FIRESUPPEFFECTTHAN));
             dicType501 = T_SYS_DICTCls.getTypeModel(new T_SYS_DICTTYPE_SW { DICTTYPEID = "501" });
         }
 
@@ -3043,6 +3054,10 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
             sb.AppendFormat("<thead><tr><th colspan=\"4\">森林火灾损失汇总表</th></tr></thead>");
             sb.AppendFormat("<tbody>");
+            sb.AppendFormat("<tr>");
+            sb.AppendFormat("<td class=\"center\" style=\"width: 25%\">森林火灾编号</td>");
+            sb.AppendFormat("<td class=\"left\" style=\"width: 25%\"  colspan=\"3\">{0}</td>", m.FIRECODE);
+            sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
             sb.AppendFormat("<td class=\"center\" style=\"width: 25%\">起火单位</td>");
             sb.AppendFormat("<td class=\"center\" style=\"width: 25%\">{0}</td>", m.ORGNAME);
@@ -3084,7 +3099,7 @@ namespace ManagerSystem.MVC.Controllers
                         string mark1 = (m1 != null && !string.IsNullOrEmpty(m1.MARK)) ? m1.MARK : "";
                         sb.AppendFormat("<tr>");
                         sb.AppendFormat("<td rowspan=\"{1}\" class=\"center\">{0}</td>", type.DICTTYPENAME, rowCount);
-                        sb.AppendFormat("<td class=\"center\">{0}</td>", type.DICTListModel[0].DICTNAME);
+                        sb.AppendFormat("<td class=\"left\">{0}</td>", type.DICTListModel[0].DICTNAME);
                         sb.AppendFormat("<td class=\"center\">{0}</td>", louseMoney1);
                         sb.AppendFormat("<td class=\"center\">{0}</td>", mark1);
                         sb.AppendFormat("</tr>");
@@ -3094,7 +3109,7 @@ namespace ManagerSystem.MVC.Controllers
                             string louseMoney2 = (m2 != null && !string.IsNullOrEmpty(m2.LOSEMONEY)) ? m2.LOSEMONEY : "";
                             string mark2 = (m2 != null && !string.IsNullOrEmpty(m2.MARK)) ? m2.MARK : "";
                             sb.AppendFormat("<tr>");
-                            sb.AppendFormat("<td class=\"center\">{0}</td>", type.DICTListModel[i].DICTNAME);
+                            sb.AppendFormat("<td class=\"left\">{0}</td>", type.DICTListModel[i].DICTNAME);
                             sb.AppendFormat("<td class=\"center\">{0}</td>", louseMoney2);
                             sb.AppendFormat("<td class=\"center\">{0}</td>", mark2);
                             sb.AppendFormat("</tr>");
@@ -3108,7 +3123,7 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
             sb.AppendFormat("<td colspan=\"2\" class=\"center\">森林资源损失率/%</td>");
-            sb.AppendFormat("<td colspan=\"2\" class=\"center\">{0}</td>", !string.IsNullOrEmpty(model.FORESTRESOURCELOSSRATIO) ? string.Format("{0:P}", float.Parse(model.FORESTRESOURCELOSSRATIO) / 100) : "");
+            sb.AppendFormat("<td colspan=\"2\" class=\"center\">{0}</td>", model.FORESTRESOURCELOSSRATIO);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
             sb.AppendFormat("<td colspan=\"2\" class=\"center\">人均损失价值<br />元/人</td>");
@@ -3120,7 +3135,7 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
             sb.AppendFormat("<td colspan=\"2\" class=\"center\">扑火成效比<br />%</td>");
-            sb.AppendFormat("<td colspan=\"2\" class=\"center\">{0}</td>", !string.IsNullOrEmpty(model.FIRESUPPEFFECTTHAN) ? string.Format("{0:P}", float.Parse(model.FIRESUPPEFFECTTHAN) / 100) : "");
+            sb.AppendFormat("<td colspan=\"2\" class=\"center\">{0}</td>", model.FIRESUPPEFFECTTHAN);
             sb.AppendFormat("</tr>");
             sb.AppendFormat(" </tbody>");
             sb.AppendFormat("</table>");

@@ -23,6 +23,14 @@ namespace ManagerSystemSearchWhereModel
         /// 手机号码
         /// </summary>
         public string PHONE { get; set; }
+        /// <summary>
+        /// 页数
+        /// </summary>
+        public int pageSize { get; set; }
+        /// <summary>
+        /// 当前页
+        /// </summary>
+        public int curPage { get; set; }
     }
     /// <summary>
     /// 预警监测-红外相机-彩信图片

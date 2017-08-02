@@ -17,6 +17,7 @@
             <div style=" color: #3c7915;">
                 年份：<input id="tbxREPORTYEAR" type="text" class="Wdate" style="width:100px;" value="@ViewBag.REPORTYEAR" onclick="WdatePicker({ dateFmt: 'yyyy'})" />
                 单位：<select id="tbxBYORGNO" onchange="Query()">@Html.Raw(@ViewBag.vdOrg)</select>&nbsp;&nbsp;&nbsp;
+                <input type="button" class="btnSaveCss" value="保存" onclick="Manager()" id="Save" />
             </div>
         </div>
     </div>
@@ -51,7 +52,7 @@
                     <td style="width:18%;"></td>
                 </tr>
                 <tr style="width:95%;">
-                    <td rowspan="3" >年龄</td>
+                    <td rowspan="3">年龄</td>
                     <td style="width:10%;" id="tbx0">省级</td>
                     <td>30岁以下:<input id="tbx02" type="text" value="0" style="width: 50%;" /> </td>
                     <td>31-50岁 :<input id="tbx03" type="text" value="0" style="width: 50%;" /> </td>
@@ -73,106 +74,119 @@
                     <td></td>
                 </tr>
                 <tr style="width:95%;">
-                    <td rowspan="3"  id="tbx3">职务</td>
+                    <td rowspan="3" id="tbx3">职务</td>
                     <td style="width:10%;" id="tbx0">省级</td>
-                    <td>厅局级:<input id="tbx05" type="text" value="0" style="width: 50%;" /></td>
-                    <td>处级  :<input id="tbx06" name="0" type="text" value="0" style="width: 50%;" /></td>
-                    <td>科级  :<input id="tbx07" name="0" type="text" value="0" style="width: 50%;" /></td>
+                    <td>厅 局 级:&nbsp;&nbsp;<input id="tbx05" type="text" value="0" style="width: 50%;" /></td>
+                    <td>处 &nbsp;&nbsp;级  :&nbsp;&nbsp;<input id="tbx06" name="0" type="text" value="0" style="width: 50%;" /></td>
+                    <td>科&nbsp;&nbsp; 级  :&nbsp;&nbsp;<input id="tbx07" name="0" type="text" value="0" style="width: 50%;" /></td>
                     <td>科级以下:<input id="tbx08" name="0" type="text" value="0" style="width: 50%;" /></td>
                 </tr>
                 <tr style="width:95%;">
                     <td id="tbx1">地级</td>
-                    <td>厅局级:<input id="tbx15" type="text" value="0" style="width: 50%;" /></td>
-                    <td>处级  :<input id="tbx16" name="0" type="text" value="0" style="width: 50%;" /></td>
-                    <td>科级  :<input id="tbx17" name="0" type="text" value="0" style="width: 50%;" /></td>
+                    <td>厅 局 级:&nbsp;&nbsp;<input id="tbx15" type="text" value="0" style="width: 50%;" /></td>
+                    <td>处 &nbsp;&nbsp;级  :&nbsp;&nbsp;<input id="tbx16" name="0" type="text" value="0" style="width: 50%;" /></td>
+                    <td>科&nbsp;&nbsp; 级  :&nbsp;&nbsp;<input id="tbx17" name="0" type="text" value="0" style="width: 50%;" /></td>
                     <td>科级以下:<input id="tbx18" name="0" type="text" value="0" style="width: 50%;" /></td>
                 </tr>
                 <tr style="width:95%;">
                     <td id="tbx2">县级</td>
-                    <td>厅局级:<input id="tbx25" type="text" value="0" style="width: 50%;" /></td>
-                    <td>处级  :<input id="tbx26" name="0" type="text" value="0" style="width: 50%;" /></td>
-                    <td>科级  :<input id="tbx27" name="0" type="text" value="0" style="width: 50%;" /></td>
+                    <td>厅 局 级:&nbsp;&nbsp;<input id="tbx25" type="text" value="0" style="width: 50%;" /></td>
+                    <td>处 &nbsp;&nbsp;级  :&nbsp;&nbsp;<input id="tbx26" name="0" type="text" value="0" style="width: 50%;" /></td>
+                    <td>科&nbsp;&nbsp; 级  :&nbsp;&nbsp;<input id="tbx27" name="0" type="text" value="0" style="width: 50%;" /></td>
                     <td>科级以下:<input id="tbx28" name="0" type="text" value="0" style="width: 50%;" /></td>
                 </tr>
                 <tr style="width:95%;">
                     <td rowspan="3" id="tbx4">文化程度</td>
-                    <td  id="tbx0">省级</td>
-                    <td>大专以上:<input id="tbx09" type="text" value="0" style="width: 50%;" /></td>
-                    <td>中  专  :<input id="tbx010" name="0" type="text" value="0" style="width: 50%;" /></td>
+                    <td id="tbx0">省级</td>
+                    <td>大专以上:&nbsp;<input id="tbx09" type="text" value="0" style="width: 50%;" /></td>
+                    <td>中 &nbsp;&nbsp;专  :&nbsp;&nbsp;<input id="tbx010" name="0" type="text" value="0" style="width: 50%;" /></td>
                     <td>高中以下:<input id="tbx011" name="0" type="text" value="0" style="width: 50%;" /></td>
                     <td></td>
                 </tr>
                 <tr style="width:95%;">
                     <td id="tbx1">地级</td>
-                    <td>大专以上:<input id="tbx19" type="text" value="0" style="width: 50%;" /></td>
-                    <td>中  专  :<input id="tbx110" name="0" type="text" value="0" style="width: 50%;" /></td>
+                    <td>大专以上:&nbsp;<input id="tbx19" type="text" value="0" style="width: 50%;" /></td>
+                    <td>中 &nbsp;&nbsp;专  :&nbsp;&nbsp;<input id="tbx110" name="0" type="text" value="0" style="width: 50%;" /></td>
                     <td>高中以下:<input id="tbx111" name="0" type="text" value="0" style="width: 50%;" /></td>
                     <td></td>
                 </tr>
                 <tr style="width:95%;">
-                    <td id="tbx2">县级</td>    
-                    <td>大专以上:<input id="tbx29" type="text" value="0" style="width: 50%;" /></td>
-                    <td>中  专  :<input id="tbx210" name="0" type="text" value="0" style="width: 50%;" /></td>
+                    <td id="tbx2">县级</td>
+                    <td>大专以上:&nbsp;<input id="tbx29" type="text" value="0" style="width: 50%;" /></td>
+                    <td>中 &nbsp;&nbsp;专  :&nbsp;&nbsp;<input id="tbx210" name="0" type="text" value="0" style="width: 50%;" /></td>
                     <td>高中以下:<input id="tbx211" name="0" type="text" value="0" style="width: 50%;" /></td>
-                    <td></td>                  
+                    <td></td>
                 </tr>
                 <tr style="width:95%;">
-                    <td rowspan="3" >技术职称</td>
+                    <td rowspan="3">技术职称</td>
                     <td style="width:10%;" id="tbx0">省级</td>
-                    <td>高级:<input id="tbx012" type="text" value="0" style="width: 50%;" /></td>
-                    <td>中级:<input id="tbx013" type="text" value="0" style="width: 50%;" /></td>
+                    <td>高&nbsp;&nbsp;级:&nbsp;&nbsp;&nbsp;&nbsp;<input id="tbx012" type="text" value="0" style="width: 50%;" /></td>
+                    <td>中&nbsp;&nbsp;级:&nbsp;&nbsp;&nbsp;&nbsp;<input id="tbx013" type="text" value="0" style="width: 50%;" /></td>
                     <td>初级以下:<input id="tbx014" type="text" value="0" style="width: 50%;" /></td>
                     <td></td>
                 </tr>
                 <tr style="width:95%;">
                     <td id="tbx1">地级</td>
-                    <td>高级:<input id="tbx112" type="text" value="0" style="width: 50%;" /></td>
-                    <td>中级:<input id="tbx113" type="text" value="0" style="width: 50%;" /></td>
+                    <td>高&nbsp;&nbsp;级:&nbsp;&nbsp;&nbsp;&nbsp;<input id="tbx112" type="text" value="0" style="width: 50%;" /></td>
+                    <td>中&nbsp;&nbsp;级:&nbsp;&nbsp;&nbsp;&nbsp;<input id="tbx113" type="text" value="0" style="width: 50%;" /></td>
                     <td>初级以下:<input id="tbx114" type="text" value="0" style="width: 50%;" /></td>
                     <td></td>
                 </tr>
                 <tr style="width:95%;">
                     <td id="tbx2">县级</td>
-                    <td>高级:<input id="tbx212" type="text" value="0" style="width: 50%;" /></td>
-                    <td>中级:<input id="tbx213" type="text" value="0" style="width: 50%;" /></td>
+                    <td>高&nbsp;&nbsp;级:&nbsp;&nbsp;&nbsp;&nbsp;<input id="tbx212" type="text" value="0" style="width: 50%;" /></td>
+                    <td>中&nbsp;&nbsp;级:&nbsp;&nbsp;&nbsp;&nbsp;<input id="tbx213" type="text" value="0" style="width: 50%;" /></td>
                     <td>初级以下:<input id="tbx214" type="text" value="0" style="width: 50%;" /></td>
                     <td></td>
                 </tr>
                 <tr style="width:95%;">
-                    <td rowspan="3" >防火工作年限</td>
+                    <td rowspan="3">防火工作年限</td>
                     <td style="width:10%;" id="tbx0">省级</td>
                     <td>15年以上:<input id="tbx015" type="text" value="0" style="width: 50%;" /></td>
-                    <td>5-15年:<input id="tbx016" type="text" value="0" style="width: 50%;" /></td>
-                    <td>5年以下:<input id="tbx017" type="text" value="0" style="width: 50%;" /></td>
+                    <td>5-15年:&nbsp;&nbsp;<input id="tbx016" type="text" value="0" style="width: 50%;" /></td>
+                    <td>5年以下:&nbsp;&nbsp;<input id="tbx017" type="text" value="0" style="width: 50%;" /></td>
                     <td></td>
                 </tr>
                 <tr style="width:95%;">
                     <td id="tbx1">地级</td>
                     <td>15年以上:<input id="tbx115" type="text" value="0" style="width: 50%;" /></td>
-                    <td>5-15年 :<input id="tbx116" type="text" value="0" style="width: 50%;" /></td>
-                    <td>5年以下:<input id="tbx117" type="text" value="0" style="width: 50%;" /></td>
+                    <td>5-15年:&nbsp;&nbsp;<input id="tbx116" type="text" value="0" style="width: 50%;" /></td>
+                    <td>5年以下:&nbsp;&nbsp;<input id="tbx117" type="text" value="0" style="width: 50%;" /></td>
                     <td></td>
                 </tr>
                 <tr style="width:95%;">
                     <td id="tbx2">县级</td>
                     <td>15年以上:<input id="tbx215" type="text" value="0" style="width: 50%;" /></td>
-                    <td>5-15年:<input id="tbx216" type="text" value="0" style="width: 50%;" /></td>
-                    <td>5年以下:<input id="tbx217" type="text" value="0" style="width: 50%;" /></td>
+                    <td>5-15年:&nbsp;&nbsp;<input id="tbx216" type="text" value="0" style="width: 50%;" /></td>
+                    <td>5年以下:&nbsp;&nbsp;<input id="tbx217" type="text" value="0" style="width: 50%;" /></td>
                     <td></td>
                 </tr>
                 <tr style="width:95%;">
                     <td style="text-align:center;" id="tbx7">备注：</td>
-                    <td colspan="5"><input id="tbx711" name="" type="text"style="width: 95%;" /></td>
+                    <td colspan="5">
+                        <input id="tbx018" onkeyup="WriteBeiZhu()" type="text" value="" style="width: 95%;" />
+                        <input id="tbx118" type="hidden" value="" style="width: 95%;" />
+                        <input id="tbx218" type="hidden" value="" style="width: 95%;" />
+                    </td>
                 </tr>
             </table>
         </div>
-        <p style="text-align:center;margin-bottom:10px;">
-            <input type="button" class="btnSaveCss" value="保存" onclick="Manager()" id="Save" />
-        </p>
     </div>
 </div>
 
 <script type="text/javascript">
+    function WriteBeiZhu() {
+        document.getElementById('tbx118').value = $("#tbx018").val();
+        document.getElementById('tbx218').value = $("#tbx018").val();
+    }
+    //验证整数
+    function CheckINT1(number) {
+        var filter = /^\+?[0-9][0-9]*$/;
+        if (filter.test($.trim(number))) return true;
+        else {
+            return false;
+        }
+    }
     function Manager() {
         var dic305Value = $('#dic305Value').val().split(',');
         var dic305Count = $('#dic305Count').val();
@@ -188,27 +202,31 @@
         var strSSXTYPELEVELCODE = "";
         var strREPORTVALUE = "";
         for (var x = 0; x < dic305Count; x++) {
-            for (var y = 0; y < dic311Count-1; y++) {
+            for (var y = 0; y < dic311Count; y++) {
                 var temp = x.toString() + y.toString();
                 var s = $('#tbx' + temp + '').val();
                 if ($.trim(s) != "") {
-                    if (!CheckNUM2(s)) {
-                        layer.msg('请输入整数!', { icon: 5 });
-                        $('#tbx' + temp + '').focus();
-                        return;
-                    }
-                    else {
-                        if (s == "0" || s == "") {
-                            continue;
+                    if (temp !== x.toString() + (dic311Count - 1)) {
+                        if (!CheckINT1(s)) {
+                            layer.msg('请输入整数!', { icon: 5 });
+                            $('#tbx' + temp + '').focus();
+                            return;
                         }
                         else {
-                            strREPORTVALUE = strREPORTVALUE + $('#tbx' + temp + '').val() + ",";
-                            strSSXTYPELEVELCODE = strSSXTYPELEVELCODE + dic305Value[x] + ",";
-                            strREPORTCODE = strREPORTCODE + dic311Value[y] + ",";
-                            //if (y == dic311Count - 1) {
-                            //    strREPORTVALUE = strREPORTVALUE + $('#tbxREPORTVALUE').val() + ",";
-                            //}
+                            if (s == "0") {
+                                continue;
+                            }
+                            else {
+                                strREPORTVALUE = strREPORTVALUE + $('#tbx' + temp + '').val() + ",";
+                                strSSXTYPELEVELCODE = strSSXTYPELEVELCODE + dic305Value[x] + ",";
+                                strREPORTCODE = strREPORTCODE + dic311Value[y] + ",";
+                            }
                         }
+                    }
+                    else {
+                        strREPORTVALUE = strREPORTVALUE + $('#tbx' + temp + '').val() + ",";
+                        strSSXTYPELEVELCODE = strSSXTYPELEVELCODE + dic305Value[x] + ",";
+                        strREPORTCODE = strREPORTCODE + dic311Value[y] + ",";
                     }
                 }
             }

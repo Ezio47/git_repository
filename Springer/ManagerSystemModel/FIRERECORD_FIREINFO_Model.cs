@@ -203,6 +203,15 @@ namespace ManagerSystemModel
         /// 返回网址
         /// </summary>
         public string returnUrl { get; set; }
+
+        /// <summary>
+        /// 经度
+        /// </summary>
+        public string JD { get; set; }
+        /// <summary>
+        /// 纬度
+        /// </summary>
+        public string WD { get; set; }
   
     }
 }

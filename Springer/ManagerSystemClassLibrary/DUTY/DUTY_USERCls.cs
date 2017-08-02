@@ -282,7 +282,7 @@ namespace ManagerSystemClassLibrary.DUTY
 
             DataTable dtU = BaseDT.T_SYSSEC_USER.getDT(new T_SYSSEC_IPSUSER_SW { });//获取所有系统用户
             DataTable dtORG =null;
-            if (sw.curOrgNo.Substring(4, 5) == "00000" || sw.curOrgNo.Substring(6, 3) == "000")//市县
+            if (sw.curOrgNo.Substring(4, 11) == "00000000000" || sw.curOrgNo.Substring(6, 9) == "000000000")//市县
             {
                  dtORG = BaseDT.T_SYS_ORG.getDT(new T_SYS_ORGSW { TopORGNO = sw.curOrgNo, OnlyGetShiXian = "1" });//获取单位
             }

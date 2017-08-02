@@ -132,11 +132,10 @@ namespace ManagerSystemClassLibrary.BaseDT
                 sb.AppendFormat(" AND PHOTOTITLE = '{0}'", ClsSql.EncodeSql(sw.PHOTOTITLE));
             //根据照片描述查询
             if (string.IsNullOrEmpty(sw.PHOTOEXPLAIN) == false)
-                sb.AppendFormat(" AND PHOTOEXPLAIN like  '%{0}%'", ClsSql.EncodeSql(sw.PHOTOEXPLAIN));           
+                sb.AppendFormat(" AND PHOTOEXPLAIN like  '%{0}%'", ClsSql.EncodeSql(sw.PHOTOEXPLAIN));
             #endregion
 
-            string sql = "SELECT PEST_PHOTOID, PHOTOTITLE, PHOTOFILENAME, PHOTOEXPLAIN, PHOTOTIME, PHOTOTYPE, PRID "
-                + sb.ToString() + " ORDER BY PEST_PHOTOID, PHOTOTIME ";
+            string sql = "SELECT PEST_PHOTOID, PHOTOTITLE, PHOTOFILENAME, PHOTOEXPLAIN, PHOTOTIME, PHOTOTYPE, PRID " + sb.ToString() + " ORDER BY PEST_PHOTOID, PHOTOTIME ";
             DataSet ds = DataBaseClass.FullDataSet(sql);
             return ds.Tables[0];
         }

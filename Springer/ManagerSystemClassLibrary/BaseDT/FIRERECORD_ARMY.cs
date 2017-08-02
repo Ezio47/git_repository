@@ -93,6 +93,5 @@ namespace ManagerSystemClassLibrary.BaseDT
         //}
         //#endregion
 
-
     }
 }
