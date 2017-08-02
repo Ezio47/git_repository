@@ -17,19 +17,21 @@
                     </ul>
                 </div>
             </div>
+
             <div data-options="region:'center'" title="" style=" border: none; " class="LayoutCenterBG">
                 <div class="divTable">
                     @Html.Raw(@ViewBag.AREAList)
                 </div>
             </div>
+
             <div data-options="region:'south'" title="" style=" height:40px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
                 <div class="divOP" style="text-align:left;">
                     <div class="home">
-                        编码：<input id="tbxAREACODE" type="text" value="" style="width:70px;" />
+                        编码：<input id="tbxAREACODE" type="text" value="" style="width:120px;" />
                         名称：<input id="tbxAREANAME" type="text" value="" style="width:70px;" />
-                        简称：<input id="tbxAREAJC" type="text" value="" style="width:65px;" />
-                        经度：<input id="tbxJD" type="text" value="" style="width:65px;" />
-                        纬度：<input id="tbxWD" type="text" value="" style="width:65px;" />
+                        简称：<input id="tbxAREAJC" type="text" value="" style="width:60px;" />
+                        经度：<input id="tbxJD" type="text" value="" style="width:60px;" />
+                        纬度：<input id="tbxWD" type="text" value="" style="width:60px;" />
                         <input id="tbxAREAID" type="hidden" value="" />
                         <input type="button" value="添加" onclick="Manager('Add')" class="btnAddCss" />
                         <input type="button" value="修改" onclick="Manager('Mdy')" class="btnMdyCss" />
@@ -59,10 +61,12 @@
                     document.getElementById("tbxJD").value = data.JD;
                     document.getElementById("tbxWD").value = data.WD;
                 }
-                else alert("erro");
+                else {
+                    layer.msg(data.Msg, { icon: 5 });
+                }
             },
             error: function (err, ioArgs) {
-                alert('登陆异常');
+                layer.msg('登陆异常!', { icon: 5 });
             }
         });
     }
@@ -73,7 +77,7 @@
         if ($.trim(t1) != "") {
             reg = /^-?\d+\.\d{1,6}$/;
             if (!reg.test(t1)) {
-                layer.msg('经度格式不正确！', { icon: 5 });
+                layer.msg('经度格式不正确!', { icon: 5 });
                 $('#tbxJD').focus();
                 return false;
             }
@@ -81,7 +85,7 @@
         if ($.trim(t2) != "") {
             reg = /^-?\d+\.\d{1,6}$/;
             if (!reg.test(t2)) {
-                layer.msg('纬度格式不正确！', { icon: 5 });
+                layer.msg('纬度格式不正确!', { icon: 5 });
                 $('#tbxWD').focus();
                 return false;
             }
@@ -105,18 +109,18 @@
                 Method: Method,
                 returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)'
             },
+            dataType:'json',
             success: function (data) {
-                var ar = eval('(' + data + ')');
-                if (ar.Success) {
-                    if (confirm(ar.Msg + ' 请返回！'))
-                        window.location.assign(ar.Url);
+                if (data.Success) {
+                    if (confirm(data.Msg + ' 请返回?'))
+                        window.location.assign(data.Url);
                 }
                 else {
-                    alert(ar.Msg);
+                    layer.msg(data.Msg, { icon: 5 });
                 }
             },
             error: function (err, ioArgs) {
-                alert('保存异常');
+                layer.msg('保存异常!', { icon: 5 });
             }
         });
     }

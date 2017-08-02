@@ -63,12 +63,12 @@ namespace ManagerSystemClassLibrary.BaseDT
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("UPDATE FIRELOST_LOSTTYPE_ATTACK_P1 SET ");
             sb.AppendFormat(" P1NAME={0}", ClsSql.saveNullField(m.P1NAME));
-            sb.AppendFormat(", P1CODE={0}", ClsSql.saveNullField(m.P1CODE));
-            sb.AppendFormat(", LOSEMONEYCOUNT={0}", ClsSql.saveNullField(m.LOSEMONEYCOUNT));
-            sb.AppendFormat(", P1COUNT={0}", ClsSql.saveNullField(m.P1COUNT));
-            sb.AppendFormat(", P1UNIT={0}", ClsSql.saveNullField(m.P1UNIT));
-            sb.AppendFormat(", P1PRICE={0}", ClsSql.saveNullField(m.P1PRICE));
-            sb.AppendFormat(", MARK={0}", ClsSql.saveNullField(m.MARK));
+            sb.AppendFormat(",P1CODE={0}", ClsSql.saveNullField(m.P1CODE));
+            sb.AppendFormat(",LOSEMONEYCOUNT={0}", ClsSql.saveNullField(m.LOSEMONEYCOUNT));
+            sb.AppendFormat(",P1COUNT={0}", ClsSql.saveNullField(m.P1COUNT));
+            sb.AppendFormat(",P1UNIT={0}", ClsSql.saveNullField(m.P1UNIT));
+            sb.AppendFormat(",P1PRICE={0}", ClsSql.saveNullField(m.P1PRICE));
+            sb.AppendFormat(",MARK={0}", ClsSql.saveNullField(m.MARK));
             sb.AppendFormat(" WHERE P1ID= '{0}'", ClsSql.EncodeSql(m.P1ID));
             bool bln = DataBaseClass.ExeSql(sb.ToString());
             if (bln == true)

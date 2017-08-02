@@ -201,7 +201,7 @@ namespace ManagerSystemClassLibrary
                 m.NAME = dt.Rows[i]["NAME"].ToString();
                 m.ADDRESS = dt.Rows[i]["ADDRESS"].ToString();
                 m.BYORGNO = dt.Rows[i]["BYORGNO"].ToString();
-                if (m.BYORGNO.Substring(6, 3) != "000")
+                if (m.BYORGNO.Substring(6, 3) != "000" && m.BYORGNO.Substring(9, 6) == "000000")
                 {
                     m.ORGName = BaseDT.T_SYS_ORG.getName(dtORG, m.BYORGNO);
 

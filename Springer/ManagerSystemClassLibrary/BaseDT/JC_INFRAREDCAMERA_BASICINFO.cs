@@ -25,8 +25,8 @@ namespace ManagerSystemClassLibrary.BaseDT
         /// <returns>参见模型</returns>
         public static Message Add(JC_INFRAREDCAMERA_BASICINFO_Model m)
         {
-            if (PublicCls.OrgIsZhen(m.BYORGNO) == false)
-                return new Message(false, "添加失败，所属单位必须为乡镇！", "");
+            //if (PublicCls.OrgIsZhen(m.BYORGNO) == false)
+            //    return new Message(false, "添加失败，所属单位必须为乡镇！", "");
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("INSERT INTO  JC_INFRAREDCAMERA_BASICINFO(BYORGNO,INFRAREDCAMERANAME,PHONE,JD,WD,GC,ADDRESS)");
             sb.AppendFormat("output inserted.INFRAREDCAMERAID ");
@@ -54,8 +54,8 @@ namespace ManagerSystemClassLibrary.BaseDT
         /// <returns>参见模型</returns>
         public static Message AddHONGWAIXIANGJI(JC_INFRAREDCAMERA_BASICINFO_Model m, string emid)
         {
-            if (PublicCls.OrgIsZhen(m.BYORGNO) == false)
-                return new Message(false, "添加失败，所属单位必须为乡镇！", "");
+            //if (PublicCls.OrgIsZhen(m.BYORGNO) == false)
+            //    return new Message(false, "添加失败，所属单位必须为乡镇！", "");
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("insert into HONGWAIXIANGJI(OBJECTID,NAME,JD,WD,Shape,ADDRESS) values(");
             sb.AppendFormat("{0},", ClsSql.saveNullField(emid));
@@ -164,7 +164,6 @@ namespace ManagerSystemClassLibrary.BaseDT
 
         #endregion
 
-
         #region 获取数据
         /// <summary>
         /// 获取数据
@@ -183,7 +182,6 @@ namespace ManagerSystemClassLibrary.BaseDT
                 sb.AppendFormat(" AND PHONE = '{0}'", ClsSql.EncodeSql(sw.PHONE)); 
             if (string.IsNullOrEmpty(sw.BYORGNO) == false)
             {
-
                 if (PublicCls.OrgIsShi(sw.BYORGNO))
                 {
                     sb.AppendFormat(" and BYORGNO like '{0}%'", PublicCls.getShiIncOrgNo(sw.BYORGNO));
@@ -192,16 +190,66 @@ namespace ManagerSystemClassLibrary.BaseDT
                 {
                     sb.AppendFormat(" and BYORGNO like  '{0}%'", PublicCls.getXianIncOrgNo(sw.BYORGNO));
                 }
+                else if (PublicCls.OrgIsZhen(sw.BYORGNO))
+                {
+                    sb.AppendFormat(" and BYORGNO like '{0}%'", PublicCls.getZhenIncOrgNo(sw.BYORGNO));
+                }
                 else
                 {
-                    sb.AppendFormat(" and BYORGNO = '{0}'", PublicCls.getZhenIncOrgNo(sw.BYORGNO));
+                    sb.AppendFormat(" and BYORGNO = '{0}'", sw.BYORGNO);
                 }
-
             }
             string sql = "SELECT    INFRAREDCAMERAID,BYORGNO,INFRAREDCAMERANAME,PHONE,JD,WD,GC,ADDRESS"
                 + sb.ToString()
                 + " order by BYORGNO";
             DataSet ds = DataBaseClass.FullDataSet(sql);
+            return ds.Tables[0];
+        }
+
+        #endregion
+
+        #region 获取分页数据
+        /// <summary>
+        /// 获取分页数据
+        /// </summary>
+        /// <returns>参见模型</returns>
+        public static DataTable getDT(JC_INFRAREDCAMERA_BASICINFO_SW sw, out int total)
+        {
+            StringBuilder sb = new StringBuilder();
+
+
+            sb.AppendFormat(" FROM      JC_INFRAREDCAMERA_BASICINFO a");
+            sb.AppendFormat(" WHERE   1=1");
+            if (string.IsNullOrEmpty(sw.INFRAREDCAMERAID) == false)
+                sb.AppendFormat(" AND INFRAREDCAMERAID = '{0}'", ClsSql.EncodeSql(sw.INFRAREDCAMERAID));
+            if (string.IsNullOrEmpty(sw.PHONE) == false)
+                sb.AppendFormat(" AND PHONE = '{0}'", ClsSql.EncodeSql(sw.PHONE));
+            if (string.IsNullOrEmpty(sw.BYORGNO) == false)
+            {
+                if (PublicCls.OrgIsShi(sw.BYORGNO))
+                {
+                    sb.AppendFormat(" and BYORGNO like '{0}%'", PublicCls.getShiIncOrgNo(sw.BYORGNO));
+                }
+                else if (PublicCls.OrgIsXian(sw.BYORGNO))
+                {
+                    sb.AppendFormat(" and BYORGNO like  '{0}%'", PublicCls.getXianIncOrgNo(sw.BYORGNO));
+                }
+                else if (PublicCls.OrgIsZhen(sw.BYORGNO))
+                {
+                    sb.AppendFormat(" and BYORGNO like '{0}%'", PublicCls.getZhenIncOrgNo(sw.BYORGNO));
+                }
+                else
+                {
+                    sb.AppendFormat(" and BYORGNO = '{0}'", sw.BYORGNO);
+                }
+            }
+            string sql = "SELECT    INFRAREDCAMERAID,BYORGNO,INFRAREDCAMERANAME,PHONE,JD,WD,GC,ADDRESS"
+                + sb.ToString()
+                + " order by BYORGNO";
+            string sqlC = "select count(1) " + sb.ToString();
+            total = int.Parse(DataBaseClass.ReturnSqlField(sqlC));
+            sw.curPage = PagerCls.getCurPage(new PagerSW { curPage = sw.curPage, pageSize = sw.pageSize, rowCount = total });
+            DataSet ds = DataBaseClass.FullDataSet(sql, (sw.curPage - 1) * sw.pageSize, sw.pageSize, "a");
             return ds.Tables[0];
         }
 

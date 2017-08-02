@@ -19,14 +19,19 @@
                         手机号码：
                         <input id="tbxUserName" type="text" value="@ViewBag.PHONE" />
 
-                        <input type="button" value="查询" onclick="query()" class="btnSearchCss" />
+                        <input type="button" value="查询" onclick="query(1)" class="btnSearchCss" />
                         <input type="button" value="添加" id="btnAdd" style="display:none;" onclick="Add()" class="btnAddCss" />
                     </div>
                 </div>
             </div>
             <div data-options="region:'center'" title="" style=" border: none; ">
                 <div class="divTable" id="divTable">
-                    @Html.Raw(ViewBag.INFRAREDCAMERA_BASICINFOList)
+                    @*@Html.Raw(ViewBag.INFRAREDCAMERA_BASICINFOList)*@
+                </div>
+            </div>
+            <div data-options="region:'south'" title="" style=" height:40px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
+                <div class="divPager" id="divPager">
+                   
                 </div>
             </div>
         </div>
@@ -104,7 +109,7 @@
                     var ar = eval('(' + re + ')');
                     if (ar.Success) {
                         if (confirm(ar.Msg)) {
-                            query();
+                            query(Page);
                         }
                     }
                     else {
@@ -124,7 +129,7 @@
             maxmin: true,
             content: '/YJJC/INFRAREDCAMERAMan',
             end: function () {
-                query();
+                query(Page);
             }
         });
         //window.location.assign('/YJJC/INFRAREDCAMERAMan');
@@ -151,13 +156,18 @@
             maxmin: true,
             content: '/YJJC/INFRAREDCAMERAMan?ID=' + ID + '&Method=Mdy',
             end: function () {
-                query();
+                query(Page);
             }
         });
     }
-
-    query();
-    function query() {
+    query("1")
+    var page = 1;//当前默认页面为1
+    function query(Page) {
+        page = Page;
+        var pagesize = '0';
+        if (document.getElementById("selPageSize") != null) {
+            pagesize = document.getElementById("selPageSize").value;
+        }
         $.ajax({
             url: '/YJJC/getINFRAREDCAMERA_BASICINFOList',
             cache: false,
@@ -165,12 +175,15 @@
             timeout: 10000, //10秒后超时，如果为0则永不超时
             data: {
                 PHONE: $("#tbxUserName").val(),
-                BYORGNO: $("#tbxORGNO").val()
+                BYORGNO: $("#tbxORGNO").val(),
+                PageSize: pagesize,
+                Page: Page,
             },
             success: function (data, ioArgs) {
                 var ar = eval('(' + data + ')');
                 if (ar.Success) {
                     $('#divTable').html(ar.tableInfo);
+                    $('#divPager').html(ar.pagerInfo);
                 }
                 else {
                     alert(ar.Msg);

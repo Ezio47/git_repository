@@ -51,17 +51,16 @@
         $.ajax({
             type: 'get',
             url: '/System/ORGNOChange',
-            dataType: 'html',
+            dataType: 'json',
             data: { orgNo: orgNo },
             success: function (data, ioArgs) {
-                var ar = eval('(' + data + ')');
-                if (ar.Success) {
+                if (data.Success) {
                     $('#OABodyInfo').html("");
-                    $('#OABodyInfo').html(ar.Msg);
+                    $('#OABodyInfo').html(data.Msg);
                     FindOADept();
                 }
                 else {
-                    layer.msg(ar.Msg);
+                    layer.msg(data.Msg, { icon: 5 });
                 }
             },
             error: function (err, ioArgs) {
@@ -87,20 +86,20 @@
                 url: '/System/FindOADept',
                 timeout: 10000, //10秒后超时，如果为0则永不超时
                 data: { sysORGNO: ORGNO, sysDeptIdList: SysDeptId },
+                dataType: 'json',
                 success: function (data, ioArgs) {
-                    var ar = eval('(' + data + ')');
-                    if (ar.Success) {
-                        var IdArray = ar.Msg.split(',');
+                    if (data.Success) {
+                        var IdArray = data.Msg.split(',');
                         for (var i = 0; i < IdArray.length; i++) {
                             $('#tbxOADept' + i + '').val(IdArray[i])
                         }
                     }
                     else {
-                        layer.msg(ar.Msg);
+                        layer.msg(data.Msg, { icon: 5 });
                     }
                 },
                 error: function (err) {
-                    layer.msg("查询异常!");
+                    layer.msg("查询异常!", { icon: 5 });
                 }
             });
         }
@@ -125,17 +124,17 @@
             url: '/System/OADeptManager',
             timeout: 10000, //10秒后超时，如果为0则永不超时
             data: { SysORGNO: SysORGNO, SysDeptID: SysDeptID, OADeptID: OADeptID },
+            dataType: 'json',
             success: function (data, ioArgs) {
-                var ar = eval('(' + data + ')');
-                if (ar.Success) {
-                    layer.alert(ar.Msg, { icon: 6 });
+                if (data.Success) {
+                    layer.msg(data.Msg, { icon: 6 });
                 }
                 else {
-                    layer.msg(ar.Msg);
+                    layer.msg(data.Msg, { icon: 5 });
                 }
             },
             error: function (err, ioArgs) {
-                layer.msg("保存异常!");
+                layer.msg("保存异常!", { icon: 5 });
             }
         });
     }

@@ -2,22 +2,22 @@
 @{
     Layout = "~/Views/Shared/_LayoutIndex.cshtml";
     var curorgno = SystemCls.getCurUserOrgNo();
-    if (curorgno.Substring(6, 3) == "000" && curorgno.Substring(4, 2) != "00")
+    if (curorgno.Substring(6, 9) == "000000000" && curorgno.Substring(4, 2) != "00")
     {
-        curorgno = curorgno.Substring(0, 6) + "xxx";
+        curorgno = curorgno.Substring(0, 6) + "xxxxxxxxx";
     }
     else
     {
         curorgno = SystemCls.getCurUserOrgNo();
     }
     var curorgno1 = "";//添加的时候组织机判断
-    if (curorgno.Substring(4, 5) == "00000")
+    if (curorgno.Substring(4, 11) == "00000000000")
     {
         curorgno1 = "";
     }
-    else if (curorgno.Substring(6, 3) != "000")
+    else if (curorgno.Substring(6, 3) != "000" && curorgno.Substring(9, 6) == "000000")
     {
-        curorgno1 = curorgno.Substring(0, 6) + "000";
+        curorgno1 = curorgno.Substring(0, 6) + "000000000";
     }
     else
     {

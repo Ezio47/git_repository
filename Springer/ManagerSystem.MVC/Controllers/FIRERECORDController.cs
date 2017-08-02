@@ -74,8 +74,8 @@ namespace ManagerSystem.MVC.Controllers
             m.FIRERECINFO150 = Request.Params["FIRERECINFO150"];
             m.FIRERECINFO160 = Request.Params["FIRERECINFO160"];
             m.FIRELOSEAREA = Request.Params["FIRELOSEAREA"];
-            //m.JD = Request.Params["JD"];
-            //m.WD = Request.Params["WD"];
+            m.JD = Request.Params["JD"];
+            m.WD = Request.Params["WD"];
             m.opMethod = Request.Params["Method"];
             return Content(JsonConvert.SerializeObject(FIRERECORD_FIREINFOCls.Manager(m)), "text/html;charset=UTF-8");
         }
@@ -108,8 +108,9 @@ namespace ManagerSystem.MVC.Controllers
             ViewBag.Method = Method;
             ViewBag.FRFIID = FRFIID;
             ViewBag.JCFID = JCFID;
-            //ViewBag.StartTime = ClsSwitch.SwitTM(model.FIRETIME);
-            //ViewBag.EndTime = ClsSwitch.SwitTM(model.FIREENDTIME); 
+            ViewBag.StartTime = ClsSwitch.SwitTM(DateTime.Now.ToString());
+            ViewBag.EndTime = ClsSwitch.SwitTM(DateTime.Now.ToString()); 
+            // ViewBag.isAdd = (SystemCls.isRight("011002002")) ? "1" : "0";
             return View(model);
         }
 
@@ -139,8 +140,8 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("<tr>");
             sb.AppendFormat("<td >起火地点村:</td>");
             sb.AppendFormat("<td>{0}</td>", m.FIREADDRESSVILLAGES);
-            sb.AppendFormat("<td></td>");
-            sb.AppendFormat("<td></td>");
+            sb.AppendFormat("<td>起火地点详细地址</td>");
+            sb.AppendFormat("<td>{0}</td>", m.FIREADDRESS);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
             sb.AppendFormat("<td>起火时间:</td>");
@@ -155,22 +156,22 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("<td>{0}</td>", m.FIRERECINFO000);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
+            sb.AppendFormat("<td>森林火灾受害面积（公顷）:</td>");
+            sb.AppendFormat("<td>{0}</td>", m.FIRELOSEAREA);
             sb.AppendFormat("<td>火场面积（公顷）:</td>");
             sb.AppendFormat("<td>{0}</td>", m.FIRERECINFO020);
+            sb.AppendFormat("</tr>");
+            sb.AppendFormat("<tr>");
             sb.AppendFormat("<td>有林地面积（公顷）:</td>");
             sb.AppendFormat("<td>{0}</td>", m.FIRERECINFO021);
-            sb.AppendFormat("</tr>");
-            sb.AppendFormat("<tr>");
             sb.AppendFormat("<td>成灾面积原始林（公顷）:</td>");
             sb.AppendFormat("<td>{0}</td>", m.FIRERECINFO030);
-            sb.AppendFormat("<td>成灾面积次生林（公顷）:</td>");
-            sb.AppendFormat("<td>{0}</td>", m.FIRERECINFO030);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
+            sb.AppendFormat("<td>成灾面积次生林（公顷）:</td>");
+            sb.AppendFormat("<td>{0}</td>", m.FIRERECINFO031);
             sb.AppendFormat("<td>成灾面积人工林（公顷）:</td>");
-            sb.AppendFormat("<td>{0}</td>", m.FIRERECINFO030);
-            sb.AppendFormat("<td></td>");
-            sb.AppendFormat("<td></td>");
+            sb.AppendFormat("<td>{0}</td>", m.FIRERECINFO032);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
             sb.AppendFormat("<td>林木损失成林蓄积（立方米）:</td>");
@@ -215,14 +216,14 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("<tr>");
             sb.AppendFormat("<td>出动扑火人工（工日）:</td>");
             sb.AppendFormat("<td>{0}</td>", m.FIRERECINFO100);
-            sb.AppendFormat("<td>出动车辆汽车（台）:</td>");
-            sb.AppendFormat("<td >{0}</td>", m.FIRERECINFO110);
-            sb.AppendFormat("</tr>");
-            sb.AppendFormat("<tr>");
             sb.AppendFormat("<td>出动飞机（架次）:</td>");
             sb.AppendFormat("<td>{0}</td>", m.FIRERECINFO120);
-            sb.AppendFormat("<td></td>");
-            sb.AppendFormat("<td ></td>");
+            sb.AppendFormat("</tr>");
+            sb.AppendFormat("<tr>");
+            sb.AppendFormat("<td>出动车辆合计（台）:</td>");
+            sb.AppendFormat("<td >{0}</td>", m.FIRERECINFO111);
+            sb.AppendFormat("<td>其中汽车（台）:</td>");
+            sb.AppendFormat("<td >{0}</td>", m.FIRERECINFO110);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
             sb.AppendFormat("<td>火案查处是否已处理:</td>");
@@ -263,7 +264,8 @@ namespace ManagerSystem.MVC.Controllers
         {
             StringBuilder sb = new StringBuilder();
             string SHICODE = Request.Params["SHICODE"];
-            sb.AppendFormat(T_SYS_ORGCls.getSelectOptionByORGNO(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), GetXZOrgNOByConty = SHICODE, CurORGNO = SHICODE }));
+            //sb.AppendFormat(T_SYS_ORGCls.getSelectOptionByORGNO(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), GetXZOrgNOByConty = SHICODE,CurORGNO = SHICODE }));
+            sb.AppendFormat(T_SYS_ORGCls.getSelectOptionByORGNO(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), GetXZOrgNOByConty = SHICODE, CurORGNO = SHICODE, OnlyGetShiXianXZ = "1", TopORGNO = SHICODE }));
             return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), "")), "text/html;charset=UTF-8");
         }
         #endregion
@@ -278,10 +280,10 @@ namespace ManagerSystem.MVC.Controllers
             pubViewBag("041001", "041001", "林火1表月报表");
             if (ViewBag.isPageRight == false)
                 return View();
-            if (PublicCls.OrgIsShi(SystemCls.getCurUserOrgNo()))//如果是州级别取市县,否则取乡镇
+            if (PublicCls.OrgIsShi(SystemCls.getCurUserOrgNo()))//如果是州级获取市县,否则取乡镇
                 ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = SystemCls.getCurUserOrgNo(), TopORGNO = SystemCls.getCurUserOrgNo(), OnlyGetShiXian = "1" });
             else
-                ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = SystemCls.getCurUserOrgNo(), TopORGNO = SystemCls.getCurUserOrgNo() });
+                ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = SystemCls.getCurUserOrgNo(), TopORGNO = SystemCls.getCurUserOrgNo(),OnlyGetXianXZ ="1" });
             ViewBag.Time = DateTime.Now.ToString("yyyy-MM");
             return View();
         }
@@ -353,6 +355,8 @@ namespace ManagerSystem.MVC.Controllers
                 if (PublicCls.OrgIsXian(result[i].ORGNO))
                     templist = _nowmonthlyreportList.FindAll(a => a.FIREADDRESSTOWNS.Substring(0, 6) == result[i].ORGNO.Substring(0, 6)).ToList();
                 if (PublicCls.OrgIsZhen(result[i].ORGNO))
+                    templist = _nowmonthlyreportList.FindAll(a => a.FIREADDRESSTOWNS.Substring(0, 9) == result[i].ORGNO.Substring(0, 9)).ToList();
+                if (PublicCls.OrgIsCun(result[i].ORGNO))
                     templist = _nowmonthlyreportList.FindAll(a => a.FIREADDRESSTOWNS == result[i].ORGNO).ToList();
                 sb.AppendFormat("<td class=\"center\">{0}</td>", templist.Count);
                 sb.AppendFormat(TOTAL(templist));
@@ -502,8 +506,8 @@ namespace ManagerSystem.MVC.Controllers
                 int z = 0;
                 IRow row6 = sheet1.CreateRow(rowIndex + 6);
                 if (PublicCls.OrgIsShi(result[i].ORGNO)) { }
-                else if (PublicCls.OrgIsXian(result[i].ORGNO)) { result[i].ORGNAME = "　　" + result[i].ORGNAME; }
-                else { result[i].ORGNAME = "　　　　" + result[i].ORGNAME; }
+                else if (PublicCls.OrgIsXian(result[i].ORGNO)) { result[i].ORGNAME = "  " + result[i].ORGNAME; }
+                else { result[i].ORGNAME = "　" + result[i].ORGNAME; }
                 row6.CreateCell(z).SetCellValue(result[i].ORGNAME);
                 row6.GetCell(z).CellStyle = getCellStyleLeft(book);
                 z++;
@@ -513,6 +517,8 @@ namespace ManagerSystem.MVC.Controllers
                 if (PublicCls.OrgIsXian(result[i].ORGNO))
                     templist = _nowmonthlyreportList.FindAll(a => a.FIREADDRESSTOWNS.Substring(0, 6) == result[i].ORGNO.Substring(0, 6)).ToList();
                 if (PublicCls.OrgIsZhen(result[i].ORGNO))
+                    templist = _nowmonthlyreportList.FindAll(a => a.FIREADDRESSTOWNS.Substring(0, 9) == result[i].ORGNO.Substring(0, 9)).ToList();
+                if (PublicCls.OrgIsCun(result[i].ORGNO))
                     templist = _nowmonthlyreportList.FindAll(a => a.FIREADDRESSTOWNS == result[i].ORGNO).ToList();
                 row6.CreateCell(z).SetCellValue(templist.Count);
                 row6.GetCell(z).CellStyle = getCellStyleCenter(book);
@@ -631,7 +637,7 @@ namespace ManagerSystem.MVC.Controllers
                 result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = ORGNO, OnlyGetXianXZ = "1" }).ToList();
             if (PublicCls.OrgIsZhen(ORGNO))
                 result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = ORGNO }).ToList();
-            List<FIRERECORD_FIREINFO_Model> _list = FIRERECORD_FIREINFOCls.getListModel(new FIRERECORD_FIREINFO_SW { FIRETIME = fireTime, FIREENDTIME = fireEndTime }).ToList();
+            List<FIRERECORD_FIREINFO_Model> _list = FIRERECORD_FIREINFOCls.getListModel(new FIRERECORD_FIREINFO_SW { BYORGNO = ORGNO, FIRETIME = fireTime, FIREENDTIME = fireEndTime }).ToList();
             List<T_SYS_DICTModel> dic304 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "304" }).ToList();
             #endregion
 
@@ -670,6 +676,8 @@ namespace ManagerSystem.MVC.Controllers
                 if (PublicCls.OrgIsXian(result[i].ORGNO))
                     templist = _list.FindAll(a => a.FIREADDRESSTOWNS.Substring(0, 6) == result[i].ORGNO.Substring(0, 6)).ToList();
                 if (PublicCls.OrgIsZhen(result[i].ORGNO))
+                    templist = _list.FindAll(a => a.FIREADDRESSTOWNS.Substring(0, 9) == result[i].ORGNO.Substring(0, 9)).ToList();
+                if (PublicCls.OrgIsCun(result[i].ORGNO))
                     templist = _list.FindAll(a => a.FIREADDRESSTOWNS == result[i].ORGNO).ToList();
                 sb.AppendFormat("<td class=\"center\">{0}</td>", templist.Count);
                 sb.AppendFormat(TOTAL(templist));
@@ -707,7 +715,7 @@ namespace ManagerSystem.MVC.Controllers
                 result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = ORGNO, OnlyGetXianXZ = "1" }).ToList();
             if (PublicCls.OrgIsZhen(ORGNO))
                 result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = ORGNO }).ToList();
-            List<FIRERECORD_FIREINFO_Model> _list = FIRERECORD_FIREINFOCls.getListModel(new FIRERECORD_FIREINFO_SW { FIRETIME = fireTime, FIREENDTIME = fireEndTime }).ToList();
+            List<FIRERECORD_FIREINFO_Model> _list = FIRERECORD_FIREINFOCls.getListModel(new FIRERECORD_FIREINFO_SW { BYORGNO = ORGNO, FIRETIME = fireTime, FIREENDTIME = fireEndTime }).ToList();
             List<T_SYS_DICTModel> dic304 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "304" }).ToList();
             int colsCount = dic304.Count + 18;
             string orgName = T_SYS_ORGCls.getorgname(ORGNO);
@@ -754,8 +762,8 @@ namespace ManagerSystem.MVC.Controllers
                 int z = 0;
                 IRow row5 = sheet1.CreateRow(rowIndex + 5);
                 if (PublicCls.OrgIsShi(result[i].ORGNO)) { }
-                else if (PublicCls.OrgIsXian(result[i].ORGNO)) { result[i].ORGNAME = "　　" + result[i].ORGNAME; }
-                else { result[i].ORGNAME = "　　　　" + result[i].ORGNAME; }
+                else if (PublicCls.OrgIsXian(result[i].ORGNO)) { result[i].ORGNAME = "  " + result[i].ORGNAME; }
+                else { result[i].ORGNAME = "  " + result[i].ORGNAME; }
                 row5.CreateCell(z).SetCellValue(result[i].ORGNAME);
                 row5.GetCell(z).CellStyle = getCellStyleLeft(book);
                 z++;
@@ -765,6 +773,8 @@ namespace ManagerSystem.MVC.Controllers
                 if (PublicCls.OrgIsXian(result[i].ORGNO))
                     templist = _list.FindAll(a => a.FIREADDRESSTOWNS.Substring(0, 6) == result[i].ORGNO.Substring(0, 6)).ToList();
                 if (PublicCls.OrgIsZhen(result[i].ORGNO))
+                    templist = _list.FindAll(a => a.FIREADDRESSTOWNS.Substring(0, 9) == result[i].ORGNO.Substring(0, 9)).ToList();
+                if (PublicCls.OrgIsCun(result[i].ORGNO))
                     templist = _list.FindAll(a => a.FIREADDRESSTOWNS == result[i].ORGNO).ToList();
                 row5.CreateCell(z).SetCellValue(templist.Count);
                 row5.GetCell(z).CellStyle = getCellStyleCenter(book);
@@ -1544,6 +1554,8 @@ namespace ManagerSystem.MVC.Controllers
                 if (PublicCls.OrgIsXian(result[i].ORGNO))
                     templist = _nowmonthlyreportList.FindAll(a => a.FIREADDRESSTOWNS.Substring(0, 6) == result[i].ORGNO.Substring(0, 6)).ToList();
                 if (PublicCls.OrgIsZhen(result[i].ORGNO))
+                    templist = _nowmonthlyreportList.FindAll(a => a.FIREADDRESSTOWNS.Substring(0, 9) == result[i].ORGNO.Substring(0, 9)).ToList();
+                if (PublicCls.OrgIsCun(result[i].ORGNO))
                     templist = _nowmonthlyreportList.FindAll(a => a.FIREADDRESSTOWNS == result[i].ORGNO).ToList();
                 sb.AppendFormat("<td class=\"center\">{0}</td>", templist.Count);
                 sb.AppendFormat(METHODS(templist));
@@ -1586,7 +1598,7 @@ namespace ManagerSystem.MVC.Controllers
                 result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO }).ToList();
             List<T_SYS_DICTModel> dic302 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "302" }).ToList();
             List<T_SYS_DICTModel> dic203 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "203" }).ToList();
-            List<FIRERECORD_FIREINFO_Model> _monthlyreportList = FIRERECORD_FIREINFOCls.getListModel(new FIRERECORD_FIREINFO_SW { BYORGNO = ORGNO, FIRETIME = fireTime, FIREENDTIME = fireEndTime }).ToList();
+            List<FIRERECORD_FIREINFO_Model> _monthlyreportList = FIRERECORD_FIREINFOCls.getListModel(new FIRERECORD_FIREINFO_SW { BYORGNO = ORGNO, FIRETIME = fireTime, FIREENDTIME = nowfireEndTime }).ToList();
             List<FIRERECORD_FIREINFO_Model> _nowmonthlyreportList = FIRERECORD_FIREINFOCls.getListModel(new FIRERECORD_FIREINFO_SW { BYORGNO = ORGNO, FIRETIME = nowFireTime, FIREENDTIME = nowfireEndTime }).ToList();
             int colsCount = (dic302.Count) + 8;
             string orgName = T_SYS_ORGCls.getorgname(ORGNO);
@@ -1640,8 +1652,8 @@ namespace ManagerSystem.MVC.Controllers
                 int z = 0;
                 IRow row6 = sheet1.CreateRow(rowIndex + 6);
                 if (PublicCls.OrgIsShi(result[i].ORGNO)) { }
-                else if (PublicCls.OrgIsXian(result[i].ORGNO)) { result[i].ORGNAME = "　　" + result[i].ORGNAME; }
-                else { result[i].ORGNAME = "　　　　" + result[i].ORGNAME; }
+                else if (PublicCls.OrgIsXian(result[i].ORGNO)) { result[i].ORGNAME = "  " + result[i].ORGNAME; }
+                else { result[i].ORGNAME = "　　" + result[i].ORGNAME; }
                 row6.CreateCell(z).SetCellValue(result[i].ORGNAME);
                 row6.GetCell(z).CellStyle = getCellStyleLeft(book);
                 z++;
@@ -1651,6 +1663,8 @@ namespace ManagerSystem.MVC.Controllers
                 if (PublicCls.OrgIsXian(result[i].ORGNO))
                     templist = _nowmonthlyreportList.FindAll(a => a.FIREADDRESSTOWNS.Substring(0, 6) == result[i].ORGNO.Substring(0, 6)).ToList();
                 if (PublicCls.OrgIsZhen(result[i].ORGNO))
+                    templist = _nowmonthlyreportList.FindAll(a => a.FIREADDRESSTOWNS.Substring(0, 9) == result[i].ORGNO.Substring(0, 9)).ToList();
+                if (PublicCls.OrgIsCun(result[i].ORGNO))
                     templist = _nowmonthlyreportList.FindAll(a => a.FIREADDRESSTOWNS == result[i].ORGNO).ToList();
                 //row6.CreateCell(z).SetCellValue(templist.Count);
                 //row6.GetCell(z).CellStyle = getCellStyleCenter(book);
@@ -1769,6 +1783,8 @@ namespace ManagerSystem.MVC.Controllers
                 if (PublicCls.OrgIsXian(result[i].ORGNO))
                     templist = _nowmonthlyreportList.FindAll(a => a.FIREADDRESSTOWNS.Substring(0, 6) == result[i].ORGNO.Substring(0, 6)).ToList();
                 if (PublicCls.OrgIsZhen(result[i].ORGNO))
+                    templist = _nowmonthlyreportList.FindAll(a => a.FIREADDRESSTOWNS.Substring(0, 9) == result[i].ORGNO.Substring(0, 9)).ToList();
+                if (PublicCls.OrgIsCun(result[i].ORGNO))
                     templist = _nowmonthlyreportList.FindAll(a => a.FIREADDRESSTOWNS == result[i].ORGNO).ToList();
                 sb.AppendFormat("<td class=\"center\">{0}</td>", templist.Count);
                 sb.AppendFormat(METHODS(templist));
@@ -1811,11 +1827,11 @@ namespace ManagerSystem.MVC.Controllers
                 result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO }).ToList();
             List<T_SYS_DICTModel> dic302 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "302" }).ToList();
             List<T_SYS_DICTModel> dic203 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "203" }).ToList();
-            List<FIRERECORD_FIREINFO_Model> _monthlyreportList = FIRERECORD_FIREINFOCls.getListModel(new FIRERECORD_FIREINFO_SW { BYORGNO = ORGNO, FIRETIME = fireTime, FIREENDTIME = fireEndTime }).ToList();
+            List<FIRERECORD_FIREINFO_Model> _monthlyreportList = FIRERECORD_FIREINFOCls.getListModel(new FIRERECORD_FIREINFO_SW { BYORGNO = ORGNO, FIRETIME = fireTime, FIREENDTIME = nowfireEndTime }).ToList();
             List<FIRERECORD_FIREINFO_Model> _nowmonthlyreportList = FIRERECORD_FIREINFOCls.getListModel(new FIRERECORD_FIREINFO_SW { BYORGNO = ORGNO, FIRETIME = nowFireTime, FIREENDTIME = nowfireEndTime }).ToList();
             int colsCount = (dic302.Count) + 8;
             string orgName = T_SYS_ORGCls.getorgname(ORGNO);
-            string menuName = T_SYS_MENUCls.getMenuNameByCode(new T_SYS_MENU_SW { MENUCODE = "041005", SYSFLAG = ConfigCls.getSystemFlag() });
+            string menuName = T_SYS_MENUCls.getMenuNameByCode(new T_SYS_MENU_SW { MENUCODE = "041006", SYSFLAG = ConfigCls.getSystemFlag() });
             string title = orgName + "-" + Time + "-" + menuName;
             #endregion
 
@@ -1854,8 +1870,8 @@ namespace ManagerSystem.MVC.Controllers
                 int z = 0;
                 IRow row6 = sheet1.CreateRow(rowIndex + 5);
                 if (PublicCls.OrgIsShi(result[i].ORGNO)) { }
-                else if (PublicCls.OrgIsXian(result[i].ORGNO)) { result[i].ORGNAME = "　　" + result[i].ORGNAME; }
-                else { result[i].ORGNAME = "　　　　" + result[i].ORGNAME; }
+                else if (PublicCls.OrgIsXian(result[i].ORGNO)) { result[i].ORGNAME = "  " + result[i].ORGNAME; }
+                else { result[i].ORGNAME = "   " + result[i].ORGNAME; }
                 row6.CreateCell(z).SetCellValue(result[i].ORGNAME);
                 row6.GetCell(z).CellStyle = getCellStyleLeft(book);
                 z++;
@@ -1865,6 +1881,8 @@ namespace ManagerSystem.MVC.Controllers
                 if (PublicCls.OrgIsXian(result[i].ORGNO))
                     templist = _nowmonthlyreportList.FindAll(a => a.FIREADDRESSTOWNS.Substring(0, 6) == result[i].ORGNO.Substring(0, 6)).ToList();
                 if (PublicCls.OrgIsZhen(result[i].ORGNO))
+                    templist = _nowmonthlyreportList.FindAll(a => a.FIREADDRESSTOWNS.Substring(0, 9) == result[i].ORGNO.Substring(0, 9)).ToList();
+                if (PublicCls.OrgIsCun(result[i].ORGNO))
                     templist = _nowmonthlyreportList.FindAll(a => a.FIREADDRESSTOWNS == result[i].ORGNO).ToList();
                 //row6.CreateCell(z).SetCellValue(templist.Count);
                 //row6.GetCell(z).CellStyle = getCellStyleCenter(book);
@@ -2140,7 +2158,7 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("<th colspan=\"3\" style=\"width:200px;\">起火地点</th>");
             sb.AppendFormat("<th colspan=\"3\" style=\"width:100px;\">起火时间</th>");
             sb.AppendFormat("<th colspan=\"3\" style=\"width:100px;\">扑灭时间</th>");
-            sb.AppendFormat("<th rowspan=\"2\" style=\"width:32px;\">起火</br></br>原因</th>");
+            sb.AppendFormat("<th rowspan=\"2\" style=\"width:41px;\">起火</br></br>原因</th>");
             sb.AppendFormat("<th rowspan=\"2\" style=\"width:32px;\">火灾</br></br>种类</th>");
             sb.AppendFormat("<th rowspan=\"2\" style=\"width:32px;\">火灾</br></br>等级</th>");
             sb.AppendFormat("<th rowspan=\"2\">火 场</br></br>面积</br></br>(公顷)</th>");
@@ -2666,7 +2684,7 @@ namespace ManagerSystem.MVC.Controllers
                     model = FIRERECORD_REPORT8Cls.getModel(new FIRERECORD_REPORT8_SW { FIRERECORD_REPORT8ID = FIRERECORD_REPORT8ID });
                 }
             }
-            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOptionByORGNO(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopSXORGNO = ORGNO, CurORGNO = ORGNO });
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOptionByORGNO(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), OnlyGetShiXian = ORGNO, TopORGNO = ORGNO });//获取州级和市县
             ViewBag.REPORTYEAR = DateTime.Now.ToString("yyyy");
             ViewBag.Method = Method;
             List<T_SYS_DICTModel> dic305list = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "305" }).ToList();
@@ -2690,7 +2708,6 @@ namespace ManagerSystem.MVC.Controllers
             if (ViewBag.isPageRight == false)
                 return View();
             ViewBag.YEAR = DateTime.Now.ToString("yyyy");
-            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOptionByORGNO(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopSXORGNO = SystemCls.getCurUserOrgNo(), CurORGNO = SystemCls.getCurUserOrgNo() });
             return View();
         }
 
@@ -2709,14 +2726,8 @@ namespace ManagerSystem.MVC.Controllers
             #endregion
 
             #region 数据准备
-            List<T_SYS_ORGModel> result = new List<T_SYS_ORGModel>();
-            if (PublicCls.OrgIsShi(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetShiXian = "1" }).ToList();
-            if (PublicCls.OrgIsXian(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetXianXZ = "1" }).ToList();
-            if (PublicCls.OrgIsZhen(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO }).ToList();
-            List<FIRERECORD_REPORT8_Model> yearreportlist = FIRERECORD_REPORT8Cls.getListModel(new FIRERECORD_REPORT8_SW { REPORTYEAR = YEAR, }).ToList();
+            List<T_SYS_ORGModel> result = ResultList(ORGNO);//获取组织机构编码
+            List<FIRERECORD_REPORT8_Model> yearreportlist = FIRERECORD_REPORT8Cls.getListModel(new FIRERECORD_REPORT8_SW { BYORGNO=ORGNO,REPORTYEAR = YEAR, }).ToList();
             List<T_SYS_DICTModel> dic305 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "305" }).ToList();//省地县
             List<T_SYS_DICTModel> dic310 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "310" }).ToList();//组织机构统计年报
             #endregion
@@ -2847,17 +2858,21 @@ namespace ManagerSystem.MVC.Controllers
             for (int i = 0; i < result.Count; i++)
             {
                 sb.AppendFormat("<tr class=\"{0}\">", (i % 2 == 0) ? "" : "row1");
-                sb.AppendFormat("<td class=\"Center\" style=\"{1}\" colspan=\"2\">{0}</td>", result[i].ORGNAME, PublicCls.getOrgTDNameClass(ORGNO, result[i].ORGNO));
+                sb.AppendFormat("<td class=\"Center\"  colspan=\"2\">{0}</td>", result[i].ORGNAME);
                 List<FIRERECORD_REPORT8_Model> templist = new List<FIRERECORD_REPORT8_Model>();
                 if (PublicCls.OrgIsShi(result[i].ORGNO))
-                    templist = yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 4) == result[i].ORGNO.Substring(0, 4)).ToList();
+                    templist = yearreportlist.FindAll(a => a.BYORGNO.Substring(4, 11) == result[i].ORGNO.Substring(4, 11)).ToList();//判断是否州级
+                //if (PublicCls.OrgIsShi(result[i].ORGNO))
+                //    templist = yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 4) == result[i].ORGNO.Substring(0, 4)).ToList();
                 if (PublicCls.OrgIsXian(result[i].ORGNO))
                     templist = yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 6) == result[i].ORGNO.Substring(0, 6)).ToList();
                 if (PublicCls.OrgIsZhen(result[i].ORGNO))
+                    templist = yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 9) == result[i].ORGNO.Substring(0, 9)).ToList();
+                if (PublicCls.OrgIsCun(result[i].ORGNO))
                     templist = yearreportlist.FindAll(a => a.BYORGNO == result[i].ORGNO).ToList();
                 for (int j = 0; j < dic310.Count - 1; j++)
                 {
-                    var templist2 = templist.FindAll(a => a.REPORTCODE == dic310[j].DICTVALUE );
+                    var templist2 = templist.FindAll(a => a.REPORTCODE == dic310[j].DICTVALUE);
                     int REPORTVALUE = 0;
                     foreach (var v in templist2)
                     {
@@ -2893,14 +2908,8 @@ namespace ManagerSystem.MVC.Controllers
             #endregion
 
             #region 数据准备
-            List<T_SYS_ORGModel> result = new List<T_SYS_ORGModel>();
-            if (PublicCls.OrgIsShi(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetShiXian = "1" }).ToList();
-            if (PublicCls.OrgIsXian(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetXianXZ = "1" }).ToList();
-            if (PublicCls.OrgIsZhen(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO }).ToList();
-            List<FIRERECORD_REPORT8_Model> yearreportlist = FIRERECORD_REPORT8Cls.getListModel(new FIRERECORD_REPORT8_SW { REPORTYEAR = YEAR }).ToList();
+            List<T_SYS_ORGModel> result = ResultList(ORGNO);//获取组织机构编码;
+            List<FIRERECORD_REPORT8_Model> yearreportlist = FIRERECORD_REPORT8Cls.getListModel(new FIRERECORD_REPORT8_SW { BYORGNO = ORGNO, REPORTYEAR = YEAR }).ToList();
             List<T_SYS_DICTModel> dic305 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "305" }).ToList();//省地县
             List<T_SYS_DICTModel> dic310 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "310" }).ToList();//组织机构统计年报
             int colsCount = (dic310.Count + 2);
@@ -3036,23 +3045,6 @@ namespace ManagerSystem.MVC.Controllers
             row4.CreateCell(j).SetCellValue(bzlist.Count > 0 ? bzlist[0].REPORTVALUE : "");
             row4.GetCell(j).CellStyle = getCellStyleCenter(book);
             j++;
-            //sb.AppendFormat("<td>{0}</td>", bzlist.Count > 0 ? bzlist[0].REPORTVALUE : "");
-            //for (int i = 0; i < dic310.Count; i++)
-            //{
-            //    var templist = yearreportlist.FindAll(a => a.REPORTCODE == dic310[i].DICTVALUE);
-            //    if (i < dic310.Count)
-            //    {
-            //        row4.CreateCell(j).SetCellValue(templist.Count);
-            //        row4.GetCell(j).CellStyle = getCellStyleCenter(book);
-            //        j++;
-            //    }
-            //    if (i == dic310.Count)
-            //    {
-            //        j = i;
-            //        row4.CreateCell(j).SetCellValue("测试");
-            //        row4.GetCell(j).CellStyle = getCellStyleCenter(book);
-            //    }
-            //}
             #endregion
 
             #region 省县地级
@@ -3118,9 +3110,7 @@ namespace ManagerSystem.MVC.Controllers
                     k++;
                 }
                 z++;
-
             }
-
             #endregion
 
             #region 详细数据行
@@ -3134,14 +3124,16 @@ namespace ManagerSystem.MVC.Controllers
                 x = 2;
                 List<FIRERECORD_REPORT8_Model> templist = new List<FIRERECORD_REPORT8_Model>();
                 if (PublicCls.OrgIsShi(result[i].ORGNO))
-                    templist = yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 4) == result[i].ORGNO.Substring(0, 4)).ToList();
+                    templist = yearreportlist.FindAll(a => a.BYORGNO.Substring(4, 11) == result[i].ORGNO.Substring(4, 11)).ToList();//判断是否州级
                 if (PublicCls.OrgIsXian(result[i].ORGNO))
                     templist = yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 6) == result[i].ORGNO.Substring(0, 6)).ToList();
                 if (PublicCls.OrgIsZhen(result[i].ORGNO))
+                    templist = yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 9) == result[i].ORGNO.Substring(0, 9)).ToList();
+                if (PublicCls.OrgIsCun(result[i].ORGNO))
                     templist = yearreportlist.FindAll(a => a.BYORGNO == result[i].ORGNO).ToList();
                 for (int k = 0; k < dic310.Count - 1; k++)
                 {
-                    var templist2 = templist.FindAll(a => a.REPORTCODE == dic310[k].DICTVALUE && a.SSXTYPELEVELCODE == dic305[k].DICTVALUE);
+                    var templist2 = templist.FindAll(a => a.REPORTCODE == dic310[k].DICTVALUE);
                     int REPORTVALUE = 0;
                     foreach (var v in templist2)
                     {
@@ -3158,13 +3150,6 @@ namespace ManagerSystem.MVC.Controllers
                 row6.CreateCell(x).SetCellValue(bzlist1.Count > 0 ? bzlist1[0].REPORTVALUE : "");
                 row6.GetCell(x).CellStyle = getCellStyleCenter(book);
                 x++;
-                //foreach (var d2 in dic310)
-                //{
-                //    var templist1 = templist.FindAll(a => a.REPORTCODE == d2.DICTVALUE);
-                //    row6.CreateCell(x).SetCellValue(templist1.Count);
-                //    row6.GetCell(x).CellStyle = getCellStyleCenter(book);
-                //    x++;
-                //}
                 rowIndex++;
             }
             #endregion
@@ -3216,7 +3201,7 @@ namespace ManagerSystem.MVC.Controllers
                     model = FIRERECORD_REPORT9Cls.getModel(new FIRERECORD_REPORT9_SW { FIRERECORD_REPORT9ID = FIRERECORD_REPORT9ID });
                 }
             }
-            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOptionByORGNO(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopSXORGNO = ORGNO, CurORGNO = ORGNO });
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOptionByORGNO(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), OnlyGetShiXian = ORGNO, TopORGNO = ORGNO });
             ViewBag.REPORTYEAR = DateTime.Now.ToString("yyyy");
             ViewBag.Method = Method;
             List<T_SYS_DICTModel> dic305list = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "305" }).ToList();
@@ -3240,8 +3225,6 @@ namespace ManagerSystem.MVC.Controllers
             if (ViewBag.isPageRight == false)
                 return View();
             ViewBag.YEAR = DateTime.Now.ToString("yyyy");
-            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOptionByORGNO(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopSXORGNO = SystemCls.getCurUserOrgNo(), CurORGNO = SystemCls.getCurUserOrgNo() });
-            // ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { TopORGNO = SystemCls.getCurUserOrgNo(), SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = SystemCls.getCurUserOrgNo() });
             return View();
         }
 
@@ -3260,14 +3243,8 @@ namespace ManagerSystem.MVC.Controllers
             #endregion
 
             #region 数据准备
-            List<T_SYS_ORGModel> result = new List<T_SYS_ORGModel>();
-            if (PublicCls.OrgIsShi(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetShiXian = "1" }).ToList();
-            if (PublicCls.OrgIsXian(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetXianXZ = "1" }).ToList();
-            if (PublicCls.OrgIsZhen(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO }).ToList();
-            List<FIRERECORD_REPORT9_Model> yearreportlist = FIRERECORD_REPORT9Cls.getListModel(new FIRERECORD_REPORT9_SW { REPORTYEAR = YEAR, }).ToList();
+            List<T_SYS_ORGModel> result = ResultList(ORGNO);//获取组织机构编码
+            List<FIRERECORD_REPORT9_Model> yearreportlist = FIRERECORD_REPORT9Cls.getListModel(new FIRERECORD_REPORT9_SW { BYORGNO = ORGNO, REPORTYEAR = YEAR, }).ToList();
             List<T_SYS_DICTModel> dic305 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "305" }).ToList();//省地县
             List<T_SYS_DICTModel> dic311 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "311" }).ToList();//组织机构统计年报
             #endregion
@@ -3446,13 +3423,15 @@ namespace ManagerSystem.MVC.Controllers
             for (int i = 0; i < result.Count; i++)
             {
                 sb.AppendFormat("<tr class=\"{0}\">", (i % 2 == 0) ? "" : "row1");
-                sb.AppendFormat("<td class=\"Center\" style=\"{1}\" colspan=\"2\">{0}</td>", result[i].ORGNAME, PublicCls.getOrgTDNameClass(ORGNO, result[i].ORGNO));
+                sb.AppendFormat("<td class=\"Center\"  colspan=\"2\">{0}</td>", result[i].ORGNAME);
                 List<FIRERECORD_REPORT9_Model> templist = new List<FIRERECORD_REPORT9_Model>();
                 if (PublicCls.OrgIsShi(result[i].ORGNO))
-                    templist = yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 4) == result[i].ORGNO.Substring(0, 4)).ToList();
+                    templist = yearreportlist.FindAll(a => a.BYORGNO.Substring(4, 11) == result[i].ORGNO.Substring(4, 11)).ToList();
                 if (PublicCls.OrgIsXian(result[i].ORGNO))
                     templist = yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 6) == result[i].ORGNO.Substring(0, 6)).ToList();
                 if (PublicCls.OrgIsZhen(result[i].ORGNO))
+                    templist = yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 9) == result[i].ORGNO.Substring(0, 9)).ToList();
+                if (PublicCls.OrgIsCun(result[i].ORGNO))
                     templist = yearreportlist.FindAll(a => a.BYORGNO == result[i].ORGNO).ToList();
                 int total2 = 0;
                 for (int k = 0; k < 2; k++)
@@ -3505,14 +3484,8 @@ namespace ManagerSystem.MVC.Controllers
             #endregion
 
             #region 数据准备
-            List<T_SYS_ORGModel> result = new List<T_SYS_ORGModel>();
-            if (PublicCls.OrgIsShi(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetShiXian = "1" }).ToList();
-            if (PublicCls.OrgIsXian(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetXianXZ = "1" }).ToList();
-            if (PublicCls.OrgIsZhen(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO }).ToList();
-            List<FIRERECORD_REPORT9_Model> yearreportlist = FIRERECORD_REPORT9Cls.getListModel(new FIRERECORD_REPORT9_SW { REPORTYEAR = YEAR }).ToList();
+            List<T_SYS_ORGModel> result = ResultList(ORGNO);//获取组织机构编码
+            List<FIRERECORD_REPORT9_Model> yearreportlist = FIRERECORD_REPORT9Cls.getListModel(new FIRERECORD_REPORT9_SW { BYORGNO = ORGNO, REPORTYEAR = YEAR }).ToList();
             List<T_SYS_DICTModel> dic305 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "305" }).ToList();//省地县
             List<T_SYS_DICTModel> dic311 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "311" }).ToList();//组织机构统计年报
             int colsCount = (dic311.Count + 2);
@@ -3739,10 +3712,12 @@ namespace ManagerSystem.MVC.Controllers
                 x = 2;
                 List<FIRERECORD_REPORT9_Model> templist = new List<FIRERECORD_REPORT9_Model>();
                 if (PublicCls.OrgIsShi(result[i].ORGNO))
-                    templist = yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 4) == result[i].ORGNO.Substring(0, 4)).ToList();
+                    templist = yearreportlist.FindAll(a => a.BYORGNO.Substring(4, 11) == result[i].ORGNO.Substring(4, 11)).ToList();
                 if (PublicCls.OrgIsXian(result[i].ORGNO))
                     templist = yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 6) == result[i].ORGNO.Substring(0, 6)).ToList();
                 if (PublicCls.OrgIsZhen(result[i].ORGNO))
+                    templist = yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 9) == result[i].ORGNO.Substring(0, 9)).ToList();
+                if (PublicCls.OrgIsCun(result[i].ORGNO))
                     templist = yearreportlist.FindAll(a => a.BYORGNO == result[i].ORGNO).ToList();
                 int total2 = 0;
                 for (int k = 0; k < 2; k++)
@@ -3828,7 +3803,7 @@ namespace ManagerSystem.MVC.Controllers
                     model = FIRERECORD_REPORT10Cls.getModel(new FIRERECORD_REPORT10_SW { FIRERECORD_REPORT10ID = FIRERECORD_REPORT10ID });
                 }
             }
-            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOptionByORGNO(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopSXORGNO = ORGNO, CurORGNO = ORGNO });
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOptionByORGNO(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), OnlyGetShiXian = ORGNO, TopORGNO = ORGNO });
             ViewBag.REPORTYEAR = DateTime.Now.ToString("yyyy");
             ViewBag.Method = Method;
             List<T_SYS_DICTModel> dic312List = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "312" }).ToList();
@@ -3849,7 +3824,6 @@ namespace ManagerSystem.MVC.Controllers
             if (ViewBag.isPageRight == false)
                 return View();
             ViewBag.YEAR = DateTime.Now.ToString("yyyy");
-            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOptionByORGNO(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopSXORGNO = SystemCls.getCurUserOrgNo(), CurORGNO = SystemCls.getCurUserOrgNo() });
             return View();
         }
 
@@ -3868,15 +3842,9 @@ namespace ManagerSystem.MVC.Controllers
             #endregion
 
             #region 数据准备
-            List<T_SYS_ORGModel> result = new List<T_SYS_ORGModel>();
-            if (PublicCls.OrgIsShi(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetShiXian = "1" }).ToList();
-            if (PublicCls.OrgIsXian(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetXianXZ = "1" }).ToList();
-            if (PublicCls.OrgIsZhen(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO }).ToList();
+            List<T_SYS_ORGModel> result = ResultList(ORGNO);//获取组织机构编码
             //List<FIRERECORD_REPORT10_Model> _yearreportlist = FIRERECORD_REPORT10Cls.getListModel(new FIRERECORD_REPORT10_SW { REPORTYEAR = YEAR, }).ToList();
-            List<FIRERECORD_REPORT10_Model> _totalyearreportlist = FIRERECORD_REPORT10Cls.getListModel(new FIRERECORD_REPORT10_SW { REPORTYEAR = YEAR, }).ToList();
+            List<FIRERECORD_REPORT10_Model> _totalyearreportlist = FIRERECORD_REPORT10Cls.getListModel(new FIRERECORD_REPORT10_SW { BYORGNO = ORGNO, REPORTYEAR = YEAR, }).ToList();
             var _yearreportlist = _totalyearreportlist.FindAll(a => a.REPORTYEAR == YEAR);
             List<T_SYS_DICTModel> dic312 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "312" }).ToList();//基础设施统计年报表一
             #endregion
@@ -4004,13 +3972,15 @@ namespace ManagerSystem.MVC.Controllers
             for (int i = 0; i < result.Count; i++)
             {
                 sb.AppendFormat("<tr class=\"{0}\">", (i % 2 == 0) ? "" : "row1");
-                sb.AppendFormat("<td class=\"Center\" style=\"{1}\" >{0}</td>", result[i].ORGNAME, PublicCls.getOrgTDNameClass(ORGNO, result[i].ORGNO));
+                sb.AppendFormat("<td class=\"Center\" >{0}</td>", result[i].ORGNAME);
                 List<FIRERECORD_REPORT10_Model> templist = new List<FIRERECORD_REPORT10_Model>();
                 if (PublicCls.OrgIsShi(result[i].ORGNO))
-                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 4) == result[i].ORGNO.Substring(0, 4)).ToList();
+                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(4, 11) == result[i].ORGNO.Substring(4, 11)).ToList();
                 if (PublicCls.OrgIsXian(result[i].ORGNO))
                     templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 6) == result[i].ORGNO.Substring(0, 6)).ToList();
                 if (PublicCls.OrgIsZhen(result[i].ORGNO))
+                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 9) == result[i].ORGNO.Substring(0, 9)).ToList();
+                if (PublicCls.OrgIsCun(result[i].ORGNO))
                     templist = _yearreportlist.FindAll(a => a.BYORGNO == result[i].ORGNO).ToList();
 
                 List<float> total2 = CalHJ1(templist);
@@ -4056,14 +4026,8 @@ namespace ManagerSystem.MVC.Controllers
             #endregion
 
             #region 数据准备
-            List<T_SYS_ORGModel> result = new List<T_SYS_ORGModel>();
-            if (PublicCls.OrgIsShi(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetShiXian = "1" }).ToList();
-            if (PublicCls.OrgIsXian(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetXianXZ = "1" }).ToList();
-            if (PublicCls.OrgIsZhen(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO }).ToList();
-            List<FIRERECORD_REPORT10_Model> _totalyearreportlist = FIRERECORD_REPORT10Cls.getListModel(new FIRERECORD_REPORT10_SW { REPORTYEAR = YEAR, }).ToList();
+            List<T_SYS_ORGModel> result = ResultList(ORGNO);//获取组织机构编码
+            List<FIRERECORD_REPORT10_Model> _totalyearreportlist = FIRERECORD_REPORT10Cls.getListModel(new FIRERECORD_REPORT10_SW { BYORGNO = ORGNO, REPORTYEAR = YEAR, }).ToList();
             var _yearreportlist = _totalyearreportlist.FindAll(a => a.REPORTYEAR == YEAR);
             List<T_SYS_DICTModel> dic312 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "312" }).ToList();//基础设施统计年报表一
             int colsCount = (dic312.Count + 4);
@@ -4193,8 +4157,8 @@ namespace ManagerSystem.MVC.Controllers
             j++;
             j = FIRERECORD_REPORT10Excel(_yearreportlist, dic312, book, row5, j);
             var bzlist1 = _yearreportlist.FindAll(a => a.REPORTCODE == dic312[dic312.Count - 1].DICTVALUE);
-            row4.CreateCell(j).SetCellValue(bzlist1.Count > 0 ? bzlist1[0].REPORTVALUE : "");
-            row4.GetCell(j).CellStyle = getCellStyleCenter(book);
+            row5.CreateCell(j).SetCellValue(bzlist1.Count > 0 ? bzlist1[0].REPORTVALUE : "");
+            row5.GetCell(j).CellStyle = getCellStyleCenter(book);
             #endregion
 
             #region 详细数据行
@@ -4208,15 +4172,17 @@ namespace ManagerSystem.MVC.Controllers
                 k++;
                 List<FIRERECORD_REPORT10_Model> templist = new List<FIRERECORD_REPORT10_Model>();
                 if (PublicCls.OrgIsShi(result[i].ORGNO))
-                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 4) == result[i].ORGNO.Substring(0, 4)).ToList();
+                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(4, 11) == result[i].ORGNO.Substring(4, 11)).ToList();//判断是否为州级
                 if (PublicCls.OrgIsXian(result[i].ORGNO))
                     templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 6) == result[i].ORGNO.Substring(0, 6)).ToList();
                 if (PublicCls.OrgIsZhen(result[i].ORGNO))
+                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 9) == result[i].ORGNO.Substring(0, 9)).ToList();
+                if (PublicCls.OrgIsCun(result[i].ORGNO))
                     templist = _yearreportlist.FindAll(a => a.BYORGNO == result[i].ORGNO).ToList();
                 k = FIRERECORD_REPORT10Excel(templist, dic312, book, row6, k);
                 var bzlist2 = templist.FindAll(a => a.REPORTCODE == dic312[dic312.Count - 1].DICTVALUE);
-                row4.CreateCell(k).SetCellValue(bzlist2.Count > 0 ? bzlist2[0].REPORTVALUE : "");
-                row4.GetCell(k).CellStyle = getCellStyleCenter(book);
+                row6.CreateCell(k).SetCellValue(bzlist2.Count > 0 ? bzlist2[0].REPORTVALUE : "");
+                row6.GetCell(k).CellStyle = getCellStyleCenter(book);
                 rowIndex++;
             }
             #endregion
@@ -4267,7 +4233,7 @@ namespace ManagerSystem.MVC.Controllers
                     model = FIRERECORD_REPORT11Cls.getModel(new FIRERECORD_REPORT11_SW { FIRERECORD_REPORT11ID = FIRERECORD_REPORT11ID });
                 }
             }
-            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOptionByORGNO(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopSXORGNO = ORGNO, CurORGNO = ORGNO });
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOptionByORGNO(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), OnlyGetShiXian = ORGNO, TopORGNO = ORGNO });
             ViewBag.REPORTYEAR = DateTime.Now.ToString("yyyy");
             ViewBag.Method = Method;
             List<T_SYS_DICTModel> dic313List = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "313" }).ToList();
@@ -4288,8 +4254,6 @@ namespace ManagerSystem.MVC.Controllers
             if (ViewBag.isPageRight == false)
                 return View();
             ViewBag.YEAR = DateTime.Now.ToString("yyyy");
-            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOptionByORGNO(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopSXORGNO = SystemCls.getCurUserOrgNo(), CurORGNO = SystemCls.getCurUserOrgNo() });
-         
             return View();
         }
 
@@ -4308,14 +4272,8 @@ namespace ManagerSystem.MVC.Controllers
             #endregion
 
             #region 数据准备
-            List<T_SYS_ORGModel> result = new List<T_SYS_ORGModel>();
-            if (PublicCls.OrgIsShi(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetShiXian = "1" }).ToList();
-            if (PublicCls.OrgIsXian(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetXianXZ = "1" }).ToList();
-            if (PublicCls.OrgIsZhen(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO }).ToList();
-            List<FIRERECORD_REPORT11_Model> _totalyearreportlist = FIRERECORD_REPORT11Cls.getListModel(new FIRERECORD_REPORT11_SW { REPORTYEAR = YEAR, }).ToList();
+            List<T_SYS_ORGModel> result = ResultList(ORGNO);//获取组织机构编码
+            List<FIRERECORD_REPORT11_Model> _totalyearreportlist = FIRERECORD_REPORT11Cls.getListModel(new FIRERECORD_REPORT11_SW { BYORGNO = ORGNO, REPORTYEAR = YEAR, }).ToList();
             var _yearreportlist = _totalyearreportlist.FindAll(a => a.REPORTYEAR == YEAR);
             List<T_SYS_DICTModel> dic313 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "313" }).ToList();//基础设施统计年报表二
             #endregion
@@ -4398,12 +4356,12 @@ namespace ManagerSystem.MVC.Controllers
             }
             sb.AppendFormat("<tr>");
             sb.AppendFormat("<td class=\"center\">累 计 实 有</td>");
-            List<int> total = CalHJ2(_totalyearreportlist);
+            List<float> total = CalHJ2(_totalyearreportlist);
             for (int i = 0; i < count1; i++)
             {
                 sb.AppendFormat("<td>{0}</td>", total[i]);
             }
-            int XFCLHJ = total[4] + total[5] + total[6] + total[7] + total[8];
+            float XFCLHJ = total[4] + total[5] + total[6] + total[7] + total[8];
             sb.AppendFormat("<td>{0}</td>", XFCLHJ);
 
             for (int i = count1; i < count1 + count2; i++)
@@ -4422,12 +4380,12 @@ namespace ManagerSystem.MVC.Controllers
             #region 本年合计
             sb.AppendFormat("<tr class=\"{0}\">", "row1");
             sb.AppendFormat("<td class=\"center\">本 年 合 计</td>");
-            List<int> total1 = CalHJ2(_yearreportlist);
+            List<float> total1 = CalHJ2(_yearreportlist);
             for (int i = 0; i < count1; i++)
             {
                 sb.AppendFormat("<td>{0}</td>", total1[i]);
             }
-            int XFCLHJ1 = total1[4] + total1[5] + total1[6] + total1[7] + total1[8];
+            float XFCLHJ1 = total1[4] + total1[5] + total1[6] + total1[7] + total1[8];
             sb.AppendFormat("<td>{0}</td>", XFCLHJ1);
 
             for (int i = count1; i < count1 + count2; i++)
@@ -4447,20 +4405,22 @@ namespace ManagerSystem.MVC.Controllers
             for (int i = 0; i < result.Count; i++)
             {
                 sb.AppendFormat("<tr class=\"{0}\">", (i % 2 == 0) ? "" : "row1");
-                sb.AppendFormat("<td class=\"Center\" style=\"{1}\" >{0}</td>", result[i].ORGNAME, PublicCls.getOrgTDNameClass(ORGNO, result[i].ORGNO));
+                sb.AppendFormat("<td class=\"Center\"  >{0}</td>", result[i].ORGNAME);
                 List<FIRERECORD_REPORT11_Model> templist = new List<FIRERECORD_REPORT11_Model>();
                 if (PublicCls.OrgIsShi(result[i].ORGNO))
-                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 4) == result[i].ORGNO.Substring(0, 4)).ToList();
+                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(4, 11) == result[i].ORGNO.Substring(4, 11)).ToList();
                 if (PublicCls.OrgIsXian(result[i].ORGNO))
                     templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 6) == result[i].ORGNO.Substring(0, 6)).ToList();
                 if (PublicCls.OrgIsZhen(result[i].ORGNO))
+                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 9) == result[i].ORGNO.Substring(0, 9)).ToList();
+                if (PublicCls.OrgIsCun(result[i].ORGNO))
                     templist = _yearreportlist.FindAll(a => a.BYORGNO == result[i].ORGNO).ToList();
-                List<int> total2 = CalHJ2(templist);
+                List<float> total2 = CalHJ2(templist);
                 for (int j = 0; j < count1; j++)
                 {
                     sb.AppendFormat("<td>{0}</td>", total2[j]);
                 }
-                int XFCLHJ2 = total2[4] + total2[5] + total2[6] + total2[7] + total2[8];
+                float XFCLHJ2 = total2[4] + total2[5] + total2[6] + total2[7] + total2[8];
                 sb.AppendFormat("<td>{0}</td>", XFCLHJ2);
 
                 for (int k = count1; k < count1 + count2; k++)
@@ -4497,14 +4457,8 @@ namespace ManagerSystem.MVC.Controllers
             #endregion
 
             #region 数据准备
-            List<T_SYS_ORGModel> result = new List<T_SYS_ORGModel>();
-            if (PublicCls.OrgIsShi(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetShiXian = "1" }).ToList();
-            if (PublicCls.OrgIsXian(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetXianXZ = "1" }).ToList();
-            if (PublicCls.OrgIsZhen(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO }).ToList();
-            List<FIRERECORD_REPORT11_Model> _totalyearreportlist = FIRERECORD_REPORT11Cls.getListModel(new FIRERECORD_REPORT11_SW { REPORTYEAR = YEAR, }).ToList();
+            List<T_SYS_ORGModel> result = ResultList(ORGNO);//获取组织机构编码
+            List<FIRERECORD_REPORT11_Model> _totalyearreportlist = FIRERECORD_REPORT11Cls.getListModel(new FIRERECORD_REPORT11_SW { BYORGNO = ORGNO, REPORTYEAR = YEAR, }).ToList();
             var _yearreportlist = _totalyearreportlist.FindAll(a => a.REPORTYEAR == YEAR);
             List<T_SYS_DICTModel> dic313 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "313" }).ToList();//基础设施统计年报表二
             int colsCount = (dic313.Count + 1);
@@ -4644,10 +4598,12 @@ namespace ManagerSystem.MVC.Controllers
                 k++;
                 List<FIRERECORD_REPORT11_Model> templist = new List<FIRERECORD_REPORT11_Model>();
                 if (PublicCls.OrgIsShi(result[i].ORGNO))
-                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 4) == result[i].ORGNO.Substring(0, 4)).ToList();
+                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(4, 11) == result[i].ORGNO.Substring(4, 11)).ToList();
                 if (PublicCls.OrgIsXian(result[i].ORGNO))
                     templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 6) == result[i].ORGNO.Substring(0, 6)).ToList();
                 if (PublicCls.OrgIsZhen(result[i].ORGNO))
+                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 9) == result[i].ORGNO.Substring(0, 9)).ToList();
+                if (PublicCls.OrgIsCun(result[i].ORGNO))
                     templist = _yearreportlist.FindAll(a => a.BYORGNO == result[i].ORGNO).ToList();
                 k = FIRERECORD_REPORT11Excel(templist, dic313, book, row6, k);
                 var bzlist2 = templist.FindAll(a => a.REPORTCODE == dic313[dic313.Count - 1].DICTVALUE);
@@ -4704,7 +4660,7 @@ namespace ManagerSystem.MVC.Controllers
                     model = FIRERECORD_REPORT12Cls.getModel(new FIRERECORD_REPORT12_SW { FIRERECORD_REPORT12ID = FIRERECORD_REPORT12ID });
                 }
             }
-            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOptionByORGNO(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopSXORGNO = ORGNO, CurORGNO = ORGNO });
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOptionByORGNO(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), OnlyGetShiXian = ORGNO, TopORGNO = ORGNO });
             ViewBag.REPORTYEAR = DateTime.Now.ToString("yyyy");
             ViewBag.Method = Method;
             List<T_SYS_DICTModel> dic314List = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "314" }).ToList();
@@ -4725,7 +4681,6 @@ namespace ManagerSystem.MVC.Controllers
             if (ViewBag.isPageRight == false)
                 return View();
             ViewBag.YEAR = DateTime.Now.ToString("yyyy");
-            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOptionByORGNO(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopSXORGNO = SystemCls.getCurUserOrgNo(), CurORGNO = SystemCls.getCurUserOrgNo() });
             return View();
         }
 
@@ -4744,14 +4699,8 @@ namespace ManagerSystem.MVC.Controllers
             #endregion
 
             #region 数据准备
-            List<T_SYS_ORGModel> result = new List<T_SYS_ORGModel>();
-            if (PublicCls.OrgIsShi(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetShiXian = "1" }).ToList();
-            if (PublicCls.OrgIsXian(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetXianXZ = "1" }).ToList();
-            if (PublicCls.OrgIsZhen(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO }).ToList();
-            List<FIRERECORD_REPORT12_Model> _totalyearreportlist = FIRERECORD_REPORT12Cls.getListModel(new FIRERECORD_REPORT12_SW { REPORTYEAR = YEAR, }).ToList();
+            List<T_SYS_ORGModel> result = ResultList(ORGNO);//获取组织机构编码
+            List<FIRERECORD_REPORT12_Model> _totalyearreportlist = FIRERECORD_REPORT12Cls.getListModel(new FIRERECORD_REPORT12_SW { BYORGNO = ORGNO, REPORTYEAR = YEAR, }).ToList();
             var _yearreportlist = _totalyearreportlist.FindAll(a => a.REPORTYEAR == YEAR);
             List<T_SYS_DICTModel> dic314 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "314" }).ToList();//森林防火建设资金统计年报表
             #endregion
@@ -4763,7 +4712,7 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("<thead>");
             sb.AppendFormat("<tr>");
             sb.AppendFormat("<th rowspan=\"3\"style=\" width:100px;\">单  位/项  目</th>");
-            sb.AppendFormat("<th colspan=\"7\">合   计（万元）</th>");
+            sb.AppendFormat("<th colspan=\"7\">森林防火建资金（万元）</th>");
             sb.AppendFormat("<th colspan=\"7\">其中国家专项补助（万元）</th>");
             sb.AppendFormat("<th colspan=\"5\">地方配套（万元）</th>");
             sb.AppendFormat("<th rowspan=\"3\">备 注</th>");
@@ -4900,13 +4849,15 @@ namespace ManagerSystem.MVC.Controllers
             for (int i = 0; i < result.Count; i++)
             {
                 sb.AppendFormat("<tr class=\"{0}\">", (i % 2 == 0) ? "" : "row1");
-                sb.AppendFormat("<td class=\"Center\" style=\"{1}\" >{0}</td>", result[i].ORGNAME, PublicCls.getOrgTDNameClass(ORGNO, result[i].ORGNO));
+                sb.AppendFormat("<td class=\"Center\" >{0}</td>", result[i].ORGNAME);
                 List<FIRERECORD_REPORT12_Model> templist = new List<FIRERECORD_REPORT12_Model>();
                 if (PublicCls.OrgIsShi(result[i].ORGNO))
-                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 4) == result[i].ORGNO.Substring(0, 4)).ToList();
+                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(4, 11) == result[i].ORGNO.Substring(4, 11)).ToList();
                 if (PublicCls.OrgIsXian(result[i].ORGNO))
                     templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 6) == result[i].ORGNO.Substring(0, 6)).ToList();
                 if (PublicCls.OrgIsZhen(result[i].ORGNO))
+                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 9) == result[i].ORGNO.Substring(0, 9)).ToList();
+                if (PublicCls.OrgIsCun(result[i].ORGNO))
                     templist = _yearreportlist.FindAll(a => a.BYORGNO == result[i].ORGNO).ToList();
                 List<float> total2 = CalHJ3(templist);
                 float JSZJ2 = total2[0] + total2[1] + total2[2] + total2[3] + total2[4] + total2[5];
@@ -4954,14 +4905,8 @@ namespace ManagerSystem.MVC.Controllers
             #endregion
 
             #region 数据准备
-            List<T_SYS_ORGModel> result = new List<T_SYS_ORGModel>();
-            if (PublicCls.OrgIsShi(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetShiXian = "1" }).ToList();
-            if (PublicCls.OrgIsXian(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetXianXZ = "1" }).ToList();
-            if (PublicCls.OrgIsZhen(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO }).ToList();
-            List<FIRERECORD_REPORT12_Model> _totalyearreportlist = FIRERECORD_REPORT12Cls.getListModel(new FIRERECORD_REPORT12_SW { REPORTYEAR = YEAR, }).ToList();
+            List<T_SYS_ORGModel> result = ResultList(ORGNO);//获取组织机构编码
+            List<FIRERECORD_REPORT12_Model> _totalyearreportlist = FIRERECORD_REPORT12Cls.getListModel(new FIRERECORD_REPORT12_SW { BYORGNO = ORGNO, REPORTYEAR = YEAR, }).ToList();
             var _yearreportlist = _totalyearreportlist.FindAll(a => a.REPORTYEAR == YEAR);
             List<T_SYS_DICTModel> dic314 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "314" }).ToList();//森林防火建设资金统计年报表
             int colsCount = (dic314.Count + 3);
@@ -5046,7 +4991,7 @@ namespace ManagerSystem.MVC.Controllers
             sheet1.AddMergedRegion(new CellRangeAddress(1, 1, 1, 7));
             sheet1.AddMergedRegion(new CellRangeAddress(1, 1, 8, 14));
             sheet1.AddMergedRegion(new CellRangeAddress(1, 1, 15, 19));
-            sheet1.AddMergedRegion(new CellRangeAddress(1, 3, 20, 20));
+            sheet1.AddMergedRegion(new CellRangeAddress(1, 2, 20, 20));
             #endregion
 
             #region 表身及数据
@@ -5087,10 +5032,12 @@ namespace ManagerSystem.MVC.Controllers
                 k++;
                 List<FIRERECORD_REPORT12_Model> templist = new List<FIRERECORD_REPORT12_Model>();
                 if (PublicCls.OrgIsShi(result[i].ORGNO))
-                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 4) == result[i].ORGNO.Substring(0, 4)).ToList();
+                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(4, 11) == result[i].ORGNO.Substring(4, 11)).ToList();
                 if (PublicCls.OrgIsXian(result[i].ORGNO))
                     templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 6) == result[i].ORGNO.Substring(0, 6)).ToList();
                 if (PublicCls.OrgIsZhen(result[i].ORGNO))
+                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 9) == result[i].ORGNO.Substring(0, 9)).ToList();
+                if (PublicCls.OrgIsCun(result[i].ORGNO))
                     templist = _yearreportlist.FindAll(a => a.BYORGNO == result[i].ORGNO).ToList();
                 k = FIRERECORD_REPORT12Excel(templist, dic314, book, row5, k);
                 var bzlist2 = templist.FindAll(a => a.REPORTCODE == dic314[dic314.Count - 1].DICTVALUE);
@@ -5147,7 +5094,7 @@ namespace ManagerSystem.MVC.Controllers
                     model = FIRERECORD_ARMYCls.getModel(new FIRERECORD_ARMY_SW { FIRERECORD_ARMYID = FIRERECORD_ARMYID });
                 }
             }
-            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOptionByORGNO(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopSXORGNO = ORGNO, CurORGNO = ORGNO });
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOptionByORGNO(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), OnlyGetShiXian = ORGNO, TopORGNO = ORGNO });
             ViewBag.REPORTYEAR = DateTime.Now.ToString("yyyy");
             ViewBag.Method = Method;
             List<T_SYS_DICTModel> dic315List = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "315" }).ToList();
@@ -5168,7 +5115,6 @@ namespace ManagerSystem.MVC.Controllers
             if (ViewBag.isPageRight == false)
                 return View();
             ViewBag.YEAR = DateTime.Now.ToString("yyyy");
-            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOptionByORGNO(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopSXORGNO = SystemCls.getCurUserOrgNo(), CurORGNO = SystemCls.getCurUserOrgNo() });
             return View();
         }
 
@@ -5187,14 +5133,8 @@ namespace ManagerSystem.MVC.Controllers
             #endregion
 
             #region 数据准备
-            List<T_SYS_ORGModel> result = new List<T_SYS_ORGModel>();
-            if (PublicCls.OrgIsShi(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetShiXian = "1" }).ToList();
-            if (PublicCls.OrgIsXian(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetXianXZ = "1" }).ToList();
-            if (PublicCls.OrgIsZhen(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO }).ToList();
-            List<FIRERECORD_ARMY_Model> _totalyearreportlist = FIRERECORD_ARMYCls.getListModel(new FIRERECORD_ARMY_SW { REPORTYEAR = YEAR, }).ToList();
+            List<T_SYS_ORGModel> result = ResultList(ORGNO);//获取组织机构编码
+            List<FIRERECORD_ARMY_Model> _totalyearreportlist = FIRERECORD_ARMYCls.getListModel(new FIRERECORD_ARMY_SW { BYORGNO = ORGNO, REPORTYEAR = YEAR, }).ToList();
             var _yearreportlist = _totalyearreportlist.FindAll(a => a.REPORTYEAR == YEAR);
             List<T_SYS_DICTModel> dic315 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "315" }).ToList();//队伍表
             int count1 = 0;
@@ -5225,9 +5165,9 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("<thead>");
             sb.AppendFormat("<tr>");
             sb.AppendFormat("<th rowspan=\"2\"style=\" width:100px;\">单  位/项  目</th>");
-            sb.AppendFormat("<th colspan=\"2\">本年新建队伍（支）</th>");
-            sb.AppendFormat("<th colspan=\"2\">本年新建基地（个）</th>");
-            sb.AppendFormat("<th colspan=\"2\">目前全省共有队伍数(支)</th>");
+            sb.AppendFormat("<th colspan=\"2\"style=\" width:80px;\">本年新建队伍（支）</th>");
+            sb.AppendFormat("<th colspan=\"2\"style=\" width:80px;\">本年新建基地（个）</th>");
+            sb.AppendFormat("<th colspan=\"2\"style=\" width:80px;\">目前全省共有队伍数(支)</th>");
             sb.AppendFormat("<th colspan=\"6\">全省各类基地数量（个）</th>");
             sb.AppendFormat("<th colspan=\"6\">全省各类基地产值（元）</th>");
             sb.AppendFormat("</tr>");
@@ -5333,13 +5273,15 @@ namespace ManagerSystem.MVC.Controllers
             for (int i = 0; i < result.Count; i++)
             {
                 sb.AppendFormat("<tr class=\"{0}\">", (i % 2 == 0) ? "" : "row1");
-                sb.AppendFormat("<td class=\"Center\" style=\"{1}\" >{0}</td>", result[i].ORGNAME, PublicCls.getOrgTDNameClass(ORGNO, result[i].ORGNO));
+                sb.AppendFormat("<td class=\"Center\"  >{0}</td>", result[i].ORGNAME);
                 List<FIRERECORD_ARMY_Model> templist = new List<FIRERECORD_ARMY_Model>();
                 if (PublicCls.OrgIsShi(result[i].ORGNO))
-                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 4) == result[i].ORGNO.Substring(0, 4)).ToList();
+                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(4, 11) == result[i].ORGNO.Substring(4, 11)).ToList();
                 if (PublicCls.OrgIsXian(result[i].ORGNO))
                     templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 6) == result[i].ORGNO.Substring(0, 6)).ToList();
                 if (PublicCls.OrgIsZhen(result[i].ORGNO))
+                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 9) == result[i].ORGNO.Substring(0, 9)).ToList();
+                if (PublicCls.OrgIsCun(result[i].ORGNO))
                     templist = _yearreportlist.FindAll(a => a.BYORGNO == result[i].ORGNO).ToList();
                 List<float> total2 = CalARMYHJ(templist);
                 for (int j = 0; j < count1; j++)
@@ -5383,14 +5325,8 @@ namespace ManagerSystem.MVC.Controllers
             #endregion
 
             #region 数据准备
-            List<T_SYS_ORGModel> result = new List<T_SYS_ORGModel>();
-            if (PublicCls.OrgIsShi(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetShiXian = "1" }).ToList();
-            if (PublicCls.OrgIsXian(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetXianXZ = "1" }).ToList();
-            if (PublicCls.OrgIsZhen(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO }).ToList();
-            List<FIRERECORD_ARMY_Model> _totalyearreportlist = FIRERECORD_ARMYCls.getListModel(new FIRERECORD_ARMY_SW { REPORTYEAR = YEAR, }).ToList();
+            List<T_SYS_ORGModel> result = ResultList(ORGNO);//获取组织机构编码
+            List<FIRERECORD_ARMY_Model> _totalyearreportlist = FIRERECORD_ARMYCls.getListModel(new FIRERECORD_ARMY_SW { BYORGNO = ORGNO, REPORTYEAR = YEAR, }).ToList();
             var _yearreportlist = _totalyearreportlist.FindAll(a => a.REPORTYEAR == YEAR);
             List<T_SYS_DICTModel> dic315 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "315" }).ToList();//队伍表
             int colsCount = (dic315.Count + 2);
@@ -5536,10 +5472,12 @@ namespace ManagerSystem.MVC.Controllers
                 k++;
                 List<FIRERECORD_ARMY_Model> templist = new List<FIRERECORD_ARMY_Model>();
                 if (PublicCls.OrgIsShi(result[i].ORGNO))
-                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 4) == result[i].ORGNO.Substring(0, 4)).ToList();
+                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(4, 11) == result[i].ORGNO.Substring(4, 11)).ToList();
                 if (PublicCls.OrgIsXian(result[i].ORGNO))
                     templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 6) == result[i].ORGNO.Substring(0, 6)).ToList();
                 if (PublicCls.OrgIsZhen(result[i].ORGNO))
+                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 9) == result[i].ORGNO.Substring(0, 9)).ToList();
+                if (PublicCls.OrgIsCun(result[i].ORGNO))
                     templist = _yearreportlist.FindAll(a => a.BYORGNO == result[i].ORGNO).ToList();
                 k = ARMYExcel(templist, dic315, book, row6, k);
                 rowIndex++;
@@ -5748,9 +5686,30 @@ namespace ManagerSystem.MVC.Controllers
                 result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetXianXZ = "1" }).ToList();
             if (PublicCls.OrgIsZhen(ORGNO))
                 result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO }).ToList();
+            //if (PublicCls.OrgIsCun(ORGNO))
+            // result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO }).ToList();
             List<T_SYS_DICTModel> dic304 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "304" }).ToList();
-            _monthlyreportList = FIRERECORD_FIREINFOCls.getListModel(new FIRERECORD_FIREINFO_SW { BYORGNO = ORGNO, FIRETIME = fireTime, FIREENDTIME = fireEndTime }).ToList();
+            _monthlyreportList = FIRERECORD_FIREINFOCls.getListModel(new FIRERECORD_FIREINFO_SW { BYORGNO = ORGNO, FIRETIME = fireTime, FIREENDTIME = nowfireEndTime }).ToList();
             _nowmonthlyreportList = FIRERECORD_FIREINFOCls.getListModel(new FIRERECORD_FIREINFO_SW { BYORGNO = ORGNO, FIRETIME = nowFireTime, FIREENDTIME = nowfireEndTime }).ToList();
+        }
+        #endregion
+
+        #region  组织机构编码集合
+        /// <summary>
+        /// 获取组织机构编码的集合
+        /// </summary>
+        /// <param name="ORGNO">当前登陆的组织机构编码</param>
+        /// <returns></returns>
+        private static List<T_SYS_ORGModel> ResultList(string ORGNO)
+        {
+            List<T_SYS_ORGModel> result = new List<T_SYS_ORGModel>();
+            if (PublicCls.OrgIsShi(ORGNO))
+                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetShiXian = "1" }).ToList();
+            if (PublicCls.OrgIsXian(ORGNO))
+                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetXianXZ = "1" }).ToList();
+            if (PublicCls.OrgIsZhen(ORGNO))
+                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO }).ToList();
+            return result;
         }
         #endregion
 
@@ -6144,7 +6103,7 @@ namespace ManagerSystem.MVC.Controllers
                 if (i == 0)
                     sheet1.SetColumnWidth(i, 20 * 256);
                 else
-                    sheet1.SetColumnWidth(i, 15 * 256);
+                    sheet1.SetColumnWidth(i, 10 * 256);
             }
             IRow rowTitle = sheet1.CreateRow(0);
             rowTitle.Height = 2 * 350;
@@ -6444,13 +6403,13 @@ namespace ManagerSystem.MVC.Controllers
         /// </summary>
         /// <param name="_yearreportlist">数据列表</param>
         /// <returns></returns>
-        private static List<int> CalHJ2(List<FIRERECORD_REPORT11_Model> _yearreportlist)
+        private static List<float> CalHJ2(List<FIRERECORD_REPORT11_Model> _yearreportlist)
         {
             List<T_SYS_DICTModel> dic313 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "313" }).ToList();//基础设施统计年报表一
-            List<int> _totallist = new List<int>();
+            List<float> _totallist = new List<float>();
             for (int i = 0; i < dic313.Count - 1; i++)
             {
-                int total = 0;
+                float total = 0;
                 var templist = _yearreportlist.FindAll(a => a.REPORTCODE == dic313[i].DICTVALUE);
                 if (templist.Count == 0)
                 {
@@ -6462,7 +6421,7 @@ namespace ManagerSystem.MVC.Controllers
                     {
                         if (!string.IsNullOrEmpty(v.REPORTVALUE))
                         {
-                            total += int.Parse(v.REPORTVALUE);
+                            total += float.Parse(v.REPORTVALUE);
                         }
 
                     } _totallist.Add(total);
@@ -6497,14 +6456,14 @@ namespace ManagerSystem.MVC.Controllers
                     count2++;
                 }
             }
-            List<int> total = CalHJ2(_yearreportlist);
+            List<float> total = CalHJ2(_yearreportlist);
             for (int i = 0; i < count1; i++)
             {
                 row4.CreateCell(x).SetCellValue(total[i]);
                 row4.GetCell(x).CellStyle = getCellStyleCenter(book);
                 x++;
             }
-            int XFCLHJ = total[4] + total[5] + total[6] + total[7] + total[8];
+            float XFCLHJ = total[4] + total[5] + total[6] + total[7] + total[8];
             row4.CreateCell(x).SetCellValue(XFCLHJ);
             row4.GetCell(x).CellStyle = getCellStyleCenter(book);
             x++;

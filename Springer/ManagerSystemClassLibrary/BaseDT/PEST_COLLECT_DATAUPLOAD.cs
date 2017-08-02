@@ -28,7 +28,7 @@ namespace ManagerSystemClassLibrary.BaseDT
             sb.AppendFormat("INSERT INTO  PEST_COLLECT_DATAUPLOAD(PESTCOLLDATAID,UPLOADNAME, UPLOADDESCRIBE, UPLOADURL,UPLOADTYPE)");
             sb.AppendFormat("VALUES(");
             sb.AppendFormat("'{0}'", ClsSql.EncodeSql(m.PESTCOLLDATAID));
-            sb.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.UPLOADNAME));
+            sb.AppendFormat(",{0}", ClsSql.saveNullField(m.UPLOADNAME));
             sb.AppendFormat(",{0}", ClsSql.saveNullField(m.UPLOADDESCRIBE));
             sb.AppendFormat(",{0}", ClsSql.saveNullField(m.UPLOADURL));
             sb.AppendFormat(",{0})", ClsSql.saveNullField(m.UPLOADTYPE));
@@ -36,7 +36,7 @@ namespace ManagerSystemClassLibrary.BaseDT
             if (bln == true)
                 return new Message(true, "添加成功!", "");
             else
-                return new Message(false, "添加失败，请检查各输入框是否正确!", "");
+                return new Message(false, "添加失败!", "");
         }
 
         #endregion
@@ -50,8 +50,7 @@ namespace ManagerSystemClassLibrary.BaseDT
         public static Message Mdy(PEST_COLLECT_DATAUPLOAD_Model m)
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("UPDATE PEST_COLLECT_DATAUPLOAD");
-            sb.AppendFormat(" set ");
+            sb.AppendFormat("UPDATE PEST_COLLECT_DATAUPLOAD SET");
             sb.AppendFormat(" UPLOADNAME='{0}'", ClsSql.EncodeSql(m.UPLOADNAME));
             sb.AppendFormat(",UPLOADDESCRIBE={0}", ClsSql.saveNullField(m.UPLOADDESCRIBE));
             sb.AppendFormat(",UPLOADURL={0}", ClsSql.saveNullField(m.UPLOADURL));
@@ -61,7 +60,7 @@ namespace ManagerSystemClassLibrary.BaseDT
             if (bln == true)
                 return new Message(true, "修改成功!", "");
             else
-                return new Message(false, "修改失败，请检查各输入框是否正确!", "");
+                return new Message(false, "修改失败!", "");
         }
 
         #endregion
@@ -75,8 +74,7 @@ namespace ManagerSystemClassLibrary.BaseDT
         public static Message MdyTP(PEST_COLLECT_DATAUPLOAD_Model m)
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("UPDATE PEST_COLLECT_DATAUPLOAD");
-            sb.AppendFormat(" set ");
+            sb.AppendFormat("UPDATE PEST_COLLECT_DATAUPLOAD SET");
             sb.AppendFormat("UPLOADNAME='{0}'", ClsSql.EncodeSql(m.UPLOADNAME));
             sb.AppendFormat(",UPLOADDESCRIBE={0}", ClsSql.saveNullField(m.UPLOADDESCRIBE));
             sb.AppendFormat(" where PESTCOLLDATAUPLOADID= '{0}'", ClsSql.EncodeSql(m.PESTCOLLDATAUPLOADID));
@@ -129,7 +127,7 @@ namespace ManagerSystemClassLibrary.BaseDT
                 sb.AppendFormat(" AND UPLOADNAME like  '%{0}%'", ClsSql.EncodeSql(sw.UPLOADNAME));
             //根据文件描述查询
             if (string.IsNullOrEmpty(sw.UPLOADDESCRIBE) == false)
-                sb.AppendFormat(" AND SMALLADDRESS = '{0}'", ClsSql.EncodeSql(sw.UPLOADDESCRIBE));
+                sb.AppendFormat(" AND UPLOADDESCRIBE = '{0}'", ClsSql.EncodeSql(sw.UPLOADDESCRIBE));
             #endregion
 
             string sql = "SELECT * " + sb.ToString() + " order by PESTCOLLDATAUPLOADID,UPLOADTYPE ";

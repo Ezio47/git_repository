@@ -90,18 +90,24 @@ namespace ManagerSystemClassLibrary
         {
             string str2 = "&nbsp;&nbsp;&nbsp;";
             string str3 = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+            string str4 = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
             if (PublicCls.OrgIsShi(topOrgNo))
             { }
             else if (PublicCls.OrgIsXian(topOrgNo))
             {
+                str4 = str3;
                 str3 = str2;
                 str2 = "";
             }
             else if (PublicCls.OrgIsZhen(topOrgNo))
             {
+                str4 = str3;
                 str3 = "";
             }
-
+            else if (PublicCls.OrgIsCun(topOrgNo))
+            {
+                str4 = "";
+            }
             if (PublicCls.OrgIsShi(orgCode))//市
             {
                 return orgName;
@@ -110,9 +116,13 @@ namespace ManagerSystemClassLibrary
             {
                 return str2 + orgName;
             }
-            else
+            else if (PublicCls.OrgIsZhen(orgCode))
             {
                 return str3 + orgName;
+            }
+            else
+            {
+                return str4 + orgName;
             }
         }
 
@@ -127,25 +137,35 @@ namespace ManagerSystemClassLibrary
             string str1 = "padding-left:0px;";
             string str2 = "padding-left:20px;";
             string str3 = "padding-left:40px;";
+            string str4 = "padding-left:60px;";
             if (PublicCls.OrgIsShi(topOrgNo))
             {
                 str1 = "padding-left:0px;";
                 str2 = "padding-left:20px;";
                 str3 = "padding-left:40px;";
+                str4 = "padding-left:60px;";
             }
             else if (PublicCls.OrgIsXian(topOrgNo))
             {
                 str1 = "padding-left:0px;";
                 str2 = "padding-left:0px;";
                 str3 = "padding-left:20px;";
+                str4 = "padding-left:40px;";
             }
             else if (PublicCls.OrgIsZhen(topOrgNo))
             {
                 str1 = "padding-left:0px;";
                 str2 = "padding-left:0px;";
                 str3 = "padding-left:0px;";
+                str4 = "padding-left:20px;";
             }
-
+            else if (PublicCls.OrgIsCun(topOrgNo))
+            {
+                str1 = "padding-left:0px;";
+                str2 = "padding-left:0px;";
+                str3 = "padding-left:0px;";
+                str4 = "padding-left:0px;";
+            }
             if (PublicCls.OrgIsShi(orgCode))//市
             {
                 return str1;
@@ -154,9 +174,13 @@ namespace ManagerSystemClassLibrary
             {
                 return str2;
             }
-            else
+            else if (PublicCls.OrgIsZhen(orgCode))
             {
                 return str3;
+            }
+            else
+            {
+                return str4;
             }
         }
 
@@ -169,9 +193,9 @@ namespace ManagerSystemClassLibrary
         {
             if (string.IsNullOrEmpty(str))
                 return false;
-            if (str.Length != 9)
+            if (str.Length != 15)
                 return false;
-            if (str.Substring(4, 5) == "00000")
+            if (str.Substring(4, 11) == "00000000000")
                 return true;
             return false;
         }
@@ -185,9 +209,9 @@ namespace ManagerSystemClassLibrary
         {
             if (string.IsNullOrEmpty(str))
                 return false;
-            if (str.Length != 9)
+            if (str.Length != 15)
                 return false;
-            if (str.Substring(6, 3) == "000" && str.Substring(4, 5) != "00000")
+            if (str.Substring(6, 9) == "000000000" && str.Substring(4, 11) != "00000000000")
                 return true;
             return false;
         }
@@ -201,9 +225,25 @@ namespace ManagerSystemClassLibrary
         {
             if (string.IsNullOrEmpty(str))
                 return false;
-            if (str.Length != 9)
+            if (str.Length != 15)
                 return false;
-            if (str.Substring(6, 3) != "000")
+            if (str.Substring(9, 6) == "000000"  && str.Substring(6, 9) != "000000000")
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// 判断组织机构是否是村
+        /// </summary>
+        /// <param name="str">单位编码</param>
+        /// <returns>true 村 false 否</returns>
+        public static bool OrgIsCun(string str)
+        {
+            if (string.IsNullOrEmpty(str))
+                return false;
+            if (str.Length != 15)
+                return false;
+            if (str.Substring(9, 6) != "000000")
                 return true;
             return false;
         }
@@ -217,7 +257,7 @@ namespace ManagerSystemClassLibrary
         {
             if (string.IsNullOrEmpty(str))
                 return "";
-            if (str.Length != 9)
+            if (str.Length != 15)
                 return "";
             return str.Substring(0, 4);
         }
@@ -231,7 +271,7 @@ namespace ManagerSystemClassLibrary
         {
             if (string.IsNullOrEmpty(str))
                 return "";
-            if (str.Length != 9)
+            if (str.Length != 15)
                 return "";
             return str.Substring(0, 6);
         }
@@ -245,9 +285,23 @@ namespace ManagerSystemClassLibrary
         {
             if (string.IsNullOrEmpty(str))
                 return "";
-            if (str.Length != 9)
+            if (str.Length != 15)
                 return "";
-            return str;
+            return str.Substring(0, 9);
+        }
+
+        /// <summary>
+        /// 返回村机构编码
+        /// </summary>
+        /// <param name="str">单位编码</param>
+        /// <returns>返回村机构编码</returns>
+        public static string getCunIncOrgNo(string str)
+        {
+            if (string.IsNullOrEmpty(str))
+                return "";
+            if (str.Length != 15)
+                return "";
+            return str.Substring(0, 12);
         }
 
         /// <summary>
@@ -278,10 +332,9 @@ namespace ManagerSystemClassLibrary
         public static string GetOrgNameByOrgNO(string orgno)
         {
             string str = "";
-            DataTable dt =  BaseDT.T_SYS_ORG.getDT(new T_SYS_ORGSW() { ORGNO = orgno });
-            str =  BaseDT.T_SYS_ORG.getName(dt, orgno);
+            DataTable dt = BaseDT.T_SYS_ORG.getDT(new T_SYS_ORGSW() { ORGNO = orgno });
+            str = BaseDT.T_SYS_ORG.getName(dt, orgno);
             return str;
         }
-
     }
 }

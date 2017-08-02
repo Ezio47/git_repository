@@ -78,6 +78,10 @@ namespace ManagerSystemSearchWhereModel
         /// </summary>
         public string OnlyGetXianXZ { get; set; }
         /// <summary>
+        /// 获取市县乡
+        /// </summary>
+        public string OnlyGetShiXianXZ { get; set; }
+        /// <summary>
         /// 数据中心组织机构下拉框全部
         /// </summary>
         public string IsShowAll{ get; set; }

@@ -344,7 +344,7 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
             sb.AppendFormat("<td>经纬度集合:</td>");
-            sb.AppendFormat("<td colspan=\"3\"></td>", m.JWDLIST); ;
+            sb.AppendFormat("<td colspan=\"3\" ><input type=\"text\" style=\"width:98%\" value=\"{0}\"  /></td>", !string.IsNullOrEmpty(m.JWDLIST)?m.JWDLIST:m.JWDLIST);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
             sb.AppendFormat("<td>疑似病死:</td>");
@@ -2346,7 +2346,7 @@ namespace ManagerSystem.MVC.Controllers
             ViewBag.ENDDATE = arr[4];
             ViewBag.FINDDATE = DateTime.Now.ToString("yyyy-MM-dd");
             int total = 0;
-            ViewBag.TableInfo = GetDIEPINESURVEYREPORTStr(new PEST_REPORT_DIEPINESURVEY_SW { CurPage = int.Parse(Page), PageSize = int.Parse(arr[0]), BYORGNO = arr[1], FINDER = arr[2], STARTDATE = arr[3],ENDDATE=arr[4] }, out total);
+            ViewBag.TableInfo = GetDIEPINESURVEYREPORTStr(new PEST_REPORT_DIEPINESURVEY_SW { CurPage = int.Parse(Page), PageSize = int.Parse(arr[0]), BYORGNO = arr[1], FINDER = arr[2], STARTDATE = arr[3], ENDDATE = arr[4] }, out total);
             ViewBag.PageInfo = PagerCls.getPagerInfo_New(new PagerSW { curPage = int.Parse(Page), pageSize = int.Parse(arr[0]), rowCount = total, url = "/PEST/DIEPINESURVEYREPORT?trans=" + trans });
             ViewBag.Add = (SystemCls.isRight("024012001")) ? 1 : 0;
             ViewBag.Del = (SystemCls.isRight("024012004")) ? 1 : 0;

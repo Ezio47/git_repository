@@ -136,10 +136,12 @@ namespace ManagerSystemClassLibrary.BaseDT
                sb.AppendFormat(" AND ORGNO = '{0}'", ClsSql.EncodeSql(sw.curOrgNo));
            if (!string.IsNullOrEmpty(sw.ORGNO))
            {
-               if (sw.ORGNO.Substring(4, 5) == "00000")//获取所有市的
+               if (sw.ORGNO.Substring(4, 9) == "00000000000")//获取所有市的
                    sb.AppendFormat(" AND (SUBSTRING(ORGNO,1,4) = '{0}' or ORGNO is null or ORGNO='')", ClsSql.EncodeSql(sw.ORGNO.Substring(0, 4)));
-               else if (sw.ORGNO.Substring(6, 3) == "000")//获取所有县的
+               else if (sw.ORGNO.Substring(6, 9) == "000000000")//获取所有县的
                    sb.AppendFormat(" AND (SUBSTRING(ORGNO,1,6) = '{0}' or ORGNO is null or ORGNO='')", ClsSql.EncodeSql(sw.ORGNO.Substring(0, 6)));
+               else if (sw.ORGNO.Substring(9,6)=="000000")//获取所有镇的
+                   sb.AppendFormat(" AND ORGNO = '{0}'", ClsSql.EncodeSql(sw.ORGNO));
                else
                    sb.AppendFormat(" AND ORGNO = '{0}'", ClsSql.EncodeSql(sw.ORGNO));
            }
@@ -208,8 +210,7 @@ namespace ManagerSystemClassLibrary.BaseDT
            foreach (string id in userIdArray)
            {
                StringBuilder sb = new StringBuilder();
-               sb.AppendFormat("update T_SYSSEC_USER");
-               sb.AppendFormat(" set ");
+               sb.AppendFormat("update T_SYSSEC_USER SET");
                sb.AppendFormat(" IsOpenOA='{0}'", ClsSql.EncodeSql(value));
                sb.AppendFormat(" where USERID= '{0}'", ClsSql.EncodeSql(id));
                sqllist.Add(sb.ToString());

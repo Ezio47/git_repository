@@ -102,16 +102,24 @@ namespace ManagerSystemClassLibrary
             {
                 string orgNo = dt.Rows[i]["ORGNO"].ToString();
                 string orgName = dt.Rows[i]["ORGNAME"].ToString();
-                if (orgNo.Substring(4, 5) == "00000")//获取所有县的
+                if (orgNo.Substring(4, 11) == "00000000000")//获取所有市的
                     orgName = "" + orgName;
-                else if (orgNo.Substring(6, 3) == "000")//获取所有市的
+                else if (orgNo.Substring(6, 9) == "000000000")//获取所有县的
                     orgName = "--" + orgName;
+                else if (orgNo.Substring(9, 6) == "000000")//获取所有乡镇的
+                {
+                     orgName = "----" + orgName;
+                }
                 else
                 {
                     if (sw.OnlyGetShiXian != "1")
-                        orgName = "----" + orgName;
+                    {
+                        orgName = "------" + orgName;
+                    }
                     else
+                    {
                         orgName = "";
+                    }
                 }
                 if (!string.IsNullOrEmpty(orgName))
                 {
@@ -169,14 +177,18 @@ namespace ManagerSystemClassLibrary
                     string orgNo = dr["ORGNO"].ToString();
                     string orgName = dr["ORGNAME"].ToString();
 
-                    if (orgNo.Substring(4, 5) == "00000")//获取所有县的
+                    if (orgNo.Substring(4, 11) == "00000000000")//获取所有县的
                         orgName = "" + orgName;
-                    else if (orgNo.Substring(6, 3) == "000")//获取所有市的
+                    else if (orgNo.Substring(6, 9) == "000000000")//获取所有市的
                         orgName = "--" + orgName;
+                    else if (orgNo.Substring(9, 6) == "000000")//获取所有乡镇的
+                    {
+                        orgName = "----" + orgName;
+                    }
                     else
                     {
                         if (sw.OnlyGetShiXian != "1")
-                            orgName = "----" + orgName;
+                            orgName = "------" + orgName;
                         else
                             orgName = "";
                     }
@@ -209,7 +221,7 @@ namespace ManagerSystemClassLibrary
             {
                 string orgNo = dt.Rows[i]["ORGNO"].ToString();
                 string orgName = dt.Rows[i]["ORGNAME"].ToString();
-                if (orgNo.Substring(6, 3) == "000")
+                if (orgNo.Substring(6, 9) == "000000000")
                     sb.AppendFormat("<option value=\"{0}\">{1}</option>", orgNo, orgName);
             }
             dt.Clear();
@@ -367,7 +379,7 @@ namespace ManagerSystemClassLibrary
             {
                 if (bbxz)
                 {
-                    sw.ORGNO = sw.ORGNO.Substring(0, 6) + "000";//市县
+                    sw.ORGNO = sw.ORGNO.Substring(0, 6) + "000000000";//市县
                     distance = System.Configuration.ConfigurationManager.AppSettings["3DZoomCountyLayer"].ToString();
                     var DataModel = getModel(sw);
                     if (!string.IsNullOrEmpty(DataModel.JD) && !string.IsNullOrEmpty(DataModel.WD))
@@ -411,13 +423,13 @@ namespace ManagerSystemClassLibrary
                 }
                 else if (PublicCls.OrgIsXian(sw.ORGNO))//县，需要获取县及市
                 {
-                    string orgS = PublicCls.getShiIncOrgNo(sw.ORGNO) + "00000";
+                    string orgS = PublicCls.getShiIncOrgNo(sw.ORGNO) + "00000000000";
                     orgList = orgS + "," + sw.ORGNO;
                 }
                 else if (PublicCls.OrgIsZhen(sw.ORGNO))//镇，需要获取乡、县及市
                 {
-                    string orgS = PublicCls.getShiIncOrgNo(sw.ORGNO) + "00000";
-                    string orgX = PublicCls.getXianIncOrgNo(sw.ORGNO) + "000";
+                    string orgS = PublicCls.getShiIncOrgNo(sw.ORGNO) + "00000000000";
+                    string orgX = PublicCls.getXianIncOrgNo(sw.ORGNO) + "000000000";
                     orgList = orgS + "," + orgX + "," + sw.ORGNO;
                 }
                 else
@@ -433,7 +445,7 @@ namespace ManagerSystemClassLibrary
                 }
                 else if (PublicCls.OrgIsZhen(sw.ORGNO))//镇，需要获取乡、县及市
                 {
-                    string orgX = PublicCls.getXianIncOrgNo(sw.ORGNO) + "000";
+                    string orgX = PublicCls.getXianIncOrgNo(sw.ORGNO) + "000000000";
                     orgList = orgX + "," + sw.ORGNO;
                 }
                 else
@@ -474,27 +486,27 @@ namespace ManagerSystemClassLibrary
         private static JArray getTreeORGChild(DataTable dtOrg, string orgNo)
         {
             JArray childArray = new JArray();
-            if (orgNo.Substring(4, 5) == "00000")
+            if (orgNo.Substring(4, 11) == "00000000000")
             {
-                string orgshi = orgNo.Substring(0, 4) + "xxxxx";
+                string orgshi = orgNo.Substring(0, 4) + "xxxxxxxxxxx";
                 string orgname = T_SYS_ORGCls.getorgname(orgNo);
                 JObject root = new JObject { { "id", orgshi }, { "text", orgname } };
                 childArray.Add(root);
-                DataRow[] drOrg = dtOrg.Select("SUBSTRING(ORGNO,1,4) = '" + orgNo.Substring(0, 4) + "' AND ORGNO<>'" + orgNo + "' and SUBSTRING(ORGNO,7,3)='000'", "");//获取市下级县
+                DataRow[] drOrg = dtOrg.Select("SUBSTRING(ORGNO,1,4) = '" + orgNo.Substring(0, 4) + "' AND ORGNO<>'" + orgNo + "' and SUBSTRING(ORGNO,7,9)='000000000'", "");//获取市下级县
                 for (int i = 0; i < drOrg.Length; i++)
                 {
                     string orgxian = drOrg[i]["ORGNO"].ToString();//县编码
                     string name = drOrg[i]["ORGNAME"].ToString() + "所有";
-                    string orgxianre = orgxian.Substring(0, 6) + "xxx";//县的替代边吗
+                    string orgxianre = orgxian.Substring(0, 6) + "xxxxxxxxx";//县的替代边吗
                     JObject root1 = new JObject { { "id", orgxianre }, { "text", name } };
                     root1.Add("children", getTreeORGChild(dtOrg, orgxianre));
                     childArray.Add(root1);
                 }
                 return childArray;
             }
-            else if (orgNo.Substring(6, 3) == "xxx" && orgNo.Substring(4, 2) != "xx")//获取所有县下属的乡包括县
+            else if (orgNo.Substring(6, 9) == "xxxxxxxxx" && orgNo.Substring(4, 2) != "xx")//获取所有县下属的乡包括县
             {
-                DataRow[] drOrg = dtOrg.Select("SUBSTRING(ORGNO,1,6) = '" + orgNo.Substring(0, 6) + "' AND ORGNO<>'" + orgNo + "'", "");//获取所有县且〈〉市的
+                DataRow[] drOrg = dtOrg.Select("SUBSTRING(ORGNO,1,6) = '" + orgNo.Substring(0, 6) + "' AND ORGNO<>'" + orgNo + "' and SUBSTRING(ORGNO,10,6)='000000'", "");//获取所有县且〈〉市的
                 for (int i = 0; i < drOrg.Length; i++)
                 {
                     JObject root = new JObject { { "id", drOrg[i]["ORGNO"].ToString() }, { "text", drOrg[i]["ORGNAME"].ToString() } };
@@ -518,15 +530,15 @@ namespace ManagerSystemClassLibrary
             DataRow[] drOrg = dtOrg.Select("", "ORGNO");
             if (drOrg.Length > 0)
             {
-                if (drOrg[0]["ORGNO"].ToString().Substring(4, 5) == "00000")
+                if (drOrg[0]["ORGNO"].ToString().Substring(4, 11) == "00000000000")
                 {
                     JObject root = new JObject { { "id", drOrg[0]["ORGNO"].ToString() }, { "text", "全部" } };
                     root.Add("children", getTreeORGChild(dtOrg, drOrg[0]["ORGNO"].ToString()));
                     jObjects.Add(root);
                 }
-                else if (drOrg[0]["ORGNO"].ToString().Substring(6, 3) == "000")
+                else if (drOrg[0]["ORGNO"].ToString().Substring(6, 9) == "000000000")
                 {
-                    string orgno = drOrg[0]["ORGNO"].ToString().Substring(0, 6) + "xxx";
+                    string orgno = drOrg[0]["ORGNO"].ToString().Substring(0, 6) + "xxxxxxxxx";
                     JObject root = new JObject { { "id", orgno }, { "text", drOrg[0]["ORGNAME"].ToString() + "所有" } };
                     root.Add("children", getTreeORGChild(dtOrg, orgno));
                     jObjects.Add(root);
@@ -553,9 +565,9 @@ namespace ManagerSystemClassLibrary
         private static JArray getTreeOnlyORGChild(DataTable dtOrg, string orgNo)
         {
             JArray childArray = new JArray();
-            if (orgNo.Substring(4, 5) == "00000")
+            if (orgNo.Substring(4, 11) == "00000000000")
             {
-                DataRow[] drOrg = dtOrg.Select("SUBSTRING(ORGNO,1,4) = '" + orgNo.Substring(0, 4) + "' AND ORGNO<>'" + orgNo + "' and SUBSTRING(ORGNO,7,3)='000'", "");//获取市下级县
+                DataRow[] drOrg = dtOrg.Select("SUBSTRING(ORGNO,1,4) = '" + orgNo.Substring(0, 4) + "' AND ORGNO<>'" + orgNo + "' and SUBSTRING(ORGNO,7,9)='000000000'", "");//获取市下级县
                 for (int i = 0; i < drOrg.Length; i++)
                 {
                     string orgxian = drOrg[i]["ORGNO"].ToString();//县编码
@@ -566,9 +578,9 @@ namespace ManagerSystemClassLibrary
                 }
                 return childArray;
             }
-            else if (orgNo.Substring(6, 3) == "000" && orgNo.Substring(4, 2) != "00")//获取所有县下属的乡
+            else if (orgNo.Substring(6, 9) == "000000000" && orgNo.Substring(4, 2) != "00")//获取所有县下属的乡
             {
-                DataRow[] drOrg = dtOrg.Select("SUBSTRING(ORGNO,1,6) = '" + orgNo.Substring(0, 6) + "' AND ORGNO<>'" + orgNo + "'", "");//获取所有县且〈〉市的
+                DataRow[] drOrg = dtOrg.Select("SUBSTRING(ORGNO,1,6) = '" + orgNo.Substring(0, 6) + "' AND ORGNO<>'" + orgNo + "' and SUBSTRING(ORGNO,10,6)='000000'", "");//获取所有县且〈〉市的
                 for (int i = 0; i < drOrg.Length; i++)
                 {
                     JObject root = new JObject { { "id", drOrg[i]["ORGNO"].ToString() }, { "text", drOrg[i]["ORGNAME"].ToString() } };
@@ -624,6 +636,23 @@ namespace ManagerSystemClassLibrary
         {
             T_SYS_ORGModel m = getModel(new T_SYS_ORGSW { ORGNO = orgno });
             return m.ORGNAME;
+        }
+        #endregion
+
+        #region 通过组织机构名获取组织机构吗
+        /// <summary>
+        /// 通过组织机构名获取组织机构吗
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static string getCodeByName(string name)
+        {
+            string orgno = "";
+            if (string.IsNullOrEmpty(name)==false)
+            {
+                orgno = BaseDT.T_SYS_ORG.getCodeByName(name);
+            }
+            return orgno;
         }
         #endregion
     }

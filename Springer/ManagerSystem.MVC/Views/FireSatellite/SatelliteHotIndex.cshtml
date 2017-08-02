@@ -1,32 +1,21 @@
 ﻿@{
     Layout = "~/Views/Shared/_LayoutIndex.cshtml";
 }
+@section Header{
+    <script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+}
 
-<script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
 <div class="easyui-layout" data-options="fit:true" style=" border:0;">
     <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
         @Html.Raw(@ViewBag.PageLeftMenu)
     </div>
+
     <div data-options="region:'center'" title="" class="LayoutCenterBG">
         <div class="easyui-layout" data-options="fit:true" style=" border:0;">
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
                 <div class="divOP">
                     <ul>
                         <li class="homeUL"><input type="button" class="btnSaveCss" value="保存" onclick="Save()"> </li>
-                        @*<input type="button" value="返回" onclick="javascript: history.go(-1);">*@
-                        @*<li class="active" style="margin-left:30px">
-
-                                @using (@Html.BeginForm("SatelliteHotIndex", "FireSatellite", FormMethod.Post, new { enctype = "multipart/form-data" }))
-                                {
-                                    <input name="file" style="width:130px;" type="file" id="file" class="btn btn-info btn-sm" />
-
-                                    <button type="submit" name="Upload" value="导入" class="btnInputCss">
-                                        导 入
-                                    </button>
-                                }
-                            <li class="active">
-                                <a href="~/UploadFile/WXRDExcel/卫星热点模板.xls" target="_blank" title="右键，另存为">下载模板</a>
-                            </li>*@
                     </ul>
                 </div>
             </div>
@@ -92,51 +81,50 @@
         var str = $('#tbxBYORGNO').val();//orgno
         var reg = new RegExp("-", "g");
         var text = $("#tbxBYORGNO").find("option:selected").text().replace(reg, '');//orgname
-
         var t1 = $('#tbxAddr').val();
         var t2 = $('#tbxNum').val();
         var t3 = $('#tbxJD').val();
         var t4 = $('#tbxWD').val();
 
         if ($.trim(text) == "") {
-            layer.msg('卫星热点地点不可为空！', { icon: 5 });
+            layer.msg('卫星热点地点不可为空!', { icon: 5 });
             $('#tbxAddr').focus();
             return;
         }
         if ($.trim(t2) == "") {
-            layer.msg('火点个数不可为空！', { icon: 5 });
+            layer.msg('火点个数不可为空!', { icon: 5 });
             $('#tbxNum').focus();
             return;
         }
         else {
             var reg = new RegExp("^[0-9]*[1-9][0-9]*$");
             if (!reg.test(t2)) {
-                layer.msg('火点个数请输入数字！', { icon: 5 });
+                layer.msg('火点个数请输入数字!', { icon: 5 });
                 $('#tbxXS').focus();
                 return;
             }
         }
 
         if ($.trim(t3) == "") {
-            layer.msg('经度不可为空！', { icon: 5 });
+            layer.msg('经度不可为空!', { icon: 5 });
             $('#tbxJD').focus();
             return;
         } else {
             reg = /^-?\d+\.\d{1,6}$/;
             if (!reg.test(t4)) {
-                layer.msg('经度格式不正确！', { icon: 5 });
+                layer.msg('经度格式不正确!', { icon: 5 });
                 $('#tbxJD').focus();
                 return;
             }
         }
         if ($.trim(t4) == "") {
-            layer.msg('纬度不可为空！', { icon: 5 });
+            layer.msg('纬度不可为空!', { icon: 5 });
             $('#tbxWD').focus();
             return;
         } else {
             reg = /^-?\d+\.\d{1,6}$/;
             if (!reg.test(t4)) {
-                layer.msg('纬度格式不正确！', { icon: 5 });
+                layer.msg('纬度格式不正确!', { icon: 5 });
                 $('#tbxWD').focus();
                 return;
             }
@@ -162,11 +150,11 @@
                     });
                 }
                 else {
-                    layer.msg(ar.Msg);
+                    layer.msg(ar.Msg, { icon: 5 });
                 }
             },
             error: function (err, ioArgs) {
-                layer.msg("保存异常！");
+                layer.msg("保存异常!", { icon: 5 });
             }
         });
     }

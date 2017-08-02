@@ -232,7 +232,7 @@ namespace ManagerSystemClassLibrary
                m.NAME = dt.Rows[i]["NAME"].ToString();
                m.ORGNOS = dt.Rows[i]["ORGNOS"].ToString();
                //m.ORGNOSName = BaseDT.T_SYS_ORG.getNames(dtORG, m.ORGNOS);
-               if (m.ORGNOS.Substring(6, 3) != "000")
+               if (m.ORGNOS.Substring(6, 3) != "000" && m.ORGNOS.Substring(9, 6) == "000000")
                {
                    m.ORGNOSName = BaseDT.T_SYS_ORG.getName(dtORG, m.ORGNOS);
 

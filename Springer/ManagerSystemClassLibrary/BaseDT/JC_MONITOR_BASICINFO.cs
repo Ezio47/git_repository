@@ -237,9 +237,13 @@ namespace ManagerSystemClassLibrary.BaseDT
                 {
                     sb.AppendFormat(" and BYORGNO like  '{0}%'", PublicCls.getXianIncOrgNo(sw.BYORGNO));
                 }
+                else if (PublicCls.OrgIsZhen(sw.BYORGNO))
+                {
+                    sb.AppendFormat(" and BYORGNO like  '{0}%'", PublicCls.getZhenIncOrgNo(sw.BYORGNO));
+                }
                 else
                 {
-                    sb.AppendFormat(" and BYORGNO = '{0}'", PublicCls.getZhenIncOrgNo(sw.BYORGNO));
+                    //sb.AppendFormat(" and BYORGNO = '{0}'", PublicCls.getZhenIncOrgNo(sw.BYORGNO));
                 }
 
             }

@@ -1720,8 +1720,8 @@ namespace ManagerSystem.MVC.Controllers
                 strorgname = StateSwitch.GetOrgNameByOrgNO(orgno);
             }
             else if (bx)
-            {
-                strorgname = StateSwitch.GetOrgNameByOrgNO(orgno.Remove(orgno.Length - 3, 3) + "000");
+            {   
+                strorgname = StateSwitch.GetOrgNameByOrgNO(orgno.Remove(orgno.Length - 9, 9) + "000000000");
                 strxzname = StateSwitch.GetOrgNameByOrgNO(orgno);
             }
             StringBuilder sb = new StringBuilder();

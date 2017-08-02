@@ -14,7 +14,8 @@ using System.Text;
 using ManagerSystem.MVC.Models;
 using ManagerSystemModel.SDEModel;
 using ManagerSystem.MVC.HelpCom;
-
+using NPOI.HSSF.UserModel;
+using NPOI.SS.UserModel;
 namespace ManagerSystem.MVC.Controllers
 {
     /// <summary>
@@ -1639,7 +1640,84 @@ namespace ManagerSystem.MVC.Controllers
                         }
                         savePath = Path.Combine(filePath, name);
                         File.SaveAs(savePath);
-                        DC_CARCls.CarUpload(savePath);
+                        //DC_CARCls.CarUpload(savePath);
+                        HSSFWorkbook hssfworkbook;
+                        FileStream file = new FileStream(savePath, FileMode.Open, FileAccess.Read);
+                         hssfworkbook = new HSSFWorkbook(file);
+                        NPOI.SS.UserModel.ISheet sheet = hssfworkbook.GetSheetAt(0);
+                        int rowCount = sheet.LastRowNum;
+                        for (int i = (sheet.FirstRowNum + 1); i <= rowCount; i++)
+                        {
+
+                            IRow row = sheet.GetRow(i);
+                            string[] arr = new string[12];
+                            for (int k = 0; k < arr.Length; k++)
+                            {
+                                if (k != 6)
+                                    arr[k] = row.GetCell(k) == null ? "" : row.GetCell(k).ToString();//循环获取每一单元格内容
+                                else
+                                    arr[k] = row.GetCell(k).DateCellValue.ToString("yyyy-MM-dd");
+                            }
+                            DC_CAR_Model m = new DC_CAR_Model();
+                            //单位	车辆类型	名称	编号	号牌	存储地点	购买年份 购买价格 驾驶员 联系方式 经度 纬度
+                            if (string.IsNullOrEmpty(arr[0]) || string.IsNullOrEmpty(arr[2]))
+                            {
+                                continue;
+                            }
+                            m.BYORGNO = T_SYS_ORGCls.getCodeByName(arr[0]);
+                            if (string.IsNullOrEmpty(m.BYORGNO))
+                            {
+                                return Content(@"<script>alert('表格中组织机构名称错误，请确认后再上传！');history.go(-1);</script>");
+                            }
+                            m.opMethod = "Add";
+                            m.NAME = arr[2];
+                            m.NUMBER = arr[3];
+                            m.PLATENUM = arr[4];
+                            m.STOREADDR = arr[5];
+                            m.BUYYEAR = arr[6];
+                            if (m.BUYYEAR == "9999-12-31")
+                                m.BUYYEAR = "1900-01-01";
+                            m.BUYPRICE = arr[7];
+                            m.DRIVER = arr[8];
+                            m.CONTACTS = arr[9];
+                            string jd = arr[10];
+                            string wd = arr[11];
+                            if (string.IsNullOrEmpty(jd) == false && string.IsNullOrEmpty(wd) == false)
+                            {
+                                double[] brr = ClsPositionTrans.GpsTransform(double.Parse(wd), double.Parse(jd), "1");
+                                m.JD = brr[1].ToString();
+                                m.WD = brr[0].ToString();
+                            }
+                            if (arr[1].Trim() == "指挥车")//装备类型
+                            {
+                                m.CARTYPE = "1";
+                            }
+                            else if (arr[1].Trim() == "运兵车")
+                            {
+                                m.CARTYPE = "2";
+                            }
+                            else if (arr[1].Trim() == "供水车")
+                            {
+                                m.CARTYPE = "3";
+                            }
+                            else if (arr[1].Trim() == "通讯车")
+                            {
+                                m.CARTYPE = "4";
+                            }
+                            else if (arr[1].Trim() == "宣传车")
+                            {
+                                m.CARTYPE = "5";
+                            }
+                            else
+                            {
+                                m.CARTYPE = "1";
+                            }
+                            DC_CARCls.Manager(m);
+
+                            string a = row.GetCell(0).ToString();
+                            string a1 = row.GetCell(1).ToString();
+                            string a2 = row.GetCell(2).ToString();
+                        }
                     }
                     catch (Exception)
                     {
@@ -1939,12 +2017,119 @@ namespace ManagerSystem.MVC.Controllers
                         }
                         savePath = Path.Combine(filePath, name);
                         File.SaveAs(savePath);
-                        DC_EQUIP_NEWCls.EQUIPUpload(savePath);
+                        //DC_EQUIP_NEWCls.EQUIPUpload(savePath);
+                        HSSFWorkbook hssfworkbook;
+                        FileStream file = new FileStream(savePath, FileMode.Open, FileAccess.Read);
+                        hssfworkbook = new HSSFWorkbook(file);
+                        NPOI.SS.UserModel.ISheet sheet = hssfworkbook.GetSheetAt(0);
+                        int rowCount = sheet.LastRowNum;
+                        for (int i = (sheet.FirstRowNum + 1); i <= rowCount; i++)
+                        {
+                            IRow row = sheet.GetRow(i);
+                            string[] arr = new string[12];
+                            for (int k = 0; k < arr.Length; k++)
+                            {
+                                if (k != 6)
+                                    arr[k] = row.GetCell(k) == null ? "" : row.GetCell(k).ToString();//循环获取每一单元格内容
+                                else
+                                    arr[k] = row.GetCell(k).DateCellValue.ToString("yyyy-MM-dd");
+                            }
+                            DC_EQUIP_NEW_Model m = new DC_EQUIP_NEW_Model();
+                            //单位	装备类型	名称	编号	型号	使用现状	购买年份 存储地点 数量 价值 经度 纬度
+                            if (string.IsNullOrEmpty(arr[0]) || string.IsNullOrEmpty(arr[2]))
+                            {
+                                continue;
+                            }
+                            m.BYORGNO = T_SYS_ORGCls.getCodeByName(arr[0]);
+                            if (string.IsNullOrEmpty(m.BYORGNO))
+                            {
+                                return Content(@"<script>alert('表格中组织机构名称错误，请确认后再上传！');history.go(-1);</script>");
+                            }
+                            m.opMethod = "Add";
+                            m.NAME = arr[2];
+                            m.NUMBER = arr[3];
+                            m.MODEL = arr[4];
+                            m.BUYYEAR = arr[6];
+                            if (m.BUYYEAR == "9999-12-31")
+                                m.BUYYEAR = "1900-01-01";
+                            m.STOREADDR = arr[7];
+                            m.EQUIPAMOUNT = arr[8];
+                            m.WORTH = arr[9];
+                            string jd = arr[10];
+                            string wd = arr[11];
+                            if (string.IsNullOrEmpty(jd) == false && string.IsNullOrEmpty(wd) == false)
+                            {
+                                double[] brr = ClsPositionTrans.GpsTransform(double.Parse(wd), double.Parse(jd), "1");
+                                m.JD = brr[1].ToString();
+                                m.WD = brr[0].ToString();
+                            }
+                            if (arr[1].Trim() == "扑救类")//装备类型
+                            {
+                                m.EQUIPTYPE = "1";
+                            }
+                            else if (arr[1].Trim() == "阻隔类")
+                            {
+                                m.EQUIPTYPE = "2";
+                            }
+                            else if (arr[1].Trim() == "防护类")
+                            {
+                                m.EQUIPTYPE = "3";
+                            }
+                            else if (arr[1].Trim() == "通讯类")
+                            {
+                                m.EQUIPTYPE = "4";
+                            }
+                            else if (arr[1].Trim() == "户外类")
+                            {
+                                m.EQUIPTYPE = "5";
+                            }
+                            else if (arr[1].Trim() == "运输类")
+                            {
+                                m.EQUIPTYPE = "6";
+                            }
+                            else
+                            {
+                                m.EQUIPTYPE = "1";
+                            }
+                            if (arr[5].Trim() == "在用")//使用类型
+                            {
+                                m.USESTATE = "1";
+                            }
+                            else if (arr[5].Trim() == "储存")
+                            {
+                                m.USESTATE = "2";
+                            }
+                            else if (arr[5].Trim() == "报废")
+                            {
+                                m.USESTATE = "3";
+                            }
+                            else
+                            {
+                                m.USESTATE = "1";
+                            }
+                            var ms = DC_EQUIP_NEWCls.Manager(m);
+                            if (string.IsNullOrEmpty(jd) == false && string.IsNullOrEmpty(wd) == false)
+                            {
+                                TD_EQUIP_Model m1 = new TD_EQUIP_Model();
+                                m1.OBJECTID = ms.Url;
+                                m1.NAME = m.NAME;
+                                m1.opMethod = "Add";
+                                m1.TYPE = m.EQUIPTYPE;
+                                m1.JD = jd;
+                                m1.WD = wd;
+                                m1.Shape = "geometry::STGeomFromText('POINT(" + m1.JD + " " + m1.WD + ")',4326)";
+                                TD_EQUIPCls.Manager(m1);
+                            }
+                            string a = row.GetCell(0).ToString();
+                            string a1 = row.GetCell(1).ToString();
+                            string a2 = row.GetCell(2).ToString();
+                        }
                     }
                     catch (Exception)
                     {
                         return Content(@"<script>alert('上传文件模板错误，请确认后再上传！');history.go(-1);</script>");
                     }
+                
                 }
                 else
                 {
@@ -1952,6 +2137,7 @@ namespace ManagerSystem.MVC.Controllers
                 }
             }
             return Content("<script>alert('导入成功');window.location.href='EQUIP_NEWIndex';</script>");
+        
         }
         #endregion
         #endregion
@@ -2187,7 +2373,87 @@ namespace ManagerSystem.MVC.Controllers
                         }
                         savePath = Path.Combine(filePath, name);
                         File.SaveAs(savePath);
-                        DC_UTILITY_CAMPCls.CAMPUpload(savePath);
+                        //DC_UTILITY_CAMPCls.CAMPUpload(savePath);
+                        HSSFWorkbook hssfworkbook;
+                        FileStream file = new FileStream(savePath, FileMode.Open, FileAccess.Read);
+                            hssfworkbook = new HSSFWorkbook(file);
+                        NPOI.SS.UserModel.ISheet sheet = hssfworkbook.GetSheetAt(0);
+                        int rowCount = sheet.LastRowNum;
+                        for (int i = (sheet.FirstRowNum + 1); i <= rowCount; i++)
+                        {
+
+                            IRow row = sheet.GetRow(i);
+                            string[] arr = new string[12];
+                            for (int k = 0; k < arr.Length; k++)
+                            {
+                                if (k != 6)
+                                    arr[k] = row.GetCell(k) == null ? "" : row.GetCell(k).ToString();//循环获取每一单元格内容
+                                else
+                                    arr[k] = row.GetCell(k).DateCellValue.ToString("yyyy-MM-dd");
+                            }
+                            DC_UTILITY_CAMP_Model m = new DC_UTILITY_CAMP_Model();
+                            //单位	结构类型 名称 编号 建筑面积 楼层 建设日期 附属设施 价值 经度 纬度
+                            if (string.IsNullOrEmpty(arr[0]) || string.IsNullOrEmpty(arr[2]))
+                            {
+                                continue;
+                            }
+                            m.ORGNOS = T_SYS_ORGCls.getCodeByName(arr[0]);
+                            if (string.IsNullOrEmpty(m.ORGNOS))
+                            {
+                                return Content(@"<script>alert('表格中组织机构名称错误，请确认后再上传！');history.go(-1);</script>");
+                                
+                            }
+                            m.opMethod = "Add";
+                            m.NAME = arr[2];
+                            m.NUMBER = arr[3];
+                            m.AREA = arr[4];
+                            m.FLOOR = arr[5];
+                            m.BUILDDATE = arr[6];
+                            if (m.BUILDDATE == "9999-12-31")
+                                m.BUILDDATE = "1900-01-01";
+                            m.SUBFACILITIES = arr[7];
+                            m.WORTH = arr[8];
+                            string jd = arr[9];
+                            string wd = arr[10];
+                            if (string.IsNullOrEmpty(jd) == false && string.IsNullOrEmpty(wd) == false)
+                            {
+                                double[] brr = ClsPositionTrans.GpsTransform(double.Parse(wd), double.Parse(jd), "1");
+                                m.JD = brr[1].ToString();
+                                m.WD = brr[0].ToString();
+                            }
+                            if (arr[1].Trim() == "钢构")//装备类型
+                            {
+                                m.STRUCTURETYPE = "1";
+                            }
+                            else if (arr[1].Trim() == "砖混")
+                            {
+                                m.STRUCTURETYPE = "2";
+                            }
+                            else if (arr[1].Trim() == "钢混")
+                            {
+                                m.STRUCTURETYPE = "3";
+                            }
+                            else
+                            {
+                                m.STRUCTURETYPE = "1";
+                            }
+                            var ms = DC_UTILITY_CAMPCls.Manager(m);
+                            if (string.IsNullOrEmpty(jd) == false && string.IsNullOrEmpty(wd) == false)
+                            {
+                                TD_CAMP_Model m1 = new TD_CAMP_Model();
+                                m1.OBJECTID = ms.Url;
+                                m1.opMethod = "Add";
+                                m1.NAME = m.NAME;
+                                m1.TYPE = m.STRUCTURETYPE;
+                                m1.JD = jd;
+                                m1.WD = wd;
+                                m1.Shape = "geometry::STGeomFromText('POINT(" + m1.JD + " " + m1.WD + ")',4326)";
+                                TD_CAMPCls.Manager(m1);
+                            }
+                            string a = row.GetCell(0).ToString();
+                            string a1 = row.GetCell(1).ToString();
+                            string a2 = row.GetCell(2).ToString();
+                        }
                     }
                     catch (Exception)
                     {
@@ -2430,7 +2696,89 @@ namespace ManagerSystem.MVC.Controllers
                         }
                         savePath = Path.Combine(filePath, name);
                         File.SaveAs(savePath);
-                        DC_UTILITY_OVERWATCHCls.OVERWATCHUpload(savePath);
+                        //DC_UTILITY_OVERWATCHCls.OVERWATCHUpload(savePath);
+                        HSSFWorkbook hssfworkbook;
+                        
+                            FileStream file = new FileStream(savePath, FileMode.Open, FileAccess.Read);
+                            hssfworkbook = new HSSFWorkbook(file);
+                        NPOI.SS.UserModel.ISheet sheet = hssfworkbook.GetSheetAt(0);
+                        int rowCount = sheet.LastRowNum;
+                        for (int i = (sheet.FirstRowNum + 1); i <= rowCount; i++)
+                        {
+
+                            IRow row = sheet.GetRow(i);
+                            string[] arr = new string[11];
+                            for (int k = 0; k < arr.Length; k++)
+                            {
+                                if (k != 6)
+                                    arr[k] = row.GetCell(k) == null ? "" : row.GetCell(k).ToString();//循环获取每一单元格内容
+                                else
+                                    arr[k] = row.GetCell(k).DateCellValue.ToString("yyyy-MM-dd");
+                            }
+                            DC_UTILITY_OVERWATCH_Model m = new DC_UTILITY_OVERWATCH_Model();
+                            //单位	结构类型	名称	编号	建筑面积	楼层	建设日期 附属设施  价值 经度 纬度
+                            if (string.IsNullOrEmpty(arr[0]) || string.IsNullOrEmpty(arr[2]))
+                            {
+                                continue;
+                            }
+                            m.ORGNOS = T_SYS_ORGCls.getCodeByName(arr[0]);
+                            if (string.IsNullOrEmpty(m.ORGNOS))
+                            {
+                                return Content(@"<script>alert('表格中组织机构名称错误，请确认后再上传！');history.go(-1);</script>");
+                            }
+                            m.opMethod = "Add";
+                            m.NAME = arr[2];
+                            m.NUMBER = arr[3];
+                            m.AREA = arr[4];
+                            m.FLOOR = arr[5];
+                            m.BUILDDATE = arr[6];
+                            if (m.BUILDDATE == "9999-12-31")
+                                m.BUILDDATE = "1900-01-01";
+                            m.SUBFACILITIES = arr[7];
+                            m.WORTH = arr[8];
+                            string jd = arr[9];
+                            string wd = arr[10];
+                            if (string.IsNullOrEmpty(jd) == false && string.IsNullOrEmpty(wd) == false)
+                            {
+                                double[] brr = ClsPositionTrans.GpsTransform(double.Parse(wd), double.Parse(jd), "1");
+                                m.JD = brr[1].ToString();
+                                m.WD = brr[0].ToString();
+                            }
+                            if (arr[1].Trim() == "钢构")//结构类型
+                            {
+                                m.STRUCTURETYPE = "1";
+                            }
+                            else if (arr[1].Trim() == "砖混")
+                            {
+                                m.STRUCTURETYPE = "2";
+                            }
+                            else if (arr[1].Trim() == "钢混")
+                            {
+                                m.STRUCTURETYPE = "3";
+                            }
+                            else
+                            {
+                                m.STRUCTURETYPE = "1";
+                            }
+                            var ms = DC_UTILITY_OVERWATCHCls.Manager(m);
+                            if (string.IsNullOrEmpty(jd) == false && string.IsNullOrEmpty(wd) == false)
+                            {
+                                TD_OVERWATCH_Model m1 = new TD_OVERWATCH_Model();
+                                m1.OBJECTID = ms.Url;
+                                m1.NAME = m.NAME;
+                                m1.opMethod = "Add";
+                                m1.TYPE = m.STRUCTURETYPE;
+                                m1.JD = jd;
+                                m1.WD = wd;
+                                m1.Shape = "geometry::STGeomFromText('POINT(" + m1.JD + " " + m1.WD + ")',4326)";
+                                TD_OVERWATCHCls.Manager(m1);
+                            }
+                            string a = row.GetCell(0).ToString();
+                            string a1 = row.GetCell(1).ToString();
+                            string a2 = row.GetCell(2).ToString();
+
+                        }
+
                     }
                     catch (Exception)
                     {
@@ -2827,7 +3175,104 @@ namespace ManagerSystem.MVC.Controllers
                         }
                         savePath = Path.Combine(filePath, name);
                         File.SaveAs(savePath);
-                        DC_UTILITY_ISOLATIONSTRIPCls.ISOLATIONSTRIPUpload(savePath);
+                        //DC_UTILITY_ISOLATIONSTRIPCls.ISOLATIONSTRIPUpload(savePath);
+                        HSSFWorkbook hssfworkbook;
+
+                        FileStream file = new FileStream(savePath, FileMode.Open, FileAccess.Read);
+                            
+                                hssfworkbook = new HSSFWorkbook(file);
+                            
+                       
+
+                        NPOI.SS.UserModel.ISheet sheet = hssfworkbook.GetSheetAt(0);
+                        int rowCount = sheet.LastRowNum;
+                        for (int i = (sheet.FirstRowNum + 1); i <= rowCount; i++)
+                        {
+
+                            IRow row = sheet.GetRow(i);
+                            string[] arr = new string[12];
+                            for (int k = 0; k < arr.Length; k++)
+                            {
+                                arr[k] = row.GetCell(k) == null ? "" : row.GetCell(k).ToString();//循环获取每一单元格内容
+                            }
+                            DC_UTILITY_ISOLATIONSTRIP_Model m = new DC_UTILITY_ISOLATIONSTRIP_Model();
+                            //单位	隔离带类型	名称	编号	使用现状 维护类型	宽度 长度 计划面积 实际面积 价值 树种
+                            if (string.IsNullOrEmpty(arr[0]) || string.IsNullOrEmpty(arr[2]))
+                            {
+                                continue;
+                            }
+                            m.BYORGNO = T_SYS_ORGCls.getCodeByName(arr[0]);
+                            if (string.IsNullOrEmpty(m.BYORGNO))
+                            {
+                                return Content(@"<script>alert('表格中组织机构名称错误，请确认后再上传！');history.go(-1);</script>");
+                            }
+                            m.opMethod = "Add";
+                            m.NAME = arr[2];
+                            m.NUMBER = arr[3];
+                            m.WIDTH = arr[6];
+                            m.LENGTH = arr[7];
+                            m.PLANAREA = arr[8];
+                            m.REALAREA = arr[9];
+                            m.WORTH = arr[11];
+                            m.KINDTYPE = arr[10];
+                            if (arr[1].Trim() == "生物")//隔离带类型
+                            {
+                                m.ISOLATIONTYPE = "1";
+                            }
+                            else if (arr[1].Trim() == "生土")
+                            {
+                                m.ISOLATIONTYPE = "2";
+                            }
+                            else if (arr[1].Trim() == "火烧线")
+                            {
+                                m.ISOLATIONTYPE = "3";
+                            }
+                            else if (arr[1].Trim() == "计划烧除")
+                            {
+                                m.ISOLATIONTYPE = "4";
+                            }
+                             else if (arr[1].Trim() == "规划生物隔离带")
+                            {
+                                m.ISOLATIONTYPE = "5";
+                            }
+                            else
+                            {
+                                m.ISOLATIONTYPE = "1";
+                            }
+                            if (arr[4].Trim() == "在用")//使用类型
+                            {
+                                m.USESTATE = "1";
+                            }
+                            else if (arr[4].Trim() == "储存")
+                            {
+                                m.USESTATE = "2";
+                            }
+                            else if (arr[4].Trim() == "报废")
+                            {
+                                m.USESTATE = "3";
+                            }
+                            else
+                            {
+                                m.USESTATE = "1";
+                            }
+                            if (arr[5].Trim() == "维护")//使用类型
+                            {
+                                m.MANAGERSTATE = "2";
+                            }
+                            else if (arr[5].Trim() == "未维护")
+                            {
+                                m.MANAGERSTATE = "1";
+                            }
+                            else
+                            {
+                                m.MANAGERSTATE = "1";
+                            }
+                            DC_UTILITY_ISOLATIONSTRIPCls.Manager(m);
+                            string a = row.GetCell(0).ToString();
+                            string a1 = row.GetCell(1).ToString();
+                            string a2 = row.GetCell(2).ToString();
+
+                        }
                     }
                     catch (Exception)
                     {
@@ -3123,7 +3568,104 @@ namespace ManagerSystem.MVC.Controllers
                         }
                         savePath = Path.Combine(filePath, name);
                         File.SaveAs(savePath);
-                        DC_UTILITY_FIRECHANNELCls.FIRECHANNELUpload(savePath);
+                        //DC_UTILITY_FIRECHANNELCls.FIRECHANNELUpload(savePath);
+                        HSSFWorkbook hssfworkbook;
+                            FileStream file = new FileStream(savePath, FileMode.Open, FileAccess.Read);
+                                hssfworkbook = new HSSFWorkbook(file);
+                        NPOI.SS.UserModel.ISheet sheet = hssfworkbook.GetSheetAt(0);
+                        int rowCount = sheet.LastRowNum;
+                        for (int i = (sheet.FirstRowNum + 1); i <= rowCount; i++)
+                        {
+
+                            IRow row = sheet.GetRow(i);
+                            string[] arr = new string[10];
+                            for (int k = 0; k < arr.Length; k++)
+                            {
+                                if (k != 8)
+                                    arr[k] = row.GetCell(k) == null ? "" : row.GetCell(k).ToString();//循环获取每一单元格内容
+                                else
+                                    arr[k] = row.GetCell(k).DateCellValue.ToString("yyyy-MM-dd");
+                            }
+
+                            DC_UTILITY_FIRECHANNEL_Model m = new DC_UTILITY_FIRECHANNEL_Model();
+                            //单位	名称  长度	编号 使用现状	维护管理类型 防火通道等级 防火通道使用性质 建设日期 价值 
+                            if (string.IsNullOrEmpty(arr[0]) || string.IsNullOrEmpty(arr[2]))
+                            {
+                                continue;
+                            }
+                            m.BYORGNO = T_SYS_ORGCls.getCodeByName(arr[0]);
+                            if (string.IsNullOrEmpty(m.BYORGNO))
+                            {
+                                return Content(@"<script>alert('表格中组织机构名称错误，请确认后再上传！');history.go(-1);</script>");
+                               
+                            }
+                            m.opMethod = "Add";
+                            m.NAME = arr[1];
+                            m.LENGTH = arr[2];
+                            m.NUMBER = arr[3];
+                            m.BUILDDATE = arr[8];
+                            if (m.BUILDDATE == "9999-12-31")
+                                m.BUILDDATE = "1900-01-01";
+                            m.WORTH = arr[9];
+                            if (arr[4].Trim() == "在用")//使用现状
+                            {
+                                m.USESTATE = "1";
+                            }
+                            else if (arr[4].Trim() == "储存")
+                            {
+                                m.USESTATE = "2";
+                            }
+                            else if (arr[4].Trim() == "报废")
+                            {
+                                m.USESTATE = "3";
+                            }
+                            else
+                            {
+                                m.USESTATE = "1";
+                            }
+                            if (arr[5].Trim() == "未维护")//维护管理类型
+                            {
+                                m.MANAGERSTATE = "1";
+                            }
+                            else if (arr[5].Trim() == "维护")
+                            {
+                                m.MANAGERSTATE = "2";
+                            }
+                            else
+                            {
+                                m.MANAGERSTATE = "1";
+                            }
+                            if (arr[6].Trim() == "便道")//防火通道等级类型
+                            {
+                                m.FIRECHANNELLEVELTYPE = "1";
+                            }
+                            else if (arr[6].Trim() == "林区道路")
+                            {
+                                m.FIRECHANNELLEVELTYPE = "2";
+                            }
+                            else
+                            {
+                                m.FIRECHANNELLEVELTYPE = "1";
+                            }
+                            if (arr[7].Trim() == "人行道")//防火通道性质类型
+                            {
+                                m.FIRECHANNELUSERTYPE = "1";
+                            }
+                            else if (arr[7].Trim() == "车行道")
+                            {
+                                m.FIRECHANNELUSERTYPE = "2";
+                            }
+                            else
+                            {
+                                m.FIRECHANNELUSERTYPE = "1";
+                            }
+                            DC_UTILITY_FIRECHANNELCls.Manager(m);
+                            string a = row.GetCell(0).ToString();
+                            string a1 = row.GetCell(1).ToString();
+                            string a2 = row.GetCell(2).ToString();
+
+                        }
+
                     }
                     catch (Exception)
                     {
@@ -3388,7 +3930,129 @@ namespace ManagerSystem.MVC.Controllers
                         }
                         savePath = Path.Combine(filePath, name);
                         File.SaveAs(savePath);
-                        DC_UTILITY_PROPAGANDASTELECls.PROPAGANDASTELEUpload(savePath);
+                        //DC_UTILITY_PROPAGANDASTELECls.PROPAGANDASTELEUpload(savePath);
+                        HSSFWorkbook hssfworkbook;
+
+                        FileStream file = new FileStream(savePath, FileMode.Open, FileAccess.Read);
+                            
+                                hssfworkbook = new HSSFWorkbook(file);
+                           
+
+                        NPOI.SS.UserModel.ISheet sheet = hssfworkbook.GetSheetAt(0);
+                        int rowCount = sheet.LastRowNum;
+                        for (int i = (sheet.FirstRowNum + 1); i <= rowCount; i++)
+                        {
+
+                            IRow row = sheet.GetRow(i);
+                            string[] arr = new string[12];
+                            for (int k = 0; k < arr.Length; k++)
+                            {
+                                if (k != 7)
+                                    arr[k] = row.GetCell(k) == null ? "" : row.GetCell(k).ToString();//循环获取每一单元格内容
+                                else
+                                    arr[k] = row.GetCell(k).DateCellValue.ToString("yyyy-MM-dd");
+                            }
+                            DC_UTILITY_PROPAGANDASTELE_Model m = new DC_UTILITY_PROPAGANDASTELE_Model();
+                            //单位	宣传碑类型	名称	编号 使用现状 维护管理类型 结构类型 建设日期 价值 地址 经度 纬度
+                            if (string.IsNullOrEmpty(arr[0]) || string.IsNullOrEmpty(arr[2]))
+                            {
+                                continue;
+                            }
+                            m.BYORGNO = T_SYS_ORGCls.getCodeByName(arr[0]);
+                            if (string.IsNullOrEmpty(m.BYORGNO))
+                            {
+                                return Content(@"<script>alert('表格中组织机构名称错误，请确认后再上传！');history.go(-1);</script>");
+                            }
+                            m.opMethod = "Add";
+                            m.NAME = arr[2];
+                            m.NUMBER = arr[3];
+                            m.BUILDDATE = arr[7];
+                            if (m.BUILDDATE == "9999-12-31")
+                                m.BUILDDATE = "1900-01-01";
+                            m.WORTH = arr[8];
+                            m.ADDRESS = arr[9];
+                            string jd = arr[10];
+                            string wd = arr[11];
+                            if (string.IsNullOrEmpty(jd) == false && string.IsNullOrEmpty(wd) == false)
+                            {
+                                double[] brr = ClsPositionTrans.GpsTransform(double.Parse(wd), double.Parse(jd), "1");
+                                m.JD = brr[1].ToString();
+                                m.WD = brr[0].ToString();
+                            }
+                            if (arr[1].Trim() == "永久性")//宣传碑类型
+                            {
+                                m.PROPAGANDASTELETYPE = "1";
+                            }
+                            else if (arr[1].Trim() == "临时性")
+                            {
+                                m.PROPAGANDASTELETYPE = "2";
+                            }
+                            else
+                            {
+                                m.PROPAGANDASTELETYPE = "1";
+                            }
+                            if (arr[4].Trim() == "在用")//使用现状
+                            {
+                                m.USESTATE = "1";
+                            }
+                            else if (arr[4].Trim() == "储存")
+                            {
+                                m.USESTATE = "2";
+                            }
+                            else if (arr[4].Trim() == "报废")
+                            {
+                                m.USESTATE = "3";
+                            }
+                            else
+                            {
+                                m.USESTATE = "1";
+                            }
+                            if (arr[5].Trim() == "未维护")//维护管理类型
+                            {
+                                m.MANAGERSTATE = "1";
+                            }
+                            else if (arr[5].Trim() == "维护")
+                            {
+                                m.MANAGERSTATE = "2";
+                            }
+                            else
+                            {
+                                m.MANAGERSTATE = "1";
+                            }
+                            if (arr[6].Trim() == "钢构")//结构类型
+                            {
+                                m.STRUCTURETYPE = "1";
+                            }
+                            else if (arr[6].Trim() == "砖混")
+                            {
+                                m.STRUCTURETYPE = "2";
+                            }
+                            else if (arr[6].Trim() == "钢混")
+                            {
+                                m.STRUCTURETYPE = "3";
+                            }
+                            else
+                            {
+                                m.STRUCTURETYPE = "1";
+                            }
+                            var ms = DC_UTILITY_PROPAGANDASTELECls.Manager(m);
+                            if (string.IsNullOrEmpty(jd) == false && string.IsNullOrEmpty(wd) == false)
+                            {
+                                TD_PROPAGANDASTELE_Model m1 = new TD_PROPAGANDASTELE_Model();
+                                m1.OBJECTID = ms.Url;
+                                m1.opMethod = "Add";
+                                m1.NAME = m.NAME;
+                                m1.TYPE = m.PROPAGANDASTELETYPE;
+                                m1.JD = jd;
+                                m1.WD = wd;
+                                m1.Shape = "geometry::STGeomFromText('POINT(" + m1.JD + " " + m1.WD + ")',4326)";
+                                TD_PROPAGANDASTELECls.Manager(m1);
+                            }
+                            string a = row.GetCell(0).ToString();
+                            string a1 = row.GetCell(1).ToString();
+                            string a2 = row.GetCell(2).ToString();
+
+                        }
                     }
                     catch (Exception)
                     {
@@ -3653,7 +4317,120 @@ namespace ManagerSystem.MVC.Controllers
                         }
                         savePath = Path.Combine(filePath, name);
                         File.SaveAs(savePath);
-                        DC_UTILITY_RELAYCls.RELAYUpload(savePath);
+                        //DC_UTILITY_RELAYCls.RELAYUpload(savePath);
+                        HSSFWorkbook hssfworkbook;
+
+                        FileStream file = new FileStream(savePath, FileMode.Open, FileAccess.Read);
+                            
+                                hssfworkbook = new HSSFWorkbook(file);
+                           
+                       
+
+                        NPOI.SS.UserModel.ISheet sheet = hssfworkbook.GetSheetAt(0);
+                        int rowCount = sheet.LastRowNum;
+                        for (int i = (sheet.FirstRowNum + 1); i <= rowCount; i++)
+                        {
+
+                            IRow row = sheet.GetRow(i);
+                            string[] arr = new string[12];
+                            for (int k = 0; k < arr.Length; k++)
+                            {
+                                if (k != 7)
+                                    arr[k] = row.GetCell(k) == null ? "" : row.GetCell(k).ToString();//循环获取每一单元格内容
+                                else
+                                    arr[k] = row.GetCell(k).DateCellValue.ToString("yyyy-MM-dd");
+                            }
+                            DC_UTILITY_RELAY_Model m = new DC_UTILITY_RELAY_Model();
+                            //单位	通讯方式	名称	编号	型号	使用现状	维护管理类型 建设日期  价值 地址 经度 纬度
+                            if (string.IsNullOrEmpty(arr[0]) || string.IsNullOrEmpty(arr[2]))
+                            {
+                                continue;
+                            }
+                            m.BYORGNO = T_SYS_ORGCls.getCodeByName(arr[0]);
+                            if (string.IsNullOrEmpty(m.BYORGNO))
+                            {
+                                return Content(@"<script>alert('表格中组织机构名称错误，请确认后再上传！');history.go(-1);</script>");
+                                
+                            }
+                            m.opMethod = "Add";
+                            m.NAME = arr[2];
+                            m.NUMBER = arr[3];
+                            m.MODEL = arr[4];
+                            m.BUILDDATE = arr[7];
+                            if (m.BUILDDATE == "9999-12-31")
+                                m.BUILDDATE = "1900-01-01";
+                            m.WORTH = arr[8];
+                            m.ADDRESS = arr[9];
+                            string jd = arr[10];
+                            string wd = arr[11];
+                            if (string.IsNullOrEmpty(jd) == false && string.IsNullOrEmpty(wd) == false)
+                            {
+                                double[] brr = ClsPositionTrans.GpsTransform(double.Parse(wd), double.Parse(jd), "1");
+                                m.JD = brr[1].ToString();
+                                m.WD = brr[0].ToString();
+                            }
+                            if (arr[5].Trim() == "在用")//使用类型
+                            {
+                                m.USESTATE = "1";
+                            }
+                            else if (arr[5].Trim() == "储存")
+                            {
+                                m.USESTATE = "2";
+                            }
+                            else if (arr[5].Trim() == "报废")
+                            {
+                                m.USESTATE = "3";
+                            }
+                            else
+                            {
+                                m.USESTATE = "1";
+                            }
+                            if (arr[6].Trim() == "未维护")//维护管理类型
+                            {
+                                m.MANAGERSTATE = "1";
+                            }
+                            else if (arr[6].Trim() == "维护")
+                            {
+                                m.MANAGERSTATE = "2";
+                            }
+                            else
+                            {
+                                m.MANAGERSTATE = "1";
+                            }
+                            if (arr[1].Trim() == "短波")//通讯方式
+                            {
+                                m.COMMUNICATIONWAY = "1";
+                            }
+                            else if (arr[1].Trim() == "超短波")
+                            {
+                                m.COMMUNICATIONWAY = "2";
+                            }
+                            else if (arr[1].Trim() == "微波")
+                            {
+                                m.COMMUNICATIONWAY = "3";
+                            }
+                            else
+                            {
+                                m.COMMUNICATIONWAY = "1";
+                            }
+                            var ms = DC_UTILITY_RELAYCls.Manager(m);
+                            if (string.IsNullOrEmpty(jd) == false && string.IsNullOrEmpty(wd) == false)
+                            {
+                                TD_RELAY_Model m1 = new TD_RELAY_Model();
+                                m1.opMethod = "Add";
+                                m1.OBJECTID = ms.Url;
+                                m1.NAME = m.NAME;
+                                m1.TYPE = m.COMMUNICATIONWAY;
+                                m1.JD = jd;
+                                m1.WD = wd;
+                                m1.Shape = "geometry::STGeomFromText('POINT(" + m1.JD + " " + m1.WD + ")',4326)";
+                                TD_RELAYCls.Manager(m1);
+                            }
+                            string a = row.GetCell(0).ToString();
+                            string a1 = row.GetCell(1).ToString();
+                            string a2 = row.GetCell(2).ToString();
+
+                        }
                     }
                     catch (Exception)
                     {
@@ -3920,7 +4697,114 @@ namespace ManagerSystem.MVC.Controllers
                         }
                         savePath = Path.Combine(filePath, name);
                         File.SaveAs(savePath);
-                        DC_UTILITY_MONITORINGSTATIONCls.MONITORINGSTATIONUpload(savePath);
+                        //DC_UTILITY_MONITORINGSTATIONCls.MONITORINGSTATIONUpload(savePath);
+                        HSSFWorkbook hssfworkbook;
+
+                        FileStream file = new FileStream(savePath, FileMode.Open, FileAccess.Read);
+                            
+                                hssfworkbook = new HSSFWorkbook(file);
+                       
+                        NPOI.SS.UserModel.ISheet sheet = hssfworkbook.GetSheetAt(0);
+                        int rowCount = sheet.LastRowNum;
+                        for (int i = (sheet.FirstRowNum + 1); i <= rowCount; i++)
+                        {
+
+                            IRow row = sheet.GetRow(i);
+                            string[] arr = new string[13];
+                            for (int k = 0; k < arr.Length; k++)
+                            {
+                                if (k != 7)
+                                    arr[k] = row.GetCell(k) == null ? "" : row.GetCell(k).ToString();//循环获取每一单元格内容
+                                else
+                                    arr[k] = row.GetCell(k).DateCellValue.ToString("yyyy-MM-dd");
+                            }
+                            DC_UTILITY_MONITORINGSTATION_Model m = new DC_UTILITY_MONITORINGSTATION_Model();
+                            //单位	无线电方式	名称	编号	型号	使用现状	维护管理类型 建设日期  监测内容 价值 地址 经度 纬度
+                            if (string.IsNullOrEmpty(arr[0]) || string.IsNullOrEmpty(arr[2]))
+                            {
+                                continue;
+                            }
+                            m.BYORGNO = T_SYS_ORGCls.getCodeByName(arr[0]);
+                            if (string.IsNullOrEmpty(m.BYORGNO))
+                            {
+                                return Content(@"<script>alert('表格中组织机构名称错误，请确认后再上传！');history.go(-1);</script>");
+                             
+                            }
+                            m.opMethod = "Add";
+                            m.NAME = arr[2];
+                            m.NUMBER = arr[3];
+                            m.MODEL = arr[4];
+                            m.BUILDDATE = arr[7];
+                            if (m.BUILDDATE == "9999-12-31")
+                                m.BUILDDATE = "1900-01-01";
+                            m.MONICONTENT = arr[8];
+                            m.WORTH = arr[9];
+                            m.ADDRESS = arr[10];
+                            string jd = arr[11];
+                            string wd = arr[12];
+                            if (string.IsNullOrEmpty(jd) == false && string.IsNullOrEmpty(wd) == false)
+                            {
+                                double[] brr = ClsPositionTrans.GpsTransform(double.Parse(wd), double.Parse(jd), "1");
+                                m.JD = brr[1].ToString();
+                                m.WD = brr[0].ToString();
+                            }
+                            if (arr[5].Trim() == "在用")//使用类型
+                            {
+                                m.USESTATE = "1";
+                            }
+                            else if (arr[5].Trim() == "储存")
+                            {
+                                m.USESTATE = "2";
+                            }
+                            else if (arr[5].Trim() == "报废")
+                            {
+                                m.USESTATE = "3";
+                            }
+                            else
+                            {
+                                m.USESTATE = "1";
+                            }
+                            if (arr[6].Trim() == "未维护")//维护管理类型
+                            {
+                                m.MANAGERSTATE = "1";
+                            }
+                            else if (arr[6].Trim() == "维护")
+                            {
+                                m.MANAGERSTATE = "2";
+                            }
+                            else
+                            {
+                                m.MANAGERSTATE = "1";
+                            }
+                            if (arr[1].Trim() == "有线")//无线电方式
+                            {
+                                m.TRANSFERMODETYPE = "1";
+                            }
+                            else if (arr[1].Trim() == "无线")
+                            {
+                                m.TRANSFERMODETYPE = "2";
+                            }
+                            else
+                            {
+                                m.TRANSFERMODETYPE = "1";
+                            }
+                            var ms = DC_UTILITY_MONITORINGSTATIONCls.Manager(m);
+                            if (string.IsNullOrEmpty(jd) == false && string.IsNullOrEmpty(wd) == false)
+                            {
+                                TD_MONITORINGSTATION_Model m1 = new TD_MONITORINGSTATION_Model();
+                                m1.opMethod = "Add";
+                                m1.OBJECTID = ms.Url;
+                                m1.NAME = m.NAME;
+                                m1.TYPE = m.TRANSFERMODETYPE;
+                                m1.JD = jd;
+                                m1.WD = wd;
+                                m1.Shape = "geometry::STGeomFromText('POINT(" + m1.JD + " " + m1.WD + ")',4326)";
+                                TD_MONITORINGSTATIONCls.Manager(m1);
+                            }
+                            string a = row.GetCell(0).ToString();
+                            string a1 = row.GetCell(1).ToString();
+                            string a2 = row.GetCell(2).ToString();
+                        }
                     }
                     catch (Exception)
                     {
@@ -4186,7 +5070,112 @@ namespace ManagerSystem.MVC.Controllers
                         }
                         savePath = Path.Combine(filePath, name);
                         File.SaveAs(savePath);
-                        DC_UTILITY_FACTORCOLLECTSTATIONCls.FACTORCOLLECTSTATIONUpload(savePath);
+                        //DC_UTILITY_FACTORCOLLECTSTATIONCls.FACTORCOLLECTSTATIONUpload(savePath);
+                        HSSFWorkbook hssfworkbook;
+                        FileStream file = new FileStream(savePath, FileMode.Open, FileAccess.Read);
+                        hssfworkbook = new HSSFWorkbook(file);
+                        NPOI.SS.UserModel.ISheet sheet = hssfworkbook.GetSheetAt(0);
+                        int rowCount = sheet.LastRowNum;
+                        for (int i = (sheet.FirstRowNum + 1); i <= rowCount; i++)
+                        {
+
+                            IRow row = sheet.GetRow(i);
+                            string[] arr = new string[13];
+                            for (int k = 0; k < arr.Length; k++)
+                            {
+                                if (k != 7)
+                                    arr[k] = row.GetCell(k) == null ? "" : row.GetCell(k).ToString();//循环获取每一单元格内容
+                                else
+                                    arr[k] = row.GetCell(k).DateCellValue.ToString("yyyy-MM-dd");
+                            }
+                            DC_UTILITY_FACTORCOLLECTSTATION_Model m = new DC_UTILITY_FACTORCOLLECTSTATION_Model();
+                            //单位	无线电方式	名称	编号	型号	使用现状	维护管理类型 建设日期  采集内容 价值 地址 经度 纬度
+                            if (string.IsNullOrEmpty(arr[0]) || string.IsNullOrEmpty(arr[2]))
+                            {
+                                continue;
+                            }
+                            m.BYORGNO = T_SYS_ORGCls.getCodeByName(arr[0]);
+                            if (string.IsNullOrEmpty(m.BYORGNO))
+                            {
+                                return Content(@"<script>alert('表格中组织机构名称错误，请确认后再上传！');history.go(-1);</script>");
+                                
+                            }
+                            m.opMethod = "Add";
+                            m.NAME = arr[2];
+                            m.NUMBER = arr[3];
+                            m.MODEL = arr[4];
+                            m.BUILDDATE = arr[7];
+                            if (m.BUILDDATE == "9999-12-31")
+                                m.BUILDDATE = "1900-01-01";
+                            m.FACTCOLLCONTENT = arr[8];
+                            m.WORTH = arr[9];
+                            m.ADDRESS = arr[10];
+                            string jd = arr[11];
+                            string wd = arr[12];
+                            if (string.IsNullOrEmpty(jd) == false && string.IsNullOrEmpty(wd) == false)
+                            {
+                                double[] brr = ClsPositionTrans.GpsTransform(double.Parse(wd), double.Parse(jd), "1");
+                                m.JD = brr[1].ToString();
+                                m.WD = brr[0].ToString();
+                            }
+                            if (arr[5].Trim() == "在用")//使用类型
+                            {
+                                m.USESTATE = "1";
+                            }
+                            else if (arr[5].Trim() == "储存")
+                            {
+                                m.USESTATE = "2";
+                            }
+                            else if (arr[5].Trim() == "报废")
+                            {
+                                m.USESTATE = "3";
+                            }
+                            else
+                            {
+                                m.USESTATE = "1";
+                            }
+                            if (arr[6].Trim() == "未维护")//维护管理类型
+                            {
+                                m.MANAGERSTATE = "1";
+                            }
+                            else if (arr[6].Trim() == "维护")
+                            {
+                                m.MANAGERSTATE = "2";
+                            }
+                            else
+                            {
+                                m.MANAGERSTATE = "1";
+                            }
+                            if (arr[1].Trim() == "有线")//无线电方式
+                            {
+                                m.TRANSFERMODETYPE = "1";
+                            }
+                            else if (arr[1].Trim() == "无线")
+                            {
+                                m.TRANSFERMODETYPE = "2";
+                            }
+                            else
+                            {
+                                m.TRANSFERMODETYPE = "1";
+                            }
+                            var ms = DC_UTILITY_FACTORCOLLECTSTATIONCls.Manager(m);
+                            if (string.IsNullOrEmpty(jd) == false && string.IsNullOrEmpty(wd) == false)
+                            {
+                                TD_FACTORCOLLECTSTATION_Model m1 = new TD_FACTORCOLLECTSTATION_Model();
+                                m1.OBJECTID = ms.Url;
+                                m1.opMethod = "Add";
+                                m1.NAME = m.NAME;
+                                m1.TYPE = m.TRANSFERMODETYPE;
+                                m1.JD = jd;
+                                m1.WD = wd;
+                                m1.Shape = "geometry::STGeomFromText('POINT(" + m1.JD + " " + m1.WD + ")',4326)";
+                                TD_FACTORCOLLECTSTATIONCls.Manager(m1);
+                            }
+                            string a = row.GetCell(0).ToString();
+                            string a1 = row.GetCell(1).ToString();
+                            string a2 = row.GetCell(2).ToString();
+
+                        }
                     }
                     catch (Exception)
                     {
@@ -4499,7 +5488,133 @@ namespace ManagerSystem.MVC.Controllers
                         }
                         savePath = Path.Combine(filePath, name);
                         File.SaveAs(savePath);
-                        DC_RESOURCE_NEWCls.RESOURCEUpload(savePath);
+                        //DC_RESOURCE_NEWCls.RESOURCEUpload(savePath);
+                        HSSFWorkbook hssfworkbook;
+                        FileStream file = new FileStream(savePath, FileMode.Open, FileAccess.Read);
+                         hssfworkbook = new HSSFWorkbook(file);
+                        NPOI.SS.UserModel.ISheet sheet = hssfworkbook.GetSheetAt(0);
+                        int rowCount = sheet.LastRowNum;
+                        for (int i = (sheet.FirstRowNum + 1); i <= rowCount; i++)
+                        {
+
+                            IRow row = sheet.GetRow(i);
+                            string[] arr = new string[17];
+                            for (int k = 0; k < arr.Length; k++)
+                            {
+                                arr[k] = row.GetCell(k) == null ? "" : row.GetCell(k).ToString();//循环获取每一单元格内容
+                            }
+                            DC_RESOURCE_NEW_Model m = new DC_RESOURCE_NEW_Model();
+                            //单位 资源类型 名称 编号 林龄类型 起源类型 可燃类型 林木类型 树种 面积 坡向 坡度 挂钩领导 职务 领导电话 责任人 责任人电话
+                            if (string.IsNullOrEmpty(arr[0]) || string.IsNullOrEmpty(arr[2]))
+                            {
+                                continue;
+                            }
+                             m.ORGNOS = T_SYS_ORGCls.getCodeByName(arr[0]);
+                            if (string.IsNullOrEmpty(m.ORGNOS))
+                            {
+                                   return Content(@"<script>alert('表格中组织机构名称错误，请确认后再上传！');history.go(-1);</script>");
+                            }
+                            m.opMethod= "Add";
+                            m.NAME = arr[2];
+                            m.NUMBER = arr[3];
+                            m.KINDTYPE = arr[8];
+                            m.AREA = arr[9];
+                            m.ASPECT = arr[10];
+                            m.ANGLE = arr[11];
+                            m.POTHOOKLEADER = arr[12];
+                            m.POTHOOKLEADERJOB = arr[13];
+                            m.POTHOOKLEADERTLEE = arr[14];
+                            m.DUTYPERSON = arr[15];
+                            m.DUTYPERSONTELL = arr[16];
+                            if (arr[1].Trim() == "重点林区")//资源类型
+                            {
+                                m.RESOURCETYPE = "1";
+                            }
+                            else if (arr[1].Trim() == "有林地")
+                            {
+                                m.RESOURCETYPE = "2";
+                            }
+                            else if (arr[1].Trim() == "荒山")
+                            {
+                                m.RESOURCETYPE = "3";
+                            }
+                            else if (arr[1].Trim() == "灌木丛")
+                            {
+                                m.RESOURCETYPE = "4";
+                            }
+                            else
+                            {
+                                m.RESOURCETYPE = "1";
+                            }
+                            if (arr[4].Trim() == "幼龄林")//林龄类型
+                            {
+                                m.AGETYPE = "1";
+                            }
+                            else if (arr[4].Trim() == "中龄林")
+                            {
+                                m.AGETYPE = "2";
+                            }
+                            else if (arr[4].Trim() == "近熟林")
+                            {
+                                m.AGETYPE = "3";
+                            }
+                            else if (arr[4].Trim() == "成熟林")
+                            {
+                                m.AGETYPE = "4";
+                            }
+                            else if (arr[4] == "过熟林")
+                            {
+                                m.AGETYPE = "5";
+                            }
+                            else
+                            {
+                                m.AGETYPE = "1";
+                            }
+                            if (arr[5].Trim() == "天然")//起源类型
+                            {
+                                m.ORIGINTYPE = "1";
+                            }
+                            else if (arr[5].Trim() == "人工")
+                            {
+                                m.ORIGINTYPE = "2";
+                            }
+                            else
+                            {
+                                m.ORIGINTYPE = "1";
+                            }
+                            if (arr[6].Trim() == "易燃")//可燃类型
+                            {
+                                m.BURNTYPE = "1";
+                            }
+                            else if (arr[6].Trim() == "不易燃")
+                            {
+                                m.BURNTYPE = "2";
+                            }
+                            else
+                            {
+                                m.BURNTYPE = "1";
+                            }
+                            if (arr[7].Trim() == "针叶林")//林木类型
+                            {
+                                m.TREETYPE = "1";
+                            }
+                            else if (arr[7].Trim() == "阔叶林")
+                            {
+                                m.TREETYPE = "2";
+                            }
+                            else if (arr[7].Trim() == "混交林")
+                            {
+                                m.TREETYPE = "3";
+                            }
+                            else
+                            {
+                                m.TREETYPE = "1";
+                            }
+                            DC_RESOURCE_NEWCls.Manager(m);
+                            string a = row.GetCell(0).ToString();
+                            string a1 = row.GetCell(1).ToString();
+                            string a2 = row.GetCell(2).ToString();
+                        }
                     }
                     catch (Exception)
                     {
@@ -4932,7 +6047,84 @@ namespace ManagerSystem.MVC.Controllers
                         }
                         savePath = Path.Combine(filePath, name);
                         File.SaveAs(savePath);
-                        DC_ARMYCls.ARMYUpload(savePath);
+                        //DC_ARMYCls.ARMYUpload(savePath);
+                        HSSFWorkbook hssfworkbook;
+
+                        FileStream file = new FileStream(savePath, FileMode.Open, FileAccess.Read);
+                        hssfworkbook = new HSSFWorkbook(file);
+                        NPOI.SS.UserModel.ISheet sheet = hssfworkbook.GetSheetAt(0);
+                        int rowCount = sheet.LastRowNum;
+                        for (int i = (sheet.FirstRowNum + 1); i <= rowCount; i++)
+                        {
+
+                            IRow row = sheet.GetRow(i);
+                            string[] arr = new string[9];
+                            for (int k = 0; k < arr.Length; k++)
+                            {
+                                arr[k] = row.GetCell(k) == null ? "" : row.GetCell(k).ToString();//循环获取每一单元格内容
+                            }
+                            DC_ARMY_Model m = new DC_ARMY_Model();
+                            //单位	队伍类型	名称	编号	人数	队长	联系方式
+                            if (string.IsNullOrEmpty(arr[0]) || string.IsNullOrEmpty(arr[1]) || string.IsNullOrEmpty(arr[2]))
+                            {
+                                continue;
+                            }
+                            m.BYORGNO = T_SYS_ORGCls.getCodeByName(arr[0]);
+                            if (string.IsNullOrEmpty(m.BYORGNO))
+                            {
+                                return Content(@"<script>alert('表格中组织机构名称错误，请确认后再上传！');history.go(-1);</script>");
+                            }
+                            m.opMethod = "Add";
+                            m.NAME = arr[2];
+                            m.NUMBER = arr[3];
+                            m.ARMYMEMBERCOUNT = arr[4];
+                            m.ARMYLEADER = arr[5];
+                            m.CONTACTS = arr[6];
+                            string jd = arr[7];
+                            string wd = arr[8];
+                            if (string.IsNullOrEmpty(jd) == false && string.IsNullOrEmpty(wd) == false)
+                            {
+                                double[] brr = ClsPositionTrans.GpsTransform(double.Parse(wd), double.Parse(jd), "1");
+                                m.JD = brr[1].ToString();
+                                m.WD = brr[0].ToString();
+                            }
+                            if (arr[1].Trim() == "专业队伍")//性别
+                            {
+                                m.ARMYTYPE = "1";
+                            }
+                            else if (arr[1].Trim() == "半专业队伍")
+                            {
+                                m.ARMYTYPE = "2";
+                            }
+                            else if (arr[1].Trim() == "应急队伍")
+                            {
+                                m.ARMYTYPE = "3";
+                            }
+                            else if (arr[1].Trim() == "群众队伍")
+                            {
+                                m.ARMYTYPE = "4";
+                            }
+                            else
+                            {
+                                m.ARMYTYPE = "1";
+                            }
+                            var ms = DC_ARMYCls.Manager(m);
+                            if (string.IsNullOrEmpty(jd) == false && string.IsNullOrEmpty(wd) == false)
+                            {
+                                Firedepartment_Model m1 = new Firedepartment_Model();
+                                m1.OBJECTID = ms.Url;
+                                m1.NAME = m.NAME;
+                                m1.TYPE = m.ARMYTYPE;
+                                m1.JD = jd;
+                                m1.WD = wd;
+                                m1.Shape = "geometry::STGeomFromText('POINT(" + m1.JD + " " + m1.WD + ")',4326)";
+                                m1.opMethod = "Add";
+                                FiredepartmentCls.Manager(m1);
+                            }
+                            string a = row.GetCell(0).ToString();
+                            string a1 = row.GetCell(1).ToString();
+                            string a2 = row.GetCell(2).ToString();
+                        }
                     }
                     catch (Exception)
                     {
@@ -4944,9 +6136,7 @@ namespace ManagerSystem.MVC.Controllers
                     return Content(@"<script>alert('请选择需要导入的队伍表格');history.go(-1);</script>");
                 }
             }
-            //return RedirectToAction("FRUserList", "System");
             return Content("<script>alert('导入成功');window.location.href='ARMY_NEWIndex';</script>");
-            //return View();
         }
         #endregion
         #endregion
@@ -5218,10 +6408,12 @@ namespace ManagerSystem.MVC.Controllers
             //string firename = Request.Params["FIRENAME"];
             string firefrom = Request.Params["FIREFROM"];
             string YEAR = Request.Params["YEAR"];
-            DateTime startYear = new DateTime(int.Parse(YEAR), 1, 1);  //本年年初
-            DateTime endYear = new DateTime(int.Parse(YEAR), 12, 31).AddDays(1).AddSeconds(-1);  //本年年末
-            string fireTime = startYear.ToString();
-            string fireEndTime = endYear.ToString();
+            string fireTime = !string.IsNullOrEmpty(YEAR) ? Convert.ToDateTime(YEAR + "-01-01 00:00:00").ToString() : "";
+            string fireEndTime = !string.IsNullOrEmpty(YEAR) ? Convert.ToDateTime(YEAR + "-12-31 23:59:59").ToString() : "";
+            //DateTime startYear = new DateTime(int.Parse(YEAR), 1, 1);  //本年年初
+            //DateTime endYear = new DateTime(int.Parse(YEAR), 12, 31).AddDays(1).AddSeconds(-1);  //本年年末
+            //string fireTime = startYear.ToString();
+            //string fireEndTime = endYear.ToString();
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
             sb.AppendFormat("<thead>");

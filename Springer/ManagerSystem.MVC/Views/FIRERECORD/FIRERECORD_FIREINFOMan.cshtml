@@ -36,7 +36,7 @@
                     <td style="width:125px;color:#3c7915">起火地点：</td>
                     <td style="padding-left:5px;width:205px" colspan="5">
                         <select id="tbxBYORGNO" onchange="loadXIAN();" style="display:none; width:45%;padding:1px">
-                            <option value="532500000" selected>州级</option>
+                            <option value="532500000000000" selected>州级</option>
                         </select>
                         &nbsp;<span style="color:#3c7915">县：</span><select id="tbxFIREADDRESSCOUNTY" name="tbxFIREADDRESSCOUNTY" onchange="loadXZ();" style="width:100px;padding:1px;" onclick ="Change()"></select>
 
@@ -171,7 +171,7 @@
                 </tr>
                 <tr>
                     <td style="color:#3c7915">出动车辆合计：</td>
-                    <td><input id="tbxFIRERECINFO110" name="tbxFIRERECINFO110" type="text" value="@Model.FIRERECINFO110" style="width: 70%;" /><span style="color:#3c7915">(台)</span></td>
+                    <td><input id="tbxFIRERECINFO111" name="tbxFIRERECINFO111" type="text" value="@Model.FIRERECINFO111" style="width: 70%;" /><span style="color:#3c7915">(台)</span></td>
                     <td style="color:#3c7915">其中汽车：</td>
                     <td><input id="tbxFIRERECINFO110" name="tbxFIRERECINFO110" type="text" value="@Model.FIRERECINFO110" style="width: 70%;" /><span style="color:#3c7915">(台)</span></td>
                     <td colspan="2 "></td>
@@ -181,7 +181,7 @@
                     <td><input id="tbxJD" name="tbxJD" type="text" value="" style="width: 70%;" /></td>
                     <td style="color:#3c7915">纬度：</td>
                     <td><input id="tbxWD" name="tbxWD" type="text" value="" style="width: 70%;" /></td>
-                    <td colspan="2 "></td>
+                    <td colspan="2 "><input type="button" value="地图定位" onclick="setPoint()" class="btnMapLoaclCss" /></td>
                 </tr>
             </table>
         </div>
@@ -193,8 +193,16 @@
 </div>
 
 <script type="text/javascript">
+    //验证整数
+    function CheckINT1(number) {
+        var filter = /^\+?[0-9][0-9]*$/;
+        if (filter.test($.trim(number))) return true;
+        else {
+            return false;
+        }
+    }
     //获取填入的县乡村
-    window.setTimeout(WriteCun, 700);
+    window.setTimeout(WriteCun,1000);
     function WriteCun() {
         document.getElementById('tbxFIREADDRESS').value = $("#tbxFIREADDRESSCOUNTY").find("option:selected").text() + $("#tbxFIREADDRESSTOWNS").find("option:selected").text() + document.getElementById("tbxFIREADDRESSVILLAGES").value;
     } 
@@ -202,9 +210,9 @@
         window.setTimeout(Change, 600);
         document.getElementById('tbxFIREADDRESS').value = $("#tbxFIREADDRESSCOUNTY").find("option:selected").text() + $("#tbxFIREADDRESSTOWNS").find("option:selected").text() + document.getElementById("tbxFIREADDRESSVILLAGES").value ;
     }
-    if ('@ViewBag.Method' == 'Add') {
+    @*if ('@ViewBag.Method' == 'Add') {
         document.getElementById("JWD").style.display = 'none';
-    }
+    }*@
     if ('@ViewBag.Method' == 'Mdy' || '@ViewBag.Method' == 'See1') {
         $.ajax({
             url: '/DataCenter/GetArchivaljson',
@@ -216,7 +224,7 @@
                 if (ar.JCFID != null) {
                     //document.getElementById("tbxFIREADDRESSCOUNTY").value = ar.BYORGNO;
                     // document.getElementById("tbxFIREADDRESSTOWNS").value = ar.BYORGNO;
-                    $('#hidsx').val(ar.BYORGNO.substring(0, 6) + "000");
+                    $('#hidsx').val(ar.BYORGNO.substring(0, 6) + "000000000");
                     $('#hidxz').val(ar.BYORGNO);
                     document.getElementById("tbxFIRETIME").value = ar.FIRETIME;
                     document.getElementById("tbxFIREENDTIME").value = ar.FIREENDTIME;
@@ -249,77 +257,317 @@
         //    $('#tbxFIREENDTIME').focus();
         //    return;
         //}
-        var reg = /^\d+$/;
+        //var reg = /^\d+$/;
         var FIRECODE = $('#tbxFIRECODE').val();
-        if ($.trim(FIRECODE) != "") {
-            if (!reg.test(FIRECODE)) {
-                layer.msg('请输入数字编码!', { icon: 5 });
+        if ($.trim(FIRECODE) == "") {
+            layer.msg('请输入火灾编号!', { icon: 5 });
+            $('#tbxFIRECODE').focus();
+            return;
+        }
+        else {
+            if (!CheckINT1(FIRECODE)) {
+                layer.msg('请输入整数编码！', { icon: 5 });
                 $('#tbxFIRECODE').focus();
                 return;
             }
         }
-        var reg = /^[0-9]+([.]{1}[0-9]+){0,1}$/;
+
         var FIRELOSEAREA = $('#tbxFIRELOSEAREA').val();
-        if ($.trim(FIRELOSEAREA) != "") {
-            if (!reg.test(FIRELOSEAREA)) {
-                layer.msg('请输入数字格式数据!', { icon: 5 });
+        if ($.trim(FIRELOSEAREA) == "") {
+            layer.msg('请输入受害森林面积!', { icon: 5 });
+            $('#tbxFIRELOSEAREA').focus();
+            return;
+        }
+        else {
+            if (!CheckNUM2(FIRELOSEAREA)) {
+                layer.msg('受害面积请输入数字,且最多保留2位有效数字!', { icon: 5 });
                 $('#tbxFIRELOSEAREA').focus();
                 return;
             }
         }
+
+
         var FIRERECINFO020 = $('#tbxFIRERECINFO020').val();
-        if ($.trim(FIRERECINFO020) != "") {
-            if (!reg.test(FIRERECINFO020)) {
-                layer.msg('请输入数字格式数据!', { icon: 5 });
+        if ($.trim(FIRERECINFO020) == "") {
+            layer.msg('请输入火场总面积!', { icon: 5 });
+            $('#tbxFIRERECINFO020').focus();
+            return;
+        }
+        else {
+            if (!CheckNUM2(FIRERECINFO020)) {
+                layer.msg('火场总请输入数字,且最多保留2位有效数字!', { icon: 5 });
                 $('#tbxFIRERECINFO020').focus();
                 return;
             }
         }
+
         var FIRERECINFO021 = $('#tbxFIRERECINFO021').val();
-        if ($.trim(FIRERECINFO021) != "") {
-            if (!reg.test(FIRERECINFO021)) {
-                layer.msg('请输入数字格式数据!', { icon: 5 });
+        if ($.trim(FIRERECINFO021) == "") {
+            layer.msg('请输入有林地面积!', { icon: 5 });
+            $('#tbxFIRERECINFO021').focus();
+            return;
+        }
+        else {
+            if (!CheckNUM2(FIRERECINFO021)) {
+                layer.msg('有林地面积请输入数字,且最多保留2位有效数字!', { icon: 5 });
                 $('#tbxFIRERECINFO021').focus();
                 return;
             }
         }
         var FIRERECINFO030 = $('#tbxFIRERECINFO030').val();
-        if ($.trim(FIRERECINFO030) != "") {
-            if (!reg.test(FIRERECINFO030)) {
-                layer.msg('请输入数字格式数据!', { icon: 5 });
+        if ($.trim(FIRERECINFO030) == "") {
+            layer.msg('请输入原始林受灾面积!', { icon: 5 });
+            $('#tbxFIRERECINFO030').focus();
+            return;
+        }
+        else {
+            if (!CheckNUM2(FIRERECINFO030)) {
+                layer.msg('原始林受灾面积请输入数字,且最多保留2位有效数字!', { icon: 5 });
                 $('#tbxFIRERECINFO030').focus();
                 return;
             }
         }
+
         var FIRERECINFO031 = $('#tbxFIRERECINFO031').val();
-        if ($.trim(FIRERECINFO031) != "") {
-            if (!reg.test(FIRERECINFO031)) {
-                layer.msg('请输入数字格式数据!', { icon: 5 });
+        if ($.trim(FIRERECINFO031) == "") {
+            layer.msg('请输入次生林受害面积!', { icon: 5 });
+            $('#tbxFIRERECINFO031').focus();
+            return;
+        }
+        else {
+            if (!CheckNUM2(FIRERECINFO031)) {
+                layer.msg('次生林受害面积请输入数字,且最多保留2位有效数字!', { icon: 5 });
                 $('#tbxFIRERECINFO031').focus();
                 return;
             }
         }
+
+
         var FIRERECINFO032 = $('#tbxFIRERECINFO032').val();
-        if ($.trim(FIRERECINFO032) != "") {
-            if (!reg.test(FIRERECINFO032)) {
-                layer.msg('请输入数字格式数据!', { icon: 5 });
+        if ($.trim(FIRERECINFO032) == "") {
+            layer.msg('请输入人工林受害面积!', { icon: 5 });
+            $('#tbxFIRERECINFO032').focus();
+            return;
+        }
+        else {
+            if (!CheckNUM2(FIRERECINFO032)) {
+                layer.msg('人工林受害面积请输入数字,且最多保留2位有效数字!', { icon: 5 });
                 $('#tbxFIRERECINFO032').focus();
                 return;
             }
         }
+
         var FIRERECINFO040 = $('#tbxFIRERECINFO040').val();
-        if ($.trim(FIRERECINFO040) != "") {
-            if (!reg.test(FIRERECINFO040)) {
-                layer.msg('请输入数字格式数据!', { icon: 5 });
+        if ($.trim(FIRERECINFO040) == "") {
+            layer.msg('请输入成林蓄积损失!', { icon: 5 });
+            $('#tbxFIRERECINFO040').focus();
+            return;
+        }
+        else {
+            if (!CheckNUM2(FIRERECINFO040)) {
+                layer.msg('成林蓄积损失请输入数字,且最多保留2位有效数字!', { icon: 5 });
                 $('#tbxFIRERECINFO040').focus();
                 return;
             }
         }
+
+
         var FIRERECINFO041 = $('#tbxFIRERECINFO041').val();
-        if ($.trim(FIRERECINFO041) != "") {
-            if (!reg.test(FIRERECINFO041)) {
-                layer.msg('请输入数字格式数据!', { icon: 5 });
+        if ($.trim(FIRERECINFO041) == "") {
+            layer.msg('请输入幼林株数损失!', { icon: 5 });
+            $('#tbxFIRERECINFO041').focus();
+            return;
+        }
+        else {
+            if (!CheckNUM2(FIRERECINFO041)) {
+                layer.msg('幼林株数损失请输入数字,且最多保留2位有效数字!', { icon: 5 });
                 $('#tbxFIRERECINFO041').focus();
+                return;
+            }
+        }
+        var FIRERECINFO050 = $('#tbxFIRERECINFO050').val();
+        if ($.trim(FIRERECINFO050) == "") {
+            layer.msg('请输入林分组成!', { icon: 5 });
+            $('#tbxFIRERECINFO050').focus();
+            return;
+        }
+
+        var FIRERECINFO060= $('#tbxFIRERECINFO060').val();
+        if ($.trim(FIRERECINFO060) == "") {
+            layer.msg('请输入火场指挥员姓名!', { icon: 5 });
+            $('#tbxFIRERECINFO060').focus();
+            return;
+        }
+        var FIRERECINFO061= $('#tbxFIRERECINFO061').val();
+        if ($.trim(FIRERECINFO061) == "") {
+            layer.msg('请输入火场指挥员职务!', { icon: 5 });
+            $('#tbxFIRERECINFO061').focus();
+            return;
+        }
+
+        var FIRERECINFO051 = $('#tbxFIRERECINFO051').val();
+        if ($.trim(FIRERECINFO051) == "") {
+            layer.msg('请输入林龄!', { icon: 5 });
+            $('#tbxFIRERECINFO051').focus();
+            return;
+        }
+        else {
+            if (!CheckNUM2(FIRERECINFO051)) {
+                layer.msg('林龄请输入数字,且最多保留2位有效数字!', { icon: 5 });
+                $('#tbxFIRERECINFO051').focus();
+                return;
+            }
+        }
+ 
+        var FIRERECINFO070 = $('#tbxFIRERECINFO070').val();
+        if ($.trim(FIRERECINFO070) == "") {
+            layer.msg('请输入人员伤亡轻伤人数!', { icon: 5 });
+            $('#tbxFIRERECINFO070').focus();
+            return;
+        }
+        else {
+            if (!CheckINT1(FIRERECINFO070)) {
+                layer.msg('人员伤亡轻伤人数请输入整数数字!', { icon: 5 });
+                $('#tbxFIRERECINFO070').focus();
+                return;
+            }
+        }
+
+        var FIRERECINFO071= $('#tbxFIRERECINFO071').val();
+        if ($.trim(FIRERECINFO071) == "") {
+            layer.msg('请输入人员伤亡重伤人数!', { icon: 5 });
+            $('#tbxFIRERECINFO071').focus();
+            return;
+        }
+        else {
+            if (!CheckINT1(FIRERECINFO071)) {
+                layer.msg('人员伤亡重伤人数请输入整数数字!', { icon: 5 });
+                $('#tbxFIRERECINFO071').focus();
+                return;
+            }
+        }
+        var FIRERECINFO072 = $('#tbxFIRERECINFO072').val();
+        if ($.trim(FIRERECINFO072) == "") {
+            layer.msg('请输入人员伤亡死亡人数!', { icon: 5 });
+            $('#tbxFIRERECINFO072').focus();
+            return;
+        }
+        else {
+            if (!CheckINT1(FIRERECINFO072)) {
+                layer.msg('人员伤亡死亡人数请输入整数数字!', { icon: 5 });
+                $('#tbxFIRERECINFO072').focus();
+                return;
+            }
+        }
+
+        var FIRERECINFO081 = $('#tbxFIRERECINFO081').val();
+        if ($.trim(FIRERECINFO081) == "") {
+            layer.msg('请输入林政处罚人数!', { icon: 5 });
+            $('#tbxFIRERECINFO081').focus();
+            return;
+        }
+        else {
+            if (!CheckINT1(FIRERECINFO081)) {
+                layer.msg('林政处罚人数请输入整数数字!', { icon: 5 });
+                $('#tbxFIRERECINFO081').focus();
+                return;
+            }
+        }
+
+
+        var FIRERECINFO082 = $('#tbxFIRERECINFO082').val();
+        if ($.trim(FIRERECINFO082) == "") {
+            layer.msg('请输入刑事处罚人数!', { icon: 5 });
+            $('#tbxFIRERECINFO082').focus();
+            return;
+        }
+        else {
+            if (!CheckINT1(FIRERECINFO082)) {
+                layer.msg('刑事处罚人数请输入整数数字!', { icon: 5 });
+                $('#tbxFIRERECINFO082').focus();
+                return;
+            }
+        }
+
+        var FIRERECINFO090 = $('#tbxFIRERECINFO090').val();
+        if ($.trim(FIRERECINFO090) == "") {
+            layer.msg('请输入其他损失折款!', { icon: 5 });
+            $('#tbxFIRERECINFO090').focus();
+            return;
+        }
+        else {
+            if (!CheckNUM2(FIRERECINFO090)) {
+                layer.msg('其他损失折款请输入数字,且最多保留2位有效数字!', { icon: 5 });
+                $('#tbxFIRERECINFO090').focus();
+                return;
+            }
+        }
+
+
+        var FIRERECINFO100 = $('#tbxFIRERECINFO100').val();
+        if ($.trim(FIRERECINFO100) == "") {
+            layer.msg('请输入出动扑火人工!', { icon: 5 });
+            $('#tbxFIRERECINFO100').focus();
+            return;
+        }
+        else {
+            if (!CheckINT1(FIRERECINFO100)) {
+                layer.msg('出动扑火人工请输入整数数字!', { icon: 5 });
+                $('#tbxFIRERECINFO100').focus();
+                return;
+            }
+        }
+
+        var FIRERECINFO110 = $('#tbxFIRERECINFO110').val();
+        if ($.trim(FIRERECINFO110) == "") {
+            layer.msg('请输入其中汽车!', { icon: 5 });
+            $('#tbxFIRERECINFO110').focus();
+            return;
+        }
+        else {
+            if (!CheckINT1(FIRERECINFO110)) {
+                layer.msg('其中汽车请输入整数数字!', { icon: 5 });
+                $('#tbxFIRERECINFO110').focus();
+                return;
+            }
+        }
+        var FIRERECINFO111 = $('#tbxFIRERECINFO111').val();
+        if ($.trim(FIRERECINFO111) == "") {
+            layer.msg('请输入出动车辆合计!', { icon: 5 });
+            $('#tbxFIRERECINFO111').focus();
+            return;
+        }
+        else {
+            if (!CheckINT1(FIRERECINFO111)) {
+                layer.msg('出动车辆合计请输入整数数字!', { icon: 5 });
+                $('#tbxFIRERECINFO111').focus();
+                return;
+            }
+        }
+
+        var FIRERECINFO120= $('#tbxFIRERECINFO120').val();
+        if ($.trim(FIRERECINFO120) == "") {
+            layer.msg('请输入出动飞机!', { icon: 5 });
+            $('#tbxFIRERECINFO120').focus();
+            return;
+        }
+        else {
+            if (!CheckINT1(FIRERECINFO120)) {
+                layer.msg('出动飞机请输入整数数字!', { icon: 5 });
+                $('#tbxFIRERECINFO120').focus();
+                return;
+            }
+        }
+        var FIRERECINFO130 = $('#tbxFIRERECINFO130').val();
+        if ($.trim(FIRERECINFO130) == "") {
+            layer.msg('请输入扑火经费!', { icon: 5 });
+            $('#tbxFIRERECINFO130').focus();
+            return;
+        }
+        else {
+            if (!CheckNUM2(FIRERECINFO130)) {
+                layer.msg('扑火经费请输入数字,且最多保留2位有效数字!', { icon: 5 });
+                $('#tbxFIRERECINFO130').focus();
                 return;
             }
         }
@@ -443,5 +691,42 @@
                 }
             });
         }
+    }
+
+
+
+    @*var bln = '@ViewBag.isAdd';
+    if (bln == "1") {
+        document.getElementById('btnAdd').style.display = "";
+    }*@
+    //地图定位
+    function setPoint() {
+        var name ="火情档案" ;
+        var jd = document.getElementById("tbxJD").value;
+        var wd = document.getElementById("tbxWD").value;
+        layer.open({
+            type: 2,
+            title: name + '地图位置设置',
+            btn: ['保存', '关闭'],
+            area: ['800px', '450px'],
+            fix: false, //不固定
+            maxmin: true,
+            content: '/MapCommon/GetMapPontIndex?jd=' + jd + "&wd=" + wd,
+            yes: function (index, layero) { //或者使用btn1
+                //按钮【按钮一】的回调
+                var ptxt = layer.getChildFrame("p", index);
+                var arr = ptxt.html().split(',');
+                if ($.trim(arr) != "") {
+                    var jd = parseFloat(arr[0]).toFixed(6);
+                    var wd = parseFloat(arr[1]).toFixed(6);
+                    $('#tbxJD').val(jd);
+                    $('#tbxWD').val(wd);
+                }
+                layer.close(index);
+            }, cancel: function (index) {
+                layer.close(index);
+            }
+        });
+
     }
 </script>

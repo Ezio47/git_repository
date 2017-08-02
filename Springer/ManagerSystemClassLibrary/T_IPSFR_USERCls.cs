@@ -546,7 +546,8 @@ namespace ManagerSystemClassLibrary
                          {"treeType","org"} 
                      };
                     JArray jObjectsC = new JArray();
-                    DataRow[] drOrgC = dtOrg.Select("SUBSTRING(ORGNO,1,6) = '" + curUserOrg.Substring(0, 6) + "' AND ORGNO<>'" + curUserOrg + "'", ""); //获取所有县且〈〉市的
+                    //DataRow[] drOrgC = dtOrg.Select("SUBSTRING(ORGNO,1,6) = '" + curUserOrg.Substring(0, 6) + "' AND ORGNO<>'" + curUserOrg + "'", ""); //获取所有县且〈〉市的
+                    DataRow[] drOrgC = dtOrg.Select("SUBSTRING(ORGNO,1,6) = " + curUserOrg.Substring(0, 6) + " AND SUBSTRING(ORGNO,10,6) =" + curUserOrg.Substring(9, 6) + " AND ORGNO<>" + curUserOrg + "", "");
                     for (int i = 0; i < drOrgC.Length; i++)
                     {
                         JObject rootC = new JObject
@@ -573,7 +574,7 @@ namespace ManagerSystemClassLibrary
             #endregion
 
             #region 乡镇用户
-            else
+            else if (PublicCls.OrgIsZhen(curUserOrg))
             {
                 DataRow[] drOrg = dtOrg.Select("", "ORGNO");
                 if (drOrg.Length > 0)
@@ -686,7 +687,8 @@ namespace ManagerSystemClassLibrary
                          {"treeType","org"} 
                      };
                     JArray jObjectsC = new JArray();
-                    DataRow[] drOrgC = dtOrg.Select("SUBSTRING(ORGNO,1,6) = '" + curUserOrg.Substring(0, 6) + "' AND ORGNO<>'" + curUserOrg + "'", ""); //获取所有县且〈〉市的
+                    //DataRow[] drOrgC = dtOrg.Select("SUBSTRING(ORGNO,1,6) = '" + curUserOrg.Substring(0, 6) + "' AND ORGNO<>'" + curUserOrg + "'", ""); //获取所有县且〈〉市的
+                    DataRow[] drOrgC = dtOrg.Select("SUBSTRING(ORGNO,1,6) = " + curUserOrg.Substring(0, 6) + " AND SUBSTRING(ORGNO,10,6) =" + curUserOrg.Substring(9,6) + " AND ORGNO<>" + curUserOrg + "", "");
                     for (int i = 0; i < drOrgC.Length; i++)
                     {
                         JObject rootC = new JObject
@@ -713,7 +715,7 @@ namespace ManagerSystemClassLibrary
             #endregion
 
             #region 乡镇用户
-            else
+            else if (PublicCls.OrgIsZhen(curUserOrg))
             {
                 DataRow[] drOrg = dtOrg.Select("", "ORGNO");
                 if (drOrg.Length > 0)
@@ -1565,7 +1567,7 @@ namespace ManagerSystemClassLibrary
                         };
                         childArray.Add(roota);
                     }
-                    DataRow[] drOrgC = dtOrg.Select("SUBSTRING(ORGNO,1,4) = '" + curUserOrg.Substring(0, 4) + "' AND ORGNO<>'" + curUserOrg + "' and SUBSTRING(ORGNO,7,3)='000'", "");//获取所有县且〈〉市的
+                    DataRow[] drOrgC = dtOrg.Select("SUBSTRING(ORGNO,1,4) = '" + curUserOrg.Substring(0, 4) + "' AND ORGNO<>'" + curUserOrg + "' and SUBSTRING(ORGNO,7,9)='000000000'", "");//获取所有县且〈〉市的
                     for (int i = 0; i < drOrgC.Length; i++)
                     {
                         JObject rootb = new JObject
@@ -1617,7 +1619,7 @@ namespace ManagerSystemClassLibrary
                             jObjects.Add(rootc);
                         }
                     }
-                    DataRow[] drOrgC = dtOrg.Select("SUBSTRING(ORGNO,1,6) = '" + curUserOrg.Substring(0, 6) + "' AND ORGNO<>'" + curUserOrg + "'", ""); //获取所有镇且〈〉县的
+                    DataRow[] drOrgC = dtOrg.Select("SUBSTRING(ORGNO,1,6) = '" + curUserOrg.Substring(0, 6) + "' AND ORGNO<>'" + curUserOrg + "' and SUBSTRING(ORGNO,10,6)='000000'", ""); //获取所有镇且〈〉县的
                     for (int i = 0; i < drOrgC.Length; i++)
                     {
                         JObject rootd = new JObject
@@ -1775,7 +1777,7 @@ namespace ManagerSystemClassLibrary
                     childArrayroot.Add(root3);
                     root2.Add("children", childArrayroot);
                     JArray childArray = new JArray();
-                    DataRow[] drOrgC = dtOrg.Select("SUBSTRING(ORGNO,1,4) = '" + curUserOrg.Substring(0, 4) + "' AND ORGNO<>'" + curUserOrg + "' and SUBSTRING(ORGNO,7,3)='000'", "");//获取所有县且〈〉市的
+                    DataRow[] drOrgC = dtOrg.Select("SUBSTRING(ORGNO,1,4) = '" + curUserOrg.Substring(0, 4) + "' AND ORGNO<>'" + curUserOrg + "' and SUBSTRING(ORGNO,7,9)='000000000'", "");//获取所有县且〈〉市的
                     for (int i = 0; i < drOrgC.Length; i++)
                     {
                         JObject rooth = new JObject
@@ -1809,7 +1811,7 @@ namespace ManagerSystemClassLibrary
                     childArrayroot.Add(root3);
                     root2.Add("children", childArrayroot);
                     JArray jObjectsC = new JArray();
-                    DataRow[] drOrgC = dtOrg.Select("SUBSTRING(ORGNO,1,6) = '" + curUserOrg.Substring(0, 6) + "' AND ORGNO<>'" + curUserOrg + "'", ""); //获取所有镇且〈〉县的
+                    DataRow[] drOrgC = dtOrg.Select("SUBSTRING(ORGNO,1,6) = '" + curUserOrg.Substring(0, 6) + "' AND ORGNO<>'" + curUserOrg + "' and SUBSTRING(ORGNO,10,6)='000000'", ""); //获取所有镇且〈〉县的
                     for (int i = 0; i < drOrgC.Length; i++)
                     {
                         JObject rooti = new JObject

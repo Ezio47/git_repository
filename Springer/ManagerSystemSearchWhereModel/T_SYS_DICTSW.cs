@@ -71,7 +71,7 @@ namespace ManagerSystemSearchWhereModel
         public string isShowAll { get; set; }
 
         /// <summary>
-        /// 备用字段1 1 表是州部门 2 表示市县部门 3 表示乡镇部门
+        /// 备用字段1 1 表是州部门 2 表示市县部门 3 表示乡镇部门 4 表示村部门
         /// </summary>
         public string STANDBY1 { get; set; }
         /// <summary>

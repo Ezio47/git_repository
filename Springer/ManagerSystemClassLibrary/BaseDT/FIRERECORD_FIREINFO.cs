@@ -26,12 +26,14 @@ namespace ManagerSystemClassLibrary.BaseDT
         {
             #region 添加数据至JC_FIRE表中
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("INSERT  INTO  JC_FIRE(BYORGNO,FIREFROM,FIRETIME,FIREENDTIME,ZQWZ,ISOUTFIRE) output inserted.JCFID ");
+            sb.AppendFormat("INSERT  INTO  JC_FIRE(BYORGNO,FIREFROM,FIRETIME,FIREENDTIME,JD,WD,ZQWZ,ISOUTFIRE) output inserted.JCFID ");
             sb.AppendFormat("VALUES(");
             sb.AppendFormat("{0}", ClsSql.saveNullField(m.FIREADDRESSTOWNS));
             sb.AppendFormat(",'50'");
             sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIRETIME));
             sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIREENDTIME));
+            sb.AppendFormat(",{0}", ClsSql.saveNullField(m.JD));
+            sb.AppendFormat(",{0}", ClsSql.saveNullField(m.WD));
             sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIREADDRESS));
             sb.AppendFormat(",'1'");
             sb.AppendFormat(")");
@@ -91,9 +93,23 @@ namespace ManagerSystemClassLibrary.BaseDT
             sc.AppendFormat("'{0}'", ClsSql.EncodeSql(str));
             sc.AppendFormat(",{0}", ClsSql.saveNullField(m.FIRERECINFO001));
             sc.AppendFormat(")");
+
+            //添加数据至空间库HUOQINGDANGAN
+            StringBuilder sd = new StringBuilder();
+            sd.AppendFormat("INSERT  INTO  HUOQINGDANGAN(OBJECTID,NAME,JD,WD,ADDRESS,YEAR) ");
+            sd.AppendFormat("VALUES(");
+            sd.AppendFormat("'{0}'", ClsSql.EncodeSql(str));
+            sd.AppendFormat(",{0}", ClsSql.saveNullField(m.FIREADDRESS));
+            sd.AppendFormat(",{0}", ClsSql.saveNullField(m.JD));
+            sd.AppendFormat(",{0}", ClsSql.saveNullField(m.WD));
+            sd.AppendFormat(",{0}", ClsSql.saveNullField(m.FIREADDRESS));
+            string[] sTIME = m.FIRETIME.Split('-');
+            sd.AppendFormat(",{0}", ClsSql.saveNullField(sTIME[0]));
+            sd.AppendFormat(")");
+            bool bl = SDEDataBaseClass.ExeSql(sd.ToString());
             bool bln = DataBaseClass.ExeSql(sc.ToString());
             #endregion;
-            if (bln == true)
+            if (bln == true && bl == true)
                 return new Message(true, "添加成功!", m.returnUrl);
             else
                 return new Message(false, "添加失败，请检查各输入框是否正确!", m.returnUrl);
@@ -159,16 +175,30 @@ namespace ManagerSystemClassLibrary.BaseDT
             sb.AppendFormat(",FIRETIME={0}", ClsSql.saveNullField(m.FIRETIME));
             sb.AppendFormat(",FIREENDTIME={0}", ClsSql.saveNullField(m.FIREENDTIME));
             sb.AppendFormat(",ZQWZ={0}", ClsSql.saveNullField(m.FIREADDRESS));
-            //sb.AppendFormat(",JD={0}", ClsSql.saveNullField(m.JD));
-            //sb.AppendFormat(",WD={0}", ClsSql.saveNullField(m.WD));
+            sb.AppendFormat(",JD={0}", ClsSql.saveNullField(m.JD));
+            sb.AppendFormat(",WD={0}", ClsSql.saveNullField(m.WD));
             sb.AppendFormat(" where JCFID= '{0}'", ClsSql.EncodeSql(m.JCFID));
             //修改火灾等级到JC_FIRE_PROP中
             sb.AppendFormat("Update  JC_FIRE_PROP ");
             sb.AppendFormat(" set ");
             sb.AppendFormat("FIRELEVEL={0}", ClsSql.saveNullField(m.FIRERECINFO001));
             sb.AppendFormat(" where JCFID= '{0}'", ClsSql.EncodeSql(m.JCFID));
+
+            //修改空间库HUOQINGDANGAN的数据
+            StringBuilder sc = new StringBuilder();
+            sc.AppendFormat(";");
+            sc.AppendFormat("Update HUOQINGDANGAN");
+            sc.AppendFormat(" set ");
+            sc.AppendFormat("NAME='{0}'", ClsSql.EncodeSql(m.FIREADDRESS));
+            sc.AppendFormat(",JD='{0}'", ClsSql.EncodeSql(m.JD));
+            sc.AppendFormat(",WD={0}", ClsSql.saveNullField(m.WD));
+            sc.AppendFormat(",ADDRESS={0}", ClsSql.saveNullField(m.FIREADDRESS));
+            string[] sTIME = m.FIRETIME.Split('-');
+            sc.AppendFormat(",YEAR={0}", ClsSql.saveNullField(sTIME[0]));
+            sc.AppendFormat(" where OBJECTID= '{0}'", ClsSql.EncodeSql(m.JCFID));
             bool bln = DataBaseClass.ExeSql(sb.ToString());
-            if (bln == true)
+            bool bl = SDEDataBaseClass.ExeSql(sc.ToString());
+            if (bln == true && bl == true)
                 return new Message(true, "修改成功!", m.returnUrl);
             else
                 return new Message(false, "修改失败，请检查各输入框是否正确!", m.returnUrl);
@@ -195,7 +225,14 @@ namespace ManagerSystemClassLibrary.BaseDT
             sb.AppendFormat(" where JCFID  =");
             sb.AppendFormat("'{0}'", ClsSql.EncodeSql(m.JCFID));
             bool bln = DataBaseClass.ExeSql(sb.ToString());
-            if (bln == true)
+
+            //删除空间库HUOQINGDANGAN的数据
+            StringBuilder sc = new StringBuilder();
+            sc.AppendFormat("delete from HUOQINGDANGAN");
+            sc.AppendFormat(" where OBJECTID  =");
+            sc.AppendFormat("'{0}'", ClsSql.EncodeSql(m.JCFID));
+            bool bl = SDEDataBaseClass.ExeSql(sc.ToString());
+            if (bln == true && bl == true)
                 return new Message(true, "删除成功!", "");
             else
                 return new Message(false, "删除失败，请检查各输入框是否正确!", "");
@@ -215,6 +252,17 @@ namespace ManagerSystemClassLibrary.BaseDT
             sb.AppendFormat("SELECT *  FROM   FIRERECORD_FIREINFO WHERE   1=1");
             if (string.IsNullOrEmpty(sw.FRFIID) == false)
                 sb.AppendFormat(" AND JCFID = '{0}'", sw.JCFID);
+            if (string.IsNullOrEmpty(sw.BYORGNO) == false)
+            {
+                if (sw.BYORGNO == "532500000000000")
+                {
+                    sb.AppendFormat(" AND BYORGNO = '{0}'", sw.BYORGNO);
+                }
+                else
+                {
+                    sb.AppendFormat(" AND FIREADDRESSCOUNTY = '{0}'", sw.BYORGNO);
+                }
+            }
             if (!string.IsNullOrEmpty(sw.FIRETIME))
                 sb.AppendFormat(" AND FIRETIME>='{0}'", sw.FIRETIME);
             if (!string.IsNullOrEmpty(sw.FIREENDTIME))
@@ -256,14 +304,14 @@ namespace ManagerSystemClassLibrary.BaseDT
             sb.AppendFormat(" FROM  FIRERECORD_FIREINFO WHERE  1=1");
             if (!string.IsNullOrEmpty(sw.FIREADDRESSTOWNS))
             {
-                if (sw.FIREADDRESSTOWNS.Substring(4, 5) == "00000")//获取所有市的
+                if (sw.FIREADDRESSTOWNS.Substring(4, 11) == "00000000000")//获取所有市的
                     sb.AppendFormat(" AND (SUBSTRING(FIREADDRESSTOWNS,1,4) = '{0}')", ClsSql.EncodeSql(sw.FIREADDRESSTOWNS.Substring(0, 4)));
-                else if (sw.FIREADDRESSTOWNS.Substring(4, 5) == "xxxxx")//单独市
-                    sb.AppendFormat(" AND (SUBSTRING(FIREADDRESSTOWNS,1,9) = '{0}')", ClsSql.EncodeSql(sw.FIREADDRESSTOWNS.Substring(0, 4) + "00000"));
-                else if (sw.FIREADDRESSTOWNS.Substring(6, 3) == "xxx")//获取所有县的
-                    sb.AppendFormat(" AND (SUBSTRING(FIREADDRESSTOWNS,1,6) = '{0}' )", ClsSql.EncodeSql(sw.FIREADDRESSTOWNS.Substring(0, 6)));
+                else if (sw.FIREADDRESSTOWNS.Substring(4, 11) == "xxxxxxxxxxx")//单独市
+                    sb.AppendFormat(" AND (SUBSTRING(FIREADDRESSTOWNS,1,15) = '{0}')", ClsSql.EncodeSql(sw.FIREADDRESSTOWNS.Substring(0, 4) + "00000000000"));
+                else if (sw.FIREADDRESSTOWNS.Substring(6, 9) == "xxxxxxxxx")//获取所有县的
+                    sb.AppendFormat(" AND (SUBSTRING(FIREADDRESSTOWNS,1,6) = '{0}')", ClsSql.EncodeSql(sw.FIREADDRESSTOWNS.Substring(0, 6)));
                 else
-                    sb.AppendFormat(" AND FIREADDRESSTOWNS = '{0}'", ClsSql.EncodeSql(sw.BYORGNO));
+                    sb.AppendFormat(" AND FIREADDRESSTOWNS = '{0}'", ClsSql.EncodeSql(sw.FIREADDRESSTOWNS));
             }
             if (!string.IsNullOrEmpty(sw.FIRETIME))
                 sb.AppendFormat(" AND FIRETIME>='{0}'", sw.FIRETIME);

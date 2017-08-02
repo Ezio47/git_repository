@@ -74,6 +74,7 @@ namespace ManagerSystemClassLibrary
             Message msgUser = BaseDT.JC_FIRE.MdyFireOver(m);
             return new Message(msgUser.Success, msgUser.Msg, m.returnUrl);
         }
+
         /// <summary>
         /// 获取监测火情信息
         /// </summary>
@@ -123,12 +124,13 @@ namespace ManagerSystemClassLibrary
             dt.Dispose();
             return result;
         }
+
         /// <summary>
         /// 获取监测火情信息——优化后
         /// </summary>
         /// <param name="sw"></param>
         /// <returns></returns>
-         public static IEnumerable<JC_FIRE_Model> GetListModelYH(JC_FIRE_SW sw)
+        public static IEnumerable<JC_FIRE_Model> GetListModelYH(JC_FIRE_SW sw)
         {
             DataTable dt = BaseDT.JC_FIRE.GetDTYH(sw);//列表
             var result = new List<JC_FIRE_Model>();
@@ -150,6 +152,8 @@ namespace ManagerSystemClassLibrary
             dt.Dispose();
             return result;
         }
+
+        /// <summary>
         /// 获取监测火情信息和数量
         /// </summary>
         /// <param name="sw"></param>
@@ -206,7 +210,6 @@ namespace ManagerSystemClassLibrary
             return BaseDT.JC_FIRE.GetCount(value, ftype, orgnostr, eqtype);
         }
         #endregion
-
 
         #region 签收（反馈）火情事务
         /// <summary>
@@ -581,7 +584,7 @@ namespace ManagerSystemClassLibrary
         /// </summary>
         /// <param name="sw">JC_FIRE_SW</param>
         /// <returns></returns>
-        public static string  getByorgno(JC_FIRE_SW sw)
+        public static string getByorgno(JC_FIRE_SW sw)
         {
             DataTable dt = BaseDT.JC_FIRE.getBYORGNO(sw);
             JC_FIRE_Model m = new JC_FIRE_Model();

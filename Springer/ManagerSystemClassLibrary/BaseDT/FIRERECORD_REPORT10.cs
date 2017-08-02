@@ -50,12 +50,6 @@ namespace ManagerSystemClassLibrary.BaseDT
                 return new Message(false, "保存失败，事物回滚机制！", "");
             }
 
-            //bool bln = DataBaseClass.ExeSql(sb.ToString());
-            //#endregion;
-            //if (bln == true)
-            //    return new Message(true, "添加成功!", m.returnUrl);
-            //else
-            //    return new Message(false, "添加失败，请检查各输入框是否正确!", m.returnUrl);
         }
             #endregion
         #endregion
@@ -85,23 +79,6 @@ namespace ManagerSystemClassLibrary.BaseDT
             return ds.Tables[0];
         }
         #endregion
-
-        //#region 判断记录是否存在
-        ///// <summary>
-        ///// 判断记录是否存在
-        ///// </summary>
-        ///// <param name="sw">参见模型</param>
-        ///// <returns>true存在 false不存在 </returns>
-        //public static bool isExists(FIRERECORD_FIREINF10_SW sw)
-        //{
-        //    StringBuilder sb = new StringBuilder();
-        //    sb.AppendFormat("select 1 from FIRERECORD_FIREINFO10 where 1=1");
-        //    if (string.IsNullOrEmpty(sw.FIRERECORD_REPORT10ID) == false)
-        //        sb.AppendFormat(" and FIRERECORD_REPORT10ID='{0}'", ClsSql.EncodeSql(sw.FIRERECORD_REPORT10ID));
-        //    return DataBaseClass.JudgeRecordExists(sb.ToString());
-        //}
-        //#endregion
-
 
     }
 }

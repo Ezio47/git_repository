@@ -97,9 +97,10 @@ namespace ManagerSystemClassLibrary.BaseDT
                 string ss = DataBaseClass.ReturnSqlField(sql);
                 OADeptId = OADeptId + ss + ",";
             }
-            OADeptId = OADeptId.Substring(0, OADeptId.Length - 1);
+            if (OADeptId.Length > 1)
+                OADeptId = OADeptId.Substring(0, OADeptId.Length - 1);
             return OADeptId;
-        } 
+        }
         #endregion
 
         #region 获取OA部门编号

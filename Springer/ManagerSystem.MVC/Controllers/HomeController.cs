@@ -35,8 +35,8 @@ namespace ManagerSystem.MVC.Controllers
             }
             else
             {
-                CenterX = "103.354065";
-                CenterY = "23.367718";
+                CenterX = ConfigCls.getConfigValue("Longitude");
+                CenterY = ConfigCls.getConfigValue("Latitude");
             }
             if (string.IsNullOrEmpty(CenterZ) == false)
             {

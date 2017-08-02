@@ -752,7 +752,7 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("</thead>");
 
             IEnumerable<T_SYS_ORGModel>  orglist;
-            if (o.BYORGNO.Substring(4, 5) == "00000")//如果是州级别取市县,否则取乡镇
+            if (o.BYORGNO.Substring(4, 11) == "00000000000")//如果是州级别取市县,否则取乡镇
             {
                  orglist = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { OnlyGetShiXian = "1", TopORGNO = o.BYORGNO });// new List<T_SYS_ORGModel>();
             }
@@ -1023,7 +1023,7 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("</thead>");
 
             IEnumerable<T_SYS_ORGModel> orglist;
-            if (sw.BYORGNO.Substring(4, 5) == "00000")//如果是州级别取市县,否则取乡镇
+            if (sw.BYORGNO.Substring(4, 11) == "00000000000")//如果是州级别取市县,否则取乡镇
             {
                 orglist = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { OnlyGetShiXian = "1", TopORGNO = sw.BYORGNO });
             }
@@ -1319,7 +1319,7 @@ namespace ManagerSystem.MVC.Controllers
         {
             pubViewBag("022007", "022007", "");
             string strOrgno = SystemCls.getCurUserOrgNo();//获取当前用户的组织机构编码  
-            if (strOrgno.Substring(4, 5) == "00000")//如果是州级别取市县,否则取乡镇
+            if (strOrgno.Substring(4, 11) == "00000000000")//如果是州级别取市县,否则取乡镇
             {
                 ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = strOrgno, TopORGNO = SystemCls.getCurUserOrgNo(), OnlyGetShiXian = "1" });
             }
@@ -1432,7 +1432,7 @@ namespace ManagerSystem.MVC.Controllers
             pubViewBag("022008", "022008", "");
             string strOrgno = SystemCls.getCurUserOrgNo();//获取当前用户的组织机构编码
 
-            if (strOrgno.Substring(4, 5) == "00000")//如果是州级别取市县,否则取乡镇
+            if (strOrgno.Substring(4, 11) == "00000000000")//如果是州级别取市县,否则取乡镇
             {
                 ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = strOrgno, TopORGNO = SystemCls.getCurUserOrgNo(), OnlyGetShiXian = "1" });
             }

@@ -104,6 +104,8 @@ namespace ManagerSystemClassLibrary
                 m.FIRERECINFO150 = dt.Rows[i]["FIRERECINFO150"].ToString();
                 m.FIRERECINFO160 = dt.Rows[i]["FIRERECINFO160"].ToString();
                 m.FIRELOSEAREA = dt.Rows[i]["FIRELOSEAREA"].ToString();
+                //m.JD = dt.Rows[i]["JD"].ToString();
+                //m.WD = dt.Rows[i]["WD"].ToString();
             }
             dt.Clear();
             dt.Dispose();
@@ -165,6 +167,8 @@ namespace ManagerSystemClassLibrary
                 m.FIRERECINFO150 = dt.Rows[i]["FIRERECINFO150"].ToString();
                 m.FIRERECINFO160 = dt.Rows[i]["FIRERECINFO160"].ToString();
                 m.FIRELOSEAREA = dt.Rows[i]["FIRELOSEAREA"].ToString();
+                //m.JD = dt.Rows[i]["JD"].ToString();
+                //m.WD = dt.Rows[i]["WD"].ToString();
                 result.Add(m);
             }
             dt.Clear();

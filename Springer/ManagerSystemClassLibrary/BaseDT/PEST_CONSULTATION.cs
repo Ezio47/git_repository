@@ -129,8 +129,7 @@ namespace ManagerSystemClassLibrary.BaseDT
                 sb.AppendFormat(" AND CONSULTIME >= '{0}'", ClsSql.EncodeSql(DateTime.Parse(sw.CONSULSTARTTIME).ToString()));
             if (string.IsNullOrEmpty(sw.CONSULENDTIME) == false)
                 sb.AppendFormat(" AND CONSULTIME <= '{0}'", ClsSql.EncodeSql(DateTime.Parse(sw.CONSULENDTIME).AddDays(1).AddSeconds(-1).ToString()));
-            string sql = "SELECT PEST_CONSULTATIONID, CONSULTITLE, CONSULPHONE, CONSULTIME, CONSULCONTENT"
-                + sb.ToString() + " ORDER BY CONSULTIME DESC ";
+            string sql = "SELECT PEST_CONSULTATIONID, CONSULTITLE, CONSULPHONE, CONSULTIME, CONSULCONTENT" + sb.ToString() + " ORDER BY CONSULTIME DESC ";
             DataSet ds = DataBaseClass.FullDataSet(sql);
             return ds.Tables[0];
         }
@@ -156,10 +155,9 @@ namespace ManagerSystemClassLibrary.BaseDT
                 sb.AppendFormat(" AND CONSULPHONE like '{0}%'", ClsSql.EncodeSql(sw.CONSULPHONE));
             if (string.IsNullOrEmpty(sw.CONSULSTARTTIME) == false)
                 sb.AppendFormat(" AND CONSULTIME >= '{0}'", ClsSql.EncodeSql(DateTime.Parse(sw.CONSULSTARTTIME).ToString()));
-            if(string.IsNullOrEmpty(sw.CONSULENDTIME)==false)
+            if (string.IsNullOrEmpty(sw.CONSULENDTIME) == false)
                 sb.AppendFormat(" AND CONSULTIME <= '{0}'", ClsSql.EncodeSql(DateTime.Parse(sw.CONSULENDTIME).AddDays(1).AddSeconds(-1).ToString()));
-            string sql = "SELECT PEST_CONSULTATIONID, CONSULTITLE, CONSULPHONE, CONSULTIME, CONSULCONTENT"
-                + sb.ToString() + " ORDER BY CONSULTIME DESC ";
+            string sql = "SELECT PEST_CONSULTATIONID, CONSULTITLE, CONSULPHONE, CONSULTIME, CONSULCONTENT" + sb.ToString() + " ORDER BY CONSULTIME DESC ";
             string sqlC = "select count(1) " + sb.ToString();
             total = int.Parse(DataBaseClass.ReturnSqlField(sqlC));
             sw.CurPage = PagerCls.getCurPage(new PagerSW { curPage = sw.CurPage, pageSize = sw.PageSize, rowCount = total });

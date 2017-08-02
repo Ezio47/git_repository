@@ -90,6 +90,7 @@ namespace ManagerSystemClassLibrary.BaseDT
         }
 
         #endregion
+
         #region 获取记录
         /// <summary>
         /// 获取记录

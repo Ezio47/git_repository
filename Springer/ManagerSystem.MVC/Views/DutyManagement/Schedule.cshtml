@@ -633,7 +633,8 @@
                         success: function (data, ioArgs) {
                             var ar = eval('(' + data + ')');
                             if (ar.Success) {
-                                window.location.reload();
+                                //window.location.reload();
+                                location = location;
                                 alert('新建排班成功！');
                             }
                             else {

@@ -251,7 +251,7 @@ namespace ManagerSystemClassLibrary
                 m.BUILDDATEBEGIN = PublicClassLibrary.ClsSwitch.SwitDate(dt.Rows[i]["BUILDDATEBEGIN"].ToString());
                 m.BUILDDATEEND = PublicClassLibrary.ClsSwitch.SwitDate(dt.Rows[i]["BUILDDATEEND"].ToString());
                 m.TREETYPEName = BaseDT.T_SYS_DICT.getName(dt52, m.TREETYPE);
-                if (m.BYORGNO.Substring(6, 3) != "000")
+                if (m.BYORGNO.Substring(6, 3) != "000" && m.BYORGNO.Substring(9, 6) == "000000")
                 {
                     m.ORGName = BaseDT.T_SYS_ORG.getName(dtORG, m.BYORGNO);
 

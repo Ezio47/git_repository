@@ -20,7 +20,7 @@ namespace ManagerSystemClassLibrary.BaseDT
     /// </summary>
     public class YJ_DANGERCLASS
     {
-        #region 增加
+        #region 增、删、改
         /// <summary>
         /// 添加
         /// </summary>
@@ -130,7 +130,7 @@ namespace ManagerSystemClassLibrary.BaseDT
             else
                 return new Message(false, "保存失败，事物回滚机制!", "");
         }
-
+        
         /// <summary>
         /// 批量添加更新
         /// </summary>
@@ -139,7 +139,7 @@ namespace ManagerSystemClassLibrary.BaseDT
         public static Message PLAdd2(YJ_DANGERCLASS_Model m)
         {
             List<string> sqllist = new List<string>();
-            
+
             var arrTOWNNAME = m.TOWNNAME.Split(',');
             var arrBYORGNO = m.BYORGNO.Split(',');
             var arrWEATHER = m.WEATHER.Split(',');
@@ -193,7 +193,6 @@ namespace ManagerSystemClassLibrary.BaseDT
                     sqllist.Add(insertStr);
                 }
             }
-
             var y = DataBaseClass.ExecuteSqlTran(sqllist);
             if (y >= 0)
                 return new Message(true, "保存成功!", "");
@@ -212,65 +211,9 @@ namespace ManagerSystemClassLibrary.BaseDT
             sb.AppendFormat(" DELETE   FROM  YJ_DANGERCLASS  where dcdate='" + m.DCDATE + "'");
             bool bln = DataBaseClass.ExeSql(sb.ToString());
             if (bln == true)
-                return new Message(true, "删除成功！", "");
+                return new Message(true, "删除成功!", "");
             else
-                return new Message(false, "删除失败，请检查各输入框是否正确！", "");
-        }
-
-        /// <summary>
-        /// 获取火险等级记录
-        /// </summary>
-        /// <param name="sw"></param>
-        /// <returns></returns>
-        public static DataTable getDT(YJ_DANGERCLASS_SW sw)
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendFormat(" SELECT DANGERID, DCDATE, BYORGNO, TOWNNAME, JD, WD, DANGERCLASS, TOPTOWNNAME, WEATHER, TEMPREATURE, WINDYSPEED");
-            sb.AppendFormat(" FROM YJ_DANGERCLASS Where 1=1 ");
-            if (!string.IsNullOrEmpty(sw.BYORGNO))
-            {
-                sb.AppendFormat(" And BYORGNO='{0}'", ClsSql.EncodeSql(sw.BYORGNO));
-            }
-            if (!string.IsNullOrEmpty(sw.DANGERCLASS) && sw.DANGERCLASS != "0")
-            {
-                sb.AppendFormat(" And DANGERCLASS='{0}'", ClsSql.EncodeSql(sw.DANGERCLASS));
-            }
-            if (!string.IsNullOrEmpty(sw.DCDATE))
-            {
-                sb.AppendFormat(" And convert(char(10), DCDATE,120)='{0}'", ClsSwitch.SwitDate(sw.DCDATE));
-            }
-            string sql = sb.ToString()
-                + " order by BYORGNO DESC";
-            DataSet ds = DataBaseClass.FullDataSet(sql);
-            return ds.Tables[0];
-        }
-
-        /// <summary>
-        /// 获取数据库中最新的一条火险等级记录
-        /// </summary>
-        /// <param name="sw"></param>
-        /// <returns></returns>
-        public static DataTable getTopDT(YJ_DANGERCLASS_SW sw)
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendFormat(" SELECT top 1 DANGERID, DCDATE, BYORGNO, TOWNNAME, JD, WD, DANGERCLASS, TOPTOWNNAME, WEATHER, TEMPREATURE, WINDYSPEED");
-            sb.AppendFormat(" FROM YJ_DANGERCLASS Where 1=1 ");
-            if (!string.IsNullOrEmpty(sw.BYORGNO))
-            {
-                sb.AppendFormat(" And BYORGNO='{0}'", ClsSql.EncodeSql(sw.BYORGNO));
-            }
-            if (!string.IsNullOrEmpty(sw.DANGERCLASS) && sw.DANGERCLASS != "0")
-            {
-                sb.AppendFormat(" And DANGERCLASS='{0}'", ClsSql.EncodeSql(sw.DANGERCLASS));
-            }
-            if (!string.IsNullOrEmpty(sw.DCDATE))
-            {
-                sb.AppendFormat(" And convert(char(10), DCDATE,120)='{0}'", ClsSwitch.SwitDate(sw.DCDATE));
-            }
-            string sql = sb.ToString()
-                + " order by DCDATE DESC";
-            DataSet ds = DataBaseClass.FullDataSet(sql);
-            return ds.Tables[0];
+                return new Message(false, "删除失败!", "");
         }
 
         /// <summary>
@@ -289,11 +232,11 @@ namespace ManagerSystemClassLibrary.BaseDT
             var i = SDEDataBaseClass.ExecuteSqlTran(sqllist);
             if (i > 0)
             {
-                ms = new Message(true, "处理成功！", "");
+                ms = new Message(true, "处理成功!", "");
             }
             else
             {
-                ms = new Message(false, "处理失败，事物回滚机制！", "");
+                ms = new Message(false, "处理失败，事物回滚机制!", "");
             }
             return ms;
         }
@@ -321,11 +264,11 @@ namespace ManagerSystemClassLibrary.BaseDT
             var j = SDEDataBaseClass.ExecuteSqlTran(sqllist);
             if (j > 0)
             {
-                ms = new Message(true, "保存成功！", "");
+                ms = new Message(true, "保存成功!", "");
             }
             else
             {
-                ms = new Message(false, "保存失败，事物回滚！", "");
+                ms = new Message(false, "保存失败，事物回滚!", "");
             }
             return ms;
         }
@@ -356,15 +299,113 @@ namespace ManagerSystemClassLibrary.BaseDT
             var j = SDEDataBaseClass.ExecuteSqlTran(sqllist);
             if (j >= 0)
             {
-                ms = new Message(true, "保存成功！", "");
+                ms = new Message(true, "保存成功!", "");
             }
             else
             {
-                ms = new Message(false, "保存失败，事物回滚！", "");
+                ms = new Message(false, "保存失败，事物回滚!", "");
             }
             return ms;
         }
+        #endregion
+      
+        #region 获取数据列表
+        /// <summary>
+        /// 获取火险等级记录
+        /// </summary>
+        /// <param name="sw"></param>
+        /// <returns></returns>
+        public static DataTable getDT(YJ_DANGERCLASS_SW sw)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat(" SELECT DANGERID, DCDATE, BYORGNO, TOWNNAME, JD, WD, DANGERCLASS, TOPTOWNNAME, WEATHER, TEMPREATURE, WINDYSPEED");
+            sb.AppendFormat(" FROM YJ_DANGERCLASS Where 1=1 ");
+            if (!string.IsNullOrEmpty(sw.BYORGNO))
+            {
+                sb.AppendFormat(" And BYORGNO='{0}'", ClsSql.EncodeSql(sw.BYORGNO));
+            }
+            if (!string.IsNullOrEmpty(sw.DANGERCLASS) && sw.DANGERCLASS != "0")
+            {
+                sb.AppendFormat(" And DANGERCLASS='{0}'", ClsSql.EncodeSql(sw.DANGERCLASS));
+            }
+            if (!string.IsNullOrEmpty(sw.DCDATE))
+            {
+                sb.AppendFormat(" And convert(char(10), DCDATE,120)='{0}'", ClsSwitch.SwitDate(sw.DCDATE));
+            }
+            string sql = sb.ToString() + " order by BYORGNO DESC";
+            DataSet ds = DataBaseClass.FullDataSet(sql);
+            return ds.Tables[0];
+        }
 
+        /// <summary>
+        /// 获取数据库中最新的一条火险等级记录
+        /// </summary>
+        /// <param name="sw"></param>
+        /// <returns></returns>
+        public static DataTable getTopDT(YJ_DANGERCLASS_SW sw)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat(" SELECT top 1 DANGERID, DCDATE, BYORGNO, TOWNNAME, JD, WD, DANGERCLASS, TOPTOWNNAME, WEATHER, TEMPREATURE, WINDYSPEED");
+            sb.AppendFormat(" FROM YJ_DANGERCLASS Where 1=1 ");
+            if (!string.IsNullOrEmpty(sw.BYORGNO))
+            {
+                sb.AppendFormat(" And BYORGNO='{0}'", ClsSql.EncodeSql(sw.BYORGNO));
+            }
+            if (!string.IsNullOrEmpty(sw.DANGERCLASS) && sw.DANGERCLASS != "0")
+            {
+                sb.AppendFormat(" And DANGERCLASS='{0}'", ClsSql.EncodeSql(sw.DANGERCLASS));
+            }
+            if (!string.IsNullOrEmpty(sw.DCDATE))
+            {
+                sb.AppendFormat(" And convert(char(10), DCDATE,120)='{0}'", ClsSwitch.SwitDate(sw.DCDATE));
+            }
+            string sql = sb.ToString() + " order by DCDATE DESC";
+            DataSet ds = DataBaseClass.FullDataSet(sql);
+            return ds.Tables[0];
+        }
+
+        /// <summary>
+        /// 获取最新数据
+        /// </summary>
+        /// <returns>参见模型</returns>
+        public static DataTable getNewDT(YJ_DANGERCLASS_SW sw)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat(" SELECT DANGERID, DCDATE, BYORGNO, TOWNNAME, JD, WD, DANGERCLASS, TOPTOWNNAME, WEATHER, TEMPREATURE, WINDYSPEED");
+            sb.AppendFormat(" FROM YJ_DANGERCLASS");
+            sb.AppendFormat(" where DCDATE=(select max( DCDATE) from YJ_DANGERCLASS)");
+            string sql = sb.ToString()+ " order by BYORGNO DESC";
+            DataSet ds = DataBaseClass.FullDataSet(sql);
+            return ds.Tables[0];
+        }
+
+        /// <summary>
+        /// 获取某一区域数据
+        /// </summary>
+        /// <returns>参见模型</returns>
+        public static DataTable getNewArea(YJ_DANGERCLASS_SW sw)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat(" SELECT top 1 DANGERID, DCDATE, BYORGNO, TOWNNAME, JD, WD, DANGERCLASS, TOPTOWNNAME, WEATHER, TEMPREATURE, WINDYSPEED");
+            sb.AppendFormat(" FROM YJ_DANGERCLASS Where 1=1 ");
+            if (!string.IsNullOrEmpty(sw.DCDATE) && !string.IsNullOrEmpty(sw.TOWNNAME))
+            {
+                sb.AppendFormat(" AND DCDATE='" + sw.DCDATE + "' and (TOWNNAME='" + sw.TOWNNAME + "')");
+            }
+            else
+            {
+                sb.AppendFormat(" AND TOWNNAME='" + sw.TOWNNAME + "'");
+                //sb.AppendFormat(" AND (DCDATE=(select max(DCDATE) from YJ_DANGERCLASS) or DCDATE=(select max(DCDATE) from YJ_DANGERCLASS where DCDATE!=(select max(DCDATE) from YJ_DANGERCLASS) and TOWNNAME!='" + sw.TOWNNAME + "')) and (TOWNNAME='" + sw.TOWNNAME + "')");
+                //sb.AppendFormat(" AND DCDATE=(select max( DCDATE) from YJ_DANGERCLASS)  and (TOWNNAME='" + sw.TOWNNAME + "')");
+            }
+            string sql = sb.ToString()+ " order by DCDATE DESC";
+            DataSet ds = DataBaseClass.FullDataSet(sql);
+            return ds.Tables[0];
+        }
+
+        #endregion
+
+        #region 火险等级导入
         /// <summary>
         /// 火险等级导入
         /// </summary>
@@ -389,62 +430,15 @@ namespace ManagerSystemClassLibrary.BaseDT
             var i = DataBaseClass.ExecuteSqlTran(sqllist);
             if (i > 0)
             {
-                ms = new Message(true, "处理成功！", "");
+                ms = new Message(true, "处理成功!", "");
             }
             else
             {
-                ms = new Message(false, "处理失败，事物回滚机制！", "");
+                ms = new Message(false, "处理失败，事物回滚机制!", "");
             }
             return ms;
 
         }
-        #endregion
-
-        #region 获取最新数据
-        /// <summary>
-        /// 获取数据
-        /// </summary>
-        /// <returns>参见模型</returns>
-        public static DataTable getNewDT(YJ_DANGERCLASS_SW sw)
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendFormat(" SELECT DANGERID, DCDATE, BYORGNO, TOWNNAME, JD, WD, DANGERCLASS, TOPTOWNNAME, WEATHER, TEMPREATURE, WINDYSPEED");
-            sb.AppendFormat(" FROM YJ_DANGERCLASS");
-            sb.AppendFormat(" where DCDATE=(select max( DCDATE) from YJ_DANGERCLASS)");
-            string sql = sb.ToString()
-                + " order by BYORGNO DESC";
-            DataSet ds = DataBaseClass.FullDataSet(sql);
-            return ds.Tables[0];
-        }
-
-        #endregion
-
-        #region 获取某一区域数据
-        /// <summary>
-        /// 获取数据
-        /// </summary>
-        /// <returns>参见模型</returns>
-        public static DataTable getNewArea(YJ_DANGERCLASS_SW sw)
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendFormat(" SELECT top 1 DANGERID, DCDATE, BYORGNO, TOWNNAME, JD, WD, DANGERCLASS, TOPTOWNNAME, WEATHER, TEMPREATURE, WINDYSPEED");
-            sb.AppendFormat(" FROM YJ_DANGERCLASS Where 1=1 ");
-            if (!string.IsNullOrEmpty(sw.DCDATE) && !string.IsNullOrEmpty(sw.TOWNNAME))
-            {
-                sb.AppendFormat(" AND DCDATE='" + sw.DCDATE + "' and (TOWNNAME='" + sw.TOWNNAME + "')");
-            }
-            else
-            {
-                sb.AppendFormat(" AND TOWNNAME='" + sw.TOWNNAME + "'");
-                //sb.AppendFormat(" AND (DCDATE=(select max(DCDATE) from YJ_DANGERCLASS) or DCDATE=(select max(DCDATE) from YJ_DANGERCLASS where DCDATE!=(select max(DCDATE) from YJ_DANGERCLASS) and TOWNNAME!='" + sw.TOWNNAME + "')) and (TOWNNAME='" + sw.TOWNNAME + "')");
-                //sb.AppendFormat(" AND DCDATE=(select max( DCDATE) from YJ_DANGERCLASS)  and (TOWNNAME='" + sw.TOWNNAME + "')");
-            }
-            string sql = sb.ToString()
-                + " order by DCDATE DESC";
-            DataSet ds = DataBaseClass.FullDataSet(sql);
-            return ds.Tables[0];
-        }
-
         #endregion
 
         #region 火险等级上传
@@ -466,14 +460,10 @@ namespace ManagerSystemClassLibrary.BaseDT
             {
                 throw e;
             }
-
             NPOI.SS.UserModel.ISheet sheet = hssfworkbook.GetSheetAt(0);
-
             int rowCount = sheet.LastRowNum;//LastRowNum = PhysicalNumberOfRows - 1
-
             for (int i = (sheet.FirstRowNum + 1); i <= rowCount; i++)
             {
-
                 IRow row = sheet.GetRow(i);
                 string[] arr = new string[3];
                 for (int k = 0; k < arr.Length; k++)
@@ -492,9 +482,7 @@ namespace ManagerSystemClassLibrary.BaseDT
                 m.TOWNNAME = arr[0];
                 m.DANGERCLASS = arr[1];
                 m.DCDATE = arr[2];
-
                 m.opMethod = "Add";
-
                 YJ_DANGERCLASSCls.Manager(m);
             }
 

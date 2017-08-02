@@ -55,9 +55,9 @@
                 IsOpenOA: document.getElementById("tbxIsOpenOA").value,
                 Page: document.getElementById("selPage").value,
             },
+            dataType: 'json',
             success: function (data, ioArgs) {
-                var ar = eval('(' + data + ')');
-                if (ar.Success) {
+                if (data.Success) {
                     window.location.assign(ar.Url);
                     var _len = $("#OAUserTable tr").length - 1; //行数
                     if (_len <= 0) {
@@ -67,11 +67,11 @@
                     }
                 }
                 else {
-                    alert(ar.Msg);
+                    layer.msg(data.Msg, { icon: 5 });
                 }
             },
             error: function (err, ioArgs) {
-                alert('登录异常');
+                layer.msg("系统异常!", { icon: 5 });
             }
         });
     }
@@ -94,29 +94,29 @@
                 url: '/System/OAUserOpen',
                 timeout: 10000, //10秒后超时，如果为0则永不超时
                 data: { ORGNO: document.getElementById("tbxORGNO").value, UserIDList: UserIDList, Method: 'Open' },
-                type: 'POST',
+                type: 'post',
+                dataType: 'json',
                 success: function (data, ioArgs) {
-                    var ar = eval('(' + data + ')');
-                    if (ar.Success) {
-                        layer.alert(ar.Msg, { icon: 6 });
+                    if (data.Success) {
+                        layer.alert(data.Msg, { icon: 6 });
                         Query()
                     }
                     else {
-                        layer.msg(ar.Msg);
+                        layer.msg(data.Msg, { icon: 5 });
                     }
                 },
                 error: function (err, ioArgs) {
-                    layer.msg("系统异常!");
+                    layer.msg("系统异常!", { icon: 5 });
                 }
             });
         }
         else {
             var _len = $("#OAUserTable tr").length - 1;//行数
             if (_len <= 0) {
-                layer.msg("没有可开通的账号!");
+                layer.msg("没有可开通的账号!", { icon: 5 });
             }
             else {
-                layer.msg("请选择要开通的账号!");
+                layer.msg("请选择要开通的账号!", { icon: 5 });
             }
         }
     }
@@ -128,29 +128,29 @@
                 url: '/System/OAUserClose',
                 timeout: 10000, //10秒后超时，如果为0则永不超时
                 data: { UserIDList: UserIDList },
-                type: 'POST',
+                type: 'post',
+                dataType: 'json',
                 success: function (data, ioArgs) {
-                    var ar = eval('(' + data + ')');
-                    if (ar.Success) {
-                        layer.alert(ar.Msg, { icon: 6 });
+                    if (data.Success) {
+                        layer.msg(data.Msg, { icon: 6 });
                         Query()
                     }
                     else {
-                        layer.msg(ar.Msg);
+                        layer.msg(data.Msg, { icon: 5 });
                     }
                 },
                 error: function (err, ioArgs) {
-                    layer.msg("系统异常!");
+                    layer.msg("系统异常!", { icon: 5 });
                 }
             });
         }
         else {
             var _len = $("#OAUserTable tr").length - 1;//行数
             if (_len <= 0) {
-                layer.msg("没有可禁用的账号!");
+                layer.msg("没有可禁用的账号!", { icon: 5 });
             }
             else {
-                layer.msg("请选择要禁用的账号!");
+                layer.msg("请选择要禁用的账号!", { icon: 5 });
             }
         }
     }
@@ -160,19 +160,19 @@
             url: '/System/OAUserInitPwd',
             timeout: 10000, //10秒后超时，如果为0则永不超时
             data: { UserId: userId, Pwd: pwd },
-            type: 'POST',
+            type: 'post',
+            dataType: 'json',
             success: function (data, ioArgs) {
-                var ar = eval('(' + data + ')');
-                if (ar.Success) {
-                    layer.alert(ar.Msg, { icon: 6 });
+                if (data.Success) {
+                    layer.msg(data.Msg, { icon: 6 });
                     Query()
                 }
                 else {
-                    layer.msg(ar.Msg);
+                    layer.msg(data.Msg, { icon: 5 });
                 }
             },
             error: function (err, ioArgs) {
-                layer.msg("系统异常!");
+                layer.msg("系统异常!", { icon: 5 });
             }
         });
     }

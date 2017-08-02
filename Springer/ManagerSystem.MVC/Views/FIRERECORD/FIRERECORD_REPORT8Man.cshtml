@@ -17,6 +17,7 @@
             <div style=" color: #3c7915;">
                 年份：<input id="tbxREPORTYEAR" type="text" class="Wdate" style="width:100px;" value="@ViewBag.REPORTYEAR" onclick="WdatePicker({ dateFmt: 'yyyy'})" />
                 单位：<select id="tbxBYORGNO" onchange="Query()">@Html.Raw(@ViewBag.vdOrg)</select>&nbsp;&nbsp;&nbsp;
+                <input type="button" class="btnSaveCss" value="保存" onclick="Manager()" id="Save" />
             </div>
         </div>
     </div>
@@ -31,7 +32,7 @@
                 <tr style="width:95%;">
                     <td rowspan="3" style="width:25%;" id="tbx0">森林防火指挥部</td>
                     <td style="width:10%;" id="tbx0">省级</td>
-                    <td style="width:200px;">机构数:&nbsp;&nbsp;<input id="tbx00" type="text" value="0" style="width: 50%;" /> (个)</td>
+                    <td style="width:200px;">机构数:&nbsp;&nbsp;<input id="tbx00" type="text" value="0 " style="width: 50%;" /> (个)</td>
                     <td style="width:200px;">成员数:&nbsp;&nbsp;<input id="tbx01" type="text" value="0" style="width: 50%;" /> (人)</td>
                     <td></td>
                 </tr>
@@ -145,18 +146,22 @@
                 <tr style="width:95%;">
                     <td style="text-align:center;">备注：</td>
                     <td colspan="4">
-                        <input id="tbx013" type="text" value="" style="width: 95%;" />
+                        <input id="tbx013" onkeyup="WriteBeiZhu()"type="text" value="" style="width: 95%;" />
+                        <input id="tbx113" type="hidden" value="" style="width: 95%;" />
+                        <input id="tbx213" type="hidden" value="" style="width: 95%;" />
                     </td>
                 </tr>
             </table>
         </div>
-        <p style="text-align:center;margin-bottom:10px;">
-            <input type="button" class="btnSaveCss" value="保存" onclick="Manager()" id="Save" />
-        </p>
     </div>
 </div>
 
 <script type="text/javascript">
+    function WriteBeiZhu() {
+        document.getElementById('tbx113').value = $("#tbx013").val();
+        document.getElementById('tbx213').value = $("#tbx013").val();
+
+    }
     //验证整数
     function CheckINT1(number) {
         var filter = /^\+?[0-9][0-9]*$/;

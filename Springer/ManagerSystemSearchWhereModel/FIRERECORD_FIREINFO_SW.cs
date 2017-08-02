@@ -174,5 +174,15 @@ namespace ManagerSystemClassLibrary
         /// 每页行数
         /// </summary>
         public int PageSize { get; set; }
+
+
+        /// <summary>
+        /// 经度
+        /// </summary>
+        public string JD { get; set; }
+        /// <summary>
+        /// 纬度
+        /// </summary>
+        public string WD { get; set; }
     }
 }

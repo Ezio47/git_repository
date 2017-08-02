@@ -18,11 +18,10 @@
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
                 <div class="divOP">
                     <div class="home ">
-                        单位：<select id="tbxBYORGNO" onchange="Query()">@Html.Raw(@ViewBag.vdOrg)</select>&nbsp;&nbsp;&nbsp;
                         日期：<input id="tbxYEAR" type="text" class="Wdate" style="width:100px" value="@ViewBag.YEAR" onclick="WdatePicker({ dateFmt: 'yyyy'})" />
                         <input type="button" value="查询" onclick="Query()" class="btnSearchCss" />
                         <input type="button" value="导出" onclick="Export()" id="btnExport" class="btnOutputCss">
-                        <input type="button" value="添加" onclick="Manager('','Add')" class="btnAddCss" />
+                        <input type="button" value="管理" onclick="Manager('','Add')" class="btnAddCss" />
                         <input id="hidFIRERECORD_REPORT8ID" name="hidFIRERECORD_REPORT8ID" type="hidden" value="@ViewBag.FIRERECORD_REPORT8ID" />
                     </div>
                 </div>
@@ -43,7 +42,7 @@
             type: 'get',
             url: '/FIRERECORD/FIRERECORD_REPORT8Query',
             dataType: 'json',
-            data: { YEAR: $('#tbxYEAR').val(),BYORGNO: $('#tbxBYORGNO').val(), },
+            data: { YEAR: $('#tbxYEAR').val(), BYORGNO: $('#tbxBYORGNO').val(), },
             success: function (data, ioArgs) {
                 if (data.Success) {
                     $('#divTable').html("");
