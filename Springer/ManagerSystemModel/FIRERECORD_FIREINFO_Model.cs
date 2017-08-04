@@ -212,6 +212,9 @@ namespace ManagerSystemModel
         /// 纬度
         /// </summary>
         public string WD { get; set; }
-  
+        /// <summary>
+        /// Shape
+        /// </summary>
+        public string Shape{ get; set; }
     }
 }

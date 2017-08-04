@@ -120,7 +120,7 @@
             }
         },
         error: function (err, ioArgs) {
-            alert('登录异常');
+            layer.msg('登录异常', { icon: 5 });
         }
     });
 
@@ -194,17 +194,20 @@
             success: function (data, ioArgs) {
                 var ar = eval('(' + data + ')');
                 if (ar.Success) {
-                    if (confirm(ar.Msg))
+                    layer.confirm(ar.Msg, { icon: 3, title: '提示' }, function (index){
                         var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
                         parent.layer.close(index);
                         window.location.assign(ar.Url);
+                    });
                 }
                 else {
-                    alert(ar.Msg);
+                    layer.msg(ar.Msg, { icon: 5 });
+                    var index = parent.layer.getFrameIndex(window.name);
+                    parent.layer.close(index);
                 }
             },
             error: function (err, ioArgs) {
-                alert('保存异常');
+                layer.msg('保存异常', { icon: 5 });
             }
         });
     }

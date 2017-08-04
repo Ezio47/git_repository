@@ -35,7 +35,7 @@
                     </tr>
                     <tr>
                         <td style="width:78px;">森林火灾编号:</td>
-                        <td style="width:80px;">@ViewBag.FIRECODE</td>
+                        <td style="width:70px;">@ViewBag.FIRECODE</td>
                         <td style="width:78px;">起火单位:</td>
                         <td style="width:80px;">@ViewBag.ORGNAME</td>
                         <td style="width:80px;">起火时间:</td>
@@ -59,22 +59,22 @@
                     <tr>
                         <td>灾区森林总蓄积量:</td>
                         <td>
-                            <input id="TOTALXJL" type="text" value="@Model.TOTALXJL" style="width:80%;" />
+                            <input id="TOTALXJL" type="text" value="@Model.TOTALXJL" style="width:70%;" />
                             <span style="color: gray;">m³</span>
                         </td>
                         <td>森林蓄积损失量:</td>
                         <td>
-                            <input id="XJLLOSE" type="text" value="@Model.XJLLOSE" style="width:80%;" />
+                            <input id="XJLLOSE" type="text" value="@Model.XJLLOSE" style="width:60%;" />
                             <span style="color: gray;">m³</span>
                         </td>
                         <td>灾区总人数:</td>
                         <td>
-                            <input id="TOTALPERSON" type="text" value="@Model.TOTALPERSON" style="width:80%;" />
+                            <input id="TOTALPERSON" type="text" value="@Model.TOTALPERSON" style="width:70%;" />
                             <span style="color: gray;">人</span>
                         </td>
                         <td>伤(亡)人数:</td>
                         <td>
-                            <input id="CASUALTYCOUNT" type="text" value="@Model.CASUALTYCOUNT" style="width:80%;" />
+                            <input id="CASUALTYCOUNT" type="text" value="@Model.CASUALTYCOUNT" style="width:70%;" />
                             <span style="color: gray;">人</span>
                         </td>
                         <td style="width:100px;">火灾受害面积:</td>
@@ -88,12 +88,12 @@
                     <tr>
                         <td>建筑物(或构建物)损失量:</td>
                         <td>
-                            <input id="BUILDINGLOSECOUNT" type="text" value="@Model.BUILDINGLOSECOUNT" style="width:80%;" />
+                            <input id="BUILDINGLOSECOUNT" type="text" value="@Model.BUILDINGLOSECOUNT" style="width:70%;" />
                             <span style="color: gray;">m²</span>
                         </td>
                         <td>机械设备损失量:</td>
                         <td>
-                            <input id="MACHINERYLOSECOUNT" type="text" value="@Model.MACHINERYLOSECOUNT" style="width:65%;" />
+                            <input id="MACHINERYLOSECOUNT" type="text" value="@Model.MACHINERYLOSECOUNT" style="width:60%;" />
                             <span style="color: gray;">台、件</span>
                         </td>
                     </tr>
@@ -121,7 +121,7 @@
                                         <td colspan="2" style="height:40px"><h1 style="width:200px">@title</h1></td>
                                         <td>损失金额:</td>
                                         <td>
-                                            <input id="@sMoney" type="text" value="" style="width:75%;" />
+                                            <input id="@sMoney" type="text" value="" style="width:65%;" />
                                             <span style="color: gray;">(元)</span>
                                         </td>
                                         <td>备注:</td>
@@ -142,7 +142,7 @@
                                             <td colspan="2" style="height:40px;width:100px;"><h1 style="width:200px">@title</h1></td>
                                             <td>损失金额:</td>
                                             <td>
-                                                <input id="@sMoney" type="text" value="" style="width:75%;" />
+                                                <input id="@sMoney" type="text" value="" style="width:65%;" />
                                                 <span style="color: gray;">(元)</span>
                                             </td>
                                             <td>备注:</td>
@@ -197,11 +197,11 @@
     $(function () {
         $('#a001').hide();
         $('#a103').hide();
-        queryMX();
+        query();
     });
 
-    //加载损失明细
-    function queryMX() {
+    //异步加载损失明细
+    function query() {
         var arrDicCount = $('#dicCount').val().split(';');
         var FIREINFOID = $('#FIREINFOID').val();
         for (var i = 0; i < arrDicCount.length; i++) {
@@ -210,7 +210,7 @@
                 $.ajax({
                     type: "get",
                     url: "/DamageAssess/GetSSMX",
-                    data: { FIREINFOID: FIREINFOID, Dic: arrDic[j] },
+                    data: { FIREINFOID: FIREINFOID, Dic: arrDic[j], TYPE: '1' },
                     dataType: "json",
                     async: false,
                     success: function (result) {
@@ -232,6 +232,34 @@
                 });
             }
         }
+        calLossCount()
+    }
+
+    //异步刷新某项损失
+    function queryMX(FIREINFOID, DICTVALUE) {
+        $.ajax({
+            type: "get",
+            url: "/DamageAssess/GetSSMX",
+            data: { FIREINFOID: FIREINFOID, Dic: DICTVALUE, TYPE: '2' },
+            dataType: "json",
+            async: false,
+            success: function (result) {
+                if (result.Success) {
+                    $('#div' + DICTVALUE + '').html(result.Msg)
+                    var arrUrl = result.Url.split(',');
+                    $('#tbxMoney' + DICTVALUE + '').val(arrUrl[0]);
+                    $('#tbxMark' + DICTVALUE + '').val(arrUrl[1]);
+                }
+                else {
+                    $('#div' + DICTVALUE + '').html('');
+                    $('#tbxMoney' + DICTVALUE + '').val('');
+                    $('#tbxMark' + DICTVALUE + '').val('');
+                }
+            },
+            error: function () {
+                layer.msg('系统异常!', { icon: 5 });
+            }
+        });
         calLossCount()
     }
 
@@ -324,9 +352,8 @@
         var AVGLOSSPERCATITAVALUE = "";
         var WOODLANDLOSSAVGVALUE = "";
         var FIRESUPPEFFECTTHAN = "";
-        if (xjlLose != "" && totalXjl != "") {
-            FORESTRESOURCELOSSRATIO = parseFloat(xjlLose) / parseFloat(totalXjl);
-        }
+
+        FORESTRESOURCELOSSRATIO = parseFloat(xjlLose) / parseFloat(totalXjl);
         if (FORESTRESOURCELOSSRATIO > 0) {
             var s1 = FORESTRESOURCELOSSRATIO.toFixed(2).toString();
             $('#HidFORESTRESOURCELOSSRATIO').val(s1)
@@ -346,9 +373,12 @@
             if (totalArea != "") {
                 WOODLANDLOSSAVGVALUE = parseFloat(totalLossCount) / parseFloat(totalArea);
             }
+            if (totalAttack == "") {
+                totalAttack = 0;
+            }
             FIRESUPPEFFECTTHAN = parseFloat(totalAttack) / parseFloat(totalLossCount);
         }
-        if (AVGLOSSPERCATITAVALUE > 0) {
+        if (AVGLOSSPERCATITAVALUE >= 0) {
             var s3 = AVGLOSSPERCATITAVALUE.toFixed(2).toString();
             $('#HidAVGLOSSPERCATITAVALUE').val(s3)
             s3 = s3 + "元/人";
@@ -359,7 +389,7 @@
             $('#AVGLOSSPERCATITAVALUE').html('元/人');
         }
 
-        if (WOODLANDLOSSAVGVALUE > 0) {
+        if (WOODLANDLOSSAVGVALUE >= 0) {
             var s4 = WOODLANDLOSSAVGVALUE.toFixed(2).toString();
             $('#HidWOODLANDLOSSAVGVALUE').val(s4)
             s4 = s4 + "元/hm²";
@@ -370,7 +400,7 @@
             $('#WOODLANDLOSSAVGVALUE').html('元/hm²');
         }
 
-        if (FIRESUPPEFFECTTHAN > 0) {
+        if (FIRESUPPEFFECTTHAN >= 0) {
             var s5 = FIRESUPPEFFECTTHAN.toFixed(2).toString();
             $('#HidFIRESUPPEFFECTTHAN').val(s5)
             var s6 = (parseFloat(s5) * 100).toString();
@@ -437,7 +467,8 @@
             maxmin: true,
             content: url,
             end: function () {
-                end: queryMX();
+                end: queryMX(firInfoId, DICTVALUE);
+                SaveLostType();
             }
         })
     }
@@ -451,11 +482,12 @@
         for (var i = 0; i < arrDicCount.length; i++) {
             var arrDic = arrDicCount[i].split(',');
             for (var j = 0; j < arrDic.length; j++) {
-                var s = $('#tbxMoney' + arrDic[j] + '').val();
-                if (s != "") {
+                var s1 = $('#tbxMoney' + arrDic[j] + '').val();
+                var s2 = $('#tbxMark' + arrDic[j] + '').val();
+                if (s1 != "") {
                     typeCode += arrDic[j] + ",";
-                    loseMoney += s + ',';
-                    mark += $('#tbxMark' + arrDic[j] + '').val() + ',';
+                    loseMoney += s1 + ',';
+                    mark += s2 + ',';
                 }
             }
         }
@@ -617,6 +649,7 @@
             }
         }
         calEvalStandard();
+        SaveLostType();
         $.ajax({
             type: "post",
             url: "/DamageAssess/FIRELOSTINFManager",
@@ -645,8 +678,7 @@
             dataType: "json",
             success: function (re) {
                 if (re.Success) {
-                    $('#FIREINFOID').val(re.Url);
-                    SaveLostType();
+                    $('#FIREINFOID').val(re.Url);                   
                     if (type == 'Save') {
                         layer.msg(re.Msg, { icon: 6 });
                     }

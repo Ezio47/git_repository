@@ -60,14 +60,16 @@ namespace ManagerSystemClassLibrary
             {
                 string AREACODE = dt.Rows[i]["AREACODE"].ToString();
                 string AREANAME = dt.Rows[i]["AREANAME"].ToString();
-                if (AREACODE.Substring(2, 7) == "0000000")
+                if (AREACODE.Substring(2, 13) == "0000000000000")
                     AREANAME = "" + AREANAME;
-                if (AREACODE.Substring(4, 5) == "00000")//获取所有市的
+                if (AREACODE.Substring(4, 11) == "00000000000")//获取所有市的
                     AREANAME = "-" + AREANAME;
-                else if (AREACODE.Substring(6, 3) == "000")//获取所有县的
+                else if (AREACODE.Substring(6, 9) == "000000000")//获取所有县的
                     AREANAME = "--" + AREANAME;
-                else
+                else if (AREACODE.Substring(9, 6) == "000000")//获取所有乡镇的
                     AREANAME = "----" + AREANAME;
+                else
+                    AREANAME = "------" + AREANAME;
 
                 if (sw.CurAREACODE == AREACODE)//判断是否有需要默认选中的项
                     sb.AppendFormat("<option value=\"{0}\" selected>{1}</option>", AREACODE, AREANAME);

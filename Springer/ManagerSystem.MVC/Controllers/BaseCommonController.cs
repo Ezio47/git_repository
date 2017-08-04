@@ -174,7 +174,7 @@ namespace ManagerSystem.MVC.Controllers
             var DANGERCLASS = YJ_DANGERCLASSCls.getModel(new YJ_DANGERCLASS_SW { BYORGNO = BYORGNO }).DANGERCLASS;
             if (string.IsNullOrEmpty(DANGERCLASS))
             {
-                BYORGNO = BYORGNO.Substring(0, 6) + "000";//如果乡镇没有,查市的 
+                BYORGNO = BYORGNO.Substring(0, 6) + "000000000";//如果乡镇没有,查市的 
                 DANGERCLASS = YJ_DANGERCLASSCls.getModel(new YJ_DANGERCLASS_SW { BYORGNO = BYORGNO }).DANGERCLASS;
                 if (string.IsNullOrEmpty(DANGERCLASS))
                 {

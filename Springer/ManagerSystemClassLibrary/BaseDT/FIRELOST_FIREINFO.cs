@@ -173,6 +173,8 @@ namespace ManagerSystemClassLibrary.BaseDT
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat(" FROM FIRELOST_FIREINFO  WHERE 1=1");
+            if (string.IsNullOrEmpty(sw.FIRELOST_FIREINFOID)==false)
+                sb.AppendFormat(" AND FIRELOST_FIREINFOID = '{0}'", ClsSql.EncodeSql(sw.FIRELOST_FIREINFOID));
             if (string.IsNullOrEmpty(sw.JCFID) == false)
                 sb.AppendFormat(" AND JCFID = '{0}'", ClsSql.EncodeSql(sw.JCFID));
             string sql = "SELECT * " + sb.ToString() + " order by FIRELOST_FIREINFOID ";

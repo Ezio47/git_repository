@@ -580,28 +580,25 @@ namespace ManagerSystemClassLibrary
             if (string.IsNullOrEmpty(orgno))
             {
                 var str = "";
+                if (PublicCls.OrgIsZhen(curUserOrg))
+                    str = PublicCls.GetOrgNameByOrgNO(curUserOrg.Substring(0, 6) + "000000000");
+                else
+                    str = PublicCls.GetOrgNameByOrgNO(curUserOrg);
+
+                JObject root = new JObject();
                 if (PublicCls.OrgIsShi(curUserOrg))
                 {
-                    str = "州";
-                }
-                else if (PublicCls.OrgIsXian(curUserOrg))
-                {
-                    str = PublicCls.GetOrgNameByOrgNO(curUserOrg);
-                }
-                else
-                {
-                    str = PublicCls.GetOrgNameByOrgNO(curUserOrg.Substring(0, 6) + "000000000");
-                }
-                JObject root = new JObject
+                     root = new JObject
                      {
                          {"id","1111"},//ORGNO
-                         {"text",str+"视频监控列表"}  
+                         {"text",str}  
                      };
-
+                }
+                
                 var resultlist = JC_MONITORCls.getListModel(new JC_MONITOR_BASICINFO_SW { BYORGNO = curUserOrg }); //获取所有有权限的监控摄像
                 if (resultlist.Any())
                 {
-                    var devOrgSXList = resultlist.Select(p => p.BYORGNO.Substring(0, 6) + "00000000").Distinct();
+                    var devOrgSXList = resultlist.Select(p => p.BYORGNO.Substring(0, 6) + "000000000").Distinct();
                     if (devOrgSXList.Any())
                     {
                         JArray devSXArrary = new JArray();
@@ -614,7 +611,7 @@ namespace ManagerSystemClassLibrary
                                 //{"state","closed"} 
                             };
                             var devOrgXZList = resultlist.Select(p => new { p.BYORGNO, p.ORGNAME }).Distinct()
-                                .Where(p => p.BYORGNO.Substring(0, 6) + "00000000" == orgsx);
+                                .Where(p => p.BYORGNO.Substring(0, 6) + "000000000" == orgsx);
                             if (devOrgXZList.Any())
                             {
                                 JArray devXZArrary = new JArray();
@@ -641,18 +638,30 @@ namespace ManagerSystemClassLibrary
                                             devArrary.Add(rootDevice);
                                         }
                                         rootXZ.Add("children", devArrary);
+                                        if (PublicCls.OrgIsZhen(curUserOrg))//乡镇级用户
+                                        {
+                                            jObjects.Add(rootXZ);
+                                            break;
+                                        }
                                         devXZArrary.Add(rootXZ);
                                     }
 
                                 }
                                 rootSX.Add("children", devXZArrary);
+                                if (PublicCls.OrgIsXian(curUserOrg))//县级用户
+                                {
+                                    jObjects.Add(rootSX);
+                                    break;
+                                }
                                 devSXArrary.Add(rootSX);
                             }
                         }
-                        root.Add("children", devSXArrary);
+                        if (PublicCls.OrgIsShi(curUserOrg))//市级用户
+                            root.Add("children", devSXArrary);
                     }
-                }
-                jObjects.Add(root);
+                    if (PublicCls.OrgIsShi(curUserOrg))
+                        jObjects.Add(root);
+                }               
             }
             else
             {
@@ -660,7 +669,7 @@ namespace ManagerSystemClassLibrary
                 JObject root = new JObject
                      {
                          {"id","1111"},//ORGNO
-                         {"text",str+"视频监控列表"}  
+                         {"text",str}  
                      };
                 var devlist = JC_MONITORCls.getListModel(new JC_MONITOR_BASICINFO_SW { BYORGNO = curUserOrg, EMID = eid }); //获取所有有权限的监控摄像
                 if (devlist.Any())

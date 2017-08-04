@@ -147,9 +147,11 @@ namespace ManagerSystem.MVC.Controllers
         {
             string FIREINFOID = Request.Params["FIREINFOID"];
             string Dic = Request.Params["Dic"];
+            string Type = Request.Params["TYPE"];
             StringBuilder sb = new StringBuilder();
             FIRELOST_LOSTTYPECOUNT_Model m = new FIRELOST_LOSTTYPECOUNT_Model();
             string louseMoney = "", mark = "";
+            float money = 0;
 
             #region 直接损失
 
@@ -182,6 +184,7 @@ namespace ManagerSystem.MVC.Controllers
                         sb.AppendFormat("</tr>");
                     }
                     sb.AppendFormat("</table>");
+                    money = result.Sum(a => float.Parse(a.LOSEMONEYCOUNT));
                 }
             }
             #endregion
@@ -209,6 +212,7 @@ namespace ManagerSystem.MVC.Controllers
                     }
                     sb.AppendFormat("</table>");
                 }
+                money = result.Sum(a => float.Parse(a.LOSEMONEYCOUNT));
             }
             #endregion
 
@@ -235,6 +239,7 @@ namespace ManagerSystem.MVC.Controllers
                     }
                     sb.AppendFormat("</table>");
                 }
+                money = result.Sum(a => float.Parse(a.LOSEMONEYCOUNT));
             }
             #endregion
 
@@ -260,6 +265,7 @@ namespace ManagerSystem.MVC.Controllers
                     }
                     sb.AppendFormat("</table>");
                 }
+                money = result.Sum(a => float.Parse(a.LOSEMONEYCOUNT));
             }
             #endregion
 
@@ -302,6 +308,7 @@ namespace ManagerSystem.MVC.Controllers
                     }
                     sb.AppendFormat("</table>");
                 }
+                money = result.Sum(a => float.Parse(a.LOSEMONEYCOUNT));
             }
             #endregion
 
@@ -387,6 +394,8 @@ namespace ManagerSystem.MVC.Controllers
                     }
                     sb.AppendFormat("</table>");
                 }
+                money = result1.Sum(a => float.Parse(a.LOSEMONEYCOUNT)) + result2.Sum(a => float.Parse(a.LOSEMONEYCOUNT)) + result3.Sum(a => float.Parse(a.LOSEMONEYCOUNT))
+                    + result4.Sum(a => float.Parse(a.LOSEMONEYCOUNT)) + result5.Sum(a => float.Parse(a.LOSEMONEYCOUNT)) + result6.Sum(a => float.Parse(a.LOSEMONEYCOUNT));
             }
             #endregion
 
@@ -412,6 +421,7 @@ namespace ManagerSystem.MVC.Controllers
                     }
                     sb.AppendFormat("</table>");
                 }
+                money = result.Sum(a => float.Parse(a.LOSEMONEYCOUNT));
             }
             #endregion
 
@@ -439,6 +449,7 @@ namespace ManagerSystem.MVC.Controllers
                     }
                     sb.AppendFormat("</table>");
                 }
+                money = result.Sum(a => float.Parse(a.LOSEMONEYCOUNT));
             }
             #endregion
 
@@ -465,6 +476,7 @@ namespace ManagerSystem.MVC.Controllers
                     }
                     sb.AppendFormat("</table>");
                 }
+                money = result.Sum(a => float.Parse(a.LOSEMONEYCOUNT));
             }
             #endregion
 
@@ -554,11 +566,14 @@ namespace ManagerSystem.MVC.Controllers
             m = FIRELOST_LOSTTYPECOUNTCls.getModel(new FIRELOST_LOSTTYPECOUNT_SW { FIRELOST_FIREINFOID = FIREINFOID, FIRELOSETYPECODE = Dic });
             if (m != null)
             {
-                louseMoney = !string.IsNullOrEmpty(m.LOSEMONEY) ? m.LOSEMONEY : "";
+                louseMoney = !string.IsNullOrEmpty(m.LOSEMONEY) && m.LOSEMONEY != "0" ? m.LOSEMONEY : "";
                 mark = !string.IsNullOrEmpty(m.MARK) ? m.MARK : "";
             }
 
-            return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), louseMoney + "," + mark)), "text/html;charset=UTF-8");
+            if (Type == "1")
+                return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), louseMoney + "," + mark)), "text/html;charset=UTF-8");
+            else
+                return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), money > 0 ? money.ToString() + "," + mark : "" + "," + mark)), "text/html;charset=UTF-8");
         }
 
         /// <summary>
@@ -3014,7 +3029,10 @@ namespace ManagerSystem.MVC.Controllers
             m = FIRERECORD_FIREINFOCls.getModel(new FIRERECORD_FIREINFO_SW { JCFID = JCFID });
             model = FIRELOST_FIREINFOCls.getModel(new FIRELOST_FIREINFO_SW { JCFID = JCFID });
             if (string.IsNullOrEmpty(model.FIRELOST_FIREINFOID))
-                model.FIRELOST_FIREINFOID = FIRELOST_FIREINFOCls.Manager(new FIRELOST_FIREINFO_Model { JCFID = JCFID, opMethod = "Init" }).Url;
+            {
+                string fireInfoId = FIRELOST_FIREINFOCls.Manager(new FIRELOST_FIREINFO_Model { JCFID = JCFID, opMethod = "Init" }).Url;
+                model = FIRELOST_FIREINFOCls.getModel(new FIRELOST_FIREINFO_SW { FIRELOST_FIREINFOID = fireInfoId });
+            }
             if (model.TOTALAREA == "0") { model.TOTALAREA = ""; }
             if (model.FIREAREA == "0") { model.FIREAREA = ""; }
             if (model.FIRELOSEAREA == "0") { model.FIRELOSEAREA = ""; }

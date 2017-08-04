@@ -17,6 +17,7 @@
             <div style=" color: #3c7915;">
                 年份：<input id="tbxREPORTYEAR" type="text" class="Wdate" style="width:100px;" value="@ViewBag.REPORTYEAR" onclick="WdatePicker({ dateFmt: 'yyyy'})" />
                 单位：<select id="tbxBYORGNO" onchange="Query()">@Html.Raw(@ViewBag.vdOrg)</select>&nbsp;&nbsp;&nbsp;
+                <input type="button" value="查询" onclick="Query()" class="btnSearchCss" />
                 <input type="button" class="btnSaveCss" value="保存" onclick="Manager()" id="Save" />
             </div>
         </div>
@@ -32,121 +33,121 @@
                 <tr style="width:95%;">
                     <td rowspan="3" style="width:25%;" id="tbx0">森林防火指挥部</td>
                     <td style="width:10%;" id="tbx0">省级</td>
-                    <td style="width:200px;">机构数:&nbsp;&nbsp;<input id="tbx00" type="text" value="0 " style="width: 50%;" /> (个)</td>
-                    <td style="width:200px;">成员数:&nbsp;&nbsp;<input id="tbx01" type="text" value="0" style="width: 50%;" /> (人)</td>
+                    <td style="width:200px;">机构数:&nbsp;&nbsp;<input id="tbx00" type="text" value=" " style="width: 50%;" /> (个)</td>
+                    <td style="width:200px;">成员数:&nbsp;&nbsp;<input id="tbx01" type="text" value="" style="width: 50%;" /> (人)</td>
                     <td></td>
                 </tr>
                 <tr style="width:95%;">
                     <td id="tbx1">地级</td>
-                    <td>机构数:&nbsp;&nbsp;<input id="tbx10" type="text" value="0" style="width: 50%;" /> (个)</td>
-                    <td>成员数:&nbsp;&nbsp;<input id="tbx11" type="text" value="0" style="width: 50%;" /> (人)</td>
+                    <td>机构数:&nbsp;&nbsp;<input id="tbx10" type="text" value="" style="width: 50%;" /> (个)</td>
+                    <td>成员数:&nbsp;&nbsp;<input id="tbx11" type="text" value="" style="width: 50%;" /> (人)</td>
                     <td></td>
                 </tr>
                 <tr style="width:95%;">
                     <td id="tbx2">县级</td>
-                    <td>机构数:&nbsp;&nbsp;<input id="tbx20" type="text" value="0" style="width: 50%;" /> (个)</td>
-                    <td>成员数:&nbsp;&nbsp;<input id="tbx21" type="text" value="0" style="width: 50%;" /> (人)</td>
+                    <td>机构数:&nbsp;&nbsp;<input id="tbx20" type="text" value="" style="width: 50%;" /> (个)</td>
+                    <td>成员数:&nbsp;&nbsp;<input id="tbx21" type="text" value="" style="width: 50%;" /> (人)</td>
                     <td></td>
                 </tr>
                 <tr style="width:95%;">
                     <td rowspan="3" style="width:25%;" id="tbx1">森林防火办事机构</td>
                     <td style="width:10%;" id="tbx">省级</td>
-                    <td style="width:200px;">机构数:&nbsp;&nbsp;<input id="tbx02" type="text" value="0" style="width: 50%;" /> (个)</td>
-                    <td style="width:200px;">编制数:&nbsp;&nbsp;<input id="tbx03" type="text" value="0" style="width: 50%;" /> (人)</td>
-                    <td style="width:200px;">实有数:&nbsp;&nbsp;<input id="tbx04" type="text" value="0" style="width: 50%;" /> (人)</td>
+                    <td style="width:200px;">机构数:&nbsp;&nbsp;<input id="tbx02" type="text" value="" style="width: 50%;" /> (个)</td>
+                    <td style="width:200px;">编制数:&nbsp;&nbsp;<input id="tbx03" type="text" value="" style="width: 50%;" /> (人)</td>
+                    <td style="width:200px;">实有数:&nbsp;&nbsp;<input id="tbx04" type="text" value="" style="width: 50%;" /> (人)</td>
                 </tr>
                 <tr style="width:95%;">
                     <td id="tbx">地级</td>
-                    <td>机构数:&nbsp;&nbsp;<input id="tbx12" type="text" value="0" style="width:50%;" /> (个)</td>
-                    <td>编制数:&nbsp;&nbsp;<input id="tbx13" type="text" value="0" style="width:50%;" /> (人)</td>
-                    <td>实有数:&nbsp;&nbsp;<input id="tbx14" type="text" value="0" style="width: 50%;" /> (人)</td>
+                    <td>机构数:&nbsp;&nbsp;<input id="tbx12" type="text" value="" style="width:50%;" /> (个)</td>
+                    <td>编制数:&nbsp;&nbsp;<input id="tbx13" type="text" value="" style="width:50%;" /> (人)</td>
+                    <td>实有数:&nbsp;&nbsp;<input id="tbx14" type="text" value="" style="width: 50%;" /> (人)</td>
                 </tr>
                 <tr style="width:95%;">
                     <td id="tbx13">县级</td>
-                    <td>机构数:&nbsp;&nbsp;<input id="tbx22" type="text" value="0" style="width:50%;" /> (个)</td>
-                    <td>编制数:&nbsp;&nbsp;<input id="tbx23" type="text" value="0" style="width: 50%;" /> (人)</td>
-                    <td>实有数:&nbsp;&nbsp;<input id="tbx24" type="text" value="0" style="width: 50%;" /> (人)</td>
+                    <td>机构数:&nbsp;&nbsp;<input id="tbx22" type="text" value="" style="width:50%;" /> (个)</td>
+                    <td>编制数:&nbsp;&nbsp;<input id="tbx23" type="text" value="" style="width: 50%;" /> (人)</td>
+                    <td>实有数:&nbsp;&nbsp;<input id="tbx24" type="text" value="" style="width: 50%;" /> (人)</td>
                 </tr>
                 <tr style="width:95%;">
                     <td rowspan="3" style="width:25%;" id="tbx2">防火检查站</td>
                     <td style="width:10%;" id="tbx">省级</td>
-                    <td>机构数:&nbsp;&nbsp;<input id="tbx05" type="text" value="0" style="width: 50%;" /> (个)</td>
-                    <td>&nbsp;&nbsp;人 数:&nbsp;&nbsp;<input id="tbx06" name="0" type="text" value="0" style="width: 50%;" /> (人)</td>
+                    <td>机构数:&nbsp;&nbsp;<input id="tbx05" type="text" value="" style="width: 50%;" /> (个)</td>
+                    <td>&nbsp;&nbsp;人 数:&nbsp;&nbsp;<input id="tbx06" name="" type="text" value="" style="width: 50%;" /> (人)</td>
                     <td></td>
                 </tr>
                 <tr style="width:95%;">
                     <td id="tbx">地级</td>
-                    <td>机构数:&nbsp;&nbsp;<input id="tbx15" type="text" value="0" style="width: 50%;" /> (个)</td>
-                    <td>&nbsp;&nbsp;人 数:&nbsp;&nbsp;<input id="tbx16" name="" type="text" value="0" style="width: 50%;" /> (人)</td>
+                    <td>机构数:&nbsp;&nbsp;<input id="tbx15" type="text" value="" style="width: 50%;" /> (个)</td>
+                    <td>&nbsp;&nbsp;人 数:&nbsp;&nbsp;<input id="tbx16" type="text" value="" style="width: 50%;" /> (人)</td>
                     <td></td>
                 </tr>
                 <tr style="width:95%;">
                     <td id="tbx23">县级</td>
-                    <td>机构数:&nbsp;&nbsp;<input id="tbx25" type="text" value="0" style="width: 50%;" /> (个)</td>
-                    <td>&nbsp;&nbsp;人 数:&nbsp;&nbsp;<input id="tbx26" name="" type="text" value="0" style="width: 50%;" /> (人)</td>
+                    <td>机构数:&nbsp;&nbsp;<input id="tbx25" type="text" value="" style="width: 50%;" /> (个)</td>
+                    <td>&nbsp;&nbsp;人 数:&nbsp;&nbsp;<input id="tbx26" type="text" value="" style="width: 50%;" /> (人)</td>
                     <td></td>
                 </tr>
                 <tr style="width:95%;">
                     <td rowspan="3" style="width:25%;" id="tbx3">专业(半专业)森林消防队</td>
                     <td style="width:10%;" id="tbx">省级</td>
-                    <td>&nbsp;&nbsp;队 数:&nbsp;&nbsp;<input id="tbx07" type="text" value="0" style="width: 50%;" /> (个)</td>
-                    <td>&nbsp;&nbsp;人 数:&nbsp;&nbsp;<input id="tbx08" type="text" value="0" style="width: 50%;" /> (人)</td>
+                    <td>&nbsp;&nbsp;队 数:&nbsp;&nbsp;<input id="tbx07" type="text" value="" style="width: 50%;" /> (个)</td>
+                    <td>&nbsp;&nbsp;人 数:&nbsp;&nbsp;<input id="tbx08" type="text" value="" style="width: 50%;" /> (人)</td>
                     <td></td>
                 </tr>
                 <tr style="width:95%;">
                     <td id="tbx32">地级</td>
-                    <td>&nbsp;&nbsp;队 数:&nbsp;&nbsp;<input id="tbx17" type="text" value="0" style="width: 50%;" /> (个)</td>
-                    <td>&nbsp;&nbsp;人 数:&nbsp;&nbsp;<input id="tbx18" type="text" value="0" style="width: 50%;" /> (人)</td>
+                    <td>&nbsp;&nbsp;队 数:&nbsp;&nbsp;<input id="tbx17" type="text" value="" style="width: 50%;" /> (个)</td>
+                    <td>&nbsp;&nbsp;人 数:&nbsp;&nbsp;<input id="tbx18" type="text" value="" style="width: 50%;" /> (人)</td>
                     <td></td>
                 </tr>
                 <tr style="width:95%;">
                     <td id="tbx33">县级</td>
-                    <td>&nbsp;&nbsp;队 数:&nbsp;&nbsp;<input id="tbx27" type="text" value="0" style="width: 50%;" /> (个)</td>
-                    <td>&nbsp;&nbsp;人 数:&nbsp;&nbsp;<input id="tbx28" type="text" value="0" style="width: 50%;" /> (人)</td>
+                    <td>&nbsp;&nbsp;队 数:&nbsp;&nbsp;<input id="tbx27" type="text" value="" style="width: 50%;" /> (个)</td>
+                    <td>&nbsp;&nbsp;人 数:&nbsp;&nbsp;<input id="tbx28" type="text" value="" style="width: 50%;" /> (人)</td>
                     <td></td>
                 </tr>
                 <tr style="width:95%;">
                     <td rowspan="3" style="width:25%;" id="tbx4">义务森林消防队</td>
                     <td style="width:10%;" id="tbx">省级</td>
-                    <td>&nbsp;&nbsp;队 数:&nbsp;&nbsp;<input id="tbx09" type="text" value="0" style="width: 50%;" /> (个)</td>
-                    <td>&nbsp;&nbsp;人 数:&nbsp;&nbsp;<input id="tbx010" type="text" value="0" style="width: 50%;" /> (人)</td>
+                    <td>&nbsp;&nbsp;队 数:&nbsp;&nbsp;<input id="tbx09" type="text" value="" style="width: 50%;" /> (个)</td>
+                    <td>&nbsp;&nbsp;人 数:&nbsp;&nbsp;<input id="tbx010" type="text" value="" style="width: 50%;" /> (人)</td>
                     <td></td>
                 </tr>
                 <tr style="width:95%;">
                     <td id="tbx42">地级</td>
-                    <td>&nbsp;&nbsp;队 数:&nbsp;&nbsp;<input id="tbx19" type="text" value="0" style="width: 50%;" /> (个)</td>
-                    <td>&nbsp;&nbsp;人 数:&nbsp;&nbsp;<input id="tbx110" type="text" value="0" style="width: 50%;" /> (人)</td>
+                    <td>&nbsp;&nbsp;队 数:&nbsp;&nbsp;<input id="tbx19" type="text" value="" style="width: 50%;" /> (个)</td>
+                    <td>&nbsp;&nbsp;人 数:&nbsp;&nbsp;<input id="tbx110" type="text" value="" style="width: 50%;" /> (人)</td>
                     <td></td>
                 </tr>
                 <tr style="width:95%;">
                     <td id="tbx43">县级</td>
-                    <td>&nbsp;&nbsp;队 数:&nbsp;&nbsp;<input id="tbx29" type="text" value="0" style="width: 50%;" /> (个)</td>
-                    <td>&nbsp;&nbsp;人 数:&nbsp;&nbsp;<input id="tbx210" type="text" value="0" style="width: 50%;" /> (人)</td>
+                    <td>&nbsp;&nbsp;队 数:&nbsp;&nbsp;<input id="tbx29" type="text" value="" style="width: 50%;" /> (个)</td>
+                    <td>&nbsp;&nbsp;人 数:&nbsp;&nbsp;<input id="tbx210" type="text" value="" style="width: 50%;" /> (人)</td>
                     <td></td>
                 </tr>
                 <tr style="width:95%;">
                     <td rowspan="3" style="width:25%;" id="tbx5">护林员（人）</td>
                     <td style="width:10%;" id="tbx">省级</td>
-                    <td>&nbsp;&nbsp;专 职:&nbsp;&nbsp;<input id="tbx011" type="text" value="0" style="width: 50%;" /> (人)</td>
-                    <td>&nbsp;&nbsp;兼 职:&nbsp;&nbsp;<input id="tbx012" type="text" value="0" style="width: 50%;" /> (人)</td>
+                    <td>&nbsp;&nbsp;专 职:&nbsp;&nbsp;<input id="tbx011" type="text" value="" style="width: 50%;" /> (人)</td>
+                    <td>&nbsp;&nbsp;兼 职:&nbsp;&nbsp;<input id="tbx012" type="text" value="" style="width: 50%;" /> (人)</td>
                     <td></td>
                 </tr>
                 <tr style="width:95%;">
                     <td id="tbx">地级</td>
-                    <td>&nbsp;&nbsp;专 职:&nbsp;&nbsp;<input id="tbx111" type="text" value="0" style="width: 50%;" /> (人)</td>
-                    <td>&nbsp;&nbsp;兼 职:&nbsp;&nbsp;<input id="tbx112" type="text" value="0" style="width: 50%;" /> (人)</td>
+                    <td>&nbsp;&nbsp;专 职:&nbsp;&nbsp;<input id="tbx111" type="text" value="" style="width: 50%;" /> (人)</td>
+                    <td>&nbsp;&nbsp;兼 职:&nbsp;&nbsp;<input id="tbx112" type="text" value="" style="width: 50%;" /> (人)</td>
                     <td></td>
                 </tr>
                 <tr style="width:95%;">
                     <td id="tbx">县级</td>
-                    <td>&nbsp;&nbsp;专 职:&nbsp;&nbsp;<input id="tbx211" type="text" value="0" style="width: 50%;" /> (人)</td>
-                    <td>&nbsp;&nbsp;兼 职:&nbsp;&nbsp;<input id="tbx212" type="text" value="0" style="width: 50%;" /> (人)</td>
+                    <td>&nbsp;&nbsp;专 职:&nbsp;&nbsp;<input id="tbx211" type="text" value="" style="width: 50%;" /> (人)</td>
+                    <td>&nbsp;&nbsp;兼 职:&nbsp;&nbsp;<input id="tbx212" type="text" value="" style="width: 50%;" /> (人)</td>
                     <td></td>
                 </tr>
                 <tr style="width:95%;">
                     <td style="text-align:center;">备注：</td>
                     <td colspan="4">
-                        <input id="tbx013" onkeyup="WriteBeiZhu()"type="text" value="" style="width: 95%;" />
+                        <input id="tbx013" onkeyup="WriteBeiZhu()" type="text" value="" style="width: 95%;" />
                         <input id="tbx113" type="hidden" value="" style="width: 95%;" />
                         <input id="tbx213" type="hidden" value="" style="width: 95%;" />
                     </td>
@@ -157,6 +158,61 @@
 </div>
 
 <script type="text/javascript">
+    if ('@ViewBag.Method' == 'Add') {
+        var REPORTYEAR = $("#tbxREPORTYEAR").val();
+        var BYORGNO = $("#tbxBYORGNO").val();
+        $.ajax({
+            url: '/FIRERECORD/GetReport8json',
+            cache: false,
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: { REPORTYEAR: REPORTYEAR, BYORGNO: BYORGNO },//'ViewBag.REOPRTYEAR'
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                console.info(ar);
+                if (ar.REPORTYEAR != null && BYORGNO !== null) {
+                    for (var x = 0; x < dic305Count; x++) {
+                        for (var y = 0; y < dic310Count; y++) {
+                            var temp = x.toString() + y.toString();
+                            //document.getElementById('tbx' + temp+'' ).value = ar.REPORTVALUE;
+                            $('#tbx' + temp + '').val(ar[i].REPORTVALUE);
+                        }
+                    }
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("登录异常", { icon: 5 });
+
+            }
+        });
+    }
+
+    Query();
+    function Query() {
+        var REPORTYEAR = $("#tbxREPORTYEAR").val();
+        var BYORGNO = $("#tbxBYORGNO").val();
+        $.ajax({
+            type: 'get',
+            url: '/FIRERECORD/GetReport8json',
+            dataType: 'json',
+            data: { REPORTYEAR: REPORTYEAR, BYORGNO: BYORGNO },//'ViewBag.REOPRTYEAR'
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.REPORTYEAR != null && BYORGNO !== null) {
+                    for (var x = 0; x < dic305Count; x++) {
+                        for (var y = 0; y < dic310Count; y++) {
+                            var temp = x.toString() + y.toString();
+
+                           // $('#tbx' + temp + '').val() = ar.REPORTVALUE;
+                        }
+                    }
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("查询异常!", { icon: 5 });
+            }
+        });
+    }
+
     function WriteBeiZhu() {
         document.getElementById('tbx113').value = $("#tbx013").val();
         document.getElementById('tbx213').value = $("#tbx013").val();
@@ -170,6 +226,7 @@
             return false;
         }
     }
+
     function Manager() {
         var dic305Value = $('#dic305Value').val().split(',');
         var dic305Count = $('#dic305Count').val();
@@ -243,5 +300,7 @@
                 layer.msg('系统异常!', { icon: 5 });
             }
         });
+
     }
+
 </script>

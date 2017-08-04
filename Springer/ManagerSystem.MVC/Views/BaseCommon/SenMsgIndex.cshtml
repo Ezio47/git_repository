@@ -3,6 +3,7 @@
     Layout = null;
 }
 @Scripts.Render("~/bundles/jquery")
+
 <script src="~/Scripts/jquery-easyui-1.4/jquery.easyui.min.js"></script>
 <script src="~/Scripts/jquery-easyui-1.4/locale/easyui-lang-zh_CN.js"></script>
 <script src="~/Scripts/jquery-easyui-1.4/validateHelper.js"></script>
@@ -10,6 +11,7 @@
 <link href="~/Content/themes/easyui/easyui.css" rel="stylesheet" />
 <link href="~/Content/themes/easyui/color.css" rel="stylesheet" />
 <link href="~/Content/themes/easyui/icon.css" rel="stylesheet" />
+
 
 <style type="text/css">
     body, table, th, tr, td {
@@ -67,9 +69,7 @@
                 }
 </style>
 
-
 <div class="xbsx">
-    @*<h1>火情基本信息</h1>*@
     <table cellpadding="0" cellspacing="0">
         <tbody>
             <tr>
@@ -93,12 +93,17 @@
         </tbody>
     </table>
 </div>
+
 <div id="dd" class="easyui-dialog" title="短信模板" style="width: 550px; height: 400px; display: none; top: 50px" data-options="closed:true,resizable:true,modal:true">
     <div id="scmbgrid"></div>
 </div>
 
-
 <script type="text/javascript">
+    $(function () {
+        var phone = getUrlParam("phoneno");
+        $('#fsPhoneNO').text(phone);
+    });
+
     //获取url中的参数
     function getUrlParam(name) {
         var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
@@ -106,10 +111,6 @@
         if (r != null) return unescape(r[2]); return null; //返回参数值
     }
 
-    $(function () {
-        var phone = getUrlParam("phoneno");
-        $('#fsPhoneNO').text(phone);
-    });
     var scmbgrid;
     function openscmb() {
         //短信模板
@@ -120,7 +121,8 @@
             striped: true, //奇偶行是否区分
             columns: [[
               { field: 'EM_MESSAGEID', title: '自定义短信模板编码', width: 40, sortable: true, hidden: true },
-            { field: 'MessageContent', title: '短信内容', width: 250, sortable: true }]],
+              { field: 'MessageContent', title: '短信内容', width: 250, sortable: true }
+            ]],
             fit: true,
             remoteSort: false,
             pagination: true,//显示分页栏。
@@ -133,34 +135,32 @@
                 handler: function () {
                     var arr = scmbgrid.datagrid('getSelections');
                     if (arr.length == 0) {
-                        $.messager.alert('提示', '请选择要删除的记录！');
+                        layer.msg('请选择要删除的记录!', { icon: 5 });
                     }
                     else if (arr.length > 1) {
-                        $.messager.alert('提示', '请选择一条要删除的记录！');
-                    } else {
-                        $.messager.confirm('确认', '是否要删除这条记录?', function (r) {
-                            if (r) {
-                                $.ajax({
-                                    url: '/Email/MessageManger',
-                                    data: {
-                                        EM_MESSAGEID: arr[0].EM_MESSAGEID,
-                                        Method: 'Del'
-                                        @*returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)'*@
-                                    },
-                                    type: 'post',
-                                    dataType: 'json',
-                                    success: function (data) {
-                                        if (data && data.Success) {
-                                            scmbgrid.datagrid('clearSelections');
-                                            scmbgrid.datagrid('reload');
-                                            $.messager.alert('提示', data.Msg);
-                                        }
-                                        else {
-                                            $.messager.alert('提示', data.Msg, 'error');
-                                        }
+                        layer.msg('请选择一条要删除的记录!', { icon: 5 });
+                    }
+                    else {
+                        layer.confirm('确实要要删除这条记录?', { icon: 3, title: '提示' }, function (index) {
+                            $.ajax({
+                                url: '/Email/MessageManger',
+                                data: { EM_MESSAGEID: arr[0].EM_MESSAGEID, Method: 'Del' },
+                                type: 'post',
+                                dataType: 'json',
+                                success: function (data) {
+                                    if (data && data.Success) {
+                                        scmbgrid.datagrid('clearSelections');
+                                        scmbgrid.datagrid('reload');
+                                        layer.msg(data.Msg, { icon: 6 });
                                     }
-                                });
-                            }
+                                    else {
+                                        layer.msg(data.Msg, { icon: 5 });
+                                    }
+                                },
+                                error: function () {
+                                    layer.msg('系统异常!', { icon: 5 });
+                                }
+                            });
                         });
                     }
                 }
@@ -185,23 +185,20 @@
     function Add() {
         $.ajax({
             url: '/Email/MessageManger',
-            data: {
-                MessageContent: $('#msgContext').val(),
-                Method: 'Add'
-            },
+            data: { MessageContent: $('#msgContext').val(), Method: 'Add' },
             type: 'post',
             dataType: "json",
-            error: function () {
-                $.messager.alert('错误:异常!');
-            },
             success: function (data) {
                 if (data.Success) {
                     scmbgrid.datagrid('load');
-                    $.messager.alert('提示', data.Msg);
+                    layer.msg(data.Msg, { icon: 6 });
                 }
                 else {
-                    $.messager.alert('提示', data.Msg, 'error');
+                    layer.msg(data.Msg, { icon: 5 });
                 }
+            },
+            error: function () {
+                layer.msg('系统异常!', { icon: 5 });
             }
         });
     }
@@ -211,33 +208,30 @@
         var content = $('#msgContext').val();
         var phone = $('#fsPhoneNO').text();
         if ($.trim(content) == "") {
-            $.messager.alert('提示', '没有短信内容', 'warning');
+            layer.msg('没有短信内容!', { icon: 7 });
             return;
         }
         if ($.trim(phone) == "") {
-            $.messager.alert('提示', '没有发送号码', 'warning');
+            layer.msg('没有发送号码!', { icon: 7 });
             return;
         }
         $.ajax({
             url: '/Email/MessageSend',
-            data: {
-                MessageContent: content,
-                PHONE: phone
-            },
+            data: { MessageContent: content, PHONE: phone },
             type: 'post',
             timeout: 15000, //超时时间设置，单位毫秒
             dataType: "json",
-            error: function () {
-                $.messager.alert('提示', '错误:异常!', 'error');
-            },
             success: function (re) {
                 if (re.Success) {
-                    $.messager.alert('提示', re.Msg, 'info');
+                    layer.msg(re.Msg, { icon: 6 });
                 }
                 else {
-                    $.messager.alert('提示', re.Msg, 'error');
+                    layer.msg(re.Msg, { icon: 5 });
                 }
-            }
+            },
+            error: function () {
+                layer.msg('系统异常!', { icon: 5 });
+            },
         });
     }
 </script>

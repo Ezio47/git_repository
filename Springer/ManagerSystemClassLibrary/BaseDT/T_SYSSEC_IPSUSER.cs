@@ -146,10 +146,12 @@ namespace ManagerSystemClassLibrary.BaseDT
             //根据组织机构查询
             if (!string.IsNullOrEmpty(sw.ORGNO))
             {
-                if (sw.ORGNO.Substring(4, 5) == "00000")//获取所有市的
+                if (sw.ORGNO.Substring(4, 11) == "00000000000")//获取所有市的
                     sb.AppendFormat(" AND (SUBSTRING(b.ORGNO,1,4) = '{0}' or b.ORGNO is null or b.ORGNO='')", ClsSql.EncodeSql(sw.ORGNO.Substring(0, 4)));
-                else if (sw.ORGNO.Substring(6, 3) == "000")//获取所有县的
+                else if (sw.ORGNO.Substring(6, 9) == "000000000")//获取所有县的
                     sb.AppendFormat(" AND (SUBSTRING(b.ORGNO,1,6) = '{0}' or b.ORGNO is null or b.ORGNO='')", ClsSql.EncodeSql(sw.ORGNO.Substring(0, 6)));
+                else if (sw.ORGNO.Substring(9, 6) == "000000")//获取所有县的
+                    sb.AppendFormat(" AND (SUBSTRING(b.ORGNO,1,9) = '{0}' or b.ORGNO is null or b.ORGNO='')", ClsSql.EncodeSql(sw.ORGNO.Substring(0, 9)));
                 else
                     sb.AppendFormat(" AND b.ORGNO = '{0}'", ClsSql.EncodeSql(sw.ORGNO));
             }
@@ -233,10 +235,12 @@ namespace ManagerSystemClassLibrary.BaseDT
                 sb.AppendFormat(" AND b.DEPARTMENT = '{0}'", ClsSql.EncodeSql(sw.DEPARTMENT));
             if (!string.IsNullOrEmpty(sw.ORGNO))
             {
-                if (sw.ORGNO.Substring(4, 5) == "00000")//获取所有市的
+                if (sw.ORGNO.Substring(4, 11) == "00000000000")//获取所有市的
                     sb.AppendFormat(" AND (SUBSTRING(b.ORGNO,1,4) = '{0}' or b.ORGNO is null or b.ORGNO='')", ClsSql.EncodeSql(sw.ORGNO.Substring(0, 4)));
-                else if (sw.ORGNO.Substring(6, 3) == "000")//获取所有县的
+                else if (sw.ORGNO.Substring(6, 9) == "000000000")//获取所有县的
                     sb.AppendFormat(" AND (SUBSTRING(b.ORGNO,1,6) = '{0}' or b.ORGNO is null or b.ORGNO='')", ClsSql.EncodeSql(sw.ORGNO.Substring(0, 6)));
+                else if (sw.ORGNO.Substring(9, 6) == "000000")//获取所有县的
+                    sb.AppendFormat(" AND (SUBSTRING(b.ORGNO,1,9 )= '{0}' or b.ORGNO is null or b.ORGNO=''", ClsSql.EncodeSql(sw.ORGNO.Substring(0, 9)));
                 else
                     sb.AppendFormat(" AND b.ORGNO = '{0}'", ClsSql.EncodeSql(sw.ORGNO));
             }

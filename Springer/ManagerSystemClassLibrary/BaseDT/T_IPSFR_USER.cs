@@ -361,9 +361,9 @@ namespace ManagerSystemClassLibrary.BaseDT
                {
                    sb.AppendFormat(" and BYORGNO like  '{0}%'", PublicCls.getZhenIncOrgNo(sw.BYORGNO));
                }
-               else
+               else if (PublicCls.OrgIsCun(sw.BYORGNO))
                {
-                   sb.AppendFormat(" and BYORGNO = '{0}'", PublicCls.getCunIncOrgNo(sw.BYORGNO));
+                   sb.AppendFormat(" and BYORGNO like '{0}%'", PublicCls.getCunIncOrgNo(sw.BYORGNO));
                }
            }
            if (string.IsNullOrEmpty(sw.Orgs) == false)
@@ -402,9 +402,9 @@ namespace ManagerSystemClassLibrary.BaseDT
                        {
                            sb.AppendFormat("  BYORGNO like  '{0}%'", PublicCls.getZhenIncOrgNo(arr1[i]));
                        }
-                       else
+                       else if (PublicCls.OrgIsCun(arr1[i]))
                        {
-                           sb.AppendFormat("  BYORGNO = '{0}'", PublicCls.getCunIncOrgNo(arr1[i]));
+                           sb.AppendFormat("  BYORGNO like '{0}%'", PublicCls.getCunIncOrgNo(arr1[i]));
                        }
                    }
                    sb.AppendFormat(" )");

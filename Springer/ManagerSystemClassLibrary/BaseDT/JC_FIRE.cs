@@ -437,7 +437,7 @@ namespace ManagerSystemClassLibrary.BaseDT
             {
                 sb.AppendFormat(" AND a.MANSTATE in ({0})", ClsSql.SwitchStrToSqlIn(sw.MANSTATESTR));
             }
-            sb.AppendFormat(" order by a.JCFID desc ");
+            sb.AppendFormat(" order by a.FIRETIME desc ");
             DataSet ds = DataBaseClass.FullDataSet(sb.ToString());
             return ds.Tables[0];
         }
@@ -566,7 +566,7 @@ namespace ManagerSystemClassLibrary.BaseDT
                 sb.AppendFormat(" AND b.HOTTYPE ={0}", ClsSql.EncodeSql(sw.HOTTYPE));
             }
 
-            string sql = " Select * from JC_FIRE a " + sb.ToString() + " order by a.JCFID desc ";
+            string sql = " Select * from JC_FIRE a " + sb.ToString() + " order by a.FIRETIME desc ";
             string sqlC = " Select count(*) from JC_FIRE a" + sb.ToString();
             total = int.Parse(DataBaseClass.ReturnSqlField(sqlC));
             //(sw.PageIndex - 1) * sw.PageRow, sw.PageRow

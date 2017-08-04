@@ -2,19 +2,19 @@
     Layout = "~/Views/Shared/_LayoutIndex.cshtml";
 }
 @model IEnumerable<ManagerSystemModel.DUTY_CLASS_Model>
-
-<script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
-<link href="~/Scripts/fullcalendar-3.2.0/css/jquery.multiselect.css" rel='stylesheet' />
-<link href="~/Scripts/fullcalendar-3.2.0/css/jquery-ui.min.css" rel='stylesheet' />
-<link href="~/Scripts/fullcalendar-3.2.0/css/fullcalendar.min.css" rel='stylesheet' />
-<link href="~/Scripts/fullcalendar-3.2.0/css/theme.css" rel='stylesheet' />
-<link href='~/Scripts/fullcalendar-3.2.0/css/fullcalendar.print.min.css' rel='stylesheet' media='print' />
-@*<script src="~/Scripts/fullcalendar-3.2.0/js/jquery.min.js"></script>*@
-<script src="~/Scripts/fullcalendar-3.2.0/js/jquery-ui.min.js"></script>
-<script src="~/Scripts/fullcalendar-3.2.0/js/jquery.multiselect.js"></script>
-<script src="~/Scripts/fullcalendar-3.2.0/js/moment.min.js"></script>
-<script src="~/Scripts/fullcalendar-3.2.0/js/fullcalendar.min.js"></script>
-
+@section Header{
+    <script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+    <link href="~/Scripts/fullcalendar-3.2.0/css/jquery.multiselect.css" rel='stylesheet' />
+    <link href="~/Scripts/fullcalendar-3.2.0/css/jquery-ui.min.css" rel='stylesheet' />
+    <link href="~/Scripts/fullcalendar-3.2.0/css/fullcalendar.min.css" rel='stylesheet' />
+    <link href="~/Scripts/fullcalendar-3.2.0/css/theme.css" rel='stylesheet' />
+    <link href='~/Scripts/fullcalendar-3.2.0/css/fullcalendar.print.min.css' rel='stylesheet' media='print' />
+    @*<script src="~/Scripts/fullcalendar-3.2.0/js/jquery.min.js"></script>*@
+    <script src="~/Scripts/fullcalendar-3.2.0/js/jquery-ui.min.js"></script>
+    <script src="~/Scripts/fullcalendar-3.2.0/js/jquery.multiselect.js"></script>
+    <script src="~/Scripts/fullcalendar-3.2.0/js/moment.min.js"></script>
+    <script src="~/Scripts/fullcalendar-3.2.0/js/fullcalendar.min.js"></script>
+}
 
 <div class="easyui-layout" data-options="fit:true" style=" border:0;">
     <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
@@ -58,14 +58,7 @@
                                         @Html.Raw(@ViewBag.ZBR)
                                     </select>
                                 </div>
-                            }@*else{
-                                <div class="rowElem" id="divZao" style="display:none">
-                                    <label>早班: </label>
-                                    <select name="inputzao" id="inputzao" multiple="multiple" style="width: 200px;height:50px">
-                                        @Html.Raw(@ViewBag.ZBR)
-                                    </select>
-                                </div>
-                            }*@
+                            }
                             if (item.DUTYCLASSID == "2")
                             {
                                 <div class="rowElem" id="divZhong">
@@ -75,15 +68,6 @@
                                     </select>
                                 </div>
                             }
-                            @*else
-                            {
-                                <div class="rowElem" id="divZhong" style="display:none">
-                                    <label>中班: </label>
-                                    <select name="inputzhong" id="inputzhong" multiple="multiple" style="width: 200px;height:50px">
-                                        @Html.Raw(@ViewBag.ZBR)
-                                    </select>
-                                </div>
-                            }*@
                             if (item.DUTYCLASSID == "3")
                             {
                                 <div class="rowElem" id="divWan">
@@ -93,15 +77,6 @@
                                     </select>
                                 </div>
                             }
-                            @*else
-                            {
-                                <div class="rowElem" id="divWan" style="display:none">
-                                    <label>晚班:</label>
-                                    <select name="inputwan" id="inputwan" multiple="multiple" style="width: 200px;height:50px">
-                                        @Html.Raw(@ViewBag.ZBR)
-                                    </select>
-                                </div>
-                            }*@
                         }
                     }
                     <div class="rowElem" id="divZao" style="display:none">
@@ -180,11 +155,7 @@
     $(document).ready(function () {
         $('#calendar').fullCalendar({
             theme: true,
-            header: {
-                left: 'prev,next',
-                center: 'title',
-                right: ''
-            },
+            header: { left: 'prev,next', center: 'title', right: '' },
             monthNames: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
             monthNamesShort: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
             dayNames: ["周日", "周一", "周二", "周三", "周四", "周五", "周六"],
@@ -202,16 +173,12 @@
             viewDisplay: function (view) {//动态把数据查出，按照月份动态查询
                 var viewStart = $.fullCalendar.formatDate(view.start, "yyyy-MM-dd");
                 var viewEnd = $.fullCalendar.formatDate(view.end, "yyyy-MM-dd");
-                alert("viewStart" + viewStart);
-
                 $("#calendar").fullCalendar('removeEvents');
                 $.post("../../sr/AccessDate.ashx", { start: viewStart, end: viewEnd }, function (data) {
-
                     var resultCollection = jQuery.parseJSON(data);
                     $.each(resultCollection, function (index, term) {
                         $("#calendar").fullCalendar('renderEvent', term, true);
                     });
-
                 }); //把从后台取出的数据进行封装以后在页面上以fullCalendar的方式进行显示
             },
             aspectRatio: 1.5,
@@ -225,15 +192,11 @@
             eventClick: function (calEvent, jsEvent, view) {
                 $("#divBegin").hide();
                 $("#divEnd").hide();
-
                 var str = calEvent.id;
                 var strs = new Array();
                 strs = str.split("|");
-
                 var banci = calEvent.banci;
                 var arrBanci = banci.split(",");
-                //alert("banci" + banci);
-                //alert("length===="+arrBanci.length);
                 if (arrBanci.length > 0) {
                     if (arrBanci.length == 2) {//有一个班次
                         if (arrBanci[0] == 1) {//早班
@@ -258,28 +221,27 @@
                             $("#inputdaiban").multiselect('refresh');
                             $("#inputzongdaiban").multiselect('refresh');
                         }
-                    } else if (arrBanci.length == 3) {//两个班次
+                    }
+                    else if (arrBanci.length == 3) {//两个班次
                         if (arrBanci[0] == 1 && arrBanci[1] == 2) {//早班 中班
                             var zao = eval('[' + strs[0] + ']');
                             var zhong = eval('[' + strs[1] + ']');
                             var daiban = eval('[' + strs[2] + ']');
                             var zongdaiban = eval('[' + strs[3] + ']');
-
                             $("#inputzao").val(zao);
                             $("#inputzhong").val(zhong);
                             $("#inputdaiban").val(daiban);
                             $("#inputzongdaiban").val(zongdaiban);
-
                             $("#inputzao").multiselect('refresh');
                             $("#inputwan").multiselect('refresh');
                             $("#inputdaiban").multiselect('refresh');
                             $("#inputzongdaiban").multiselect('refresh');
-                        } else if (arrBanci[0] == 1 && arrBanci[1] == 3) {//早班 晚班
+                        }
+                        else if (arrBanci[0] == 1 && arrBanci[1] == 3) {//早班 晚班
                             var zao = eval('[' + strs[0] + ']');
                             var wan = eval('[' + strs[1] + ']');
                             var daiban = eval('[' + strs[2] + ']');
                             var zongdaiban = eval('[' + strs[3] + ']');
-
                             $("#inputzao").val(zao);
                             $("#inputwan").val(wan);
                             $("#inputdaiban").val(daiban);
@@ -289,47 +251,44 @@
                             $("#inputwan").multiselect('refresh');
                             $("#inputdaiban").multiselect('refresh');
                             $("#inputzongdaiban").multiselect('refresh');
-                        } else if (arrBanci[0] == 2 && arrBanci[1] == 3) {//中班 晚班
+                        }
+                        else if (arrBanci[0] == 2 && arrBanci[1] == 3) {//中班 晚班
                             var zhong = eval('[' + strs[0] + ']');
                             var wan = eval('[' + strs[1] + ']');
                             var daiban = eval('[' + strs[2] + ']');
                             var zongdaiban = eval('[' + strs[3] + ']');
-
                             $("#inputzhong").val(zhong);
                             $("#inputwan").val(wan);
                             $("#inputdaiban").val(daiban);
                             $("#inputzongdaiban").val(zongdaiban);
-
                             $("#inputzhong").multiselect('refresh');
                             $("#inputwan").multiselect('refresh');
                             $("#inputdaiban").multiselect('refresh');
                             $("#inputzongdaiban").multiselect('refresh');
                         }
-                    } else {
+                    }
+                    else {
                         var zao = eval('[' + strs[0] + ']');
                         var zhong = eval('[' + strs[1] + ']');
                         var wan = eval('[' + strs[2] + ']');
                         var daiban = eval('[' + strs[3] + ']');
                         var zongdaiban = eval('[' + strs[4] + ']');
-
                         $("#inputzao").val(zao);
                         $("#inputzhong").val(zhong);
                         $("#inputwan").val(wan);
                         $("#inputdaiban").val(daiban);
                         $("#inputzongdaiban").val(zongdaiban);
-
                         $("#inputzao").multiselect('refresh');
                         $("#inputzhong").multiselect('refresh');
                         $("#inputwan").multiselect('refresh');
                         $("#inputdaiban").multiselect('refresh');
                         $("#inputzongdaiban").multiselect('refresh');
                     }
-                } else {
-                    alert("请设置排班班次！");
+                }
+                else {
+                    layer.msg('请设置排班班次!', { icon: 5 });
                     return;
                 }
-
-
                 var selectdate = calEvent.start.format();//当前点击的日期
                 $("#reservebox").dialog({
                     autoOpen: false,
@@ -345,48 +304,38 @@
                     },
                     draggable: false,
                     beforeClose: function (event, ui) {
-
                     },
                     buttons: {
                         "删除": function (event) {
-                            var msg = window.confirm("警告：确定要删除记录！");
-                            if (msg)
+                            layer.confirm('确实要删除吗?', { icon: 3, title: '提示' }, function (index) {
                                 $.ajax({
                                     url: '/DutyManagement/ScheduleManager', //要访问的后台地址
-                                    data: {
-                                        selectdate: selectdate,
-                                        method: "Del"
-                                    }, //要发送的数据
+                                    data: { selectdate: selectdate, method: "Del" }, //要发送的数据
                                     type: 'post',
                                     success: function (data, ioArgs) {
                                         var ar = eval('(' + data + ')');
                                         if (ar.Success) {
-                                            //$('#calendar').fullCalendar('removeEvents', event.start);
-                                            //self.location.reload();
                                             location = location;
-                                            alert('删除成功！');
-
+                                            layer.msg('删除成功!', { icon: 6 });
                                         }
                                         else {
-                                            alert(ar.Msg);
+                                            layer.msg(ar.Msg, { icon: 5 });
                                         }
                                     },
                                     error: function (err, ioArgs) {
-                                        alert("删除异常！");
+                                        layer.msg('删除异常!', { icon: 5 });
                                     }
                                 });
+                            });
                             $(this).dialog("close");
                         },
                         "更新": function () {
-
                             var strIDS = validate();
-
                             var strZaoID = strIDS.a; //早班人员id
                             var strZhongID = strIDS.b;//中班人员id
                             var strWanID = strIDS.c;//晚班人员id
                             var strDaibanID = strIDS.d;//带班领导id
                             var strZongdaibanID = strIDS.e;//总带班领导
-
                             $.ajax({
                                 url: '/DutyManagement/ScheduleManager', //要访问的后台地址
                                 data: {
@@ -402,19 +351,17 @@
                                 success: function (data, ioArgs) {
                                     var ar = eval('(' + data + ')');
                                     if (ar.Success) {
-                                        //window.location.reload(true);
                                         location = location;
-                                        alert('更新成功！');
+                                        layer.msg('更新成功!', { icon: 6 });
                                     }
                                     else {
-                                        alert(ar.Msg);
+                                        layer.msg(ar.Msg, { icon: 5 });
                                     }
                                 },
                                 error: function (err, ioArgs) {
-                                    alert("更新异常！");
+                                    layer.msg('更新异常!', { icon: 5 });
                                 }
                             });
-
                             $(this).dialog("close");
                         }
                     }
@@ -425,26 +372,22 @@
             editable: false,
             dayClick: function (date, allDay, jsEvent, view) {
                 if ($('#divZao').css('display') == "none" && $('#divZhong').css('display') == "none" && $('#divWan').css('display') == "none") {
-                    alert("请设置排班班次!");
+                    layer.msg('请设置排班班次!', { icon: 5 });
                     return;
                 }
-
                 var selectdate = date.format();//当前点击的日期
                 $("#divBegin").hide();
                 $("#divEnd").hide();
-
                 $("#inputzao").val("");//清空
                 $("#inputzhong").val("");
                 $("#inputwan").val("");
                 $("#inputdaiban").val("");
                 $("#inputzongdaiban").val("");
-
                 $("#inputzao").multiselect('refresh');
                 $("#inputzhong").multiselect('refresh');
                 $("#inputwan").multiselect('refresh');
                 $("#inputdaiban").multiselect('refresh');
                 $("#inputzongdaiban").multiselect('refresh');
-
                 $("#reservebox").dialog({
                     autoOpen: false,
                     height: 350,
@@ -454,7 +397,6 @@
                     using: function () {
                         $(this).css({
                             "position": "absolute",
-                            //"top":"200px" //设置弹出框距离是页面顶端下的200px
                         });
                     },
                     draggable: false,
@@ -465,26 +407,11 @@
                         },
                         "保存": function () {
                             var strIDS = validate();
-
                             var strZaoID = strIDS.a; //早班人员id
                             var strZhongID = strIDS.b;//中班人员id
                             var strWanID = strIDS.c;//晚班人员id
                             var strDaibanID = strIDS.d;//带班领导id
                             var strZongdaibanID = strIDS.e;//总带班领导
-                            //var strZaoID = encodeURI($("#inputzao").val()); //早班人员id
-                            //var strZhongID = encodeURI($("#inputzhong").val());//中班人员id
-                            //var strWanID = encodeURI($("#inputwan").val());//晚班人员id
-                            //var strDaibanID = encodeURI($("#inputdaiban").val());//带班领导id
-                            //var strZongdaibanID = encodeURI($("#inputzongdaiban").val());//总带班领导
-                            //var strZaoPeople = '';
-                            //$("#inputzao option:selected").each(function () {
-                            //    strZaoPeople = strZaoPeople + $(this).text() + ',';
-                            //    //$(this).removeAttr("selected");
-                            //});
-                            //if (strZaoID == '' || strZhongID == '' || strWanID == '' || strDaibanID == '' || strZongdaibanID == '') {
-                            //    alert('请选择各班次人员！');
-                            //    return;
-                            //}
                             $.ajax({
                                 url: '/DutyManagement/ScheduleManager', //要访问的后台地址
                                 data: {
@@ -500,20 +427,18 @@
                                 success: function (data, ioArgs) {
                                     var ar = eval('(' + data + ')');
                                     if (ar.Success) {
-                                        //window.location.reload(true);
                                         location = location;
-                                        alert('保存成功！');
+                                        layer.msg('保存成功!', { icon: 6 });
 
                                     }
                                     else {
-                                        alert(ar.Msg);
+                                        layer.msg(ar.Msg, { icon: 5 });
                                     }
                                 },
                                 error: function (err, ioArgs) {
-                                    alert("保存异常！");
+                                    layer.msg('保存异常!', { icon: 5 });
                                 }
                             });
-
                             $(this).dialog("close");
                         }
                     }
@@ -527,28 +452,14 @@
                 var end = end.format();
                 $.ajax({
                     url: '/DutyManagement/ScheduleQuery', //要访问的后台地址
-                    data: {
-                        start: start,
-                        end: end
-                    }, //要发送的数据
+                    data: { start: start, end: end }, //要发送的数据
                     type: 'post',
                     success: function (data) {
                         var events = eval('(' + data + ')');
-                        //var events = [{
-                        //    "title": "杜凤琼,杨志林,李正元",
-                        //    "start": "2017-02-28"
-                        //}]
-                        //$.each(events, function (index, item) {
-                        //    //var event1 = [{
-                        //    //    "title": item.title,
-                        //    //    "start": item.start
-                        //    //}]
-                        //    $("#calendar").fullCalendar('renderEvents', item);
-                        //});
                         callback(events);
                     },
                     error: function (err, ioArgs) {
-                        //alert("加载异常！");
+                        layer.msg('系统异常!', { icon: 5 });
                     }
                 });
             }
@@ -557,24 +468,21 @@
 
     function NEWDUTY() {
         if ($('#divZao').css('display') == "none" && $('#divZhong').css('display') == "none" && $('#divWan').css('display') == "none") {
-            alert("请设置排班班次!");
+            layer.msg('请设置排班班次!', { icon: 5 });
             return;
         }
         $("#divBegin").show();
         $("#divEnd").show();
-
         $("#inputzao").val("");//清空
         $("#inputzhong").val("");
         $("#inputwan").val("");
         $("#inputdaiban").val("");
         $("#inputzongdaiban").val("");
-
         $("#inputzao").multiselect('refresh');
         $("#inputzhong").multiselect('refresh');
         $("#inputwan").multiselect('refresh');
         $("#inputdaiban").multiselect('refresh');
         $("#inputzongdaiban").multiselect('refresh');
-
         $("#reservebox").dialog({
             autoOpen: false,
             height: 430,
@@ -597,26 +505,23 @@
                     var strBegin = $("#begin").val();
                     var strEnd = $("#end").val();
                     if (strBegin == "") {
-                        alert("排班起始日期不可为空！");
+                        layer.msg('排班起始日期不可为空!', { icon: 5 });
                         return;
                     }
                     if (strEnd == "") {
-                        alert("排班结束日期不可为空！");
+                        layer.msg('排班结束日期不可为空!', { icon: 5 });
                         return;
                     }
                     if (strBegin > strEnd) {
-                        alert("排班开始日期不可大于排班结束日期！");
+                        layer.msg('排班开始日期不可大于排班结束日期!', { icon: 5 });
                         return;
                     }
-
                     var strIDS = validate();
-
                     var strZaoID = strIDS.a; //早班人员id
                     var strZhongID = strIDS.b;//中班人员id
                     var strWanID = strIDS.c;//晚班人员id
                     var strDaibanID = strIDS.d;//带班领导id
                     var strZongdaibanID = strIDS.e;//总带班领导
-
                     $.ajax({
                         url: '/DutyManagement/ScheduleManager', //要访问的后台地址
                         data: {
@@ -630,19 +535,18 @@
                             method: "PLAdd"
                         },
                         type: 'post',
+                        dataType: 'json',
                         success: function (data, ioArgs) {
-                            var ar = eval('(' + data + ')');
-                            if (ar.Success) {
-                                //window.location.reload();
+                            if (data.Success) {
                                 location = location;
-                                alert('新建排班成功！');
+                                layer.msg('新建排班成功!', { icon: 6 });
                             }
                             else {
-                                alert(ar.Msg);
+                                layer.msg(data.Msg, { icon: 5 });
                             }
                         },
                         error: function (err, ioArgs) {
-                            alert("新建排班失败！");
+                            layer.msg('新建排班失败!', { icon: 5 });
                         }
                     });
                     $(this).dialog("close");
@@ -660,77 +564,82 @@
             strWanID = encodeURI($("#inputwan").val());//晚班人员id
             strDaibanID = encodeURI($("#inputdaiban").val());//带班领导id
             strZongdaibanID = encodeURI($("#inputzongdaiban").val());//总带班领导
-            if (isNullOrEmpty(strZhongID)  || isNullOrEmpty(strWanID)  || isNullOrEmpty(strDaibanID)  || isNullOrEmpty(strZongdaibanID)) {
-                alert('请选择各班次人员！');
+            if (isNullOrEmpty(strZhongID) || isNullOrEmpty(strWanID) || isNullOrEmpty(strDaibanID) || isNullOrEmpty(strZongdaibanID)) {
+                layer.msg('请选择各班次人员!', { icon: 5 });
                 return;
             }
             return { a: '', b: strZhongID, c: strWanID, d: strDaibanID, e: strZongdaibanID };
-        } else if ($('#divZhong').css('display') == "none" && $('#divZao').css('display') != "none" && $('#divWan').css('display') != "none") {
+        }
+        else if ($('#divZhong').css('display') == "none" && $('#divZao').css('display') != "none" && $('#divWan').css('display') != "none") {
             strZaoID = encodeURI($("#inputzao").val()); //早班人员id
             strWanID = encodeURI($("#inputwan").val());//晚班人员id
             strDaibanID = encodeURI($("#inputdaiban").val());//带班领导id
             strZongdaibanID = encodeURI($("#inputzongdaiban").val());//总带班领导
-
-            if (isNullOrEmpty(strZaoID)  || isNullOrEmpty(strWanID)  || isNullOrEmpty(strDaibanID)  || isNullOrEmpty(strZongdaibanID) ) {
-                alert('请选择各班次人员！');
+            if (isNullOrEmpty(strZaoID) || isNullOrEmpty(strWanID) || isNullOrEmpty(strDaibanID) || isNullOrEmpty(strZongdaibanID)) {
+                layer.msg('请选择各班次人员!', { icon: 5 });
                 return;
             }
             return { a: strZaoID, b: '', c: strWanID, d: strDaibanID, e: strZongdaibanID };
-        } else if ($('#divWan').css('display') == "none" && $('#divZhong').css('display') != "none" && $('#divZao').css('display') != "none") {
+        }
+        else if ($('#divWan').css('display') == "none" && $('#divZhong').css('display') != "none" && $('#divZao').css('display') != "none") {
             strZaoID = encodeURI($("#inputzao").val()); //早班人员id
             strZhongID = encodeURI($("#inputzhong").val());//中班人员id
             strDaibanID = encodeURI($("#inputdaiban").val());//带班领导id
             strZongdaibanID = encodeURI($("#inputzongdaiban").val());//总带班领导
 
-            if (isNullOrEmpty(strZaoID) || isNullOrEmpty(strZhongID)  || isNullOrEmpty(strDaibanID)  || isNullOrEmpty(strZongdaibanID)) {
-                alert('请选择各班次人员！');
+            if (isNullOrEmpty(strZaoID) || isNullOrEmpty(strZhongID) || isNullOrEmpty(strDaibanID) || isNullOrEmpty(strZongdaibanID)) {
+                layer.msg('请选择各班次人员!', { icon: 5 });
                 return;
             }
             return { a: strZaoID, b: strZhongID, c: '', d: strDaibanID, e: strZongdaibanID };
-        } else if ($('#divZao').css('display') == "none" && $('#divZhong').css('display') == "none" && $('#divWan').css('display') != "none") {
+        }
+        else if ($('#divZao').css('display') == "none" && $('#divZhong').css('display') == "none" && $('#divWan').css('display') != "none") {
             strWanID = encodeURI($("#inputwan").val());//晚班人员id
             strDaibanID = encodeURI($("#inputdaiban").val());//带班领导id
             strZongdaibanID = encodeURI($("#inputzongdaiban").val());//总带班领导
-            if (isNullOrEmpty(strWanID)  || isNullOrEmpty(strDaibanID)  || isNullOrEmpty(strZongdaibanID)) {
-                alert('请选择各班次人员！');
+            if (isNullOrEmpty(strWanID) || isNullOrEmpty(strDaibanID) || isNullOrEmpty(strZongdaibanID)) {
+                layer.msg('请选择各班次人员!', { icon: 5 });
                 return;
             }
             return { a: '', b: '', c: strWanID, d: strDaibanID, e: strZongdaibanID };
-        } else if ($('#divZao').css('display') == "none" && $('#divWan').css('display') == "none" && $('#divZhong').css('display') != "none") {
+        }
+        else if ($('#divZao').css('display') == "none" && $('#divWan').css('display') == "none" && $('#divZhong').css('display') != "none") {
             strZhongID = encodeURI($("#inputzhong").val());//中班人员id
             strDaibanID = encodeURI($("#inputdaiban").val());//带班领导id
             strZongdaibanID = encodeURI($("#inputzongdaiban").val());//总带班领导
-            if (isNullOrEmpty(strZhongID)  || isNullOrEmpty(strDaibanID)  || isNullOrEmpty(strZongdaibanID)) {
-                alert('请选择各班次人员！');
+            if (isNullOrEmpty(strZhongID) || isNullOrEmpty(strDaibanID) || isNullOrEmpty(strZongdaibanID)) {;
+                layer.msg('请选择各班次人员!', { icon: 5 });
                 return;
             }
             return { a: '', b: strZhongID, c: '', d: strDaibanID, e: strZongdaibanID };
-        } else if ($('#divZhong').css('display') == "none" && $('#divWan').css('display') == "none" && $('#divZao').css('display') != "none") {
+        }
+        else if ($('#divZhong').css('display') == "none" && $('#divWan').css('display') == "none" && $('#divZao').css('display') != "none") {
             strZaoID = encodeURI($("#inputzao").val()); //早班人员id
             strDaibanID = encodeURI($("#inputdaiban").val());//带班领导id
             strZongdaibanID = encodeURI($("#inputzongdaiban").val());//总带班领导
-
-            if (isNullOrEmpty(strZaoID)  || isNullOrEmpty(strDaibanID)  || isNullOrEmpty(strZongdaibanID)) {
-                alert('请选择各班次人员！');
+            if (isNullOrEmpty(strZaoID) || isNullOrEmpty(strDaibanID) || isNullOrEmpty(strZongdaibanID)) {
+                layer.msg('请选择各班次人员!', { icon: 5 });
                 return;
             }
             return { a: strZaoID, b: '', c: '', d: strDaibanID, e: strZongdaibanID };
-        } else if ($('#divZao').css('display') == "none" && $('#divZhong').css('display') == "none" && $('#divWan').css('display') == "none") {
+        }
+        else if ($('#divZao').css('display') == "none" && $('#divZhong').css('display') == "none" && $('#divWan').css('display') == "none") {
             strDaibanID = encodeURI($("#inputdaiban").val());//带班领导id
             strZongdaibanID = encodeURI($("#inputzongdaiban").val());//总带班领导
             if (isNullOrEmpty(strDaibanID) || isNullOrEmpty(strZongdaibanID)) {
-                alert('请选择各班次人员！');
+                layer.msg('请选择各班次人员!', { icon: 5 });
                 return;
             }
             return { a: '', b: '', c: '', d: strDaibanID, e: strZongdaibanID };
-        } else {
+        }
+        else {
             var strZaoID = encodeURI($("#inputzao").val()); //早班人员id
             var strZhongID = encodeURI($("#inputzhong").val());//中班人员id
             var strWanID = encodeURI($("#inputwan").val());//晚班人员id
             var strDaibanID = encodeURI($("#inputdaiban").val());//带班领导id
             var strZongdaibanID = encodeURI($("#inputzongdaiban").val());//总带班领导
-            if (isNullOrEmpty(strZaoID)  || isNullOrEmpty(strZhongID)  || isNullOrEmpty(strWanID)  || isNullOrEmpty(strDaibanID)  || isNullOrEmpty(strZongdaibanID) ) {
-                alert('请选择各班次人员！');
+            if (isNullOrEmpty(strZaoID) || isNullOrEmpty(strZhongID) || isNullOrEmpty(strWanID) || isNullOrEmpty(strDaibanID) || isNullOrEmpty(strZongdaibanID)) {
+                layer.msg('请选择各班次人员!', { icon: 5 });
                 return;
             }
             return { a: strZaoID, b: strZhongID, c: strWanID, d: strDaibanID, e: strZongdaibanID };
@@ -739,9 +648,10 @@
 
     //判断字符串是否为空
     function isNullOrEmpty(strVal) {
-        if (strVal == '' || strVal == null || strVal == undefined || strVal =='null') {
+        if (strVal == '' || strVal == null || strVal == undefined || strVal == 'null') {
             return true;
-        } else {
+        }
+        else {
             return false;
         }
     }
@@ -754,10 +664,6 @@
             minWidth: 200,
             selectedList: 10,//预设值最多显示10被选中项
             noneSelectedText: '请选择早班人员!',
-            //close: function () {
-            //    var values = $("#inputzao").val();
-            //    $("#zao").val(text);
-            //}
         });
         $("#inputzhong").multiselect({
             header: false,
@@ -772,10 +678,6 @@
             minWidth: 200,
             selectedList: 10,//预设值最多显示10被选中项
             noneSelectedText: '请选择晚班人员!',
-            //close: function () {
-            //    var values = $("#inputwan").val();
-            //    $("#wan").val(values);
-            //}
         });
         $("#inputdaiban").multiselect({
             header: false,
@@ -783,10 +685,6 @@
             minWidth: 200,
             selectedList: 10,//预设值最多显示10被选中项
             noneSelectedText: '请选择带班领导!',
-            //close: function () {
-            //    var values = $("#inputdaiban").val();
-            //    $("#inputdaiban").val(values);
-            //}
         });
         $("#inputzongdaiban").multiselect({
             header: false,
@@ -794,10 +692,6 @@
             minWidth: 200,
             selectedList: 10,//预设值最多显示10被选中项
             noneSelectedText: '请选择总带班领导!',
-            //close: function () {
-            //    var values = $("#inputzongdaiban").val();
-            //    $("#zongdaiban").val(values);
-            //}
         });
     })
 </script>

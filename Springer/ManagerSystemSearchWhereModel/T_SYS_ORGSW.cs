@@ -93,5 +93,9 @@ namespace ManagerSystemSearchWhereModel
         /// 数据中心图标展示顶级组织机构
         /// </summary>
         public string TopEchartORGNO { get; set; }
+        /// <summary>
+        /// 是否显示村 默认不显示村 0或null不显示 1显示
+        /// </summary>
+        public string IsEnableCUN { get; set; }
     }
 }

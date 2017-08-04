@@ -136,12 +136,12 @@ namespace ManagerSystemClassLibrary.BaseDT
                sb.AppendFormat(" AND ORGNO = '{0}'", ClsSql.EncodeSql(sw.curOrgNo));
            if (!string.IsNullOrEmpty(sw.ORGNO))
            {
-               if (sw.ORGNO.Substring(4, 9) == "00000000000")//获取所有市的
+               if (sw.ORGNO.Substring(4, 11) == "00000000000")//获取所有市的
                    sb.AppendFormat(" AND (SUBSTRING(ORGNO,1,4) = '{0}' or ORGNO is null or ORGNO='')", ClsSql.EncodeSql(sw.ORGNO.Substring(0, 4)));
                else if (sw.ORGNO.Substring(6, 9) == "000000000")//获取所有县的
                    sb.AppendFormat(" AND (SUBSTRING(ORGNO,1,6) = '{0}' or ORGNO is null or ORGNO='')", ClsSql.EncodeSql(sw.ORGNO.Substring(0, 6)));
                else if (sw.ORGNO.Substring(9,6)=="000000")//获取所有镇的
-                   sb.AppendFormat(" AND ORGNO = '{0}'", ClsSql.EncodeSql(sw.ORGNO));
+                   sb.AppendFormat(" AND (SUBSTRING(ORGNO,1,9)", ClsSql.EncodeSql(sw.ORGNO.Substring(0, 9)));
                else
                    sb.AppendFormat(" AND ORGNO = '{0}'", ClsSql.EncodeSql(sw.ORGNO));
            }

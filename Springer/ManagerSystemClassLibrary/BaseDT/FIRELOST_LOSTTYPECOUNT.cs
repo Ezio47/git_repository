@@ -63,10 +63,11 @@ namespace ManagerSystemClassLibrary.BaseDT
                 sqllist.Add(insertStr);
             }
             var y = DataBaseClass.ExecuteSqlTran(sqllist);
-            if (y > 0)
+            if (y >= 0)
                 return new Message(true, "损失分类数据保存成功!", "");
             else
                 return new Message(false, "损失分类数据保存失败,事物回滚机制!", "");
+
         }
         #endregion
 

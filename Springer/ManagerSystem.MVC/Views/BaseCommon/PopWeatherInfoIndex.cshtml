@@ -10,18 +10,13 @@
 <link href="~/Content/themes/default/Public.css" rel="stylesheet" />
 <link href="~/Content/themes/default/Default.css" rel="stylesheet" />
 
+
 <div class="page-content">
     <div style="margin:3px">
         <div class="divTable">
             <table>
                 <thead>
-                    <tr>
-                        <th>区域</th>
-                        <th>雨量</th>
-                        <th>温度</th>
-                        <th>最低温度--最高温度</th>
-                        <th>日期</th>
-                    </tr>
+                    <tr><th>区域</th><th>雨量</th><th>温度</th><th>最低温度--最高温度</th><th>日期</th></tr>
                 </thead>
                 <tbody>
                     @if (Model.Any())
@@ -39,7 +34,6 @@
                     }
                 </tbody>
             </table>
-
         </div>
     </div>
 </div>

@@ -37,14 +37,14 @@
             url: '/AncientTrees/LOCALTREESPECIESQuery',
             timeout: 10000, //10秒后超时，如果为0则永不超时
             data: { ORGNO: $('#tbxORGNO').val() },
-            success: function (data, ioArgs) {
-                var ar = eval('(' + data + ')');
-                if (ar.Success) {
+            dataType: 'json',
+            success: function (data) {
+                if (data.Success) {
                     $('#divTable').html("");
-                    $('#divTable').html(ar.Msg);
+                    $('#divTable').html(data.Msg);
                 }
                 else {
-                    layer.msg(ar.Msg, { icon: 5 });
+                    $('#divTable').html("");
                 }
             },
             error: function () {
@@ -74,8 +74,7 @@
                 var CODE = arrTSPCODE[i];
                 var AREA = $('#tbxAREA' + CODE + '').val();
                 if ($.trim(AREA) != "") {
-                    var reg = /^[1-9]{1}\d*(.\d{1,2})?$|^0.\d{1,2}$/;
-                    if (!reg.test(AREA)) {
+                    if (!CheckNUM2(AREA)) {
                         layer.msg('本地面积请输入正数,且最多保留2位有效小数!', { icon: 5 });
                         $('#tbxAREA' + CODE + '').focus();
                         return;
@@ -87,17 +86,17 @@
                 url: '/AncientTrees/LOCALTREESPECIESManager',
                 timeout: 10000, //10秒后超时，如果为0则永不超时
                 data: { ORGNO: $('#tbxORGNO').val(), TSPCODE: strTSPCODE, TSPAREA: strTSPAREA },
-                success: function (data, ioArgs) {
-                    var ar = eval('(' + data + ')');
-                    if (ar.Success) {
-                        layer.msg(ar.Msg, { icon: 6 });
+                dataType: 'json',
+                success: function (data) {
+                    if (data.Success) {
+                        layer.msg(data.Msg, { icon: 6 });
                         Query();
                     }
                     else {
-                        layer.msg(ar.Msg, { icon: 5 });
+                        layer.msg(data.Msg, { icon: 5 });
                     }
                 },
-                error: function (err, ioArgs) {
+                error: function () {
                     layer.msg("保存异常!", { icon: 5 });
                 }
             });

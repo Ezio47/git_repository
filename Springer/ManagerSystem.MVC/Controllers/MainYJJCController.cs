@@ -1508,7 +1508,7 @@ namespace ManagerSystem.MVC.Controllers
                     }
                     sb.AppendFormat("<td class=\"center\">{0}</td>", item.JD);
                     sb.AppendFormat("<td class=\"center\">{0}</td>", item.WD);
-                    sb.AppendFormat("<td class=\"center\">{0}</td>", item.RECEIVETIME);
+                    sb.AppendFormat("<td class=\"center\">{0}</td>", item.FIRETIME);
                     sb.AppendFormat("<td class=\"center\">{0}</td>", item.RSMJ);
                     sb.AppendFormat("<td class=\"center\">{0}</td>", StateSwitch.DicStateName("烟云类别", record.JC_FireFKData.YY));//烟云（烟云类别）
                     sb.AppendFormat("<td class=\"center\">{0}</td>", StateSwitch.DicStateName("是否连续", record.JC_FireFKData.JXHQSJ));//是否连续

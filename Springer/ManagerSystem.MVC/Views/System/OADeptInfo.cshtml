@@ -18,6 +18,7 @@
             </div>
             <div data-options="region:'center'" title="" style=" border: none; ">
                 <div class="divTable">
+                    <input type="hidden" id="IsOpenoA" name="IsOpenoA" value="@ViewBag.IsOpenOA">
                     <table cellpadding="0" cellspacing="0">
                         <thead>
                             <tr><th style="width:50%;">森林防火系统</th><th style="width:50%;">OA办公系统</th></tr>
@@ -67,6 +68,13 @@
                 layer.msg("查询异常!", { icon: 5 });
             }
         });
+    }
+
+    function OADeptChange() {
+        var isOpenOA = $('#IsOpenoA').val();
+        if (isOpenOA == "0") {
+            layer.msg("暂无操作权限,若要使用,请联系系统管理员!", { icon: 5 });
+        }
     }
     //查找已关联的OA部门
     function FindOADept() {
