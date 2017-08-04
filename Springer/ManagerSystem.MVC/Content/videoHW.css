@@ -158,6 +158,7 @@ fieldset {
         height: 22px;
         line-height: 18px;
         cursor: pointer;
+        margin:1px;
     }
 
     .preview .btn2 {

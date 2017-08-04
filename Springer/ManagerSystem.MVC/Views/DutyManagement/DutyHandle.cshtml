@@ -2,24 +2,24 @@
     Layout = "~/Views/Shared/_LayoutIndex.cshtml";
 }
 
-
 <div class="easyui-layout" data-options="fit:true" style="border: 0;">
     <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
         @Html.Raw(@ViewBag.PageLeftMenu)
     </div>
+
     <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
         <div class="easyui-layout" data-options="fit:true" style=" border:0;">
             <div data-options="region:'north'" title="" style="height: auto; border: none; overflow: hidden;">
                 <div class="divOP">
                     <div class="home right wd_9" id="divODUserInfo">
-                        当前用户：@ViewBag.SystemName
-                        &nbsp;&nbsp;所属单位：@ViewBag.SysOrgName
-                        &nbsp;&nbsp;值班状态：@ViewBag.sysState @ViewBag.dtc1
-                        &nbsp;&nbsp;
+                        当前用户：@ViewBag.SystemName &nbsp;&nbsp;
+                        所属单位：@ViewBag.SysOrgName&nbsp;&nbsp;
+                        值班状态：@ViewBag.sysState @ViewBag.dtc1&nbsp;&nbsp;
                         <input type="button" value='填写日报' style="width:80px;" class="btnWriteCss" onclick="$('#ww').window('open')" />
                     </div>
                 </div>
             </div>
+
             <div id="www" class="easyui-window" title="填写领导意见" data-options="resizable: false,collapsible: false,minimizable:false,maximizable:false,modal:true,closed:true,iconCls:'icon-save'" style="width: 550px; height: 250px; padding: 10px;">
                 <table>
                     <tr>
@@ -36,19 +36,16 @@
                     </tr>
                 </table>
             </div>
+
             <div id="w" class="easyui-window" title="交班信息" data-options="resizable: false,collapsible: false,minimizable:false,maximizable:false,modal:true,closed:true,iconCls:'icon-save'" style="width: 600px; height: 480px; padding: 10px;">
                 <table>
                     <tr>
                         <td>交班人:</td>
-                        <td>
-                            <input id="hidenrq" type="hidden" /><input id="hidenbc" type="hidden" /><input id="hidenuid" type="hidden" />@ViewBag.trueName&nbsp;&nbsp;&nbsp;&nbsp;交班时间：<span>@DateTime.Now.ToLongDateString():@DateTime.Now.ToLongTimeString()</span>
-                        </td>
+                        <td><input id="hidenrq" type="hidden" /><input id="hidenbc" type="hidden" /><input id="hidenuid" type="hidden" />@ViewBag.trueName&nbsp;&nbsp;&nbsp;&nbsp;交班时间：<span>@DateTime.Now.ToLongDateString():@DateTime.Now.ToLongTimeString()</span></td>
                     </tr>
                     <tr>
                         <td>接班人:</td>
-                        <td>
-                            <select id="s1"></select>
-                        </td>
+                        <td><select id="s1"></select></td>
                     </tr>
                     <tr>
                         <td>上班交<br />班事项：</td>
@@ -64,6 +61,7 @@
                     </tr>
                 </table>
             </div>
+
             <div id="ww" class="easyui-window" title="本日情况上报" data-options="resizable: false,collapsible: false,minimizable:false,maximizable:false,modal:true,closed:true,iconCls:'icon-save'">
                 <table>
                     <tr>
@@ -75,20 +73,15 @@
                         <td>@DateTime.Now.ToLongDateString()</td>
                     </tr>
                     <tr>
-                        <td colspan="6">
-                            <textarea id="txtDaily" style="height: 300px; width: 400px; resize: none;overflow:hidden;">@ViewBag.dayLog</textarea>
-                        </td>
+                        <td colspan="6"><textarea id="txtDaily" style="height: 300px; width: 400px; resize: none;overflow:hidden;">@ViewBag.dayLog</textarea></td>
                     </tr>
                     <tr>
-                        <td colspan="6">
-                            <input type="button" onclick="DailyAdd()" style="padding:3px 10px" value="日报提交" />
-                        </td>
+                        <td colspan="6"><input type="button" onclick="DailyAdd()" style="padding:3px 10px" value="日报提交" /></td>
                     </tr>
                 </table>
             </div>
 
             <div data-options="region:'center'" title="" class="LayoutCenterBG">
-
                 <div class="divMan" id="msgClass">
                 </div>
                 <div class="divTable" id="msg">
@@ -96,10 +89,9 @@
             </div>
         </div>
     </div>
-
 </div>
 
-<script>
+<script type="text/javascript">
     //领导意见保存事件 已更改 叶磊 2016年6月24日12时04分38秒
     function SaveLead() {
         var CurUserID = $("#hidenuid").val();
@@ -114,19 +106,19 @@
                 content: document.getElementById("txtlead").value//领导意见
             },
             type: 'post',
-            success: function (data, ioArgs) {
-                var ar = eval('(' + data + ')');
-                if (ar.Success) {
-                    layer.alert(ar.Msg, { icon: 1 });
+            dataType: 'json',
+            success: function (data) {
+                if (data.Success) {
+                    layer.msg(data.Msg, { icon: 1 });
                     $('#www').window('close');
                     loadClass();
                 }
                 else {
-                    layer.alert(ar.Msg, { icon: 1 });
+                    layer.msg(data.Msg, { icon: 2 });
                 }
             },
-            error: function (err, ioArgs) {
-                layer.alert('领导意见提交异常，请重试或与管理员联系！', { icon: 0 });
+            error: function () {
+                layer.msg('领导意见提交异常，请重试或与管理员联系!', { icon: 2 });
             }
         });
     }
@@ -136,23 +128,19 @@
     function loadODUserInfo() {
         $.ajax({
             url: '/DutyManagement/getODUserInfo',
-            data: {
-                tm: '',//2016-3-10 6:00:00',
-            },
+            data: { tm: '' },
             type: 'post',
-            success: function (data, ioArgs) {
-                var ar = eval('(' + data + ')');
-                if (ar.Success) {
-                    //$('#divODUserInfo').html('').removeAttr("style");
-                    $('#divODUserInfo').html(ar.Msg);
+            dataType: 'json',
+            success: function (data) {
+                if (data.Success) {
+                    $('#divODUserInfo').html(data.Msg);
                 }
                 else {
-                    //$('#msgClass').html('');
-                    //$('#msgClass').html('该日期为非排班日期！').css("color", "red");
+                    $('#divODUserInfo').html('');
                 }
             },
-            error: function (err, ioArgs) {
-                layer.alert("系统错误！");
+            error: function () {
+                layer.msg('系统错误!', { icon: 5 });
             }
         });
     }
@@ -161,30 +149,27 @@
     function DailyAdd() {
         $.ajax({
             url: '/DutyManagement/dutyDailyAdd',
-            data: {
-                content: document.getElementById("txtDaily").value//日报信息
-            },
+            data: { content: document.getElementById("txtDaily").value },
             type: 'post',
-            success: function (data, ioArgs) {
-                var ar = eval('(' + data + ')');
-                if (ar.Success) {
-                    layer.alert('提交成功！', { icon: 1 });
+            dataType: 'json',
+            success: function (data) {
+                if (data.Success) {
+                    layer.msg('提交成功!', { icon: 1 });
                     $('#ww').window('close');
                     loadODUserInfo();
                 }
                 else {
-                    layer.alert(ar.Msg, { icon: 0 });
+                    layer.msg(data.Msg, { icon: 2 });
                 }
             },
-            error: function (err, ioArgs) {
-                layer.alert('日报保存异常，请重试或与管理员联系！', { icon: 0 });
+            error: function () {
+                layer.alert('日报保存异常,请重试或与管理员联系!', { icon: 5 });
             }
         });
     }
 
     //值班人签到
     function zbyQD(CurUserID, dt, dcClass) {
-        //alert('值班员签到 用户序号' + CurUserID + ' 日期' + dt + ' 班次' + dcClass);
         $.ajax({
             url: '/DutyManagement/SignAgien',
             data: {
@@ -193,19 +178,18 @@
                 ondutyType: dcClass//2016-3-10 6:00:00'值班班次
             },
             type: 'post',
-            success: function (data, ioArgs) {
-                var ar = eval('(' + data + ')');
-                if (ar.Success) {
-                    layer.alert(ar.Msg, { icon: 1 });
+            dataType: 'json',
+            success: function (data) {
+                if (data.Success) {
+                    layer.msg(data.Msg, { icon: 6 });
                     loadClass();
                 }
                 else {
-                    layer.alert(ar.Msg, { icon: 0 });
+                    layer.msg(data.Msg, { icon: 5 });
                 }
-
             },
-            error: function (err, ioArgs) {
-                layer.alert('签到出现系统错误，请重试或与管理员联系！', { icon: 0 });
+            error: function () {
+                layer.msg('签到出现系统错误,请重试或与管理员联系!', { icon: 5 });
             }
         });
         loadClass();
@@ -231,18 +215,18 @@
                 ondutyType: dcClass//值班班次
             },
             type: 'post',
-            success: function (data, ioArgs) {
-                var ar = eval('(' + data + ')');
-                if (ar.Success) {
-                    layer.alert(ar.Msg, { icon: 1 });
+            dataType: 'json',
+            success: function (data) {
+                if (data.Success) {
+                    layer.msg(data.Msg, { icon: 6 });
                     loadClass();
                 }
                 else {
-                    layer.alert(ar.Msg, { icon: 0 });
+                    layer.msg(data.Msg, { icon: 5 });
                 }
             },
-            error: function (err, ioArgs) {
-                layer.alert('领导签到出现系统错误，请重试或与管理员联系！', { icon: 0 });
+            error: function () {
+                layer.msg('领导签到出现系统错误,请重试或与管理员联系!', { icon: 5 });
             }
         });
         loadClass();
@@ -254,10 +238,6 @@
         var dt = $("#hidenrq").val();
         var dcClass = $("#hidenbc").val();
         var jbrID = $("#s1").val();
-        //if (document.getElementById("txtOpconent").value == "" || document.getElementById("txtOpconent").value == null) {
-        //    layer.alert('交班内容不能为空！', { icon: 0 });
-        //    return false;
-        //}
         $.ajax({
             url: '/DutyManagement/HandOverCreatejb',
             data: {
@@ -268,19 +248,19 @@
                 opcontent: document.getElementById("txtOpconent").value//交班信息
             },
             type: 'post',
-            success: function (data, ioArgs) {
-                var ar = eval('(' + data + ')');
-                if (ar.Success) {
-                    layer.alert(ar.Msg, { icon: 1 });
+            dataType: 'json',
+            success: function (data) {
+                if (data.Success) {
+                    layer.msg(data.Msg, { icon: 6 });
                     $('#w').window('close');
                     loadClass();
                 }
                 else {
-                    layer.alert(ar.Msg, { icon: 1 });
+                    layer.msg(data.Msg, { icon: 5 });
                 }
             },
-            error: function (err, ioArgs) {
-                layer.alert('交班出现系统错误，请重试或与管理员联系！！', { icon: 0 });
+            error: function () {
+                layer.msg('交班出现系统错误,请重试或与管理员联系!', { icon: 5 });
             }
         });
     }
@@ -289,21 +269,16 @@
     function JB(CurUserID, dt, dcClass) {
         var s = "一、上班交办事项：无 \n二、本班处理事项：本班未收到热点和火情。 \n三、班内传真机、打印机正常。";
         document.getElementById("txtOpconent").value = s;
-        //alert(dt); alert(dcClass);
         $.ajax({
             url: '/DutyManagement/getclassNest',//获取下一班次的接班人（已签到的人员）
-            data: {
-                dt: dt,//2016-3-10 6:00:00',
-                dcClass: dcClass
-            },
+            data: { dt: dt, dcClass: dcClass },
             type: 'post',
-            success: function (data, ioArgs) {
-                var ar = eval('(' + data + ')');
-                if (ar.Success) {
-
-                    $('#s1').html(ar.Msg);
+            dataType: 'json',
+            success: function (data) {
+                if (data.Success) {
+                    $('#s1').html(data.Msg);
                     if (document.getElementById("s1").value == -1) {
-                        layer.alert("无接班人禁止交班！", { icon: 0 });
+                        layer.msg("无接班人禁止交班!", { icon: 5 });
                         return false;
                     }
                     else {
@@ -312,49 +287,32 @@
                         $("#hidenuid").val(CurUserID);
                         $.ajax({
                             url: '/DutyManagement/getclassJbsx',//获取上一班次的交班信息
-                            data: {
-                                dt: dt,//2016-3-10 6:00:00',
-                                dcClass: dcClass
-                            },
+                            data: { dt: dt, dcClass: dcClass },
                             type: 'post',
-                            success: function (data, ioArgs) {
-                                var ar = eval('(' + data + ')');
-                                if (ar.Success) {
-
-                                    $('#txtjb').html(ar.Msg);
-
+                            dataType: 'json',
+                            success: function (data) {
+                                if (data.Success) {
+                                    $('#txtjb').html(data.Msg);
                                 }
                                 else {
-                                    //$('#msgClass').html('');
-                                    //$('#msgClass').html('该日期为非排班日期！').css("color", "red");
+                                    $('#txtjb').html('');
                                 }
                             },
-                            error: function (err, ioArgs) {
-                                layer.alert("系统错误！", { icon: 0 });
-
+                            error: function () {
+                                layer.msg("系统错误!", { icon: 5 });
                             }
                         });
-
-
                         $('#w').window('open');
-
-
-
-                        //$('#txtjb').text(ar.url);
-                        //alert(ar.url);
-
                     }
-
                 }
                 else {
-                    layer.alert(ar.Msg, { icon: 0 });//早退提示
+                    layer.msg(data.Msg, { icon: 5 });//早退提示
                 }
             },
-            error: function (err, ioArgs) {
-                layer.alert("系统错误！");
+            error: function () {
+                layer.msg("系统错误!", { icon: 5 });
             }
         });
-
         return false;
         loadClass();
     }
@@ -364,24 +322,19 @@
     function getdaybytype(dt) {
         $.ajax({
             url: '/DutyManagement/getDCInfoByDT',
-            data: {
-                dt: dt,
-            },
+            data: { dt: dt },
             type: 'post',
-            success: function (data, ioArgs) {
-                var ar = eval('(' + data + ')');
-                if (ar.Success) {
-                    //$('#msg').html('').removeAttr("style");
-                    $('#msg').html(ar.Msg);
+            dataType: 'json',
+            success: function (data) {
+                if (data.Success) {
+                    $('#msg').html(data.Msg);
                 }
                 else {
-                    //$('#msg').html('');
-                    //$('#msg').html('该日期为非排班日期！').css("color", "red");
-                    layer.alert(ar.Msg);
+                    $('#msg').html('');
                 }
             },
-            error: function (err, ioArgs) {
-                layer.alert("系统错误！");
+            error: function () {
+                layer.msg("系统错误!", { icon: 5 });
             }
         });
     }
@@ -389,26 +342,23 @@
     loadClass();//页面加载
     //加载各班次信息
     function loadClass() {
-
         $.ajax({
             url: '/DutyManagement/getClass',
-            data: {
-                tm: '',
-            },
+            data: { tm: '', },
             type: 'post',
-            success: function (data, ioArgs) {
-                var ar = eval('(' + data + ')');
-                if (ar.Success) {
+            dataType: 'json',
+            success: function (data) {
+                if (data.Success) {
                     $('#msgClass').html('').removeAttr("style");
-                    $('#msgClass').html(ar.Msg);
+                    $('#msgClass').html(data.Msg);
                 }
                 else {
                     $('#msgClass').html('');
-                    $('#msgClass').html('请设置值班班次！').css("color", "red");
+                    $('#msgClass').html('请设置值班班次!').css("color", "red");
                 }
             },
-            error: function (err, ioArgs) {
-                layer.alert("系统错误！");
+            error: function () {
+                layer.msg("系统错误!", { icon: 5 });
             }
         });
     }

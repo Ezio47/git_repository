@@ -110,7 +110,7 @@
             }
         },
         error: function (err, ioArgs) {
-            alert('登录异常');
+            layer.msg('登录异常', { icon: 5 });
         }
     });
 
@@ -191,11 +191,11 @@
                     }
                 }
                 else {
-                    alert(ar.Msg);
+                    layer.msg(ar.Msg, { icon: 5 });
                 }
             },
             error: function (err, ioArgs) {
-                alert('保存异常');
+                layer.msg('保存异常', { icon: 5 });
             }
         });
     }

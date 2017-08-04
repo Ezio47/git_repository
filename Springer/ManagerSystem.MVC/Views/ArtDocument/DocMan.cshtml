@@ -3,77 +3,47 @@
 }
 @section Header{
     <link href="@Url.Content("~/Scripts/umeditor/themes/default/css/umeditor.css")" type="text/css" rel="stylesheet">
-
     <script type="text/javascript" charset="utf-8" src="@Url.Content("~/Scripts/umeditor/umeditor.config.js")"></script>
     <script type="text/javascript" charset="utf-8" src="@Url.Content("~/Scripts/umeditor/umeditor.min.js")"></script>
     <script type="text/javascript" src="@Url.Content("~/Scripts/umeditor/lang/zh-cn/zh-cn.js")"></script>
 }
+
 <div class="easyui-layout" data-options="fit:true" style=" border:0;">
-
-
-    @*<div data-options="region:'west'" title="" style=" width:220px; border: none;">
-
-        <div id="divLeftMenu" class="LeftMenu">
-            @Html.Raw(@ViewBag.typeList)
-        </div>
-    </div>*@
     <div data-options="region:'center'" title="" style=" border: none; ">
         <div class="easyui-layout" data-options="fit:true" style=" border:0;">
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
                 <div class="divOP">
                     <div class="homeUL">
                         <input type="button" class="btnSaveCss" value="保  存" onclick="Manager()">
-                        @*<input type="button" class="btnReturnCss" value="返  回" onclick="javascript: history.go(-1);">*@
                     </div>
                 </div>
             </div>
             <div data-options="region:'center'" title="" class="LayoutCenterBG">
                 <div class="divMan">
                     <table cellpadding="0" cellspacing="0">
-
                         <tr>
-                            <td style="width:80px;">
-                                标题:
-                            </td>
-                            <td>
-                                <input type="text" id="tbxARTTITLE" value="" style="width:650px" />
-                            </td>
+                            <td style="width:80px;">标题:</td>
+                            <td><input type="text" id="tbxARTTITLE" value="" style="width:650px" /></td>
                         </tr>
                         <tr>
-                            <td style="width:80px;">
-                                类别:
-                            </td>
-                            <td>
-                                <select id="tbxARTTYPEID">
-                                    @Html.Raw(@ViewBag.vdARTTYPEID)
-                                </select>
-                            </td>
+                            <td style="width:80px;">类别:</td>
+                            <td><select id="tbxARTTYPEID">@Html.Raw(@ViewBag.vdARTTYPEID) </select></td>
                         </tr>
                         <tr>
-                            <td>
-                                附件:
-                            </td>
+                            <td>附件:</td>
                             <td colspan="3">
                                 <input type="hidden" id="tbxPLANFILENAME" value="" style="width:650px" />
                                 <form id="uploadForm" enctype="multipart/form-data">
                                     <input type="file" name="uploadify" id="attachment" style="width:500px;" />
-
                                     <input type="button" class="btnUploadCss" value="上 传" onclick="upload()">
                                     <label id="lblInfo" style="color:red;"></label>
-
                                 </form>
                             </td>
                         </tr>
                         <tr class="row1">
-                            <td>
-                                内容:
-                            </td>
-                            <td>
-                                <script type="text/plain" id="myEditor" style="width:650px;height:250px;">
-                                </script>
-                            </td>
+                            <td>内容:</td>
+                            <td><script type="text/plain" id="myEditor" style="width:650px;height:250px;"></script></td>
                         </tr>
-
                     </table>
                 </div>
             </div>
@@ -82,26 +52,21 @@
 </div>
 
 <script type="text/javascript">
-
     var um = UM.getEditor('myEditor');
     UM.getEditor('myEditor').setContent("", false);
 
     $.ajax({
         url: '/ArtDocument/getDocJson',
-        data: {
-            id: '@ViewBag.id'
-        },
+        data: { id: '@ViewBag.id' },
         type: 'post',
+        dataType: "json",
         success: function (data) {
-            var ar = eval('(' + data + ')');
-            if (ar.ARTID != null) {
-                document.getElementById("tbxARTTITLE").value = ar.ARTTITLE;
-                UM.getEditor('myEditor').setContent(ar.ARTCONTENT, false);
-                document.getElementById("tbxPLANFILENAME").value = ar.PLANFILENAME;
-                document.getElementById("tbxARTTYPEID").value = ar.ARTTYPEID;
-
-                if (ar.PLANFILENAME != '') {
-
+            if (data.ARTID != null) {
+                document.getElementById("tbxARTTITLE").value = data.ARTTITLE;
+                UM.getEditor('myEditor').setContent(data.ARTCONTENT, false);
+                document.getElementById("tbxPLANFILENAME").value = data.PLANFILENAME;
+                document.getElementById("tbxARTTYPEID").value = data.ARTTYPEID;
+                if (data.PLANFILENAME != '') {
                     document.getElementById('lblInfo').innerText = "已上传";
                 }
                 if ('@ViewBag.T_Method' == "Del") {
@@ -112,51 +77,47 @@
                 UM.getEditor('myEditor').setContent("", false);
             }
         },
-        error: function (err, ioArgs) {
-            alert('登录异常');
+        error: function () {
+            layer.msg('系统异常!', { icon: 5 });
         }
     });
+
     function Manager() {
         $.ajax({
             url: '/ArtDocument/DocManager',
-            data: {
-                ARTTITLE: document.getElementById("tbxARTTITLE").value
-                , ARTCONTENT: UM.getEditor('myEditor').getContent()
-                , PLANFILENAME: document.getElementById("tbxPLANFILENAME").value
-                , ARTTYPEID: document.getElementById("tbxARTTYPEID").value
-                , id: '@ViewBag.id'
-                , Method: '@ViewBag.T_Method'
-                , typeID: '@ViewBag.typeID'
-                , returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)'
-            },
             type: 'post',
-            error: function () {
-                alert('错误:异常!', 'error');
+            data: {
+                ARTTITLE: document.getElementById("tbxARTTITLE").value,
+                ARTCONTENT: UM.getEditor('myEditor').getContent(),
+                PLANFILENAME: document.getElementById("tbxPLANFILENAME").value,
+                ARTTYPEID: document.getElementById("tbxARTTYPEID").value,
+                id: '@ViewBag.id',
+                Method: '@ViewBag.T_Method',
+                typeID: '@ViewBag.typeID',
+                returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)'
             },
-            success: function (re) {
-
-                var ar = eval('(' + re + ')');
-                if (ar.Success) {
-                    if (confirm(ar.Msg + ' 请返回！')) {
+            dataType: "json",
+            success: function (data) {
+                if (data.Success) {
+                    layer.confirm(data.Msg + ' 请返回?', { icon: 3, title: '提示' }, function (index2) {
+                        layer.close(index2);
                         var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
                         parent.layer.close(index);
-                        //window.location.assign(ar.Url);
                         window.location.reload();
-                    }
+                    });
                 }
                 else {
-                    alert(ar.Msg, "Error");
+                    layer.msg(data.Msg, { icon: 5 });
                 }
+            },
+            error: function () {
+                layer.msg('系统异常!', { icon: 5 });
             }
         });
-
-
     }
 
     //增加附件
     function upload() {
-
-        //upload method
         var formData = new FormData($("#uploadForm")[0]);
         $.ajax({
             type: "post",
@@ -169,18 +130,17 @@
             processData: false,
             success: function (data) {
                 if (data.Success) {
-                    alert('上传成功');
+                    layer.msg('上传成功!', { icon: 6 });
                     document.getElementById('lblInfo').innerText = "已上传";
                     $('#tbxPLANFILENAME').val(data.Msg);
                 }
                 else {
-                    alert(data.Msg);
+                    layer.msg(data.Msg, { icon: 5 });
                 }
             },
             error: function (data) {
-                alert("上传失败");
+                layer.msg('上传失败!', { icon: 5 });
             }
         });
-        //$("#attachment").filebox('clear');
     }
 </script>

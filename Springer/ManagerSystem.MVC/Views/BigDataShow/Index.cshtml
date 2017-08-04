@@ -2,7 +2,6 @@
 @{
     ViewBag.Title = "大数据展示";
     Layout = null;
-    //Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
 }
 
 <html xmlns:wb="http://open.weibo.com/wb">
@@ -17,20 +16,18 @@
     <script src="~/Scripts/Chart/echarts.js"></script>
     <!--WB.JS-->
     <script src="http://tjs.sjs.sinajs.cn/open/api/js/wb.js?appkey=3807264703" type="text/javascript" charset="utf-8"></script>
-
-    @*<script src="~/Scripts/Chart/echarts.min.js"></script>*@
 </head>
-<body>
 
+<body>
     <h2 style="text-align:center;">红河州生态保护系统大数据实时监控</h2>
     <div>
         今天是：<b id="showtime"></b>
         <table border="1" cellpadding="0" cellspacing="0" style="width:100%;">
             <tr>
                 <td style="vertical-align:top">
-                    当前系统人员：<b id="totalcount" style="color:blue"></b>人；登陆人员：<b id="incount" style="color:green"></b>；
-                    未登录人员：<b id="outcount" style="color:red;"></b>。当前剩余短信数：<b id="totalmsg" style="color:red"></b>条。更新时间：
-                    <em style="font-size:12px;"> <b id="updatetime"></b></em>
+                    当前系统人员：<b id="totalcount" style="color:blue"></b>人；登陆人员：<b id="incount" style="color:green"></b>;
+                    未登录人员：<b id="outcount" style="color:red;"></b>。当前剩余短信数：<b id="totalmsg" style="color:red"></b>条。
+                    更新时间：<em style="font-size:12px;"> <b id="updatetime"></b></em>
                     <hr />
                     <p>
                         红河哈尼族彝族自治州位于中国云南省东南部，北连昆明，东接文山，西邻玉溪，南与越南社会主义共和国接壤，北回归线横贯东西。红河是云南省第四大经济体，经济总量和部分社会经济指标居全国30个少数民族自治州之首。
@@ -38,14 +35,9 @@
                         红河州有滇南政治、经济、军事、文化中心蒙自，有世界锡都个旧，有国家历史文化名城建水；文献名邦石屏；有河口和金水河两个国家级口岸；有的锡文化、陶瓷文化和梯田文化。红河是云南经济社会和人文自然的缩影，是云南近代工业的发祥地，也是中国走向东盟的陆路通道和桥头堡。[1]
                         红河州被列为第二批国家新型城镇化综合试点地区。
                     </p>
-
                 </td>
                 <td style="width:100%">
-                    @*<iframe width="800" scrolling="no" height="120" frameborder="0" allowtransparency="true"
-                                src="http://i.tianqi.com/index.php?c=code&id=19&color=%23&bdc=%23&icon=1&temp=1&num=5&site=14">
-                        </iframe>*@
                     <iframe style="width:100%" scrolling="no" height="120" frameborder="0" allowtransparency="true" src="http://i.tianqi.com/index.php?c=code&id=19&icon=1&py=hefei&temp=1&num=5&site=12"></iframe>
-
                 </td>
             </tr>
             <tr>
@@ -68,7 +60,6 @@
                 </td>
                 <td>
                     <div style="text-align:center;width: 600px;height:700px;">
-
                         <wb:topic column="n" border="n"
                                   title="%E5%BE%AE%E5%8D%9A%E4%BF%A1%E6%81%AF" width="100%"
                                   height="100%" tags="%E5%A5%BD%E7%94%A8%E5%90%97"
@@ -78,9 +69,7 @@
                     </div>
                 </td>
             </tr>
-
         </table>
-
     </div>
     <!--引入百度地图的jssdk，这里需要使用你在百度地图开发者平台申请的 ak-->
     <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=wYCjPb9rxUueQP8xcNwqGLFw"></script>
@@ -96,6 +85,7 @@
             showTime();
             showSysInfo();
         });
+        var interval = window.setInterval(showSysInfo, 5 * 60 * 1000);
 
         function showTime() {
             var now_time = new Date().Format("yyyy年MM月dd日 星期W");
@@ -104,7 +94,6 @@
 
         ///获取系统相关信息
         function showSysInfo() {
-
             $.ajax({
                 type: "Post",
                 url: "/BIgDataShow/ShowSysInfoData",
@@ -125,17 +114,14 @@
                         $('#totalmsg').text(totalmsg);
                     }
                     else {
-                        layer.msg("未获取到系统信息！", { icon: 5 });
+                        layer.msg("未获取到系统信息!", { icon: 5 });
                     }
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
                     layer.msg("处理出现错误!状态码：" + textStatus, { icon: 5 });
                 }
             })
-        }
-
-
-        var interval = window.setInterval(showSysInfo, 5 * 60 * 1000);
+        }      
     </script>
 </body>
 </html>

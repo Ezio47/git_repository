@@ -18,15 +18,6 @@ namespace ManagerSystem.MVC.Controllers
 {
     public class ArtDocumentController : BaseController
     {
-        #region 主页
-        public ActionResult Index()
-        {
-            return View();
-        }
-        #endregion
-
-        #region 文档管理
-
         #region 文件上传
         public JsonResult DocUpload()
         {
@@ -324,7 +315,6 @@ namespace ManagerSystem.MVC.Controllers
 
         #endregion
       
-
         #region 搜索 DocDefaultQuery
         /// <summary>
         /// 搜索
@@ -461,6 +451,7 @@ namespace ManagerSystem.MVC.Controllers
 
 
         #endregion
+
         #region 组合表格 getDocBigListStr
         /// <summary>
         /// 组合表格
@@ -512,7 +503,6 @@ namespace ManagerSystem.MVC.Controllers
             return sb.ToString();
         }
 
-        #endregion
         #endregion
     }
 }

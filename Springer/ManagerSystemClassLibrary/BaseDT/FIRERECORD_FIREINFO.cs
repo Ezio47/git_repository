@@ -96,7 +96,7 @@ namespace ManagerSystemClassLibrary.BaseDT
 
             //添加数据至空间库HUOQINGDANGAN
             StringBuilder sd = new StringBuilder();
-            sd.AppendFormat("INSERT  INTO  HUOQINGDANGAN(OBJECTID,NAME,JD,WD,ADDRESS,YEAR) ");
+            sd.AppendFormat("INSERT  INTO  HUOQINGDANGAN(OBJECTID,NAME,JD,WD,ADDRESS,YEAR,Shape) ");
             sd.AppendFormat("VALUES(");
             sd.AppendFormat("'{0}'", ClsSql.EncodeSql(str));
             sd.AppendFormat(",{0}", ClsSql.saveNullField(m.FIREADDRESS));
@@ -105,6 +105,7 @@ namespace ManagerSystemClassLibrary.BaseDT
             sd.AppendFormat(",{0}", ClsSql.saveNullField(m.FIREADDRESS));
             string[] sTIME = m.FIRETIME.Split('-');
             sd.AppendFormat(",{0}", ClsSql.saveNullField(sTIME[0]));
+            sd.AppendFormat(",{0}", m.Shape);
             sd.AppendFormat(")");
             bool bl = SDEDataBaseClass.ExeSql(sd.ToString());
             bool bln = DataBaseClass.ExeSql(sc.ToString());
@@ -187,15 +188,20 @@ namespace ManagerSystemClassLibrary.BaseDT
             //修改空间库HUOQINGDANGAN的数据
             StringBuilder sc = new StringBuilder();
             sc.AppendFormat(";");
-            sc.AppendFormat("Update HUOQINGDANGAN");
-            sc.AppendFormat(" set ");
-            sc.AppendFormat("NAME='{0}'", ClsSql.EncodeSql(m.FIREADDRESS));
-            sc.AppendFormat(",JD='{0}'", ClsSql.EncodeSql(m.JD));
-            sc.AppendFormat(",WD={0}", ClsSql.saveNullField(m.WD));
-            sc.AppendFormat(",ADDRESS={0}", ClsSql.saveNullField(m.FIREADDRESS));
-            string[] sTIME = m.FIRETIME.Split('-');
-            sc.AppendFormat(",YEAR={0}", ClsSql.saveNullField(sTIME[0]));
+            sc.AppendFormat("delete from HUOQINGDANGAN");
             sc.AppendFormat(" where OBJECTID= '{0}'", ClsSql.EncodeSql(m.JCFID));
+            sc.AppendFormat(";");
+            sc.AppendFormat("INSERT  INTO  HUOQINGDANGAN(OBJECTID,NAME,JD,WD,ADDRESS,YEAR,Shape) ");
+            sc.AppendFormat("VALUES(");
+            sc.AppendFormat("{0}", ClsSql.saveNullField(m.JCFID));
+            sc.AppendFormat(",{0}", ClsSql.saveNullField(m.FIREADDRESS));
+            sc.AppendFormat(",{0}", ClsSql.saveNullField(m.JD));
+            sc.AppendFormat(",{0}", ClsSql.saveNullField(m.WD));
+            sc.AppendFormat(",{0}", ClsSql.saveNullField(m.FIREADDRESS));
+            string[] sTIME = m.FIRETIME.Split('-');
+            sc.AppendFormat(",{0}", ClsSql.saveNullField(sTIME[0]));
+            sc.AppendFormat(",{0}", m.Shape);
+            sc.AppendFormat(")");
             bool bln = DataBaseClass.ExeSql(sb.ToString());
             bool bl = SDEDataBaseClass.ExeSql(sc.ToString());
             if (bln == true && bl == true)

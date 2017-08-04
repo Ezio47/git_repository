@@ -150,10 +150,12 @@ namespace ManagerSystemClassLibrary.BaseDT
                 sb.AppendFormat(" AND (NAME like '%{0}%' or USERJOB like '%{0}%' or PHONE like '%{0}%' or Tell like '%{0}%' or UNITNAME like '%{0}%')", ClsSql.EncodeSql(sw.keys));
             if (!string.IsNullOrEmpty(sw.BYORGNO))
             {
-                if (sw.BYORGNO.Substring(4, 5) == "00000")//获取所有市的
+                if (sw.BYORGNO.Substring(4, 11) == "00000000000")//获取所有市的
                     sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,4) = '{0}' or BYORGNO is null or BYORGNO='')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 4)));
-                else if (sw.BYORGNO.Substring(6, 3) == "000")//获取所有县的
+                else if (sw.BYORGNO.Substring(6, 9) == "000000000")//获取所有县的
                     sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,6) = '{0}' or BYORGNO is null or BYORGNO='')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 6)));
+                else if (sw.BYORGNO.Substring(9,6) == "000000")//获取所有乡镇的
+                    sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,9) = '{0}' or BYORGNO is null or BYORGNO='')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 9)));
                 else
                     sb.AppendFormat(" AND BYORGNO = '{0}'", ClsSql.EncodeSql(sw.BYORGNO));
             }
@@ -191,10 +193,12 @@ namespace ManagerSystemClassLibrary.BaseDT
                 sb.AppendFormat(" AND (NAME like '%{0}%' or USERJOB like '%{0}%' or PHONE like '%{0}%' or Tell like '%{0}%')", ClsSql.EncodeSql(sw.keys));
             if (!string.IsNullOrEmpty(sw.BYORGNO))
             {
-                if (sw.BYORGNO.Substring(4, 5) == "00000")//获取所有市的
+                if (sw.BYORGNO.Substring(4, 11) == "00000000000")//获取所有市的
                     sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,4) = '{0}' or BYORGNO is null or BYORGNO='')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 4)));
-                else if (sw.BYORGNO.Substring(6, 3) == "000")//获取所有县的
+                else if (sw.BYORGNO.Substring(6, 9) == "000000000")//获取所有县的
                     sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,6) = '{0}' or BYORGNO is null or BYORGNO='')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 6)));
+                else if (sw.BYORGNO.Substring(9, 6) == "000000")//获取所有乡镇的
+                    sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,9) = '{0}' or BYORGNO is null or BYORGNO='')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 9)));
                 else
                     sb.AppendFormat(" AND BYORGNO = '{0}'", ClsSql.EncodeSql(sw.BYORGNO));
             }

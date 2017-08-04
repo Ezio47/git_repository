@@ -60,14 +60,14 @@
             url: '/AncientTrees/AncientTreesListQuery',
             timeout: 10000, //10秒后超时，如果为0则永不超时
             data: { TSPCODE: $('#hidTSPCODE').val() },
-            success: function (data, ioArgs) {
-                var ar = eval('(' + data + ')');
-                if (ar.Success) {
+            dataType: 'json',
+            success: function (data) {
+                if (data.Success) {
                     $('#divTable').html("");
-                    $('#divTable').html(ar.Msg);
+                    $('#divTable').html(data.Msg);
                 }
                 else {
-                    layer.msg(ar.Msg, { icon: 5 });
+                    $('#divTable').html("");
                 }
             },
             error: function () {
@@ -94,7 +94,7 @@
                     layer.msg('系统异常!', { icon: 5 });
                 }
             },
-            error: function (err, ioArgs) {
+            error: function () {
                 layer.msg('系统异常!', { icon: 5 });
             }
         });
@@ -197,18 +197,18 @@
                 url: '/AncientTrees/AncientTreesManager',
                 timeout: 10000, //10秒后超时，如果为0则永不超时
                 cache: false,
-                data: { TSPCODE: TSPCODE, TSPNAME: TSPNAME, LATINNAME: LATINNAME, ORDERBY: ORDERBY, Method: Method, },
+                data: { TSPCODE: TSPCODE, TSPNAME: TSPNAME, LATINNAME: LATINNAME, ORDERBY: ORDERBY, Method: Method },
+                dataType: 'json',
                 success: function (data) {
-                    var ar = eval('(' + data + ')');
-                    if (ar.Success) {
-                        layer.msg(ar.Msg, { icon: 6 });
+                    if (data.Success) {
+                        layer.msg(data.Msg, { icon: 6 });
                         Query();
                     }
                     else {
-                        layer.msg(ar.Msg, { icon: 5 });
+                        layer.msg(data.Msg, { icon: 5 });
                     }
                 },
-                error: function (err, ioArgs) {
+                error: function () {
                     layer.msg('系统异常!', { icon: 5 });
                 }
             });

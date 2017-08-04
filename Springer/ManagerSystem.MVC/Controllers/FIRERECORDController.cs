@@ -77,6 +77,7 @@ namespace ManagerSystem.MVC.Controllers
             m.JD = Request.Params["JD"];
             m.WD = Request.Params["WD"];
             m.opMethod = Request.Params["Method"];
+            m.Shape = "geometry::STGeomFromText('POINT(" + m.JD + " " + m.WD + ")',4326)";
             return Content(JsonConvert.SerializeObject(FIRERECORD_FIREINFOCls.Manager(m)), "text/html;charset=UTF-8");
         }
 
@@ -109,7 +110,7 @@ namespace ManagerSystem.MVC.Controllers
             ViewBag.FRFIID = FRFIID;
             ViewBag.JCFID = JCFID;
             ViewBag.StartTime = ClsSwitch.SwitTM(DateTime.Now.ToString());
-            ViewBag.EndTime = ClsSwitch.SwitTM(DateTime.Now.ToString()); 
+            ViewBag.EndTime = ClsSwitch.SwitTM(DateTime.Now.ToString());
             // ViewBag.isAdd = (SystemCls.isRight("011002002")) ? "1" : "0";
             return View(model);
         }
@@ -251,7 +252,6 @@ namespace ManagerSystem.MVC.Controllers
         {
             StringBuilder sb = new StringBuilder();
             string ORGNO = Request.Params["ORGNO"];
-            //string SELECTED = Request.Params["SELECTED"];
             sb.AppendFormat(T_SYS_ORGCls.getSelectOptionByORGNO(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopSXORGNO = ORGNO, CurORGNO = ORGNO }));
             return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), "")), "text/html;charset=UTF-8");
         }
@@ -265,7 +265,7 @@ namespace ManagerSystem.MVC.Controllers
             StringBuilder sb = new StringBuilder();
             string SHICODE = Request.Params["SHICODE"];
             //sb.AppendFormat(T_SYS_ORGCls.getSelectOptionByORGNO(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), GetXZOrgNOByConty = SHICODE,CurORGNO = SHICODE }));
-            sb.AppendFormat(T_SYS_ORGCls.getSelectOptionByORGNO(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), GetXZOrgNOByConty = SHICODE, CurORGNO = SHICODE, OnlyGetShiXianXZ = "1", TopORGNO = SHICODE }));
+            sb.AppendFormat(T_SYS_ORGCls.getSelectOptionByORGNO(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), GetXZOrgNOByConty = SHICODE, CurORGNO = SHICODE, TopORGNO = SHICODE }));
             return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), "")), "text/html;charset=UTF-8");
         }
         #endregion
@@ -283,7 +283,7 @@ namespace ManagerSystem.MVC.Controllers
             if (PublicCls.OrgIsShi(SystemCls.getCurUserOrgNo()))//如果是州级获取市县,否则取乡镇
                 ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = SystemCls.getCurUserOrgNo(), TopORGNO = SystemCls.getCurUserOrgNo(), OnlyGetShiXian = "1" });
             else
-                ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = SystemCls.getCurUserOrgNo(), TopORGNO = SystemCls.getCurUserOrgNo(),OnlyGetXianXZ ="1" });
+                ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = SystemCls.getCurUserOrgNo(), TopORGNO = SystemCls.getCurUserOrgNo(), OnlyGetShiXianXZ = "1", GetXZOrgNOByConty = SystemCls.getCurUserOrgNo(), });
             ViewBag.Time = DateTime.Now.ToString("yyyy-MM");
             return View();
         }
@@ -634,7 +634,7 @@ namespace ManagerSystem.MVC.Controllers
             if (PublicCls.OrgIsShi(ORGNO))
                 result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = ORGNO, OnlyGetShiXian = "1" }).ToList();
             if (PublicCls.OrgIsXian(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = ORGNO, OnlyGetXianXZ = "1" }).ToList();
+                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = ORGNO, OnlyGetShiXianXZ = "1" }).ToList();
             if (PublicCls.OrgIsZhen(ORGNO))
                 result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = ORGNO }).ToList();
             List<FIRERECORD_FIREINFO_Model> _list = FIRERECORD_FIREINFOCls.getListModel(new FIRERECORD_FIREINFO_SW { BYORGNO = ORGNO, FIRETIME = fireTime, FIREENDTIME = fireEndTime }).ToList();
@@ -712,7 +712,7 @@ namespace ManagerSystem.MVC.Controllers
             if (PublicCls.OrgIsShi(ORGNO))
                 result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = ORGNO, OnlyGetShiXian = "1" }).ToList();
             if (PublicCls.OrgIsXian(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = ORGNO, OnlyGetXianXZ = "1" }).ToList();
+                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = ORGNO, OnlyGetShiXianXZ = "1" }).ToList();
             if (PublicCls.OrgIsZhen(ORGNO))
                 result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = ORGNO }).ToList();
             List<FIRERECORD_FIREINFO_Model> _list = FIRERECORD_FIREINFOCls.getListModel(new FIRERECORD_FIREINFO_SW { BYORGNO = ORGNO, FIRETIME = fireTime, FIREENDTIME = fireEndTime }).ToList();
@@ -1495,7 +1495,7 @@ namespace ManagerSystem.MVC.Controllers
             if (PublicCls.OrgIsShi(ORGNO))
                 result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetShiXian = "1" }).ToList();
             if (PublicCls.OrgIsXian(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetXianXZ = "1" }).ToList();
+                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetShiXianXZ = "1" }).ToList();
             if (PublicCls.OrgIsZhen(ORGNO))
                 result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO }).ToList();
             List<T_SYS_DICTModel> dic302 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "302" }).ToList();
@@ -1593,7 +1593,7 @@ namespace ManagerSystem.MVC.Controllers
             if (PublicCls.OrgIsShi(ORGNO))
                 result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetShiXian = "1" }).ToList();
             if (PublicCls.OrgIsXian(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetXianXZ = "1" }).ToList();
+                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetShiXianXZ = "1" }).ToList();
             if (PublicCls.OrgIsZhen(ORGNO))
                 result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO }).ToList();
             List<T_SYS_DICTModel> dic302 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "302" }).ToList();
@@ -1730,7 +1730,7 @@ namespace ManagerSystem.MVC.Controllers
             if (PublicCls.OrgIsShi(ORGNO))
                 result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetShiXian = "1" }).ToList();
             if (PublicCls.OrgIsXian(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetXianXZ = "1" }).ToList();
+                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetShiXianXZ = "1" }).ToList();
             if (PublicCls.OrgIsZhen(ORGNO))
                 result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO }).ToList();
             List<T_SYS_DICTModel> dic302 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "302" }).ToList();
@@ -1822,7 +1822,7 @@ namespace ManagerSystem.MVC.Controllers
             if (PublicCls.OrgIsShi(ORGNO))
                 result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetShiXian = "1" }).ToList();
             if (PublicCls.OrgIsXian(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetXianXZ = "1" }).ToList();
+                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetShiXianXZ = "1" }).ToList();
             if (PublicCls.OrgIsZhen(ORGNO))
                 result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO }).ToList();
             List<T_SYS_DICTModel> dic302 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "302" }).ToList();
@@ -2674,14 +2674,16 @@ namespace ManagerSystem.MVC.Controllers
         public ActionResult FIRERECORD_REPORT8Man()
         {
             string Method = Request.Params["Method"];
-            string FIRERECORD_REPORT8ID = Request.Params["FIRERECORD_REPORT8ID"];
+            string REPORTYEAR = Request.Params["REPORTYEAR"];
+            //string FIRERECORD_REPORT8ID = Request.Params["FIRERECORD_REPORT8ID"];
             string ORGNO = SystemCls.getCurUserOrgNo();
             FIRERECORD_REPORT8_Model model = new FIRERECORD_REPORT8_Model();
-            if (!string.IsNullOrEmpty(FIRERECORD_REPORT8ID))
+            if (!string.IsNullOrEmpty(REPORTYEAR))
             {
                 if (Method == "Add")
                 {
-                    model = FIRERECORD_REPORT8Cls.getModel(new FIRERECORD_REPORT8_SW { FIRERECORD_REPORT8ID = FIRERECORD_REPORT8ID });
+
+                    model = FIRERECORD_REPORT8Cls.getModel(new FIRERECORD_REPORT8_SW { BYORGNO = ORGNO, REPORTYEAR = REPORTYEAR });
                 }
             }
             ViewBag.vdOrg = T_SYS_ORGCls.getSelectOptionByORGNO(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), OnlyGetShiXian = ORGNO, TopORGNO = ORGNO });//获取州级和市县
@@ -2694,6 +2696,19 @@ namespace ManagerSystem.MVC.Controllers
             ViewBag.dic305Count = dic305list.Count;
             ViewBag.dic310Count = dic310List.Count;
             return View(model);
+        }
+
+
+        /// <summary>
+        /// 获取数据列表
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult GetReport8json()
+        {
+            string REPORTYEAR = Request.Params["REPORTYEAR"];
+            string BYORGNO = Request.Params["BYORGNO"];
+            // string BYORGNO = SystemCls.getCurUserOrgNo();
+            return Content(JsonConvert.SerializeObject(FIRERECORD_REPORT8Cls.getListModel(new FIRERECORD_REPORT8_SW { BYORGNO = BYORGNO, REPORTYEAR = REPORTYEAR, })), "text/html;charset=UTF-8");
         }
         #endregion
 
@@ -2727,7 +2742,7 @@ namespace ManagerSystem.MVC.Controllers
 
             #region 数据准备
             List<T_SYS_ORGModel> result = ResultList(ORGNO);//获取组织机构编码
-            List<FIRERECORD_REPORT8_Model> yearreportlist = FIRERECORD_REPORT8Cls.getListModel(new FIRERECORD_REPORT8_SW { BYORGNO=ORGNO,REPORTYEAR = YEAR, }).ToList();
+            List<FIRERECORD_REPORT8_Model> yearreportlist = FIRERECORD_REPORT8Cls.getListModel(new FIRERECORD_REPORT8_SW { REPORTYEAR = YEAR, }).ToList();
             List<T_SYS_DICTModel> dic305 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "305" }).ToList();//省地县
             List<T_SYS_DICTModel> dic310 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "310" }).ToList();//组织机构统计年报
             #endregion
@@ -5683,7 +5698,7 @@ namespace ManagerSystem.MVC.Controllers
             if (PublicCls.OrgIsShi(ORGNO))
                 result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetShiXian = "1" }).ToList();
             if (PublicCls.OrgIsXian(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetXianXZ = "1" }).ToList();
+                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetShiXianXZ = "1" }).ToList();
             if (PublicCls.OrgIsZhen(ORGNO))
                 result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO }).ToList();
             //if (PublicCls.OrgIsCun(ORGNO))

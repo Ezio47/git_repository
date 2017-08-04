@@ -244,7 +244,7 @@ namespace ManagerSystemClassLibrary
                 DANGERCLASS = YJ_DANGERCLASSCls.getModel(new YJ_DANGERCLASS_SW { BYORGNO = sw.BYORGNO }).DANGERCLASS;
                 if (string.IsNullOrEmpty(DANGERCLASS))
                 {
-                    sw.BYORGNO = sw.BYORGNO.Substring(0, 6) + "000";//如果乡镇没有,查市的 
+                    sw.BYORGNO = sw.BYORGNO.Substring(0, 6) + "000000000";//如果乡镇没有,查市的 
                     DANGERCLASS = YJ_DANGERCLASSCls.getModel(new YJ_DANGERCLASS_SW { BYORGNO = sw.BYORGNO }).DANGERCLASS;
                     if (string.IsNullOrEmpty(DANGERCLASS))
                     {

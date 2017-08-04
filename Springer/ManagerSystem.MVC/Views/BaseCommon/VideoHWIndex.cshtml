@@ -2,8 +2,8 @@
     ViewBag.Title = "视频监控--海威";
     Layout = null;
 }
-<script src="~/Scripts/VideoJs/jquery-2.2.2.js"></script>
 
+<script src="~/Scripts/VideoJs/jquery-2.2.2.js"></script>
 <script src="~/Scripts/jquery-1.8.2.js"></script>
 <script src="~/Scripts/layer/layer.js"></script>
 <link href="~/Content/themes/default/Public.css" rel="stylesheet" />
@@ -15,10 +15,8 @@
 @*<script src="~/Scripts/jquery-easyui-1.4/jquery.min.js"></script>*@
 <script src="~/Scripts/jquery-easyui-1.4/jquery.easyui.min.js"></script>
 <script src="~/Scripts/jquery-easyui-1.4/locale/easyui-lang-zh_CN.js"></script>
-
 <script src="~/Scripts/VideoJs/videohw/webVideoCtrl.js"></script>
 <script src="~/Scripts/VideoJs/videohw/VideoHWShow.js"></script>
-
 <script src="~/Scripts/VideoJs/md5.js"></script>
 <script src="~/Scripts/VideoJs/loginService.js"></script>
 <script src="~/Scripts/VideoJs/ckplayer/ckplayer.js" charset="utf-8"></script>
@@ -26,9 +24,9 @@
 <script src="~/Scripts/VideoJs/cacheService.js"></script>
 <script src="~/Scripts/VideoJs/businessService.js"></script>
 <script src="~/Scripts/VideoJs/WebSocket.js"></script>
-
 <script src="~/Scripts/VideoJs/common.js"></script>
 <script src="~/Scripts/VideoJs/VideoShow.js"></script>
+
 
 <script type="text/javascript">
     var deviceType;
@@ -38,10 +36,8 @@
 
     var $j = jQuery.noConflict(); //自定义一个比较短快捷方式
     $j(function () {
-
         $j('#devTree').tree({
             url: "/BaseCommon/GetVideoTree?id=" + id + "&eid=" + eid,
-
             onDblClick: function (node) {
                 if ($j('#devTree').tree('isLeaf', node.target)) {//判断是否是叶子节点
                     //0 海威 1 森林眼
@@ -50,13 +46,9 @@
                     if (node.type == 0) {
                         clickLogin(node);//登录视频点
                     } else {
-                        //  login(node);
                         clickLogin(node);//登录视频点
                     }
                 }
-                //else {
-                //    alert("父节点" + node.text);
-                //}
             },
             onLoadSuccess: function (node, data) {
                 var node = $j('#devTree').tree('find', eid);
@@ -64,7 +56,6 @@
                     if (node.type == 0) {
                         clickLogin(node);//登录视频点
                     } else {
-                        //  login(node);
                         clickLogin(node);//登录视频点
                     }
                 }
@@ -105,7 +96,7 @@
                 mouseDownPTZControl(9);
             }
         }
-        else {//森林眼
+        else { //森林眼
             if (flag == 0) {
                 moveVideo(0, 1);
             }
@@ -131,10 +122,8 @@
                 moveVideo(-1, 1);
             }
             if (flag == 8) {
-
             }
         }
-
     }
 
     //取消切换
@@ -143,7 +132,7 @@
         if (deviceType == 0) {
             mouseUpPTZControl();
         }
-        else {
+        else { //森林眼
             moveVideoStop();
         }
     }
@@ -200,44 +189,28 @@
                             <td><input type="button" class="btn2" value="光圈-" onmousedown="PTZIrisOut()" onmouseup="PTZIrisStop()"></td>
                         </tr>
                         <tr>
-                            <td>
-                                <input type="button" class="btn2" value="开始预览" onclick="clickStartRealPlay();" />
-                                </td>
-                            <td>
-                                <input type="button" class="btn2" value="停止预览" onclick="clickStopRealPlay();" />
-                            </td>
-
+                            <td><input type="button" class="btn2" value="开始预览" onclick="clickStartRealPlay();" /></td>
+                            <td><input type="button" class="btn2" value="停止预览" onclick="clickStopRealPlay();" /></td>
                         </tr>
                     </table>
                 </div>
-
             </fieldset>
 
             <fieldset class="preview">
                 <legend>预览</legend>
                 <table cellpadding="0" cellspacing="4" border="0">
                     <tr>
-                        <td class="tt">登录设备</td>
-                        <td>
-                            <select id="ip" class="sel" onchange="getChannelInfo();"></select>
-                        </td>
-                        <td class="tt">通道列表</td>
-                        <td>
-                            <select id="channels" class="sel"></select>
-                        </td>
+                        <td class="tt">设备</td>
+                        <td><select id="ip" class="sel" onchange="getChannelInfo();"></select></td>
+                        <td class="tt">通道</td>
+                        <td><select id="channels" class="sel"></select></td>
                     </tr>
                     <tr>
-
                         <td class="tt">音量</td>
-                        <td>
-                            <input type="text" id="volume" class="txt" value="50" maxlength="3" />[0-100]
-                        </td>
-                        <td>
-                            <input type="button" class="btn" value="设置" onclick="clickSetVolume();" />
-                        </td>
+                        <td><input type="text" id="volume" class="txt" value="50" maxlength="3" />[0-100]</td>
+                        <td><input type="button" class="btn" value="设置" onclick="clickSetVolume();" /></td>
                         <td>
                             <input type="button" class="btn" value="打开声音" onclick="clickOpenSound();" />
-
                             <input type="button" class="btn" value="关闭声音" onclick="clickCloseSound();" />
                         </td>
                     </tr>
@@ -254,12 +227,13 @@
             <fieldset class="preview">
                 <legend>下载插件</legend>
                 <table cellpadding="0" cellspacing="4" border="0">
-                <tr>
-                    <td ><a href="~/UploadFile/DownLoad/WebComponents.rar">视频监控插件下载</a></td>
-                </tr>
+                    <tr>
+                        <td><a href="~/UploadFile/DownLoad/WebComponents.rar">视频监控插件下载</a></td>
+                    </tr>
                 </table>
             </fieldset>
         </div>
+
         <div data-options="region:'west',split:true" title="" style="width:200px;height:100%">
             <div class="easyui-layout" style="width:100%;height:100%;" data-options="fit:true">
                 <div data-options="region:'center',title:'',iconCls:'icon-video'">
@@ -274,6 +248,7 @@
                 </div>
             </div>
         </div>
+
         <div data-options="region:'center',title:'',iconCls:'icon-video'">
             <div id="videoScreen" style="width:100%;height:100%;">
 

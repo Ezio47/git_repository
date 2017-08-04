@@ -293,11 +293,11 @@
             success: function (data, ioArgs) {
                 var ar = eval('(' + data + ')');
                 if (ar.Success) {
-                    if (confirm(ar.Msg )) {
+                    layer.confirm(ar.Msg, { icon: 3, title: '提示' }, function (index){
                         var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
                         parent.layer.close(index);
                         window.location.assign(ar.Url);
-                    }
+                    });
                 }
                 else {
                     alert(ar.Msg);

@@ -257,7 +257,7 @@ namespace ManagerSystem.MVC.Controllers
 
             //ViewBag.RoleChk = T_SYSSEC_ROLECls.getRoleAndUid(new T_SYSSEC_ROLE_SW { USERID = ViewBag.T_USERID });
             ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag() });
-            ViewBag.vdAREANAME = T_ALL_AREACls.getAREANAMESelectOption(new T_ALL_AREA_SW { });
+            ViewBag.vdAREANAME = T_ALL_AREACls.getAREANAMESelectOption(new T_ALL_AREA_SW {});
             return View();
         }
 

@@ -102,7 +102,7 @@
                 },
                 type: 'post',
                 error: function () {
-                    alert('错误:异常!', 'error');
+                    layer.msg('错误:异常!',  { icon: 5 });
                 },
                 success: function (re) {
 
@@ -113,7 +113,7 @@
                         }
                     }
                     else {
-                        alert(ar.Msg, "Error");
+                        layer.msg(ar.Msg,   { icon: 5 });
                     }
                 }
             });
@@ -129,7 +129,7 @@
             maxmin: true,
             content: '/YJJC/INFRAREDCAMERAMan',
             end: function () {
-                query(Page);
+                query("1");
             }
         });
         //window.location.assign('/YJJC/INFRAREDCAMERAMan');
@@ -156,7 +156,7 @@
             maxmin: true,
             content: '/YJJC/INFRAREDCAMERAMan?ID=' + ID + '&Method=Mdy',
             end: function () {
-                query(Page);
+                query("1");
             }
         });
     }
@@ -186,11 +186,11 @@
                     $('#divPager').html(ar.pagerInfo);
                 }
                 else {
-                    alert(ar.Msg);
+                    layer.msg(ar.Msg, { icon: 5 });
                 }
             },
             error: function (err, ioArgs) {
-                alert('登录异常');
+                layer.msg('登录异常', { icon: 5 });
             }
         });
     }

@@ -179,7 +179,7 @@ namespace ManagerSystemClassLibrary
         {
             var result = new List<T_SYSSEC_IPSUSER_Pager_Model>();
             DataTable dtORG = BaseDT.T_SYS_ORG.getDT(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag() });//获取单位
-            DataTable dtSex = BaseDT.T_SYS_DICT.getDT(new T_SYS_DICTSW { DICTFLAG = "性别" });//性别
+            DataTable dtSex = BaseDT.T_SYS_DICT.getDT(new T_SYS_DICTSW { DICTTYPEID = "3" });//性别
             DataTable dt = BaseDT.T_SYSSEC_IPSUSER.getDT(sw, out total);//用户列表
             DataTable dt46 = BaseDT.T_SYS_DICT.getDT(new T_SYS_DICTSW { DICTTYPEID = "46" });//科室
             string uidList = "";
@@ -253,6 +253,7 @@ namespace ManagerSystemClassLibrary
                 m.USERNAME = dt.Rows[i]["USERNAME"].ToString();//用户姓名
                 m.USERJOB = dt.Rows[i]["USERJOB"].ToString();//职务
                 m.LOGINUSERNAME = dt.Rows[i]["LOGINUSERNAME"].ToString();//登录名
+                m.GID = dt.Rows[i]["GID"].ToString();//用户扩展护林员ID
                 m.PHONE = dt.Rows[i]["PHONE"].ToString();//电话
                 m.DEPARTMENT = dt.Rows[i]["DEPARTMENT"].ToString();
                 m.DEPARTMENTName = BaseDT.T_SYS_DICT.getName(dt46, dt.Rows[i]["DEPARTMENT"].ToString());

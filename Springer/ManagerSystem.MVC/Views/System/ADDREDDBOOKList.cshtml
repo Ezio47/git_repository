@@ -210,11 +210,11 @@
                     clear();
                 }
                 else {
-                    alert(ar.Msg);
+                    layer.msg(ar.Msg, { icon: 5 });
                 }
             },
             error: function (err, ioArgs) {
-                alert('保存异常');
+                layer.msg('保存异常', { icon: 5 });
             }
         });
     }
@@ -248,7 +248,7 @@
                     $('#tt').tree('reload');
                 }
                 else {
-                    layer.msg(ar.Msg);
+                    layer.msg(ar.Msg, { icon: 5 });
                 }
             },
             error: function (err, ioArgs) {
@@ -297,10 +297,10 @@
                         document.getElementById("tbxRTORDERBY").value = ar.ORDERBY;
                         document.getElementById("tbxRATID").value = ar.RATID;
                     }
-                    else alert("erro");
+                    else layer.msg("erro", { icon: 5 });
                 },
                 error: function (err, ioArgs) {
-                    alert('登录异常');
+                    layer.msg('登录异常', { icon: 5 });
                 }
             });
         }
@@ -325,7 +325,7 @@
                     }
                 },
                 error: function (err, ioArgs) {
-                    alert('登录异常');
+                    layer.msg('登录异常', { icon: 5 });
                 }
             });
         }

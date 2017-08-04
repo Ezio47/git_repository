@@ -466,7 +466,7 @@ namespace ManagerSystem.MVC.Controllers
             //ViewBag.RoleChk = T_SYSSEC_ROLECls.getRoleAndUid(new T_SYSSEC_ROLE_SW { USERID = ViewBag.T_USERID });
             ViewBag.vdSex = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTFLAG = "性别" });
             ViewBag.vdONSTATE = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTFLAG = "固兼职状态" });
-            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = SystemCls.getCurUserOrgNo() });
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = SystemCls.getCurUserOrgNo() ,IsEnableCUN="1"});
             ViewBag.vdISENABLE = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTFLAG = "启用状态", DICTVALUE = "1" });
             return View();
         }
@@ -494,7 +494,7 @@ namespace ManagerSystem.MVC.Controllers
             {
                 return View();
             }
-            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = SystemCls.getCurUserOrgNo() });// ipsuM.ORGNAME });
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = SystemCls.getCurUserOrgNo(), IsEnableCUN = "1" });// ipsuM.ORGNAME });
             ViewBag.vdISENABLE = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTFLAG = "启用状态", isShowAll = "1" });
             return View();
         }
@@ -1449,13 +1449,14 @@ namespace ManagerSystem.MVC.Controllers
             ViewBag.T_USERID = Request.Params["USERID"];
             //操作方法　Add Mdy Del
             ViewBag.T_Method = Request.Params["Method"];
+            ViewBag.T_UrlReferrer = "/System/UserList";
             //如果未传参数，默认为添加
             if (string.IsNullOrEmpty(ViewBag.T_Method))
                 ViewBag.T_Method = "Add";
             //角色复选框
             ViewBag.RoleChk = getRoleUId(new T_SYSSEC_ROLE_SW { USERID = ViewBag.T_USERID });
             ViewBag.vdSex = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTFLAG = "性别" });
-            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = SystemCls.getCurUserOrgNo(), OnlyGetShiXianXZ = "1" });
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = SystemCls.getCurUserOrgNo()});
             string sysorgFlag = "1";//1 州  2 市县 3 乡镇
             var bxz = PublicCls.OrgIsZhen(SystemCls.getCurUserOrgNo());//乡镇
             var bsx = PublicCls.OrgIsXian(SystemCls.getCurUserOrgNo());//市县
@@ -1518,7 +1519,7 @@ namespace ManagerSystem.MVC.Controllers
         {
             pubViewBag("006001", "006001", "");
             if (ViewBag.isPageRight == false) { return View(); }
-            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { TopORGNO = SystemCls.getCurUserOrgNo(), SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = SystemCls.getCurUserOrgNo(), OnlyGetShiXianXZ="1" });
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { TopORGNO = SystemCls.getCurUserOrgNo(), SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = SystemCls.getCurUserOrgNo() });
             ViewBag.depart = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "46", isShowAll = "1" });
             return View();
         }
@@ -1597,6 +1598,7 @@ namespace ManagerSystem.MVC.Controllers
             if (ViewBag.isPageRight == false) { return View(); }
             ViewBag.SysOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = SystemCls.getCurUserOrgNo() });
             ViewBag.DeptInfo = getOADeptStr("");
+            ViewBag.IsOpenOA = ConfigCls.getIsTongBuOA();
             return View();
         }
 
@@ -1634,7 +1636,7 @@ namespace ManagerSystem.MVC.Controllers
             {
                 sb.AppendFormat("<tr>");
                 sb.AppendFormat("<td class=\"center\">{0}<input id=\"sysdept" + i + "\" type=\"hidden\" value=\"{1}\"  /></td>", _list[i].DICTNAME, _list[i].DICTVALUE);
-                sb.AppendFormat("<td class=\"center\">{0}</td>", "<select id=\"tbxOADept" + i + "\" name=\"tbxOADept" + i + "\" >" + Options + "</select>");
+                sb.AppendFormat("<td class=\"center\">{0}</td>", "<select id=\"tbxOADept" + i + "\" name=\"tbxOADept" + i + "\" onclick=\"OADeptChange()\">" + Options + "</select>");
                 sb.AppendFormat("</tr>");
             }
             return sb.ToString();
@@ -1671,7 +1673,7 @@ namespace ManagerSystem.MVC.Controllers
                 return Content(JsonConvert.SerializeObject(new Message(true, OACls.FindOADeptBySysDept(sysORGNO, sysDeptIdList), "")), "text/html;charset=UTF-8");
             }
             else
-                return Content(JsonConvert.SerializeObject(new Message(false, "", "")), "text/html;charset=UTF-8");
+                return Content(JsonConvert.SerializeObject(new Message(true, "", "")), "text/html;charset=UTF-8");
         }
 
         /// <summary>
@@ -1692,7 +1694,7 @@ namespace ManagerSystem.MVC.Controllers
                 return Content(JsonConvert.SerializeObject(OACls.DeptMap(m)));
             }
             else
-                return Content(JsonConvert.SerializeObject(new Message(false, "暂无操作权限,请先修改OA配置属性!", "")), "text/html;charset=UTF-8");
+                return Content(JsonConvert.SerializeObject(new Message(false, "暂无操作权限,若要使用,请联系系统管理员!", "")), "text/html;charset=UTF-8");
         }
         #endregion
 
@@ -1868,7 +1870,7 @@ namespace ManagerSystem.MVC.Controllers
                     return Content(JsonConvert.SerializeObject(new Message(false, "OA服务不通,请联系系统管理员!", "")), "text/html;charset=UTF-8");
             }
             else
-                return Content(JsonConvert.SerializeObject(new Message(false, "暂无操作权限,请先修改OA配置属性!", "")), "text/html;charset=UTF-8");
+                return Content(JsonConvert.SerializeObject(new Message(false, "暂无操作权限,若要使用,请联系系统管理员!", "")), "text/html;charset=UTF-8");
         }
 
         /// <summary>
@@ -1888,7 +1890,7 @@ namespace ManagerSystem.MVC.Controllers
                     return Content(JsonConvert.SerializeObject(new Message(false, "OA服务不通,请联系系统管理员!", "")), "text/html;charset=UTF-8");
             }
             else
-                return Content(JsonConvert.SerializeObject(new Message(false, "暂无操作权限,请先修改OA配置属性!", "")), "text/html;charset=UTF-8");
+                return Content(JsonConvert.SerializeObject(new Message(false, "暂无操作权限,若要使用,请联系系统管理员!", "")), "text/html;charset=UTF-8");
         }
 
         /// <summary>
@@ -1910,7 +1912,7 @@ namespace ManagerSystem.MVC.Controllers
             }
             else
             {
-                return Content(JsonConvert.SerializeObject(new Message(false, "暂无操作权限,请先修改OA配置属性!", "")), "text/html;charset=UTF-8");
+                return Content(JsonConvert.SerializeObject(new Message(false, "暂无操作权限,若要使用,请联系系统管理员!", "")), "text/html;charset=UTF-8");
             }
         }
         #endregion

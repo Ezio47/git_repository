@@ -137,7 +137,7 @@ namespace ManagerSystemClassLibrary
         /// <returns></returns>
         public static IEnumerable<T_IPSFR_USER_Pager_Model> getListPagerModel(T_IPSFR_USER_SW sw, out int total)
         {
-            DataTable dtORG = BaseDT.T_SYS_ORG.getDT(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag() });//获取单位
+            DataTable dtORG = BaseDT.T_SYS_ORG.getDT(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(),IsEnableCUN="1" });//获取单位
             DataTable dtSex = BaseDT.T_SYS_DICT.getDT(new T_SYS_DICTSW { DICTFLAG = "性别" });//性别
             DataTable dtOnState = BaseDT.T_SYS_DICT.getDT(new T_SYS_DICTSW { DICTFLAG = "固兼职状态" });
             DataTable dtIsEnable = BaseDT.T_SYS_DICT.getDT(new T_SYS_DICTSW { DICTFLAG = "启用状态" });
@@ -496,7 +496,7 @@ namespace ManagerSystemClassLibrary
             string curUserOrg = SystemCls.getCurUserOrgNo();//获取当前登录用户的机构编码
             if (string.IsNullOrEmpty(OrgNo) == false)
                 curUserOrg = OrgNo;
-            DataTable dtOrg = BaseDT.T_SYS_ORG.getDT(new T_SYS_ORGSW { TopORGNO = curUserOrg, SYSFLAG = ConfigCls.getSystemFlag() });//获取当前登录用户有权限查看的单位
+            DataTable dtOrg = BaseDT.T_SYS_ORG.getDT(new T_SYS_ORGSW { TopORGNO = curUserOrg, SYSFLAG = ConfigCls.getSystemFlag(), IsEnableCUN = "1" });//获取当前登录用户有权限查看的单位
             DataTable dtFRUser = BaseDT.T_IPSFR_USER.getDT(new T_IPSFR_USER_SW { ISENABLE = "1", BYORGNO = curUserOrg, PHONE = sw.PHONE, PhoneHname = sw.PhoneHname });//获取所有有权限查看的护林员
             //当前在线的护林员
             DataTable dtRealTmp = BaseDT.T_IPS_REALDATATEMPORARY.getOnLineDtByOrgno(new T_IPS_REALDATATEMPORARYSW { ORGNO = curUserOrg, PhoneHname = sw.PhoneHname });
@@ -514,6 +514,16 @@ namespace ManagerSystemClassLibrary
                          {"treeType","org"} ,
                      };
                     JArray childArray = new JArray();
+                    #region 护林员
+                    DataRow[] drFRUser = dtFRUser.Select("BYORGNO = '" + curUserOrg + "'", "");
+                    for (int i = 0; i < drFRUser.Length; i++)
+                    {
+                        JObject rootC = new JObject { { "id", drFRUser[i]["HID"].ToString() }, { "text", drFRUser[i]["HNAME"].ToString() }, { "treeType", "hly" } };
+                        childArray.Add(rootC);
+                    }
+                    #endregion
+
+                    #region 组织机构
                     DataRow[] drOrgC = dtOrg.Select("SUBSTRING(ORGNO,1,4) = '" + curUserOrg.Substring(0, 4) + "' AND ORGNO<>'" + curUserOrg + "' and SUBSTRING(ORGNO,7,3)='000'", "");//获取所有县且〈〉市的
                     for (int i = 0; i < drOrgC.Length; i++)
                     {
@@ -526,6 +536,8 @@ namespace ManagerSystemClassLibrary
                      };
                         childArray.Add(rootC);
                     }
+                    #endregion
+                    
                     root.Add("children", childArray);
                     jObjects.Add(root);
                 }
@@ -546,6 +558,16 @@ namespace ManagerSystemClassLibrary
                          {"treeType","org"} 
                      };
                     JArray jObjectsC = new JArray();
+                    #region 护林员
+                    DataRow[] drFRUser = dtFRUser.Select("BYORGNO = '" + curUserOrg + "'", "");
+                    for (int i = 0; i < drFRUser.Length; i++)
+                    {
+                        JObject rootC = new JObject { { "id", drFRUser[i]["HID"].ToString() }, { "text", drFRUser[i]["HNAME"].ToString() }, { "treeType", "hly" } };
+                        jObjects.Add(rootC);
+                    }
+                    #endregion
+
+                    #region 组织机构
                     //DataRow[] drOrgC = dtOrg.Select("SUBSTRING(ORGNO,1,6) = '" + curUserOrg.Substring(0, 6) + "' AND ORGNO<>'" + curUserOrg + "'", ""); //获取所有县且〈〉市的
                     DataRow[] drOrgC = dtOrg.Select("SUBSTRING(ORGNO,1,6) = " + curUserOrg.Substring(0, 6) + " AND SUBSTRING(ORGNO,10,6) =" + curUserOrg.Substring(9, 6) + " AND ORGNO<>" + curUserOrg + "", "");
                     for (int i = 0; i < drOrgC.Length; i++)
@@ -564,6 +586,8 @@ namespace ManagerSystemClassLibrary
                             jObjects.Add(rootC);
                         }
                     }
+                    #endregion
+                    
                     if (string.IsNullOrEmpty(OrgNo))//县级用户登录
                     {
                         jObjects.Add(root);
@@ -585,31 +609,79 @@ namespace ManagerSystemClassLibrary
                          {"text",drOrg[0]["ORGNAME"].ToString()},
                          {"state","closed"} ,
                          {"treeType","org"} 
-                     };
-                    DataRow[] drFRUser = dtFRUser.Select("BYORGNO = '" + curUserOrg + "'", "");//获取所有县且〈〉市的
+                     };                   
                     JArray jObjectsC = new JArray();
+                    #region 护林员
+                    DataRow[] drFRUser = dtFRUser.Select("BYORGNO = '" + curUserOrg + "'", "");//获取所有县且〈〉市的
                     for (int i = 0; i < drFRUser.Length; i++)
                     {
-                        StringBuilder sb = new StringBuilder();
-                        //JObject rootC;
-                        //var arrHid = HidList.Split(',');              
-                        //for (int j = 0; j < arrHid.Length; j++)
-                        //{
-                        //    if (arrHid[j] == drFRUser[i]["HID"].ToString())
-                        //    {
-                        //         rootC = new JObject { { "id", drFRUser[i]["HID"].ToString() }, { "text", drFRUser[i]["HNAME"].ToString() },{"checked",true }, { "treeType", "hly" } };
-                        //    }
-                                
-                        //}
                         JObject rootC = new JObject { { "id", drFRUser[i]["HID"].ToString() }, { "text", drFRUser[i]["HNAME"].ToString() }, { "treeType", "hly" } };
-                        //root.Add("children", getTreeChild(dtOrg, dtFRUser, drFRUser[i]["ORGNO"].ToString()));//继续获取护林员
                         jObjectsC.Add(rootC);
                         if (string.IsNullOrEmpty(OrgNo) == false)//异步加载，不显示乡镇名
                         {
                             jObjects.Add(rootC);
                         }
                     }
+                    #endregion
+
+                    #region 组织机构
+                    DataRow[] drOrgC = dtOrg.Select("SUBSTRING(ORGNO,1,9) = " + curUserOrg.Substring(0, 9) + " AND ORGNO<>" + curUserOrg + "", "");
+                    for (int i = 0; i < drOrgC.Length; i++)
+                    {
+                        JObject rootC = new JObject
+                        {
+                         {"id",drOrgC[i]["ORGNO"].ToString()},//ORGNO
+                         {"text",drOrgC[i]["ORGNAME"].ToString()+getOnLineHRUser(dtFRUser,dtRealTmp,drOrgC[i]["ORGNO"].ToString())},
+                         {"state","closed"} ,
+                         {"treeType","org"} 
+                       };
+                        //root.Add("children", getTreeChild(dtOrg, dtFRUser, dtRealTmp, drOrg[i]["ORGNO"].ToString()));//继续获取护林员
+                        jObjectsC.Add(rootC);
+                        if (string.IsNullOrEmpty(OrgNo) == false)//异步加载，不显示县名
+                        {
+                            jObjects.Add(rootC);
+
+                        }
+                    }
+                    #endregion
+
                     if (string.IsNullOrEmpty(OrgNo))//乡镇级用户登录
+                    {
+                        jObjects.Add(root);
+                        root.Add("children", jObjectsC);
+                    }
+                }
+            }
+            #endregion
+
+            #region 村用戶
+            else if (PublicCls.OrgIsCun(curUserOrg))
+            {
+                DataRow[] drOrg = dtOrg.Select("", "ORGNO");
+                if (drOrg.Length > 0)
+                {
+                    JObject root = new JObject
+                     {
+                         {"id",drOrg[0]["ORGNO"].ToString()},//ORGNO
+                         {"text",drOrg[0]["ORGNAME"].ToString()+getOnLineHRUser(dtFRUser,dtRealTmp,drOrg[0]["ORGNO"].ToString())},
+                         {"treeType","org"} 
+                     };
+                    JArray jObjectsC = new JArray();
+
+                    #region 护林员
+                    DataRow[] drFRUser = dtFRUser.Select("BYORGNO = '" + curUserOrg + "'", "");//获取所有县且〈〉市的
+                    for (int i = 0; i < drFRUser.Length; i++)
+                    {
+                        JObject rootC = new JObject { { "id", drFRUser[i]["HID"].ToString() }, { "text", drFRUser[i]["HNAME"].ToString() }, { "treeType", "hly" } };
+                        jObjectsC.Add(rootC);
+                        if (string.IsNullOrEmpty(OrgNo) == false)//异步加载，不显示乡镇名
+                        {
+                            jObjects.Add(rootC);
+                        }
+                    }
+                    #endregion
+
+                    if (string.IsNullOrEmpty(OrgNo))//村用户登录
                     {
                         jObjects.Add(root);
                         root.Add("children", jObjectsC);
@@ -638,7 +710,7 @@ namespace ManagerSystemClassLibrary
             string curUserOrg = SystemCls.getCurUserOrgNo();//获取当前登录用户的机构编码
             if (string.IsNullOrEmpty(OrgNo) == false)
                 curUserOrg = OrgNo;
-            DataTable dtOrg = BaseDT.T_SYS_ORG.getDT(new T_SYS_ORGSW { TopORGNO = curUserOrg, SYSFLAG = ConfigCls.getSystemFlag() });//获取当前登录用户有权限查看的单位
+            DataTable dtOrg = BaseDT.T_SYS_ORG.getDT(new T_SYS_ORGSW { TopORGNO = curUserOrg, SYSFLAG = ConfigCls.getSystemFlag(),IsEnableCUN="1"});//获取当前登录用户有权限查看的单位
             DataTable dtFRUser = BaseDT.T_IPSFR_USER.getDT(new T_IPSFR_USER_SW { ISENABLE = "1", BYORGNO = curUserOrg, PHONE = sw.PHONE, PhoneHname = sw.PhoneHname });//获取所有有权限查看的护林员
             //当前在线的护林员
             DataTable dtRealTmp = BaseDT.T_IPS_REALDATATEMPORARY.getOnLineDtByOrgno(new T_IPS_REALDATATEMPORARYSW { ORGNO = curUserOrg, PhoneHname = sw.PhoneHname });
@@ -656,6 +728,32 @@ namespace ManagerSystemClassLibrary
                          {"treeType","org"} ,
                      };
                     JArray childArray = new JArray();
+
+                    #region 护林员
+                    DataRow[] drFRUser = dtFRUser.Select("BYORGNO = '" + curUserOrg + "'", "");
+                    for (int i = 0; i < drFRUser.Length; i++)
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        sb.AppendFormat("<font");
+                        DataRow[] drRealTmp = dtRealTmp.Select("HID='" + drFRUser[i]["HID"].ToString() + "'");
+                        if (drRealTmp.Length == 0)//在在线判断时间段内未有记录，离线
+                            sb.AppendFormat(" color='{0}' title='{1}'", ConfigCls.getOutLineColor(), "离线 点击快速定位");
+                        else
+                        {
+                            if (drRealTmp[0]["ISOUTRAIL"].ToString() == "0")//在线未出围
+                                sb.AppendFormat(" color='{0}' title='{1}'", ConfigCls.getInLineColor(), "在线 点击快速定位");
+                            else//在线出围 ISOUTRAIL＝1 中间表中数据
+                                sb.AppendFormat(" color='{0}' title='{1}'", ConfigCls.getOutRailColor(), "出围(责任区) 点击快速定位");
+                        }
+                        sb.AppendFormat(" onclick='getLonLat(\"{0}\")'>", drFRUser[i]["HID"].ToString());
+                        sb.AppendFormat("{0}[{1}]</font>", drFRUser[i]["HNAME"].ToString(), drFRUser[i]["PHONE"].ToString());
+                        JObject rootC = new JObject { { "id", drFRUser[i]["HID"].ToString() }, { "text", sb.ToString() }, { "treeType", "hly" } };
+                        //root.Add("children", getTreeChild(dtOrg, dtFRUser, drFRUser[i]["ORGNO"].ToString()));//继续获取护林员
+                        childArray.Add(rootC);
+                    }
+                    #endregion
+
+                    #region 组织机构
                     DataRow[] drOrgC = dtOrg.Select("SUBSTRING(ORGNO,1,4) = '" + curUserOrg.Substring(0, 4) + "' AND ORGNO<>'" + curUserOrg + "' and SUBSTRING(ORGNO,7,3)='000'", "");//获取所有县且〈〉市的
                     for (int i = 0; i < drOrgC.Length; i++)
                     {
@@ -668,6 +766,8 @@ namespace ManagerSystemClassLibrary
                      };
                         childArray.Add(rootC);
                     }
+                    #endregion
+
                     root.Add("children", childArray);
                     jObjects.Add(root);
                 }
@@ -688,7 +788,33 @@ namespace ManagerSystemClassLibrary
                      };
                     JArray jObjectsC = new JArray();
                     //DataRow[] drOrgC = dtOrg.Select("SUBSTRING(ORGNO,1,6) = '" + curUserOrg.Substring(0, 6) + "' AND ORGNO<>'" + curUserOrg + "'", ""); //获取所有县且〈〉市的
-                    DataRow[] drOrgC = dtOrg.Select("SUBSTRING(ORGNO,1,6) = " + curUserOrg.Substring(0, 6) + " AND SUBSTRING(ORGNO,10,6) =" + curUserOrg.Substring(9,6) + " AND ORGNO<>" + curUserOrg + "", "");
+
+                    #region 护林员
+                    DataRow[] drFRUser = dtFRUser.Select("BYORGNO = '" + curUserOrg + "'", "");
+                    for (int i = 0; i < drFRUser.Length; i++)
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        sb.AppendFormat("<font");
+                        DataRow[] drRealTmp = dtRealTmp.Select("HID='" + drFRUser[i]["HID"].ToString() + "'");
+                        if (drRealTmp.Length == 0)//在在线判断时间段内未有记录，离线
+                            sb.AppendFormat(" color='{0}' title='{1}'", ConfigCls.getOutLineColor(), "离线 点击快速定位");
+                        else
+                        {
+                            if (drRealTmp[0]["ISOUTRAIL"].ToString() == "0")//在线未出围
+                                sb.AppendFormat(" color='{0}' title='{1}'", ConfigCls.getInLineColor(), "在线 点击快速定位");
+                            else//在线出围 ISOUTRAIL＝1 中间表中数据
+                                sb.AppendFormat(" color='{0}' title='{1}'", ConfigCls.getOutRailColor(), "出围(责任区) 点击快速定位");
+                        }
+                        sb.AppendFormat(" onclick='getLonLat(\"{0}\")'>", drFRUser[i]["HID"].ToString());
+                        sb.AppendFormat("{0}[{1}]</font>", drFRUser[i]["HNAME"].ToString(), drFRUser[i]["PHONE"].ToString());
+                        JObject rootC = new JObject { { "id", drFRUser[i]["HID"].ToString() }, { "text", sb.ToString() }, { "treeType", "hly" } };
+                        //root.Add("children", getTreeChild(dtOrg, dtFRUser, drFRUser[i]["ORGNO"].ToString()));//继续获取护林员
+                        jObjects.Add(rootC);
+                    }
+                    #endregion
+
+                    #region 组织机构
+                    DataRow[] drOrgC = dtOrg.Select("SUBSTRING(ORGNO,1,6) = " + curUserOrg.Substring(0, 6) + " AND SUBSTRING(ORGNO,10,6) =" + curUserOrg.Substring(9, 6) + " AND ORGNO<>" + curUserOrg + "", "");
                     for (int i = 0; i < drOrgC.Length; i++)
                     {
                         JObject rootC = new JObject
@@ -703,8 +829,11 @@ namespace ManagerSystemClassLibrary
                         if (string.IsNullOrEmpty(OrgNo) == false)//异步加载，不显示县名
                         {
                             jObjects.Add(rootC);
+
                         }
                     }
+                    #endregion
+                    
                     if (string.IsNullOrEmpty(OrgNo))//县级用户登录
                     {
                         jObjects.Add(root);
@@ -726,8 +855,10 @@ namespace ManagerSystemClassLibrary
                          {"text",drOrg[0]["ORGNAME"].ToString()+getOnLineHRUser(dtFRUser,dtRealTmp,drOrg[0]["ORGNO"].ToString())},
                          {"treeType","org"} 
                      };
-                    DataRow[] drFRUser = dtFRUser.Select("BYORGNO = '" + curUserOrg + "'", "");//获取所有县且〈〉市的
                     JArray jObjectsC = new JArray();
+
+                    #region 护林员
+                    DataRow[] drFRUser = dtFRUser.Select("BYORGNO = '" + curUserOrg + "'", "");//获取所有县且〈〉市的
                     for (int i = 0; i < drFRUser.Length; i++)
                     {
                         StringBuilder sb = new StringBuilder();
@@ -756,7 +887,106 @@ namespace ManagerSystemClassLibrary
                             jObjects.Add(rootC);
                         }
                     }
+                    #endregion
+
+                    #region 组织机构
+                    DataRow[] drOrgC = dtOrg.Select("SUBSTRING(ORGNO,1,9) = " + curUserOrg.Substring(0, 9) + " AND ORGNO<>" + curUserOrg + "", "");
+                    for (int i = 0; i < drOrgC.Length; i++)
+                    {
+                        JObject rootC = new JObject
+                        {
+                         {"id",drOrgC[i]["ORGNO"].ToString()},//ORGNO
+                         {"text",drOrgC[i]["ORGNAME"].ToString()+getOnLineHRUser(dtFRUser,dtRealTmp,drOrgC[i]["ORGNO"].ToString())},
+                         {"state","closed"} ,
+                         {"treeType","org"} 
+                       };
+                        //root.Add("children", getTreeChild(dtOrg, dtFRUser, dtRealTmp, drOrg[i]["ORGNO"].ToString()));//继续获取护林员
+                        jObjectsC.Add(rootC);
+                        if (string.IsNullOrEmpty(OrgNo) == false)//异步加载，不显示县名
+                        {
+                            jObjects.Add(rootC);
+
+                        }
+                    }
+                    #endregion
+                               
                     if (string.IsNullOrEmpty(OrgNo))//乡镇级用户登录
+                    {
+                        jObjects.Add(root);
+                        root.Add("children", jObjectsC);
+                    }
+                }
+            }
+            #endregion
+
+            #region 村用戶
+            else if (PublicCls.OrgIsCun(curUserOrg))
+            {
+                DataRow[] drOrg = dtOrg.Select("", "ORGNO");
+                if (drOrg.Length > 0)
+                {
+                    JObject root = new JObject
+                     {
+                         {"id",drOrg[0]["ORGNO"].ToString()},//ORGNO
+                         {"text",drOrg[0]["ORGNAME"].ToString()+getOnLineHRUser(dtFRUser,dtRealTmp,drOrg[0]["ORGNO"].ToString())},
+                         {"treeType","org"} 
+                     };
+                    JArray jObjectsC = new JArray();
+
+                    #region 护林员
+                    DataRow[] drFRUser = dtFRUser.Select("BYORGNO = '" + curUserOrg + "'", "");//获取所有县且〈〉市的
+                    for (int i = 0; i < drFRUser.Length; i++)
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        sb.AppendFormat("<font");// color='{0}' title='{1}' onclick='getLonLat(\"{2}\")'>{3}[{4}]</font>");
+                        //string tmp = drFRUser[i]["HNAME"].ToString() + "[" + drFRUser[i]["PHONE"].ToString() + "]";
+                        DataRow[] drRealTmp = dtRealTmp.Select("HID='" + drFRUser[i]["HID"].ToString() + "'");
+                        if (drRealTmp.Length == 0)//在在线判断时间段内未有记录，离线
+                            //tmp = "<font color=red title='离线 点击快速定位' onclick='getLonLat(\"" + drFRUser[i]["HID"].ToString() + "\")'>" + tmp + "</font>";
+                            sb.AppendFormat(" color='{0}' title='{1}'", ConfigCls.getOutLineColor(), "离线 点击快速定位");
+                        else
+                        {
+                            if (drRealTmp[0]["ISOUTRAIL"].ToString() == "0")//在线未出围
+                                sb.AppendFormat(" color='{0}' title='{1}'", ConfigCls.getInLineColor(), "在线 点击快速定位");
+                            //tmp = "<font color=green title='在线 点击快速定位' onclick='getLonLat(\"" + drFRUser[i]["HID"].ToString() + "\")'>" + tmp + "</font>";
+                            else//在线出围 ISOUTRAIL＝1 中间表中数据
+                                sb.AppendFormat(" color='{0}' title='{1}'", ConfigCls.getOutRailColor(), "出围(责任区) 点击快速定位");
+                            //tmp = "<font color=green title='出围 点击快速定位' onclick='getLonLat(\"" + drFRUser[i]["HID"].ToString() + "\")'>" + tmp + "</font>";
+                        }
+                        sb.AppendFormat(" onclick='getLonLat(\"{0}\")'>", drFRUser[i]["HID"].ToString());
+                        sb.AppendFormat("{0}[{1}]</font>", drFRUser[i]["HNAME"].ToString(), drFRUser[i]["PHONE"].ToString());
+                        JObject rootC = new JObject { { "id", drFRUser[i]["HID"].ToString() }, { "text", sb.ToString() }, { "treeType", "hly" } };
+                        //root.Add("children", getTreeChild(dtOrg, dtFRUser, drFRUser[i]["ORGNO"].ToString()));//继续获取护林员
+                        jObjectsC.Add(rootC);
+                        if (string.IsNullOrEmpty(OrgNo) == false)//异步加载，不显示乡镇名
+                        {
+                            jObjects.Add(rootC);
+                        }
+                    }
+                    #endregion
+
+                    //#region 组织机构
+                    //DataRow[] drOrgC = dtOrg.Select("SUBSTRING(ORGNO,1,9) = " + curUserOrg.Substring(0, 9) + " AND ORGNO<>" + curUserOrg + "", "");
+                    //for (int i = 0; i < drOrgC.Length; i++)
+                    //{
+                    //    JObject rootC = new JObject
+                    //    {
+                    //     {"id",drOrgC[i]["ORGNO"].ToString()},//ORGNO
+                    //     {"text",drOrgC[i]["ORGNAME"].ToString()+getOnLineHRUser(dtFRUser,dtRealTmp,drOrgC[i]["ORGNO"].ToString())},
+                    //     {"state","closed"} ,
+                    //     {"treeType","org"} 
+                    //   };
+                    //    //root.Add("children", getTreeChild(dtOrg, dtFRUser, dtRealTmp, drOrg[i]["ORGNO"].ToString()));//继续获取护林员
+                    //    jObjectsC.Add(rootC);
+                    //    if (string.IsNullOrEmpty(OrgNo) == false)//异步加载，不显示县名
+                    //    {
+                    //        jObjects.Add(rootC);
+
+                    //    }
+                    //}
+                    //#endregion
+                               
+                    if (string.IsNullOrEmpty(OrgNo))//村用户登录
                     {
                         jObjects.Add(root);
                         root.Add("children", jObjectsC);
@@ -1504,13 +1734,13 @@ namespace ManagerSystemClassLibrary
                 curUserOrg = arr[0];
                 treetype = arr[1];
             }
-                //curUserOrg = OrgNo;
+            //curUserOrg = OrgNo;
             bool orgflag = false;//组织机构标志
             bool hlyflag = false;//护林员标志
             var dtOrg = new DataTable();
             if (PublicCls.OrgIsShi(curUserOrg) || PublicCls.OrgIsXian(curUserOrg) || PublicCls.OrgIsZhen(curUserOrg))
             {
-                 dtOrg = BaseDT.T_SYS_ORG.getDT(new T_SYS_ORGSW { TopORGNO = curUserOrg, SYSFLAG = ConfigCls.getSystemFlag() });//获取当前登录用户有权限查看的单位
+                dtOrg = BaseDT.T_SYS_ORG.getDT(new T_SYS_ORGSW { TopORGNO = curUserOrg, SYSFLAG = ConfigCls.getSystemFlag() });//获取当前登录用户有权限查看的单位
             }
             DataTable dtLink = BaseDT.T_SYS_ORG_LINK.getDT(new T_SYS_ORG_LINK_SW { });
             DataTable dtVillagecommittee = BaseDT.T_SYS_ORG_CWH.getDT(new T_SYS_ORG_CWH_SW { });
@@ -1579,7 +1809,7 @@ namespace ManagerSystemClassLibrary
                      };
                         childArray.Add(rootb);
                     }
-                       root1.Add("children", childArray);
+                    root1.Add("children", childArray);
                     jObjects.Add(root);
                 }
 
@@ -1614,7 +1844,7 @@ namespace ManagerSystemClassLibrary
                            { "phone",drLink[i]["PHONE"].ToString() }
                         };
                         jObjectsC.Add(rootc);
-                        if (string.IsNullOrEmpty(OrgNo) == false&& treetype=="1")//异步加载，不显示县名
+                        if (string.IsNullOrEmpty(OrgNo) == false && treetype == "1")//异步加载，不显示县名
                         {
                             jObjects.Add(rootc);
                         }
@@ -1762,7 +1992,7 @@ namespace ManagerSystemClassLibrary
                  { "text", "护林员" } 
                 };
                 #region 市级用户
-                if (PublicCls.OrgIsShi(curUserOrg) )
+                if (PublicCls.OrgIsShi(curUserOrg))
                 {
                     DataRow[] drOrg = dtOrg.Select("", "ORGNO");
                     JArray childArrayroot = new JArray();

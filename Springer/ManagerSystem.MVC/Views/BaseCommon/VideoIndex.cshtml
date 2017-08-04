@@ -26,23 +26,23 @@
 <script src="~/Scripts/VideoJs/businessService.js"></script>
 <script src="~/Scripts/VideoJs/WebSocket.js"></script>
 <script src="~/Scripts/VideoJs/VideoShow.js"></script>
+
 <style type="text/css">
     .videoclass {
         width: 100%;
         height: 100%;
     }
 </style>
-<script type="text/javascript">
 
+<script type="text/javascript">
     this.valuedatas = new treeNode();
     this.valuedatas.value = new devObj();
     var $j = jQuery.noConflict(); //自定义一个比较短快捷方式
     var id = '@ViewBag.id';
     var eid = '@ViewBag.eid';
+
     $j(function () {
         login();
-        
-       
     });
 
     var valuedata;
@@ -61,17 +61,6 @@
                 "id": 2,
                 "text": "磨盘山",
                 "isVideo": false,
-                //"children": JSON.parseJSON('{"text":1}')
-                //"children": [{
-                //    "parentid": 270, "text": "球台160", "objId": 271, "templateId": "650604426", "objState": 2, "objType": 2, "parentConnection": "0_263.0_269.0_270.271", "summary": "", "summaryAddition": "", "img": "", "classes": "devListView", "isVideo": true
-                //},
-                //{
-                //    "parentid": 275, "text": "球台162", "objId": 276, "templateId": "650604426", "objState": 2, "objType": 2, "parentConnection": "0_263.0_269.0_275.276", "summary": "", "summaryAddition": "", "img": "", "classes": "devListView", "isVideo": true
-                //}]
-                // "children":
-                //  [{ "parentid": 270, "text": "球台160", "objId": 271, "templateId": "650604426", "objState": 2, "objType": 2, "parentConnection": "0_263.0_269.0_270.271", "summary": "", "summaryAddition": "", "img": "", "classes": "devListView", "isVideo": true }, { "parentid": 275, "text": "球台162", "objId": 276, "templateId": "650604426", "objState": 2, "objType": 2, "parentConnection": "0_263.0_269.0_275.276", "summary": "", "summaryAddition": "", "img": "", "classes": "devListView", "isVideo": true }]
-                //[{"parentid":270,"name":"球台160","objId":271,"templateId":"650604426","objState":2,"objType":2,"parentConnection":"0_263.0_269.0_270.271","summary":"","summaryAddition":"","img":"","classes":"devListView","isVideo":true},{"parentid":275,"name":"球台162","objId":276,"templateId":"650604426","objState":2,"objType":2,"parentConnection":"0_263.0_269.0_275.276","summary":"","summaryAddition":"","img":"","classes":"devListView","isVideo":true}]
-                //"state": "closed",
                 "children": [{
                     "id": 3,
                     "objId": 271,
@@ -79,23 +68,20 @@
                     "text": "球台160",
                     "isVideo": true,
                     "templateId": "650604426"
-
                 }]
-            },
-                {
-                    "id": 2,
-                    "text": "窟窿山",
-                    "isVideo": false,
-                    "children": [{
-                        "id": 3,
-                        "objId": 276,
-                        "iconCls": "icon-video",
-                        "text": "球台162",
-                        "isVideo": true,
-                        "templateId": "650604426"
-                    }]
-                }
-            ]
+            },{
+                "id": 2,
+                "text": "窟窿山",
+                "isVideo": false,
+                "children": [{
+                    "id": 3,
+                    "objId": 276,
+                    "iconCls": "icon-video",
+                    "text": "球台162",
+                    "isVideo": true,
+                    "templateId": "650604426"
+                }]
+            }]
         }]
     }];
 
@@ -106,11 +92,10 @@
             genTree(tree.children[i]);
         }
         valuechildren += jsonstr.trim().substring(0, jsonstr.Length - 1);//.trimEnd(',');
-
         console.info(valuechildren);
         console.info(jsondata1);
         $j('#devTree').tree({
-            url: '/BaseCommon/GetVideoTree?id='+id+"&eid="+eid,
+            url: '/BaseCommon/GetVideoTree?id=' + id + "&eid=" + eid,
             animate: true,
             lines: true,
             onDblClick: function (node) {
@@ -121,12 +106,8 @@
                         play(url, "videoScreen");
                     });
                 }
-                //else {
-                //    alert("父节点" + node.text);
-                //}
             },
             onLoadSuccess: function (node, data) {
-                //alert(data[0].objId);
                 valuedatas.value.objId = data[0].objId;
                 valuedatas.value.templateId = data[0].templateId;
                 businessService.getVideoUrl(valuedatas, 0, function (url) {
@@ -135,13 +116,12 @@
             }
         });
     }
+
     function genTree(node) {
         videoNode = node;
         if (node.value.isVideo == true) {
             valuedata = node;
             jsonstr += JSON.stringify(node.value).replace('name', 'text') + ",";
-            //console.info(JSON.stringify(node.value));
-
         }
         if (node.children.length > 0) {
             for (var i = 0; i < node.children.length; i++) {
@@ -151,16 +131,18 @@
             }
         }
     }
+
     function shibai() {
-        alert("获取设备树失败！");
+        layer.msg('获取设备树失败!', { icon: 5 });
     }
-
 </script>
-
 
 <div>
     <div class="easyui-layout" style="width:100%;height:100%;" data-options="fit:true">
-        <div data-options="region:'north',split:true" title="" style="height:50px;text-align:center"><h3 style="margin-top:1%;">视频监控云操作界面</h3></div>
+        <div data-options="region:'north',split:true" title="" style="height:50px;text-align:center">
+            <h3 style="margin-top:1%;">视频监控云操作界面</h3>
+        </div>
+
         <div data-options="region:'east',split:true" title="云控制台" style="width:260px;height:100%">
             <div class="videoControl">
                 <ul id="controlmenu">
@@ -208,16 +190,17 @@
                                 <option>四屏</option>
                             </select>
                         </div>
-
                     </li>
                 </ul>
             </div>
         </div>
+
         <div data-options="region:'west',split:true,collapsed:true" title="视频监控点" style="width:200px;height:100%">
             <div class="easyui-panel" style="padding:5px">
                 <ul id="devTree"></ul>
             </div>
         </div>
+
         <div data-options="region:'center',title:'监控画面',iconCls:'icon-video'">
             <div id="videoScreen" style="width:100%;height:100%;">
                 @*<object pluginspage="http://www.macromedia.com/go/getflashplayer"
@@ -236,10 +219,7 @@
                                name="ckplayer_videoScreen"
                                id="ckplayer_videoScreen" align="middle" type="application/x-shockwave-flash"
                                pluginspage="http://www.macromedia.com/go/getflashplayer" />
-
                     </object>*@
-
-
             </div>
         </div>
     </div>

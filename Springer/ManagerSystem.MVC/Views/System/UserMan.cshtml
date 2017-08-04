@@ -94,7 +94,7 @@
             }
         },
         error: function (err, ioArgs) {
-            alert('登录异常');
+            layer.msg('登录异常');
         }
     });
     function Manager() {
@@ -141,7 +141,7 @@
             success: function (data, ioArgs) {
                 var ar = eval('(' + data + ')');
                 if (ar.Success) {
-                    alert(ar.Msg);
+                    layer.msg(ar.Msg);
                     // layer.msg('删除成功', { icon: 6 });
                     // if (confirm(ar.Msg + ' 请返回!'))
                     var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
@@ -149,11 +149,11 @@
                     //window.location.assign(ar.Url);
                 }
                 else {
-                    alert(ar.Msg);
+                    layer.msg(ar.Msg);
                 }
             },
             error: function (err, ioArgs) {
-                alert('保存异常!');
+                layer.msg('保存异常!');
             }
         });
     }
@@ -173,7 +173,7 @@
                 $('#tbxDEPARTMENT').html(myHTML);
             },
             error: function (result) {
-                alert(result.responseText);
+                layer.msg(result.responseText);
             }
         });
     }

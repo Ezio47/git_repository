@@ -6,6 +6,7 @@
     <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
         @Html.Raw(@ViewBag.PageLeftMenu)
     </div>
+
     <div data-options="region:'center'" title="" style=" border: none;">
         <div class="easyui-layout" data-options="fit:true" style=" border:0;">
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
@@ -19,12 +20,12 @@
             </div>
             <div data-options="region:'center'" title="" class="LayoutCenterBG">
                 <div class="divTable" id="divTable">
-                    @*@Html.Raw(ViewBag.UserList)*@
+
                 </div>
             </div>
             <div data-options="region:'south'" title="" style=" height:40px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
                 <div class="divPager" id="divPager">
-                    @*@Html.Raw(@ViewBag.PagerInfo)*@
+
                 </div>
             </div>
         </div>
@@ -32,39 +33,10 @@
 </div>
 
 <script type="text/javascript">
-   // var bln = '@ViewBag.isDel';
-    //if (bln == "1") {
-    //    document.getElementById('btnAdd').style.display = "";
-    //}
-    function Add() {
-        layer.open({
-            type: 2,
-            title: '添加',
-            fix: false, //不固定
-            area: ['56%', '90%'],
-            maxmin: true,
-            content: '/ArtDocument/DocMan?typeID=@ViewBag.typeID',
-            end: function () {
-                query(1);
-            }
-        });
-    }
-    function Mdy(id, typeid) {
-        layer.open({
-            type: 2,
-            title: '修改',
-            fix: false, //不固定
-            area: ['56%', '90%'],
-            maxmin: true,
-            content: '/ArtDocument/DocMan?id=' + id + '&typeID=' + typeid + '&Method=Mdy',
-            end: function () {
-                query(page);
-            }
-        });
-    }
     $(function () {
         query('1');
     });
+
     var page = 1;//当前默认页面为1
     function query(Page) {
         page = Page;
@@ -82,48 +54,71 @@
                 typeID: '@ViewBag.typeID'
             },
             type: 'post',
+            dataType: 'json',
             success: function (data) {
-                var ar = eval('(' + data + ')');
-                if (ar.Success) {
-                    $('#divTable').html(ar.tableInfo);
-                    $('#divPager').html(ar.pagerInfo);
+                if (data.Success) {
+                    $('#divTable').html(data.tableInfo);
+                    $('#divPager').html(data.pagerInfo);
                 }
                 else {
-                    alert(ar.Msg);
+                    $('#divTable').html('');
+                    $('#divPager').html('');
                 }
             },
-            error: function (err, ioArgs) {
-                alert('登录异常');
+            error: function () {
+                layer.msg("系统异常!", { icon: 5 });
+            }
+        });
+    }
+
+    function Add() {
+        layer.open({
+            type: 2,
+            title: '添加',
+            fix: false, //不固定
+            area: ['56%', '90%'],
+            maxmin: true,
+            content: '/ArtDocument/DocMan?typeID=@ViewBag.typeID',
+            end: function () {
+                query(1);
+            }
+        });
+    }
+
+    function Mdy(id, typeid) {
+        layer.open({
+            type: 2,
+            title: '修改',
+            fix: false, //不固定
+            area: ['56%', '90%'],
+            maxmin: true,
+            content: '/ArtDocument/DocMan?id=' + id + '&typeID=' + typeid + '&Method=Mdy',
+            end: function () {
+                query(page);
             }
         });
     }
 
     function Manager(id) {
-        if (confirm('确实要删除该内容吗?')) {
+        layer.confirm('确实要删除吗?', { icon: 3, title: '提示' }, function (index) {
             $.ajax({
                 url: '/ArtDocument/DocManager',
-                data: {
-                    id: id
-                    , Method: 'Del'
-                    , returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)'
-                },
+                data: { id: id, Method: 'Del', returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)' },
                 type: 'post',
-                error: function () {
-                    alert('错误:异常!', 'error');
-                },
+                dataType: 'json',
                 success: function (re) {
-
-                    var ar = eval('(' + re + ')');
-                    if (ar.Success) {
-                        if (confirm(ar.Msg + ' 请返回！')) {
-                            query(page);// window.location.reload();//.assign(ar.Url);
-                        }
+                    if (re.Success) {
+                        layer.msg(re.Msg, { icon: 6 });
+                        query(page);
                     }
                     else {
-                        alert(ar.Msg, "Error");
+                        layer.msg(re.Msg, { icon: 5 });
                     }
+                },
+                error: function () {
+                    layer.msg('系统异常!', { icon: 5 });
                 }
             });
-        }
+        });
     }
 </script>
