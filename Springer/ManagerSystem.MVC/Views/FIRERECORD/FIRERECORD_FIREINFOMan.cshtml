@@ -38,12 +38,12 @@
                         <select id="tbxBYORGNO" onchange="loadXIAN();" style="display:none; width:45%;padding:1px">
                             <option value="532500000000000" selected>州级</option>
                         </select>
-                        &nbsp;<span style="color:#3c7915">县：</span><select id="tbxFIREADDRESSCOUNTY" name="tbxFIREADDRESSCOUNTY" onchange="loadXZ();" style="width:100px;padding:1px;" onclick ="Change()"></select>
+                        &nbsp;<span style="color:#3c7915">县：</span><select id="tbxFIREADDRESSCOUNTY" onchange="loadXZ();" style="width:100px;padding:1px;" onclick="Change()"></select>
 
-                        &nbsp;<span style="color:#3c7915"> 乡： </span><select id="tbxFIREADDRESSTOWNS" name="tbxFIREADDRESSTOWNS" style="width:135px;padding:1px;" onchange="Change()"></select>
+                        &nbsp;<span style="color:#3c7915"> 乡： </span><select id="tbxFIREADDRESSTOWNS" style="width:135px;padding:1px;" onchange="Change()"></select>
 
-                        &nbsp;<span style="color:#3c7915">村：</span><input id="tbxFIREADDRESSVILLAGES" name="tbxFIREADDRESSVILLAGES" type="text" value="@Model.FIREADDRESSVILLAGES" style="width: 16%;" onkeyup="WriteCun()" />
-                        &nbsp;<span style="color:#3c7915">详细地：</span><input id="tbxFIREADDRESS" name="tbxFIREADDRESS" type="text" value="@Model.FIREADDRESS" style="width: 33%;"onchange ="document.getElementById('tbxFIREADDRESS').value+this.value" />
+                        &nbsp;<span style="color:#3c7915">村：</span><input id="tbxFIREADDRESSVILLAGES" type="text" value="@Model.FIREADDRESSVILLAGES" style="width: 16%;" onkeyup="WriteCun()" />
+                        &nbsp;<span style="color:#3c7915">详细地：</span><input id="tbxFIREADDRESS" type="text" value="@Model.FIREADDRESS" style="width: 33%;" />
                     </td>
                 </tr>
                 <tr>
@@ -67,7 +67,7 @@
                     </td>
                     <td style="color:#3c7915">火灾种类：</td>
                     <td>
-                        <select style="width: 70%;" id="tbxFIRERECINFO000">
+                        <select style="width: 90%;" id="tbxFIRERECINFO000">
                             @Html.Raw(@ViewBag.FIRERECINFO000)
                         </select>
                     </td>
@@ -75,7 +75,7 @@
                 </tr>
                 <tr>
 
-                    <td style="color:#3c7915">查明火源是否已查明：</td>
+                    <td style="color:#3c7915">已查明火源：</td>
                     <td>
                         <select style="width: 70%;" id="tbxFIRERECINFO140">
                             @Html.Raw(@ViewBag.FIRERECINFO140)
@@ -83,49 +83,49 @@
                     </td>
                     <td style="color:#3c7915">火源：</td>
                     <td>
-                        <select style="width: 70%;" id="tbxFIRERECINFO160">
+                        <select style="width: 90%;" id="tbxFIRERECINFO160">
                             @Html.Raw(@ViewBag.FIRERECINFO160)
                         </select>
                     </td>
                     <td colspan="2 "></td>
                 </tr>
                 <tr style="width:95%;">
-                    <td colspan="6" style="height:40px"><h1>火场信息</h1></td>
+                    <td colspan="6" style="height:40px"><h1>火 场 信 息</h1></td>
                 </tr>
                 <tr>
                     <td style="color:#3c7915">受害森林面积：</td>
-                    <td><input id="tbxFIRELOSEAREA" name="tbxFIRELOSEAREA" type="text" value="@Model.FIRELOSEAREA" style="width: 70%;" /><span style="color:#3c7915">(公顷)</span></td>
+                    <td><input id="tbxFIRELOSEAREA" name="tbxFIRELOSEAREA" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(公顷)</span></td>
                     <td style="color:#3c7915">火场总面积：</td>
-                    <td><input id="tbxFIRERECINFO020" name="tbxFIRERECINFO020" type="text" value="@Model.FIRERECINFO020" style="width: 70%;" /><span style="color:#3c7915">(公顷)</span></td>
+                    <td><input id="tbxFIRERECINFO020" name="tbxFIRERECINFO020" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(公顷)</span></td>
                     <td style="color:#3c7915">有林地面积：</td>
-                    <td><input id="tbxFIRERECINFO021" name="tbxFIRERECINFO021" type="text" value="@Model.FIRERECINFO021" style="width: 70%;" /><span style="color:#3c7915">(公顷)</span></td>
+                    <td><input id="tbxFIRERECINFO021" name="tbxFIRERECINFO021" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(公顷)</span></td>
 
                 </tr>
                 <tr>
                     <td style="color:#3c7915">原始林受灾面积：</td>
-                    <td><input id="tbxFIRERECINFO030" name="tbxFIRERECINFO030" type="text" value="@Model.FIRERECINFO030" style="width: 70%;" /><span style="color:#3c7915">(公顷)</span></td>
+                    <td><input id="tbxFIRERECINFO030" name="tbxFIRERECINFO030" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(公顷)</span></td>
                     <td style="color:#3c7915">次生林受灾面积：</td>
-                    <td><input id="tbxFIRERECINFO031" name="tbxFIRERECINFO031" type="text" value="@Model.FIRERECINFO031" style="width: 70%;" /><span style="color:#3c7915">(公顷)</span></td>
+                    <td><input id="tbxFIRERECINFO031" name="tbxFIRERECINFO031" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(公顷)</span></td>
                     <td style="color:#3c7915">人工林受灾面积：</td>
-                    <td><input id="tbxFIRERECINFO032" name="tbxFIRERECINFO032" type="text" value="@Model.FIRERECINFO032" style="width: 70%;" /><span style="color:#3c7915">(公顷)</span></td>
+                    <td><input id="tbxFIRERECINFO032" name="tbxFIRERECINFO032" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(公顷)</span></td>
 
                 </tr>
                 <tr>
                     <td style="color:#3c7915">成林蓄积损失:</td>
-                    <td><input id="tbxFIRERECINFO040" name="tbxFIRERECINFO040" type="text" value="@Model.FIRERECINFO040" style="width: 70%;" /><span style="color:#3c7915">(立方米)</span></td>
+                    <td><input id="tbxFIRERECINFO040" name="tbxFIRERECINFO040" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(立方米)</span></td>
                     <td style="color:#3c7915">幼林株数损失：</td>
-                    <td><input id="tbxFIRERECINFO041" name="tbxFIRERECINFO041" type="text" value="@Model.FIRERECINFO041" style="width: 70%;" /><span style="color:#3c7915">(万株)</span></td>
+                    <td><input id="tbxFIRERECINFO041" name="tbxFIRERECINFO041" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(万株)</span></td>
                     <td colspan="2 "></td>
                 </tr>
                 <tr>
                     <td style="color:#3c7915">林龄：</td>
-                    <td><input id="tbxFIRERECINFO051" name="tbxFIRERECINFO051" type="text" value="@Model.FIRERECINFO051" style="width: 70%;" /><span style="color:#3c7915">(年)</span></td>
+                    <td><input id="tbxFIRERECINFO051" name="tbxFIRERECINFO051" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(年)</span></td>
                     <td style="color:#3c7915">林分组成：</td>
                     <td><input id="tbxFIRERECINFO050" name="tbxFIRERECINFO050" type="text" value="@Model.FIRERECINFO050" style="width: 70%;" /></td>
                     <td colspan="2 "></td>
                 </tr>
                 <tr style="width:95%;">
-                    <td colspan="6" style="height:40px"><h1>扑救信息</h1></td>
+                    <td colspan="6" style="height:40px"><h1>扑 救 信 息</h1></td>
                 </tr>
                 <tr>
                     <td style="color:#3c7915">火场指挥员姓名：</td>
@@ -135,45 +135,45 @@
                     <td colspan="2 "></td>
                 </tr>
                 <tr>
-                    <td style="color:#3c7915">火案查处是否已处理：</td>
+                    <td style="color:#3c7915">火案查处已处理：</td>
                     <td>
                         <select style="width: 70%;" id="tbxFIRERECINFO080">
                             @Html.Raw(@ViewBag.FIRERECINFO080)
                         </select>
                     </td>
                     <td style="color:#3c7915">林政处罚人数：</td>
-                    <td><input id="tbxFIRERECINFO081" name="tbxFIRERECINFO081" type="text" value="@Model.FIRERECINFO081" style="width: 70%;" /><span style="color:#3c7915">(人)</span></td>
+                    <td><input id="tbxFIRERECINFO081" name="tbxFIRERECINFO081" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(人)</span></td>
                     <td style="color:#3c7915">刑事处罚人数：</td>
-                    <td><input id="tbxFIRERECINFO082" name="tbxFIRERECINFO082" type="text" value="@Model.FIRERECINFO082" style="width: 70%;" /><span style="color:#3c7915">(人)</span></td>
+                    <td><input id="tbxFIRERECINFO082" name="tbxFIRERECINFO082" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(人)</span></td>
 
                 </tr>
                 <tr>
                     <td style="color:#3c7915">人员伤亡轻伤人数：</td>
-                    <td><input id="tbxFIRERECINFO070" name="tbxFIRERECINFO070" type="text" value="@Model.FIRERECINFO070" style="width: 70%;" /><span style="color:#3c7915">(人)</span></td>
+                    <td><input id="tbxFIRERECINFO070" name="tbxFIRERECINFO070" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(人)</span></td>
                     <td style="color:#3c7915">人员伤亡重伤人数：</td>
-                    <td><input id="tbxFIRERECINFO071" name="tbxFIRERECINFO071" type="text" value="@Model.FIRERECINFO071" style="width: 70%;" /><span style="color:#3c7915">(人)</span></td>
+                    <td><input id="tbxFIRERECINFO071" name="tbxFIRERECINFO071" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(人)</span></td>
                     <td style="color:#3c7915">人员伤亡死亡人数：</td>
-                    <td><input id="tbxFIRERECINFO072" name="tbxFIRERECINFO072" type="text" value="@Model.FIRERECINFO072" style="width: 70%;" /><span style="color:#3c7915">(人)</span></td>
+                    <td><input id="tbxFIRERECINFO072" name="tbxFIRERECINFO072" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(人)</span></td>
                 </tr>
                 <tr>
                     <td style="color:#3c7915">扑火经费：</td>
-                    <td><input id="tbxFIRERECINFO130" name="tbxFIRERECINFO130" type="text" value="@Model.FIRERECINFO130" style="width: 70%;" /><span style="color:#3c7915">(万元)</span></td>
+                    <td><input id="tbxFIRERECINFO130" name="tbxFIRERECINFO130" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(万元)</span></td>
                     <td style="color:#3c7915">其他损失折款：</td>
-                    <td><input id="tbxFIRERECINFO090" name="tbxFIRERECINFO090" type="text" value="@Model.FIRERECINFO090" style="width: 70%;" /><span style="color:#3c7915">(万元)</span></td>
+                    <td><input id="tbxFIRERECINFO090" name="tbxFIRERECINFO090" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(万元)</span></td>
                     <td colspan="2 "></td>
                 </tr>
                 <tr>
                     <td style="color:#3c7915">出动扑火人工：</td>
-                    <td><input id="tbxFIRERECINFO100" name="tbxFIRERECINFO100" type="text" value="@Model.FIRERECINFO100" style="width: 70%;" /><span style="color:#3c7915">(工日)</span></td>
+                    <td><input id="tbxFIRERECINFO100" name="tbxFIRERECINFO100" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(工日)</span></td>
                     <td style="color:#3c7915">出动飞机：</td>
-                    <td><input id="tbxFIRERECINFO120" name="tbxFIRERECINFO120" type="text" value="@Model.FIRERECINFO120" style="width: 70%;" /><span style="color:#3c7915">(架次)</span></td>
+                    <td><input id="tbxFIRERECINFO120" name="tbxFIRERECINFO120" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(架次)</span></td>
                     <td colspan="2 "></td>
                 </tr>
                 <tr>
                     <td style="color:#3c7915">出动车辆合计：</td>
-                    <td><input id="tbxFIRERECINFO111" name="tbxFIRERECINFO111" type="text" value="@Model.FIRERECINFO111" style="width: 70%;" /><span style="color:#3c7915">(台)</span></td>
+                    <td><input id="tbxFIRERECINFO111" name="tbxFIRERECINFO111" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(台)</span></td>
                     <td style="color:#3c7915">其中汽车：</td>
-                    <td><input id="tbxFIRERECINFO110" name="tbxFIRERECINFO110" type="text" value="@Model.FIRERECINFO110" style="width: 70%;" /><span style="color:#3c7915">(台)</span></td>
+                    <td><input id="tbxFIRERECINFO110" name="tbxFIRERECINFO110" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(台)</span></td>
                     <td colspan="2 "></td>
                 </tr>
                 <tr id="JWD">
@@ -193,26 +193,161 @@
 </div>
 
 <script type="text/javascript">
+    if ('@ViewBag.Method' == 'Mdy') {
+        var JCFID = $("#tbxJCFID").val();
+        $.ajax({
+            url: '/FIRERECORD/FIRERECORD_FIREINFOjson',
+            cache: false,
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: { JCFID: JCFID },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.FIRELOSEAREA != null) {
+                    $("#tbxFIRELOSEAREA").val(ar.FIRELOSEAREA);
+                }
+                else {
+                    $("#tbxFIRELOSEAREA").val("0");
+                }
+                if (ar.FIRERECINFO020 != null) {
+                    $("#tbxFIRERECINFO020").val(ar.FIRERECINFO020);
+                }
+                else {
+                    $("#tbxFIRERECINFO020").val("0");
+                }
+                if (ar.FIRERECINFO021 != null) {
+                    $("#tbxFIRERECINFO021").val(ar.FIRERECINFO021);
+                }
+                else {
+                    $("#tbxFIRERECINFO021").val("0");
+                }
+                if (ar.FIRERECINFO030 != null) {
+                    $("#tbxFIRERECINFO030").val(ar.FIRERECINFO030);
+                }
+                else {
+                    $("#tbxFIRERECINFO030").val("0");
+                }
+                if (ar.FIRERECINFO031 != null) {
+                    $("#tbxFIRERECINFO031").val(ar.FIRERECINFO031);
+                }
+                else {
+                    $("#tbxFIRERECINFO031").val("0");
+                }
+                if (ar.FIRERECINFO032 != null) {
+                    $("#tbxFIRERECINFO032").val(ar.FIRERECINFO032);
+                }
+                else {
+                    $("#tbxFIRERECINFO032").val("0");
+                }
+                if (ar.FIRERECINFO040 != null) {
+                    $("#tbxFIRERECINFO040").val(ar.FIRERECINFO040);
+                }
+                else {
+                    $("#tbxFIRERECINFO040").val("0");
+                }
+                if (ar.FIRERECINFO041 != null) {
+                    $("#tbxFIRERECINFO041").val(ar.FIRERECINFO041);
+                }
+                else {
+                    $("#tbxFIRERECINFO041").val("0");
+                }
+                if (ar.FIRERECINFO051 != null) {
+                    $("#tbxFIRERECINFO051").val(ar.FIRERECINFO051);
+                }
+                else {
+                    $("#tbxFIRERECINFO051").val("0");
+                }
+                if (ar.FIRERECINFO070 != null) {
+                    $("#tbxFIRERECINFO070").val(ar.FIRERECINFO070);
+                }
+                else {
+                    $("#tbxFIRERECINFO070").val("0");
+                }
+                if (ar.FIRERECINFO071 != null) {
+                    $("#tbxFIRERECINFO071").val(ar.FIRERECINFO071);
+                }
+                else {
+                    $("#tbxFIRERECINFO071").val("0");
+                }
+                if (ar.FIRERECINFO072 != null) {
+                    $("#tbxFIRERECINFO072").val(ar.FIRERECINFO072);
+                }
+                else {
+                    $("#tbxFIRERECINFO072").val("0");
+                }
+                if (ar.FIRERECINFO081 != null) {
+                    $("#tbxFIRERECINFO081").val(ar.FIRERECINFO081);
+                }
+                else {
+                    $("#tbxFIRERECINFO081").val("0");
+                }
+                if (ar.FIRERECINFO082 != null) {
+                    $("#tbxFIRERECINFO082").val(ar.FIRERECINFO082);
+                }
+                else {
+                    $("#tbxFIRERECINFO082").val("0");
+                }
+                if (ar.FIRERECINFO090 != null) {
+                    $("#tbxFIRERECINFO090").val(ar.FIRERECINFO090);
+                }
+                else {
+                    $("#tbxFIRERECINFO090").val("0");
+                }
+                if (ar.FIRERECINFO100 != null) {
+                    $("#tbxFIRERECINFO100").val(ar.FIRERECINFO100);
+                }
+                else {
+                    $("#tbxFIRERECINFO100").val("0");
+                }
+                if (ar.FIRERECINFO110 != null) {
+                    $("#tbxFIRERECINFO110").val(ar.FIRERECINFO110);
+                }
+                else {
+                    $("#tbxFIRERECINFO110").val("0");
+                }
+                if (ar.FIRERECINFO111 != null) {
+                    $("#tbxFIRERECINFO111").val(ar.FIRERECINFO111);
+                }
+                else {
+                    $("#tbxFIRERECINFO111").val("0");
+                }
+                if (ar.FIRERECINFO120 != null) {
+                    $("#tbxFIRERECINFO120").val(ar.FIRERECINFO120);
+                }
+                else {
+                    $("#tbxFIRERECINFO120").val("0");
+                }
+                if (ar.FIRERECINFO130 != null) {
+                    $("#tbxFIRERECINFO130").val(ar.FIRERECINFO130);
+                }
+                else {
+                    $("#tbxFIRERECINFO130").val("0");
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("登录异常", { icon: 5 });
+
+            }
+        });
+    }
+
     //验证整数
     function CheckINT1(number) {
         var filter = /^\+?[0-9][0-9]*$/;
-        if (filter.test($.trim(number))) return true;
+        if (filter.test($.trim(number)))
+            return true;
         else {
             return false;
         }
     }
     //获取填入的县乡村
-    window.setTimeout(WriteCun,1000);
+    window.setTimeout(WriteCun, 1000);
     function WriteCun() {
         document.getElementById('tbxFIREADDRESS').value = $("#tbxFIREADDRESSCOUNTY").find("option:selected").text() + $("#tbxFIREADDRESSTOWNS").find("option:selected").text() + document.getElementById("tbxFIREADDRESSVILLAGES").value;
-    } 
+    }
     function Change() {
         window.setTimeout(Change, 600);
-        document.getElementById('tbxFIREADDRESS').value = $("#tbxFIREADDRESSCOUNTY").find("option:selected").text() + $("#tbxFIREADDRESSTOWNS").find("option:selected").text() + document.getElementById("tbxFIREADDRESSVILLAGES").value ;
+        document.getElementById('tbxFIREADDRESS').value = $("#tbxFIREADDRESSCOUNTY").find("option:selected").text() + $("#tbxFIREADDRESSTOWNS").find("option:selected").text() + document.getElementById("tbxFIREADDRESSVILLAGES").value;
     }
-    @*if ('@ViewBag.Method' == 'Add') {
-        document.getElementById("JWD").style.display = 'none';
-    }*@
     if ('@ViewBag.Method' == 'Mdy' || '@ViewBag.Method' == 'See1') {
         $.ajax({
             url: '/DataCenter/GetArchivaljson',
@@ -264,14 +399,6 @@
             $('#tbxFIRECODE').focus();
             return;
         }
-        else {
-            if (!CheckINT1(FIRECODE)) {
-                layer.msg('请输入整数编码！', { icon: 5 });
-                $('#tbxFIRECODE').focus();
-                return;
-            }
-        }
-
         var FIRELOSEAREA = $('#tbxFIRELOSEAREA').val();
         if ($.trim(FIRELOSEAREA) == "") {
             layer.msg('请输入受害森林面积!', { icon: 5 });
@@ -285,8 +412,6 @@
                 return;
             }
         }
-
-
         var FIRERECINFO020 = $('#tbxFIRERECINFO020').val();
         if ($.trim(FIRERECINFO020) == "") {
             layer.msg('请输入火场总面积!', { icon: 5 });
@@ -300,7 +425,6 @@
                 return;
             }
         }
-
         var FIRERECINFO021 = $('#tbxFIRERECINFO021').val();
         if ($.trim(FIRERECINFO021) == "") {
             layer.msg('请输入有林地面积!', { icon: 5 });
@@ -341,8 +465,6 @@
                 return;
             }
         }
-
-
         var FIRERECINFO032 = $('#tbxFIRERECINFO032').val();
         if ($.trim(FIRERECINFO032) == "") {
             layer.msg('请输入人工林受害面积!', { icon: 5 });
@@ -356,7 +478,6 @@
                 return;
             }
         }
-
         var FIRERECINFO040 = $('#tbxFIRERECINFO040').val();
         if ($.trim(FIRERECINFO040) == "") {
             layer.msg('请输入成林蓄积损失!', { icon: 5 });
@@ -370,8 +491,6 @@
                 return;
             }
         }
-
-
         var FIRERECINFO041 = $('#tbxFIRERECINFO041').val();
         if ($.trim(FIRERECINFO041) == "") {
             layer.msg('请输入幼林株数损失!', { icon: 5 });
@@ -385,26 +504,18 @@
                 return;
             }
         }
-        var FIRERECINFO050 = $('#tbxFIRERECINFO050').val();
-        if ($.trim(FIRERECINFO050) == "") {
-            layer.msg('请输入林分组成!', { icon: 5 });
-            $('#tbxFIRERECINFO050').focus();
-            return;
-        }
-
-        var FIRERECINFO060= $('#tbxFIRERECINFO060').val();
+        var FIRERECINFO060 = $('#tbxFIRERECINFO060').val();
         if ($.trim(FIRERECINFO060) == "") {
             layer.msg('请输入火场指挥员姓名!', { icon: 5 });
             $('#tbxFIRERECINFO060').focus();
             return;
         }
-        var FIRERECINFO061= $('#tbxFIRERECINFO061').val();
+        var FIRERECINFO061 = $('#tbxFIRERECINFO061').val();
         if ($.trim(FIRERECINFO061) == "") {
             layer.msg('请输入火场指挥员职务!', { icon: 5 });
             $('#tbxFIRERECINFO061').focus();
             return;
         }
-
         var FIRERECINFO051 = $('#tbxFIRERECINFO051').val();
         if ($.trim(FIRERECINFO051) == "") {
             layer.msg('请输入林龄!', { icon: 5 });
@@ -418,7 +529,6 @@
                 return;
             }
         }
- 
         var FIRERECINFO070 = $('#tbxFIRERECINFO070').val();
         if ($.trim(FIRERECINFO070) == "") {
             layer.msg('请输入人员伤亡轻伤人数!', { icon: 5 });
@@ -433,7 +543,7 @@
             }
         }
 
-        var FIRERECINFO071= $('#tbxFIRERECINFO071').val();
+        var FIRERECINFO071 = $('#tbxFIRERECINFO071').val();
         if ($.trim(FIRERECINFO071) == "") {
             layer.msg('请输入人员伤亡重伤人数!', { icon: 5 });
             $('#tbxFIRERECINFO071').focus();
@@ -459,7 +569,6 @@
                 return;
             }
         }
-
         var FIRERECINFO081 = $('#tbxFIRERECINFO081').val();
         if ($.trim(FIRERECINFO081) == "") {
             layer.msg('请输入林政处罚人数!', { icon: 5 });
@@ -473,8 +582,6 @@
                 return;
             }
         }
-
-
         var FIRERECINFO082 = $('#tbxFIRERECINFO082').val();
         if ($.trim(FIRERECINFO082) == "") {
             layer.msg('请输入刑事处罚人数!', { icon: 5 });
@@ -488,7 +595,6 @@
                 return;
             }
         }
-
         var FIRERECINFO090 = $('#tbxFIRERECINFO090').val();
         if ($.trim(FIRERECINFO090) == "") {
             layer.msg('请输入其他损失折款!', { icon: 5 });
@@ -502,8 +608,6 @@
                 return;
             }
         }
-
-
         var FIRERECINFO100 = $('#tbxFIRERECINFO100').val();
         if ($.trim(FIRERECINFO100) == "") {
             layer.msg('请输入出动扑火人工!', { icon: 5 });
@@ -517,7 +621,6 @@
                 return;
             }
         }
-
         var FIRERECINFO110 = $('#tbxFIRERECINFO110').val();
         if ($.trim(FIRERECINFO110) == "") {
             layer.msg('请输入其中汽车!', { icon: 5 });
@@ -544,8 +647,7 @@
                 return;
             }
         }
-
-        var FIRERECINFO120= $('#tbxFIRERECINFO120').val();
+        var FIRERECINFO120 = $('#tbxFIRERECINFO120').val();
         if ($.trim(FIRERECINFO120) == "") {
             layer.msg('请输入出动飞机!', { icon: 5 });
             $('#tbxFIRERECINFO120').focus();
@@ -570,6 +672,18 @@
                 $('#tbxFIRERECINFO130').focus();
                 return;
             }
+        }
+        var JD = $('#tbxJD').val();
+        if ($.trim(JD) == "") {
+            layer.msg('请输入经度!', { icon: 5 });
+            $('#tbxJD').focus();
+            return;
+        }
+        var WD = $('#tbxWD').val();
+        if ($.trim(WD) == "") {
+            layer.msg('请输入纬度!', { icon: 5 });
+            $('#tbxWD').focus();
+            return;
         }
         $.ajax({
             url: '/FIRERECORD/FIRERECORD_FIREINFOManager',
@@ -622,10 +736,15 @@
             success: function (data, ioArgs) {
                 var ar = eval('(' + data + ')');
                 if (ar.Success) {
-                    if (confirm(ar.Msg + ' 请返回?')) {
+                    //if (confirm(ar.Msg + ' 请返回?')) {
+                    //    var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                    //    parent.layer.close(index);
+                    //}
+                    layer.confirm(ar.Msg + ' 请返回?', { icon: 3, title: '提示' }, function (index2) {
+                        layer.close(index2);
                         var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
                         parent.layer.close(index);
-                    }
+                    });
                 }
                 else {
                     layer.msg(ar.Msg, { icon: 5 });
@@ -693,15 +812,13 @@
         }
     }
 
-
-
     @*var bln = '@ViewBag.isAdd';
     if (bln == "1") {
         document.getElementById('btnAdd').style.display = "";
     }*@
     //地图定位
     function setPoint() {
-        var name ="火情档案" ;
+        var name = "火情档案";
         var jd = document.getElementById("tbxJD").value;
         var wd = document.getElementById("tbxWD").value;
         layer.open({

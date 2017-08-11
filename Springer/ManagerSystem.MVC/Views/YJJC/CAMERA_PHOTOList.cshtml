@@ -105,27 +105,27 @@
 //查询
     function query() {
 
-        dojo.xhrPost({
+        $.ajax({
             url: '/YJJC/CAMERA_PHOTOListQuery',
             timeout: 10000, //10秒后超时，如果为0则永不超时
-            content: {
+            data: {
                 PageSize: document.getElementById("selPageSize").value,
                 tpa: document.getElementById("tbxtpa").value,
                 DateBegin: document.getElementById("tbxDateBegin").value,
                 DateEnd: document.getElementById("tbxDateEnd").value,
                 Page: document.getElementById("selPage").value
             },
-            load: function (data, ioArgs) {
+            success: function (data, ioArgs) {
                 var ar = eval('(' + data + ')');
                 if (ar.Success) {
                     window.location.assign(ar.Url);
                 }
                 else {
-                    alert(ar.Msg);
+                    layer.msg(ar.Msg);
                 }
             },
             error: function (err, ioArgs) {
-                alert('登录异常');
+                layer.msg('登录异常');
             }
         });
     }
@@ -153,14 +153,14 @@
             if (id[i].checked)
                 chk1.push(id[i].value);
         }
-        dojo.xhrPost({
+        $.ajax({
             url: '/YJJC/CAMERA_PHOTOManger',
             timeout: 10000, //10秒后超时，如果为0则永不超时
-            content: {
+            data: {
                 smid: chk1,
                 opMethod: Method,
             },
-            load: function (data, ioArgs) {
+            success: function (data, ioArgs) {
                 var ar = eval('(' + data + ')');
                 if (ar.Success) {
                     if (confirm(ar.Msg + ' 请返回！')) {
@@ -168,11 +168,11 @@
                     }
                 }
                 else {
-                    alert(ar.Msg);
+                    layer.msg(ar.Msg);
                 }
             },
             error: function (err, ioArgs) {
-                alert('保存异常');
+                layer.msg('保存异常');
             }
         });
     }

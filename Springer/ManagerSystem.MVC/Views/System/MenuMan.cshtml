@@ -20,41 +20,28 @@
                     <td><input id="tbxMENUICO" name="tbxMENUICO" type="text" value="@Model.MENUICO" style="width: 95%;" /></td>
                 </tr>
                 <tr>
-                    <td style="width:110px">菜单显示样式：</td>
+                    <td style="width:110px">显示样式：</td>
                     <td><input id="tbxLICLASS" name="tbxLICLASS" type="text" value="@Model.LICLASS" style="width: 95%;" /></td>
+                    <td style="width:110px">权限标识：</td>
+                    <td><input id="tbxMENURIGHTFLAG" name="tbxMENURIGHTFLAG" type="text" value="@Model.MENURIGHTFLAG" style="width: 95%;" /></td>
+                </tr>
+                <tr>                    
+                    <td style="width:110px">系统标识：</td>
+                    <td><input id="tbxSYSFLAG" name="tbxSYSFLAG" type="text" value="@Model.SYSFLAG" style="width: 95%;" /></td>
+                    <td style="width:110px">打开方式：</td>
+                    <td><select style="width: 95%;" id="tbxMENUOPENMETHOD">@Html.Raw(@ViewBag.MENUOPENMETHOD)</select></td>
+                </tr>
+                <tr>                  
+                    <td style="width:110px">关联子模块：</td>
+                    <td><input id="tbxMENULINKMODE" name="tbxMENULINKMODE" type="text" value="@Model.MENULINKMODE" style="width: 95%;" /></td>   
+                    <td style="width:110px">下拉方式：</td>
+                    <td><select style="width: 95%;" id="tbxMENUDROWMTHOD">@Html.Raw(@ViewBag.MENUDROWMTHOD)</select></td>                 
+                </tr>
+                <tr>                    
+                    <td style="width:110px">是否为顶部菜单：</td>
+                    <td><select style="width: 95%;" id="tbxISTOPMENU">@Html.Raw(@ViewBag.ISTOPMENU)</select>
                     <td style="width:110px">排序号：</td>
                     <td><input id="tbxORDERBY" name="tbxORDERBY" type="text" value="@Model.ORDERBY" style="width: 95%;" /></td>
-                   
-                </tr>
-                <tr>
-                    <td style="width:110px">菜单所属权限标识：</td>
-                    <td><input id="tbxMENURIGHTFLAG" name="tbxMENURIGHTFLAG" type="text" value="@Model.MENURIGHTFLAG" style="width: 95%;" /></td>
-                    <td style="width:110px">所属系统标识：</td>
-                    <td><input id="tbxSYSFLAG" name="tbxSYSFLAG" type="text" value="@Model.SYSFLAG" style="width: 95%;" /></td>
-                    
-                </tr>
-                <tr>
-                    <td style="width:110px">菜单关联子模块：</td>
-                    <td><input id="tbxMENULINKMODE" name="tbxMENULINKMODE" type="text" value="@Model.MENULINKMODE" style="width: 95%;" /></td>
-                    <td style="width:110px">菜单打开方式：</td>
-                    <td>
-                        <select style="width: 95%;" id="tbxMENUOPENMETHOD">
-                            @Html.Raw(@ViewBag.MENUOPENMETHOD)
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="width:110px">菜单下拉方式：</td>
-                    <td>
-                        <select style="width: 95%;" id="tbxMENUDROWMTHOD" >
-                            @Html.Raw(@ViewBag.MENUDROWMTHOD)
-                        </select>
-                    </td>
-                    <td style="width:110px">是否为顶部菜单：</td>
-                    <td>
-                        <select style="width: 95%;" id="tbxISTOPMENU" >                    
-                            @Html.Raw(@ViewBag.ISTOPMENU)
-                        </select>
                 </tr>
             </table>
         </div>
@@ -72,6 +59,7 @@
     else if ('@ViewBag.Method' == 'Add') {
         $('#tbxMENUCODE').attr("disabled", false);
     }
+
     function Manager() {
         var MENUCODE = $("#tbxMENUCODE").val();
         var MENUNAME = $("#tbxMENUNAME").val();
@@ -99,7 +87,7 @@
                 ORDERBY: ORDERBY,
                 MENURIGHTFLAG: MENURIGHTFLAG,
                 SYSFLAG: SYSFLAG,
-                MENUOPENMETHOD:MENUOPENMETHOD,
+                MENUOPENMETHOD: MENUOPENMETHOD,
                 MENULINKMODE: MENULINKMODE,
                 MENUDROWMTHOD: MENUDROWMTHOD,
                 ISTOPMENU: ISTOPMENU,
@@ -108,10 +96,11 @@
             success: function (data, ioArgs) {
                 var ar = eval('(' + data + ')');
                 if (ar.Success) {
-                    if (confirm(ar.Msg)) {
+                    layer.confirm(ar.Msg + ' 请返回?', { icon: 3, title: '提示' }, function (index2) {
+                        layer.close(index2);
                         var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
                         parent.layer.close(index);
-                    }
+                    });
                 }
                 else {
                     layer.msg(ar.Msg, { icon: 5 });

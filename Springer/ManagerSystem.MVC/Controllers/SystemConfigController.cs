@@ -12,6 +12,7 @@ using System.IO;
 using System.Text;
 using PublicClassLibrary.ThirdDockService;
 using log4net;
+using Newtonsoft.Json.Linq;
 
 
 namespace ManagerSystem.MVC.Controllers
@@ -102,7 +103,7 @@ namespace ManagerSystem.MVC.Controllers
                     else
                         navStr += "<li class=\"active\"><a href=\"/SystemConfig/AREAList?ID=" + ID.Substring(0, 2) + "0000000000000" + "\">" + T_ALL_AREACls.getNameByID(new T_ALL_AREA_SW { AREACODE = ID.Substring(0, 2) + "0000000000000" }) + "</a></li>";
                 }
-                 if (ID.Substring(2, 2) != "00")
+                if (ID.Substring(2, 2) != "00")
                 {
                     if (ID == ID.Substring(0, 4) + "00000000000")
                         navStr += "<li class=\"active\">" + T_ALL_AREACls.getNameByID(new T_ALL_AREA_SW { AREACODE = ID.Substring(0, 4) + "00000000000" }) + "</li>";
@@ -123,7 +124,6 @@ namespace ManagerSystem.MVC.Controllers
                     else
                         navStr += "<li class=\"active\"><a href=\"/SystemConfig/AREAList?ID=" + ID.Substring(0, 9) + "000000" + "\">" + T_ALL_AREACls.getNameByID(new T_ALL_AREA_SW { AREACODE = ID.Substring(0, 9) + "000000" }) + "</a></li>";
                 }
-               
             }
             ViewBag.navList = navStr;
             ViewBag.AREAList = getAreaStr(new T_ALL_AREA_SW { SubAREACODE = ID });
@@ -257,7 +257,7 @@ namespace ManagerSystem.MVC.Controllers
 
             //ViewBag.RoleChk = T_SYSSEC_ROLECls.getRoleAndUid(new T_SYSSEC_ROLE_SW { USERID = ViewBag.T_USERID });
             ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag() });
-            ViewBag.vdAREANAME = T_ALL_AREACls.getAREANAMESelectOption(new T_ALL_AREA_SW {});
+            ViewBag.vdAREANAME = T_ALL_AREACls.getAREANAMESelectOption(new T_ALL_AREA_SW { });
             return View();
         }
 
@@ -575,12 +575,22 @@ namespace ManagerSystem.MVC.Controllers
             string Method = Request.Params["Method"];
             if (string.IsNullOrEmpty(Method))
                 Method = "Add";
-            if (m.opMethod != "Del")
+            if (Method != "Del")
             {
                 if (string.IsNullOrEmpty(DICTNAME))
-                    return Content(JsonConvert.SerializeObject(new Message(false, "请输入或选择字典名!", "")), "text/html;charset=UTF-8");
+                {
+                    if (Method == "Add")
+                        return Content(JsonConvert.SerializeObject(new Message(false, "请输入字典名!", "")), "text/html;charset=UTF-8");
+                    if (Method == "Mdy")
+                        return Content(JsonConvert.SerializeObject(new Message(false, "请选择字典名!", "")), "text/html;charset=UTF-8");
+                }
                 if (string.IsNullOrEmpty(DICTVALUE))
-                    return Content(JsonConvert.SerializeObject(new Message(false, "请输入或选择字典值!", "")), "text/html;charset=UTF-8");
+                {
+                    if (Method == "Add")
+                        return Content(JsonConvert.SerializeObject(new Message(false, "请输入字典值!", "")), "text/html;charset=UTF-8");
+                    if (Method == "Mdy")
+                        return Content(JsonConvert.SerializeObject(new Message(false, "请选择字典值!", "")), "text/html;charset=UTF-8");
+                }
             }
             m.DICTID = DICTID;
             m.DICTTYPEID = DICTTYPEID;
@@ -715,15 +725,7 @@ namespace ManagerSystem.MVC.Controllers
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
             sb.AppendFormat("<thead>");
-            sb.AppendFormat("    <tr>");
-            sb.AppendFormat("        <th>单位</th>");
-            sb.AppendFormat("        <th>呼救号码</th>");
-            sb.AppendFormat("        <th>回传频率</th>");
-            sb.AppendFormat("        <th>回传开始时间</th>");
-            sb.AppendFormat("        <th>回传结束时间</th>");
-            sb.AppendFormat("        <th>WEB Service地址</th>");
-            sb.AppendFormat("        <th>回传有效日期</th>");
-            sb.AppendFormat("    </tr>");
+            sb.AppendFormat("<tr><th>单位</th><th>呼救号码</th><th>回传频率</th><th>回传开始时间</th><th>回传结束时间</th><th>WEB Service地址</th><th>回传有效日期</th></tr>");
             sb.AppendFormat("</thead>");
             sb.AppendFormat("<tbody>");
             var list = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { });
@@ -748,11 +750,9 @@ namespace ManagerSystem.MVC.Controllers
                 if (str != "")
                 {
                     sb.AppendFormat("<td class=\"left\">{0}</td>", orgName);
-
                     string[] arr = str.Split('$');
                     if (arr.Length > 1)
                     {
-
                         sb.AppendFormat("<td class=\"center\">{0}</td>", arr[0]);
                         sb.AppendFormat("<td class=\"center\">{0}</td>", arr[1]);
                         sb.AppendFormat("<td class=\"center\">{0}</td>", arr[2]);
@@ -773,7 +773,6 @@ namespace ManagerSystem.MVC.Controllers
                 else
                 {
                     sb.AppendFormat("<td class=\"left\">{0}</td>", orgName + "(默认值)");
-
                     T_SYS_PARAMETER_SW sw = new T_SYS_PARAMETER_SW();
                     var result = T_SYS_PARAMETERCls.getListModel(sw);
                     var SOS_TEL = result.Where(p => p.PARAMFLAG == "SOS_TEL").FirstOrDefault().PARAMVALUE;
@@ -782,14 +781,12 @@ namespace ManagerSystem.MVC.Controllers
                     var END_TIME = result.Where(p => p.PARAMFLAG == "END_TIME").FirstOrDefault().PARAMVALUE;
                     var WEB_SERVICE_URL = result.Where(p => p.PARAMFLAG == "WEB_SERVICE_URL").FirstOrDefault().PARAMVALUE;
                     var TransEanbleDate = result.Where(p => p.PARAMFLAG == "TransEanbleDate").FirstOrDefault().PARAMVALUE;
-
                     sb.AppendFormat("<td class=\"center\">{0}</td>", SOS_TEL);
                     sb.AppendFormat("<td class=\"center\">{0}</td>", FQCY);
                     sb.AppendFormat("<td class=\"center\">{0}</td>", STATR_TIME);
                     sb.AppendFormat("<td class=\"center\">{0}</td>", END_TIME);
                     sb.AppendFormat("<td class=\"center\">{0}</td>", WEB_SERVICE_URL);
                     sb.AppendFormat("<td class=\"center\">{0}</td>", TransEanbleDate);
-
                 }
                 sb.AppendFormat("</tr>");
             }
@@ -935,6 +932,211 @@ namespace ManagerSystem.MVC.Controllers
             }
             return Content(JsonConvert.SerializeObject(ms), "text/html;charset=UTF-8");
         }
+        #endregion
+
+        #region 系统更新管理
+        /// <summary>
+        /// 系统更新
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult SystemUpdate()
+        {
+            pubViewBag("007007", "007007", "");
+            if (ViewBag.isPageRight == false)
+                return View();
+            return View();
+        }
+
+        /// <summary>
+        /// 系统更新操作树
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult UpdateTree()
+        {
+            string result = GetUpdateTree();
+            return Content(result, "application/json");
+        }
+
+        /// <summary>
+        /// 获取系统更新操作树
+        /// </summary>
+        /// <returns></returns>
+        public static string GetUpdateTree()
+        {
+            JArray JA = new JArray();
+            JObject root1 = new JObject { { "id", "1" }, { "text", "数据库操作" }, { "state", "open" } };
+            JObject root2 = new JObject { { "id", "2" }, { "text", "图层管理" }, { "state", "open" } };
+            JObject root3 = new JObject { { "id", "3" }, { "text", "护林员巡检路线" }, { "state", "open" } };
+            JA.Add(root1);
+            JA.Add(root2);
+            JA.Add(root3);
+            return JsonConvert.SerializeObject(JA);
+        }
+
+        #region 更新数据库
+        /// <summary>
+        /// 更新数据库
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult UpdateDataBase()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 执行sql语句更新数据库
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult DataBaseManager()
+        {
+            string sql = Request.Params["Sql"]; ;
+            return Content(JsonConvert.SerializeObject(SYS_ConfigCls.UpdateDataBase(sql)), "text/html;charset=UTF-8");
+        }
+        #endregion
+
+        #region 图层管理
+        /// <summary>
+        /// 图层管理
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult UpdateLayer()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 获取图层列表
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult GetLayerList()
+        {
+            string layerName = Request.Params["LayerName"];
+            var list = T_SYS_LAYERCls.getListModel(new T_SYS_LAYER_SW { LAYERNAME = layerName });
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
+            sb.AppendFormat("<thead>");
+            sb.AppendFormat("<tr>");
+            string dis = list.Count() <= 0 ? "disabled=\"disabled\"" : "";
+            sb.AppendFormat("<th style=\"width:5%\"><input id=\"tbxLayerCodeALL\" name=\"tbxLayerCodeALL\" type=\"checkbox\" class=\"ace\" value=\"ALL\" onclick=\"selectAll(this.value,this.checked)\" {0} /></th>", dis);
+            sb.AppendFormat("<th>序号</th><th>图层编号</th><th>图层名称</th><th>图层序号</th><th>默认是否打开</th><th>是否权限控制</th><th>对应权限编码</th><th>火情周边查询</th><th>护林员周边查询</th><th>排序号</th><th>操作</th>");
+            sb.AppendFormat("</tr>");
+            sb.AppendFormat("</thead>");
+            int i = 0;
+            foreach (var v in list)
+            {
+                sb.AppendFormat("<tr class=\"{0}\" onclick=\"setColor(this)\">", (i % 2 == 0) ? "" : "row1");
+                sb.AppendFormat("<td class=\"center\">{0}</td>", "<input id=\"tbxLayerCode" + i + "\" name=\"tbxLayerCode\"  type=\"checkbox\" class=\"ace\" value=\"" + v.LAYERCODE + "\" onclick=\"selectAll(this.value,this.checked)\" />", i.ToString());
+                sb.AppendFormat("<td class=\"center\">{0}</td>", (i + 1).ToString());
+                sb.AppendFormat("<td class=\"left\">{0}</td>", v.LAYERCODE);
+                sb.AppendFormat("<td class=\"left\" style=\"{1}\">{0}</td>", v.LAYERNAME, PublicCls.getLAYERNameClass(v.LAYERCODE));
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.LAYERID);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", !string.IsNullOrEmpty(v.ISDEFAULTCH) ? (v.ISDEFAULTCH == "1" ? "是" : "否") : v.ISDEFAULTCH);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", !string.IsNullOrEmpty(v.ISACTION) ? (v.ISACTION == "1" ? "是" : "否") : v.ISDEFAULTCH);
+                sb.AppendFormat("<td class=\"left\">{0}</td>", v.LAYERRIGHTID);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", !string.IsNullOrEmpty(v.ISFIREROUNDDEFAULT) ? (v.ISFIREROUNDDEFAULT == "1" ? "是" : "否") : v.ISFIREROUNDDEFAULT);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", !string.IsNullOrEmpty(v.ISFUROUNDDEFAULT) ? (v.ISFUROUNDDEFAULT == "1" ? "是" : "否") : v.ISFUROUNDDEFAULT);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.ORDERBY);
+                sb.AppendFormat("<td class\"center\">");
+                sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}')\" title='编辑' class=\"searchBox_01 LinkMdy\">编辑</a>", v.LAYERCODE);
+                sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Del','{0}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", v.LAYERCODE);
+                sb.AppendFormat("</td>");
+                sb.AppendFormat("</tr>");
+                i++;
+            }
+            sb.AppendFormat("</table>");
+            return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), "")), "text/html;charset=UTF-8");
+        }
+
+        /// <summary>
+        /// 获取单条图层数据
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult GetLayerDataJson()
+        {
+            string layerCode = Request.Params["LayerCode"];
+            return Content(JsonConvert.SerializeObject(T_SYS_LAYERCls.getModel(new T_SYS_LAYER_SW { LAYERCODE = layerCode })), "text/html;charset=UTF-8");
+        }
+
+        /// <summary>
+        /// 批量操作图层
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult PLUpdateLayer()
+        {
+            T_SYS_LAYER_Model m = new T_SYS_LAYER_Model();
+            m.LAYERCODE = Request.Params["LayerCode"];
+            m.PlCZ = Request.Params["PlCZ"];
+            m.opMethod = "PLMdy";
+            return Content(JsonConvert.SerializeObject(T_SYS_LAYERCls.Manager(m)), "text/html;charset=UTF-8");
+        }
+
+        /// <summary>
+        /// 图层管理-增、删、改
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult LayerManager()
+        {
+            T_SYS_LAYER_Model m = new T_SYS_LAYER_Model();
+            m.LAYERCODE = Request.Params["LayerCode"];
+            m.LAYERNAME = Request.Params["LayerName"];
+            m.LAYERID = Request.Params["LayerId"];
+            m.ISACTION = Request.Params["IsAction"];
+            m.LAYERRIGHTID = Request.Params["LayerRightId"];
+            m.ORDERBY = Request.Params["OrderBy"];
+            m.ISDEFAULTCH = Request.Params["IsDefaultCh"];
+            m.ISFIREROUNDDEFAULT = Request.Params["IsFireRoundDefault"];
+            m.ISFUROUNDDEFAULT = Request.Params["IsFuRoundDefault"];
+            m.LAYERPICNAME = Request.Params["LayerPicName"];
+            m.opMethod = Request.Params["Method"];
+            return Content(JsonConvert.SerializeObject(T_SYS_LAYERCls.Manager(m)), "text/html;charset=UTF-8");
+        }
+        #endregion
+
+        #region 护林员巡检路线
+        /// <summary>
+        /// 护林员巡检路线
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult UpdateHlyRoute()
+        {
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { TopORGNO = SystemCls.getCurUserOrgNo(), SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = SystemCls.getCurUserOrgNo() });
+            return View();
+        }
+
+        /// <summary>
+        /// 获取护林员ID
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult GetHIdList()
+        {
+            string orgNo = Request.Params["ORGNO"];
+            string type = Request.Params["Type"];
+            string hidlist = "";
+            var sfrUserList = T_IPSFR_USERCls.getListModel(new T_IPSFR_USER_SW { BYORGNO = orgNo, PATROLLENGTH = type, });
+            foreach (var r in sfrUserList)
+            {
+                var count = T_IPSFR_ROUTERAILCls.GetRouteCount(new T_IPSFR_ROUTERAIL_SW { HID = r.HID,ROADTYPE="0" });
+                if (count > 0)
+                    hidlist += r.HID + ",";
+            }
+            if (hidlist.Length > 0)
+                hidlist = hidlist.Substring(0, hidlist.Length - 1);
+            return Content(JsonConvert.SerializeObject(new Message(true, hidlist, "")), "text/html;charset=UTF-8");
+        }
+
+        /// <summary>
+        /// 更新护林员路线距离
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult HlyRouteManager()
+        {
+            T_IPSFR_USER_Model m = new T_IPSFR_USER_Model();
+            m.HID = Request.Params["Hid"];
+            m.PATROLLENGTH = Request.Params["PatRollLength"];
+            m.opMethod = "PATROLLENGTH";
+            return Content(JsonConvert.SerializeObject(T_IPSFR_USERCls.Manager(m)), "text/html;charset=UTF-8");
+        }
+        #endregion
         #endregion
     }
 }

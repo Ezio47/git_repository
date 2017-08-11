@@ -59,70 +59,31 @@
 <div class="divMan" id="tableadd" style="display:none;margin-left:5px;margin-top:8px">
     <table cellpadding="0" cellspacing="0">
         <tr>
-            <td style="width:80px;">
-                单位名称：
-            </td>
-            <td>
-                <select id="BYORGNO" class="easyui-combotree" style="width:180px"></select>
-            </td>
-            <td style="width:80px;">
-                任务名称：
-            </td>
-            <td style="width:35%">
-                <input type="text" id="NAME" style="width:80%" class="input-small" value="" />
-            </td>
+            <td style="width:80px;">单位名称：</td>
+            <td><select id="BYORGNO" class="easyui-combotree" style="width:180px"></select></td>
+            <td style="width:80px;">任务名称：</td>
+            <td style="width:35%"><input type="text" id="NAME" style="width:80%" class="input-small" value="" /></td>
         </tr>
         <tr>
-            <td style="width:80px;">
-                任务类型：
-            </td>
-            <td>
-                <select id="TASKTYPE" style="width:80%">
-                    @Html.Raw(@ViewBag.TASKTYPE)
-                </select>
-            </td>
-            <td style="width:80px;">
-                任务级别：
-            </td>
-            <td style="width:35%">
-                <select id="TASKLEVEL" style="width:80%">
-                    @Html.Raw(@ViewBag.TASKLEVEL)
-                </select>
-            </td>
+            <td style="width:80px;">任务类型：</td>
+            <td><select id="TASKTYPE" style="width:80%">@Html.Raw(@ViewBag.TASKTYPE) </select></td>
+            <td style="width:80px;">任务级别：</td>
+            <td style="width:35%"><select id="TASKLEVEL" style="width:80%">@Html.Raw(@ViewBag.TASKLEVEL)</select></td>
         </tr>
         <tr>
-            <td style="width:100px;">
-                任务开始时间：
-            </td>
-            <td>
-                <input class="Wdate" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss' })" id="tbxBEGINTIME" type="text" value="" style="width:80%;" />
-            </td>
-            <td style="width:100px;">
-                任务结束时间：
-            </td>
-            <td style="width:35%">
-                <input class="Wdate" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss'})" id="tbxENDTIME" type="text" value="" style="width:80%;" />
-            </td>
-        </tr>
-
-        <tr>
-            <td style="width:80px;">
-                任务发起时间：
-            </td>
-            <td>
-                <input class="Wdate" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss'})" id="tbxSTARTTIME" type="text" value="" style="width:80%;" />
-            </td>
-            <td style="width:80px;">
-                是否下发：
-            </td>
-            <td style="width:35%">
-                <input type="checkbox" id="chk">
-            </td>
+            <td style="width:100px;">任务开始时间：</td>
+            <td><input class="Wdate" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss' })" id="tbxBEGINTIME" type="text" value="" style="width:80%;" /></td>
+            <td style="width:100px;">任务结束时间：</td>
+            <td style="width:35%"><input class="Wdate" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss'})" id="tbxENDTIME" type="text" value="" style="width:80%;" /></td>
         </tr>
         <tr>
-            <td style="width:80px;">
-                指派护林员：
-            </td>
+            <td style="width:80px;">任务发起时间：</td>
+            <td><input class="Wdate" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss'})" id="tbxSTARTTIME" type="text" value="" style="width:80%;" /></td>
+            <td style="width:80px;">是否下发：</td>
+            <td style="width:35%"><input type="checkbox" id="chk"></td>
+        </tr>
+        <tr>
+            <td style="width:80px;">指派护林员：</td>
             <td colspan="3">
                 @*<input type="checkbox" id="chk">*@
                 @*<select id="HlyList" class="easyui-combotree" style="width:200px"></select>*@
@@ -133,16 +94,10 @@
             </td>
         </tr>
         <tr>
-            <td style="width:80px;">
-                任务内容：
-            </td>
-            <td colspan="3">
-                <textarea id="tbxCONTENT" style="width:95%;height:50px; margin-top:10px; OVERFLOW:visible"></textarea>
-            </td>
+            <td style="width:80px;">任务内容： </td>
+            <td colspan="3"><textarea id="tbxCONTENT" style="width:95%;height:50px; margin-top:10px; OVERFLOW:visible"></textarea></td>
         </tr>
-
     </table>
-
 </div>
 
 <div class="divMan" id="HlyTree" style="display:none;margin-left:5px;margin-top:8px">
@@ -156,13 +111,11 @@
 </div>
 
 <script type="text/javascript">
-
     $(function () {
         var bln = '@ViewBag.isAdd';
         if (bln == "1") {
             document.getElementById('btnAdd').style.display = "";
         }
-
         $('#tbxBYORGNO').combotree({
             url: '/System/OnlyOrgTreeget',
             editable: false,
@@ -189,7 +142,6 @@
                 $('#BYORGNO').combotree('setValue', node.id);
             }
         });
-
         getTree();
         query('1');
     });
@@ -247,7 +199,6 @@
     //指派护林员
     function Assign() {
         var hidlist = $('#HlyListid').val();
-
         //$('#tt').tree({
         //    onLoadSuccess: function (node, data) {
         //        if (hidlist != "" && hidlist != null) {
@@ -300,7 +251,7 @@
                     var strname = '';
                     var strid = '';
                     if (arr.length == "0") {
-                        layer.alert('请指派护林员！', { icon: 2 });
+                        layer.alert('请指派护林员!', { icon: 2 });
                         return false;
                     } else if (arr.length == "1") {
                         strname = arrname[0];
@@ -317,7 +268,7 @@
                     $('#HlyListid').val(strid);
                     layer.close(index);
                 } else {
-                    layer.alert('请指派护林员！', { icon: 2 });
+                    layer.alert('请指派护林员!', { icon: 2 });
                     return false;
                 }
             }
@@ -327,7 +278,7 @@
     function Manager(ID, Method, page) {
         if (Method == 'Del' || Method == 'End') {
             if (Method == 'Del') {
-                if (confirm('确定要删除该任务吗?')) {
+                layer.confirm('确定要删除该任务吗?', { icon: 3, title: '提示' }, function (index) {
                     $.ajax({
                         type: "Post",
                         url: "/System/TaskManager",
@@ -339,7 +290,7 @@
                         },
                         dataType: "json",
                         error: function () {
-                            layer.msg('错误:异常!', 'error');
+                            layer.msg('错误:异常!', { icon: 5 });
                         },
                         success: function (re) {
                             if (re.Success) {
@@ -351,9 +302,10 @@
                             }
                         }
                     });
-                }
-            } else {
-                if (confirm('确定要结束该任务吗?')) {
+                });
+            }
+            else {
+                layer.confirm('确定要结束该任务吗?', { icon: 3, title: '提示' }, function (index) {
                     $.ajax({
                         type: "Post",
                         url: "/System/TaskManager",
@@ -365,21 +317,20 @@
                         },
                         dataType: "json",
                         error: function () {
-                            layer.msg('错误:异常!', 'error');
+                            layer.msg('错误:异常!', { icon: 5 });
                         },
                         success: function (re) {
                             if (re.Success) {
-                                layer.msg('成功', { icon: 6 });
+                                layer.msg('结束成功', { icon: 6 });
                                 query(page);
                             }
                             else {
-                                layer.msg('失败', { icon: 5 });
+                                layer.msg('结束失败', { icon: 5 });
                             }
                         }
                     });
-                }
+                });
             }
-
         }
         else {
             if (Method == "Add") {
@@ -396,12 +347,10 @@
                 $.ajax({
                     type: "Post",
                     url: "/system/GetTaskjson",
-                    data: {
-                        TASK_INFOID: ID,
-                    },
+                    data: { TASK_INFOID: ID, },
                     dataType: "json",
                     error: function () {
-                        layer.msg('错误:异常!', 'error');
+                        layer.msg('错误:异常!', { icon: 5 });
                     },
                     success: function (data) {
                         if (data.TASK_INFOID != '') {
@@ -419,9 +368,7 @@
                             document.getElementById("HlyList").value = data.HLYNAMELIST;
                             //document.getElementById("HlyListid").value = data.HIDLIST;
                             $('#HlyListid').val(data.HIDLIST);
-
                             document.getElementById("tbxCONTENT").value = data.TASKCONTENT;
-
                             //$('#tt').tree({
                             //    url: '/System/HlyGet?phonehname='+name ,
                             //    checked: false,
@@ -437,11 +384,9 @@
                     }
                 });
             }
-
             var str = "新增任务";
             if (Method == "Mdy")
                 str = "任务修改";
-
             layer.open({
                 type: 1,
                 title: str,
@@ -467,38 +412,37 @@
                     var begintime = $('#tbxBEGINTIME').val();
                     var endtime = $('#tbxENDTIME').val();
                     var content = $('#tbxCONTENT').val();
-
                     if ($.trim(name) == "") {
-                        layer.msg('任务名称不可为空！', { icon: 5 });
+                        layer.msg('任务名称不可为空!', { icon: 5 });
                         $('#NAME').focus();
                         return;
                     }
                     if ($.trim(begintime) == "") {
-                        layer.msg('任务开始时间不可为空！', { icon: 5 });
+                        layer.msg('任务开始时间不可为空!', { icon: 5 });
                         $('#tbxBEGINTIME').focus();
                         return;
                     }
                     if ($.trim(endtime) == "") {
-                        layer.msg('任务结束时间不可为空！', { icon: 5 });
+                        layer.msg('任务结束时间不可为空!', { icon: 5 });
                         $('#tbxENDTIME').focus();
                         return;
                     }
                     if ($.trim(begintime) > $.trim(endtime)) {
-                        layer.msg('开始时间不可大于结束时间！', { icon: 5 });
+                        layer.msg('开始时间不可大于结束时间!', { icon: 5 });
                         return;
                     }
                     if ($.trim(starttime) == "") {
-                        layer.msg('任务发起时间不可为空！', { icon: 5 });
+                        layer.msg('任务发起时间不可为空!', { icon: 5 });
                         $('#tbxSTARTTIME').focus();
                         return;
                     }
                     if ($.trim(hlylist) == "") {
-                        layer.msg('请选择指派的护林员！', { icon: 5 });
+                        layer.msg('请选择指派的护林员!', { icon: 5 });
                         $('#HlyList').focus();
                         return;
                     }
                     if ($.trim(content) == "") {
-                        layer.msg('任务内容不可为空！', { icon: 5 });
+                        layer.msg('任务内容不可为空!', { icon: 5 });
                         $('#tbxCONTENT').focus();
                         return;
                     }
@@ -524,12 +468,12 @@
                         },
                         dataType: "json",
                         error: function () {
-                            alert('错误:异常!', 'error');
+                            layer.msg('错误:异常!', { icon: 5 });
                         },
                         success: function (re) {
                             if (re.Success) {
                                 layer.close(index);
-                                layer.msg('操作成功', { icon: 6 });
+                                layer.msg(re.Msg, { icon: 6 });
                                 query('1');
                             }
                             else {
@@ -537,12 +481,12 @@
                             }
                         }
                     });
-                }, cancel: function (index) {
+                },
+                cancel: function (index) {
                     layer.close(index);
                 }
             })
         }
-
     }
 
     //查看
@@ -556,8 +500,6 @@
             content: '/System/SeeDetail?tablename=' + tablename + "&ID=" + ID
         })
     }
-
-
 
 </script>
 

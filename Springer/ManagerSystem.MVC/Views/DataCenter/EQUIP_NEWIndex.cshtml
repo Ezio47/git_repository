@@ -10,6 +10,7 @@
     {
         curorgno = SystemCls.getCurUserOrgNo();
     }
+    var curorgno1 = SystemCls.getCurUserOrgNo();//添加的时候组织机判断
 }
 
 <div class="easyui-layout" data-options="fit:true" style=" border:0;">
@@ -246,7 +247,7 @@
                 t.tree("expand", node.target);//展开节点 expandTo
             }
         });
-        $('#BYORGNO').combotree('setValue', "@curorgno");
+        $('#BYORGNO').combotree('setValue', "@curorgno1");
     });
 
     function query(Page) {
@@ -343,7 +344,7 @@
 
     function Manager(Method, ID, page) {
         if (Method == 'Del') {
-            if (confirm('确实要删除该内容吗?')) {
+            layer.confirm('确实要删除吗?', { icon: 3, title: '提示' }, function (index) {
                 $.ajax({
                     type: "Post",
                     url: "/DataCenter/EquipNewManager",
@@ -365,7 +366,7 @@
                         }
                     }
                 });
-            }
+            });
         }
         else {
             if (Method == 'Mdy' || Method == 'See') {
@@ -408,7 +409,7 @@
                 document.getElementById("NUMBER").value = "";
                 document.getElementById("NAME").value = "";
                 //document.getElementById("BYORGNO").value = "";
-                $('#BYORGNO').combotree('setValue', "@curorgno");
+                $('#BYORGNO').combotree('setValue', "@curorgno1");
                 document.getElementById("MODEL").value = "";
                 //document.getElementById("BUYYEAR").value = "";
                 document.getElementById("USESTATE").value = "";

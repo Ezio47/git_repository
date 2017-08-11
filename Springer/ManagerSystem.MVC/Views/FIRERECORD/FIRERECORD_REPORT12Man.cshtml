@@ -13,20 +13,30 @@
     }
 </style>
 <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+    <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+        <div class="divOP">
+            <div style=" color: #3c7915;">
+                年份：<input id="tbxREPORTYEAR" type="text" class="Wdate" style="width:100px;" value="@ViewBag.REPORTYEAR" onfocus="Query()" onclick="WdatePicker({ dateFmt: 'yyyy'})" />
+                单位：<select id="tbxBYORGNO" onchange="Query()">@Html.Raw(@ViewBag.vdOrg)</select>&nbsp;&nbsp;&nbsp;
+                <input type="button" class="btnSaveCss" value="保存" onclick="Manager()" id="Save" />
+            </div>
+        </div>
+    </div>
     <div data-options="region:'center'" title="" style=" border: none; ">
         <input id="dic314Value" type="hidden" value="@ViewBag.dic314Value" />
         <input id="dic314Count" type="hidden" value="@ViewBag.dic314Count" />
         <div class="divTable">
             <input id="tbxFIRERECORD_REPORT12" name="tbxFIRERECORD_REPORT12" type="hidden" value="@ViewBag.FIRERECORD_REPORT12" style="width:95%;" />
             <table cellpadding="0" cellspacing="0" style="text-align :left;">
-                <tr style="width:95%;">
-                    <td style="width:150px;"> 年份：</td>
-                    <td><input id="tbxREPORTYEAR" type="text" class="Wdate" value="@ViewBag.REPORTYEAR" onclick="WdatePicker({ dateFmt: 'yyyy'})" /></td>
-                    <td style="width:150px;"> 单位：</td>
-                    <td><select id="tbxBYORGNO">@Html.Raw(@ViewBag.vdOrg)</select>&nbsp;&nbsp;&nbsp;</td>
-                </tr>
+                @*<tr style="width:95%;">
+                        <td style="width:150px;"> 年份：</td>
+                        <td><input id="tbxREPORTYEAR" type="text" class="Wdate" value="@ViewBag.REPORTYEAR" onclick="WdatePicker({ dateFmt: 'yyyy'})" /></td>
+                        <td style="width:150px;"> 单位：</td>
+                        <td><select id="tbxBYORGNO">@Html.Raw(@ViewBag.vdOrg)</select>&nbsp;&nbsp;&nbsp;</td>
+                    </tr>*@
                 <tr>
-                    <td  colspan="4">森林防火建设资金（万元）</td>
+                    <td colspan="4">森林防火建设资金（万元）</td>
                 </tr>
                 <tr style="width:95%;">
                     <td>瞭望系统：</td>
@@ -65,7 +75,7 @@
                     <td> 扑火机具 ：</td>
                     <td><input id="tbx10" type="text" value="0" style="width: 70%;" />(万元)</td>
                     <td> 其他项目：</td>
-                    <td><input id="tb11" type="text" value="0" style="width: 70%;" />(万元)</td>
+                    <td><input id="tbx11" type="text" value="0" style="width: 70%;" />(万元)</td>
                 </tr>
                 <tr>
                     <td colspan="4">地方配套 （万元）</td>
@@ -74,12 +84,12 @@
                     <td> 省级：</td>
                     <td><input id="tbx12" type="text" value="0" style="width: 70%;" />(万元)</td>
                     <td> 州级：</td>
-                    <td><input id="tbx13" type="text" value="0" style="width: 70%;" />(万元)</td>                                                               
-                </tr>                                                                 
-                <tr style="width:95%;">                                              
-                    <td>县级：</td>                                                  
+                    <td><input id="tbx13" type="text" value="0" style="width: 70%;" />(万元)</td>
+                </tr>
+                <tr style="width:95%;">
+                    <td>县级：</td>
                     <td><input id="tbx14" type="text" value="0" style="width: 70%;" />(万元)</td>
-                    <td>林业：</td>                                                 
+                    <td>林业：</td>
                     <td><input id="tbx15" type="text" value="0" style="width: 70%;" />(万元)</td>
                 </tr>
                 <tr style="width:95%;">
@@ -88,19 +98,96 @@
                 </tr>
             </table>
         </div>
-        <p style="text-align:center;margin-bottom:10px;">
-            <input type="button" class="btnSaveCss" value="保存" onclick="Manager()" id="Save" />
-        </p>
+        @*<p style="text-align:center;margin-bottom:10px;">
+                <input type="button" class="btnSaveCss" value="保存" onclick="Manager()" id="Save" />
+            </p>*@
     </div>
 </div>
 
 <script type="text/javascript">
+    var dic314Value = $('#dic314Value').val().split(',');
+    var dic314Count = $('#dic314Count').val();
+    if (dic314Count != "") {
+        dic314Count = parseInt(dic314Count);
+    }
+    if ('@ViewBag.Method' == 'Add') { 
+        var REPORTYEAR = $("#tbxREPORTYEAR").val();
+        var BYORGNO = $("#tbxBYORGNO").val();
+        $.ajax({
+            url: '/FIRERECORD/GetReport12json',
+            cache: false,
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: { REPORTYEAR: REPORTYEAR, BYORGNO: BYORGNO },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                for (var i = 0; i < ar.length; i++) {
+                    if (ar[i].REPORTYEAR != null && ar[i].BYORGNO !== null) {
+                        for (var y = 0; y < dic314Count; y++) {
+                            var temp = y.toString();
+                            if (ar[i].REPORTCODE == dic314Value[y]) {
+                                $('#tbx' + temp + '').val(ar[i].REPORTVALUE);
+                            }
+                        }
+                    }
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("登录异常", { icon: 5 });
+
+            }
+        });
+    }
+    function Query() {
+        var REPORTYEAR = $("#tbxREPORTYEAR").val();
+        var BYORGNO = $("#tbxBYORGNO").val();
+        $.ajax({
+            url: '/FIRERECORD/GetReport12json',
+            cache: false,
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: { REPORTYEAR: REPORTYEAR, BYORGNO: BYORGNO },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.length > 0) {
+                    //先将页面清零
+                    for (var y = 0; y < dic314Count; y++) {
+                        var temp = y.toString();
+                        if (temp !== (dic314Count - 1).toString()) {
+                            $('#tbx' + temp + '').val("0");
+                        }
+                        else {
+                            $('#tbx' + temp + '').val("");
+                        }
+                    }
+                    // 将取到的值赋值到界面
+                    for (var i = 0; i < ar.length; i++) {
+                        if (ar[i].REPORTYEAR != null && ar[i].BYORGNO !== null) {
+                            for (var y = 0; y < dic314Count; y++) {
+                                var temp = y.toString();
+                                if (ar[i].REPORTCODE == dic314Value[y]) {
+                                    $('#tbx' + temp + '').val(ar[i].REPORTVALUE);
+                                }
+
+                            }
+                        }
+                    }
+                } else {
+                    for (var y = 0; y < dic314Count; y++) {
+                        var temp = y.toString();
+                        if (temp !== (dic314Count - 1).toString()) {
+                            $('#tbx' + temp + '').val("0");
+                        }
+                        else {
+                            $('#tbx' + temp + '').val("");
+                        }
+                    }
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("查询异常!", { icon: 5 });
+            }
+        });
+    }
     function Manager() {
-        var dic314Value = $('#dic314Value').val().split(',');
-        var dic314Count = $('#dic314Count').val();
-        if (dic314Count != "") {
-            dic314Count = parseInt(dic314Count);
-        }
         var strREPORTCODE = "";
         var strREPORTVALUE = "";
         for (var x = 0; x < dic314Count; x++) {
@@ -144,10 +231,15 @@
             success: function (data, ioArgs) {
                 var ar = eval('(' + data + ')');
                 if (ar.Success) {
-                    if (confirm(ar.Msg + ' 请返回?')) {
+                    //if (confirm(ar.Msg + ' 请返回?')) {
+                    //    var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                    //    parent.layer.close(index);
+                    //}
+                    layer.confirm(ar.Msg + ' 请返回?', { icon: 3, title: '提示' }, function (index2) {
+                        layer.close(index2);
                         var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
                         parent.layer.close(index);
-                    }
+                    });
                 }
                 else {
                     layer.msg(ar.Msg, { icon: 5 });

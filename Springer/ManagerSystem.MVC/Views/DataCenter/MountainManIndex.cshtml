@@ -1,0 +1,362 @@
+﻿@using ManagerSystemClassLibrary;
+@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+    var curorgno1 = SystemCls.getCurUserOrgNo();//添加的时候组织机判断
+}
+<script src="~/Scripts/Transform.js"></script>
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'center'" title="" style=" border: none; ">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="homeUL">
+                        <input type="button" value="保存" onclick="Manager()" id="btnSave" class="btnSaveCss">
+                    </div>
+                </div>
+            </div>
+
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <div class="divMan">
+                    <table cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td style="width:80px;">
+                                <span style="color:red;">*</span>
+                                所属县市：
+                            </td>
+                            <td>
+                                <select id="BYORGNOXS" style="width:120px;" class="easyui-combobox" data-options="editable:false,valueField:'id', textField:'text'"></select>
+
+
+                            </td>
+                            <td style="width:80px;">
+                                <span style="color:red;">*</span>
+                                所属乡镇：
+                            </td>
+                            <td>
+                                <select id="BYORGNO" class="easyui-combobox" style="width:120px;" data-options="editable:false,valueField:'id', textField:'text'"></select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:80px;">
+                                所属自然村：
+                            </td>
+                            <td colspan="3">
+                                <select id="VILLAGE" class="easyui-combobox" style="width:140px;" data-options="editable:false,valueField:'id', textField:'text'"></select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:120px;">
+                                <span style="color:red;">*</span>
+                                名称：
+                            </td>
+                            <td>
+                                <input type="text" id="NAME" class="input-small" value="" />
+                            </td>
+                            <td style="width:80px;">
+                                <span style="color:red;">*</span>
+                                所属地类：
+                            </td>
+                            <td>
+                                <select id="TYPE" style="width:120px">
+                                    @Html.Raw(@ViewBag.typeadd)
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:80px;">
+                                <span style="color:red;">*</span>
+                                经度：
+                            </td>
+                            <td>
+                                <input id="JD" type="text" class="input-small" value="" />
+                            </td>
+                            <td style="width:80px;">
+                                <span style="color:red;">*</span>
+                                纬度：
+                            </td>
+                            <td>
+                                <input id="WD" type="text" class="input-small" value="" />
+                                <input type="button" value="地图定位" onclick="setPoint()" class="btnMapLoaclCss" />
+                            </td>
+                        </tr>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var xzno = "";//乡镇
+    var xcno = "";//乡村
+    ///选择乡镇根据市县
+    $('#BYORGNOXS').combobox({
+        url: '/DataCenter/GetonlySXList',
+        panelHeight: 300,
+        onChange: function (newValue, oldValue) {
+            var newValue = $('#BYORGNOXS').combobox('getValue');
+            if (newValue != "") {
+                $.ajax({
+                    url: '/DataCenter/GetonlyXZList',
+                    data: {
+                        BYORGNOXZ: newValue
+                    },
+                    type: 'post',
+                    dataType: "json",
+                    success: function (record) {
+                        var obj = JSON.parse(JSON.stringify(record))
+                        $("#BYORGNO").combobox('loadData', obj);
+                        if (obj.length > 0) {
+                            if (xzno != "") {
+                                $('#BYORGNO').combobox('setValue', xzno);
+                                xzno = "";
+                            }
+                        }
+                    },
+                    error: function (err, ioArgs) {
+                        layer.msg('登录异常');
+                    }
+                });
+            }
+            else {
+                $("#BYORGNO").combobox('clear');
+                $("#VILLAGE").combobox('clear');
+            }
+
+        },
+        onSelect: function (rec) {
+            xzno = "";
+            xcno = "";
+            $("#BYORGNO").combobox('clear');
+            $("#VILLAGE").combobox('clear');
+        }
+    });
+    ///选择自然村根据乡镇
+    $('#BYORGNO').combobox({
+        panelHeight: 300,
+        onChange: function (newValue, oldValue) {
+            var newValue = $('#BYORGNO').combobox('getValue');
+            if (newValue != "") {
+                $.ajax({
+                    url: '/DataCenter/GetVillageList',
+                    data: {
+                        BYORGNOCUN: newValue
+                    },
+                    type: 'post',
+                    dataType: "json",
+                    success: function (data) {
+                        var obj = JSON.parse(JSON.stringify(data))
+                        $("#VILLAGE").combobox('loadData', obj);
+                        if (obj.length > 0) {
+
+                            if (xcno != "") {
+                                $('#VILLAGE').combobox('setValue', xcno);
+                                xcno = "";
+                            }
+                        }
+                    },
+                    error: function (err, ioArgs) {
+                        layer.msg('登录异常');
+                    }
+                });
+            }
+            else {
+                $("#VILLAGE").combobox('reset');
+            }
+
+        },
+        onSelect: function (rec) {
+            xzno = "";
+            xcno = "";
+            $("#VILLAGE").combobox('clear');
+        }
+    });
+    if ('@ViewBag.T_Method' == "Del") {
+        Manager();
+    }
+    if ('@ViewBag.T_Method' == 'Mdy') {
+        if ('@ViewBag.TYPE1' != "1") {
+            $.ajax({
+                type: "Post",
+                url: "/DataCenter/GetMountainjson",
+                data: {
+                    OBJECTID: '@ViewBag.ID',
+                },
+                dataType: "json",
+                error: function () {
+                    layer.msg('错误:异常!', 'error');
+                },
+                success: function (data) {
+                    if (data.OBJECTID != '') {
+                        $('#BYORGNOXS').combobox('setValue', data.BYORGNOXS);
+                        xzno = data.BYORGNO;
+                        if (xzno != "") {
+                            $('#BYORGNO').combobox('setValue', data.BYORGNO);
+                        }
+                        document.getElementById("NAME").value = data.NAME;
+                        document.getElementById("JD").value = data.JD;
+                        document.getElementById("WD").value = data.WD;
+                        document.getElementById("TYPE").value = data.TYPE;
+                        xcno = data.VILLAGE;
+                        if (xcno != "") {
+                            $('#VILLAGE').combobox('setValue', data.VILLAGE);
+                        }
+                    }
+                }
+            });
+        }
+        else {
+            $.ajax({
+                type: "Post",
+                url: "/DataCenter/GetPointmarkjson",
+                data: {
+                    OBJECTID: '@ViewBag.ID',
+                },
+                dataType: "json",
+                error: function () {
+                    layer.msg('错误:异常!', 'error');
+                },
+                success: function (data) {
+                    if (data.OBJECTID != '') {
+                        $('#BYORGNOXS').combobox('setValue', data.BYORGNOXS);
+                        xzno = data.BYORGNO;
+                        if (xzno != "") {
+                            $('#BYORGNO').combobox('setValue', data.BYORGNO);
+                        }
+                        document.getElementById("NAME").value = data.NAME;
+                        document.getElementById("JD").value = data.JD;
+                        document.getElementById("WD").value = data.WD;
+                        document.getElementById("TYPE").value = data.TYPE;
+                        xcno = data.VILLAGE;
+                        if (xcno != "") {
+                            $('#VILLAGE').combobox('setValue', data.VILLAGE);
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    //地图定位
+    function setPoint() {
+        var name = document.getElementById("NAME").value;
+        var JD = document.getElementById("JD").value;
+        var WD = document.getElementById("WD").value;
+        if (JD != "" && WD != "") {
+            var arr = new Array(2);
+            var lng = parseFloat(JD).toFixed(6);
+            var lat = parseFloat(WD).toFixed(6);
+            arr = wgs84togcj02(lng, lat);//转为火星坐标系
+            var jd = arr[0];
+            var wd = arr[1];
+        }
+        layer.open({
+            type: 2,
+            title: name + '地图位置设置',
+            btn: ['保存', '关闭'],
+            area: ['100%', '100%'],
+            fix: true, //不固定
+            shade: false,
+            maxmin: true,
+            content: '/MapCommon/GetMapPontIndex?jd=' + jd + "&wd=" + wd,
+            yes: function (index, layero) { //或者使用btn1
+                //按钮【按钮一】的回调
+                var ptxt = layer.getChildFrame("p", index);
+                var arr = ptxt.html().split(',');
+                if ($.trim(arr) != "") {
+                    var lng = parseFloat(arr[0]).toFixed(6);
+                    var lat = parseFloat(arr[1]).toFixed(6);
+                    var brr = gcj02towgs84(lng, lat);//转为84坐标系
+                    var LNG1 = brr[0].toFixed(6);
+                    var LAT1 = brr[1].toFixed(6);
+                    $('#JD').val(LNG1);
+                    $('#WD').val(LAT1);
+
+                }
+                layer.close(index);
+            }, cancel: function (index) {
+                layer.close(index);
+            } 
+        });
+    }
+    function Manager() {
+        var t1 = $('#JD').val();
+        var t2 = $('#WD').val();
+        var t3 = $('#NAME').val();
+        var t4 = $('#BYORGNOXS').combobox('getValue');
+        var t5 = $('#BYORGNO').combobox('getValue');
+        if ($.trim(t1) != "") {
+            reg = /^-?\d+\.\d{1,6}$/;
+            if (!reg.test(t1)) {
+                layer.msg('经度格式不正确！', { icon: 5 });
+                $('#JD').focus();
+                return;
+            }
+        }
+        if ($.trim(t2) != "") {
+            reg = /^-?\d+\.\d{1,6}$/;
+            if (!reg.test(t2)) {
+                layer.msg('纬度格式不正确！', { icon: 5 });
+                $('#WD').focus();
+                return;
+            }
+        }
+        if ($.trim(t4) == "") {
+            layer.msg('请选择所属县市！', { icon: 5 });
+            $('#BYORGNOXS').focus();
+            return;
+        }
+        if ($.trim(t5) == "") {
+            layer.msg('请选择所属乡镇！', { icon: 5 });
+            $('#BYORGNO').focus();
+            return;
+        }
+        if ($.trim(t3) == "") {
+            layer.msg('请填写名称！', { icon: 5 });
+            $('#NAME').focus();
+            return;
+        }
+        if ($.trim(t1) == "") {
+            layer.msg('请在地图上画出位置！', { icon: 5 });
+            $('#JD').focus();
+            return;
+        }
+        if ($.trim(t2) == "") {
+            layer.msg('请在地图上画出位置！', { icon: 5 });
+            $('#WD').focus();
+            return;
+        }
+
+        $.ajax({
+            type: "Post",
+            url: "/DataCenter/MountainManager",
+            data: {
+                OBJECTID: '@ViewBag.ID',
+                Method: '@ViewBag.T_Method',
+                TYPE1: '@ViewBag.TYPE1',//最初的类型
+                BYORGNOXS: $('#BYORGNOXS').combobox('getValue'),
+                BYORGNO: $('#BYORGNO').combobox('getValue'),
+                NAME: document.getElementById("NAME").value,
+                TYPE: document.getElementById("TYPE").value,
+                JD: document.getElementById("JD").value,
+                WD: document.getElementById("WD").value,
+                VILLAGE: $('#VILLAGE').combobox('getValue')
+            },
+            dataType: "json",
+            success: function (data) {
+                if (data.Success) {
+                    parent.layer.msg(data.Msg, { icon: 6 });
+                    var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                    parent.layer.close(index);
+                }
+                else {
+                    layer.msg(data.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('保存异常!');
+            }
+        });
+    }
+</script>

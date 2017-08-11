@@ -42,7 +42,7 @@
             type: 'get',
             url: '/FIRERECORD/FIRERECORD_REPORT8Query',
             dataType: 'json',
-            data: { YEAR: $('#tbxYEAR').val(), BYORGNO: $('#tbxBYORGNO').val(), },
+            data: { YEAR: $('#tbxYEAR').val()},
             success: function (data, ioArgs) {
                 if (data.Success) {
                     $('#divTable').html("");

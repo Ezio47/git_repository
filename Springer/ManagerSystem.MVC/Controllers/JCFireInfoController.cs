@@ -541,6 +541,24 @@ namespace ManagerSystem.MVC.Controllers
             return View();
         }
 
+        public ActionResult GetOrgUserIndex() 
+        {
+            return View();
+        }
+
+        public JsonResult End() 
+        {
+            Message ms = null;
+            string jcfid = Request.Params["jcfid"];
+            var m = new JC_FIRE_Model();
+            if (!string.IsNullOrEmpty(jcfid))
+                m.JCFID = jcfid;
+            m.ISOUTFIRE = "1";//0 未灭 1 已灭
+            m.opMethod = "PLEnd";
+            ms = JC_FIRECls.Manager(m);
+            return Json(ms);
+        }
+
         /// <summary>
         /// 派发核查单位Json
         /// </summary>
@@ -803,6 +821,67 @@ namespace ManagerSystem.MVC.Controllers
         }
 
         /// <summary>
+        /// 选择本单位 发送短信
+        /// </summary>
+        /// <returns></returns>
+        public JsonResult SendMessage()
+        {
+            Message ms = null;
+            string jcfid = Request.Params["jcfid"];
+            string fsperson = Request.Params["fsperson"];
+            string xgperson = Request.Params["xgperson"];
+            #region 发送短信通知
+            var fireinfo = JC_FIRECls.getModel(new JC_FIRE_SW { JCFID = jcfid });//获取火情信息
+            string hlyContent = "";
+            hlyContent = string.Format("现有热点：经度{0},纬度{1},起火时间{2},位于{3}区域,火点来源为{4},请速去核查！", fireinfo.JD, fireinfo.WD, Convert.ToDateTime(fireinfo.FIRETIME).ToString("yyyy-MM-dd HH:mm:ss"), fireinfo.ZQWZ, Enum.GetName(typeof(EnumType), int.Parse(fireinfo.FIREFROM.Trim())));
+            if (fireinfo != null)
+            {
+                if (!string.IsNullOrEmpty(fsperson))
+                {
+                    //var fsarr = fsperson.Split(',');//护林员
+                    //string hlyMobile = "";           
+                    //foreach (var item in fsarr)
+                    //{
+                    //    var phoneno = T_IPSFR_USERCls.getModel(new T_IPSFR_USER_SW { HID = item }).PHONE;
+                    //    if (!string.IsNullOrEmpty(phoneno))
+                    //    {
+                    //        //todo sendmsg
+                    //        //Smsclient.SendMsg();
+                    //        hlyMobile += phoneno.Trim() + ",";
+                    //    }
+                    //}
+                    var mmhly = Smsclient.SendMsg(hlyContent, fsperson);//护林员发送短信
+                    if (mmhly.Success == true)
+                    {
+                        ms = new Message(true, mmhly.Msg, "");
+                    }
+                }
+                
+                if (!string.IsNullOrEmpty(xgperson))
+                {
+                    //string txlMobile = "";
+                    //var xgarr = fsperson.Split(',');//通讯录
+                    //foreach (var item in xgarr)
+                    //{
+                    //    var phoneno = T_SYS_ADDREDDBOOKCls.getModel(new T_SYS_ADDREDDBOOK_SW { ADID = item }).PHONE;
+                    //    if (!string.IsNullOrEmpty(phoneno))
+                    //    {
+                    //        //todo sendmsg
+                    //        txlMobile += phoneno.Trim() + ",";
+                    //    }
+                    //}
+                    var mmtxl = Smsclient.SendMsg(hlyContent, xgperson);//护林员发送短信
+                    if (mmtxl.Success == true)
+                    {
+                        ms = new Message(true, mmtxl.Msg, "");
+                    }
+                }
+            }
+            #endregion
+            return Json(ms);
+        }
+
+        /// <summary>
         /// 乡镇签收
         /// </summary>
         /// <returns></returns>
@@ -832,27 +911,30 @@ namespace ManagerSystem.MVC.Controllers
                 ms = JC_FIRETICKLINGCls.Manager(sw);
                 #region 发送短信通知
                 var fireinfo = JC_FIRECls.getModel(new JC_FIRE_SW { JCFID = jcfid });//获取火情信息
+                string hlyContent = "";
+                hlyContent = string.Format("现有热点：经度{0},纬度{1},起火时间{2},位于{3}区域,火点来源为{4},请速去核查！", fireinfo.JD, fireinfo.WD, Convert.ToDateTime(fireinfo.FIRETIME).ToString("yyyy-MM-dd HH:mm:ss"), fireinfo.ZQWZ, Enum.GetName(typeof(EnumType), int.Parse(fireinfo.FIREFROM)));
                 if (fireinfo != null)
                 {
-                    var fsarr = fsperson.Split(',');//护林员
-                    string hlyMobile = "";
-                    string hlyContent = "";
-                    hlyContent = string.Format("现有热点：经度{0},纬度{1},起火时间{2},位于{3}区域,火点来源为{4},请速去核查！", fireinfo.JD, fireinfo.WD, Convert.ToDateTime(fireinfo.FIRETIME).ToString("yyyy-MM-dd HH:mm:ss"), fireinfo.ZQWZ, Enum.GetName(typeof(EnumType), fireinfo.FIREFROM));
-                    foreach (var item in fsarr)
+                    if (!string.IsNullOrEmpty(fsperson)) 
                     {
-                        var phoneno = T_IPSFR_USERCls.getModel(new T_IPSFR_USER_SW { HID = item }).PHONE;
-                        if (!string.IsNullOrEmpty(phoneno))
+                        var fsarr = fsperson.Split(',');//护林员
+                        string hlyMobile = "";                       
+                        foreach (var item in fsarr)
                         {
-                            //todo sendmsg
-                            //Smsclient.SendMsg();
-                            hlyMobile += phoneno.Trim() + ",";
+                            var phoneno = T_IPSFR_USERCls.getModel(new T_IPSFR_USER_SW { HID = item }).PHONE;
+                            if (!string.IsNullOrEmpty(phoneno))
+                            {
+                                //todo sendmsg
+                                //Smsclient.SendMsg();
+                                hlyMobile += phoneno.Trim() + ",";
+                            }
                         }
-                    }
-                    var mmhly = Smsclient.SendMsg(hlyContent, hlyMobile);//护林员发送短信
-                    if (mmhly.Success == true)
-                    {
-                        ms = new Message(true, mmhly.Msg, "");
-                    }
+                        var mmhly = Smsclient.SendMsg(hlyContent, hlyMobile);//护林员发送短信
+                        if (mmhly.Success == true)
+                        {
+                            ms = new Message(true, mmhly.Msg, "");
+                        }
+                    }                  
                     if (!string.IsNullOrEmpty(xgperson))
                     {
                         string txlMobile = "";
@@ -903,7 +985,7 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("</td>");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td colspan=\"3\">相关人员：<input type=\"hidden\" id=\"hidxgtxt\"/><input type=\"text\"  readonly=\"readonly\" id=\"txtxgperson\" style=\"width:60%;\"/><a style=\"color: black;\" onClick=\"SelctTXLPeron(" + SystemCls.getCurUserOrgNo() + ")\"><em>人员选择</em></a></td>");
+            sb.AppendFormat("<td colspan=\"3\">相关人员：<input type=\"hidden\" id=\"hidxgtxt\"/><input type=\"text\"  readonly=\"readonly\" id=\"txtxgperson\" style=\"width:60%;\"/><a style=\"color: black;\" onClick=\"SelectOrgPerson(" + SystemCls.getCurUserOrgNo() + ")\"><em>人员选择</em></a></td>");
             sb.AppendFormat("</td>");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("</table>");
@@ -936,7 +1018,7 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("</td>");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td colspan=\"3\">相关人员：<input type=\"hidden\" id=\"hidxgtxt\"/><input type=\"text\"  readonly=\"readonly\" id=\"txtxgperson\" style=\"width:60%;\"/><a style=\"color: black;\" onClick=\"SelctTXLPeron(" + SystemCls.getCurUserOrgNo() + ")\"><em>人员选择</em></a></td>");
+            sb.AppendFormat("<td colspan=\"3\">相关人员：<input type=\"hidden\" id=\"hidxgtxt\"/><input type=\"text\"  readonly=\"readonly\" id=\"txtxgperson\" style=\"width:60%;\"/><a style=\"color: black;\" onClick=\"SelectOrgPerson(" + SystemCls.getCurUserOrgNo() + ")\"><em>人员选择</em></a></td>");
             sb.AppendFormat("</td>");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("</table>");
@@ -957,7 +1039,7 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("</td>");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>相关人员：<input type=\"hidden\" id=\"hidxgtxt\"/><input type=\"text\"  readonly=\"readonly\" id=\"txtxgperson\" style=\"width:60%;\"/><a style=\"color: black;\" onClick=\"SelctTXLPeron(" + SystemCls.getCurUserOrgNo() + ")\"><em>人员选择</em></a></td>");
+            sb.AppendFormat("<td>相关人员：<input type=\"hidden\" id=\"hidxgtxt\"/><input type=\"text\"  readonly=\"readonly\" id=\"txtxgperson\" style=\"width:60%;\"/><a style=\"color: black;\" onClick=\"SelectOrgPerson(" + SystemCls.getCurUserOrgNo() + ")\"><em>人员选择</em></a></td>");
             sb.AppendFormat("</td>");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("</table>");

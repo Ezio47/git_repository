@@ -1,6 +1,8 @@
 ﻿using DataBaseClassLibrary;
 using ManagerSystemModel;
 using ManagerSystemSearchWhereModel;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using PublicClassLibrary;
 using System;
 using System.Collections.Generic;
@@ -243,6 +245,221 @@ namespace ManagerSystemClassLibrary
                     result.Add(m);
             }
             return result;
+        }
+        #endregion
+
+        #region 组织机构联系人TREE
+        public static string GetOrgTree(string OrgNo)
+        {
+            JArray jObjects = new JArray();
+            string curUserOrg = SystemCls.getCurUserOrgNo();//获取当前登录用户的机构编码
+            if (string.IsNullOrEmpty(OrgNo) == false)
+                curUserOrg = OrgNo; 
+            var  dtOrg = BaseDT.T_SYS_ORG.getDT(new T_SYS_ORGSW { TopORGNO = curUserOrg, SYSFLAG = ConfigCls.getSystemFlag() });//获取当前登录用户有权限查看的单位
+
+            DataTable dtLink = BaseDT.T_SYS_ORG_LINK.getDT(new T_SYS_ORG_LINK_SW { });
+            DataTable dtVillagecommittee = BaseDT.T_SYS_ORG_CWH.getDT(new T_SYS_ORG_CWH_SW { });
+
+            //JObject root = new JObject 
+            //     { 
+            //      { "id", "1"+"|" + "1" }, 
+            //       { "text", "组织机构成员" } 
+            //     };
+            #region 市级用户
+            if (PublicCls.OrgIsShi(curUserOrg))
+            {
+                DataRow[] drOrg = dtOrg.Select("", "ORGNO");
+                //JArray childArrayroot = new JArray();
+                JObject root1 = new JObject 
+                   {   
+                   { "id", drOrg[0]["ORGNO"].ToString()}, 
+                   { "text", drOrg[0]["ORGNAME"].ToString()},
+                   {"treeType","1"},
+                   { "flag","" }
+                   };
+                //childArrayroot.Add(root1);
+                //root.Add("children", childArrayroot);
+                JArray childArray = new JArray();
+                DataRow[] drLink = dtLink.Select("BYORGNO = '" + curUserOrg + "'", "");
+                for (int i = 0; i < drLink.Length; i++)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendFormat("<font title={0}>", drLink[i]["PHONE"].ToString());
+                    sb.AppendFormat("{0}[{1}] </font>", drLink[i]["NAME"].ToString(), drLink[i]["USERJOB"].ToString());
+                    JObject roota = new JObject 
+                        { 
+                        { "id", drLink[i]["PHONE"].ToString()},
+                        { "text",sb.ToString() } ,
+                        { "flag",drLink[i]["NAME"].ToString() }, 
+                        { "phone",drLink[i]["PHONE"].ToString() }
+                        };
+                    childArray.Add(roota);
+                }
+                DataRow[] drOrgC = dtOrg.Select("SUBSTRING(ORGNO,1,4) = '" + curUserOrg.Substring(0, 4) + "' AND ORGNO<>'" + curUserOrg + "' and SUBSTRING(ORGNO,7,9)='000000000'", "");//获取所有县且〈〉市的
+                for (int i = 0; i < drOrgC.Length; i++)
+                {
+                    JObject rootb = new JObject
+                     {
+                         {"id",drOrgC[i]["ORGNO"].ToString()},//ORGNO
+                         {"text",drOrgC[i]["ORGNAME"].ToString()},
+                         {"flag","" }, 
+                         {"state","closed"},
+                     };
+                    childArray.Add(rootb);
+                }
+                root1.Add("children", childArray);
+                jObjects.Add(root1);
+            }
+
+            #endregion
+
+            #region 县级用户
+            else if (PublicCls.OrgIsXian(curUserOrg))
+            {
+                DataRow[] drOrg = dtOrg.Select("", "ORGNO");
+                //JArray childArrayroot = new JArray();
+                JObject root1 = new JObject 
+                  { 
+                   { "id", drOrg[0]["ORGNO"].ToString()}, 
+                   { "text", drOrg[0]["ORGNAME"].ToString() } ,
+                   { "flag","" }
+                  };
+                //childArrayroot.Add(root1);
+                //root.Add("children", childArrayroot);
+                JArray jObjectsC = new JArray();
+                DataRow[] drLink = dtLink.Select("BYORGNO = '" + curUserOrg + "'", "");
+                for (int i = 0; i < drLink.Length; i++)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendFormat("<font title={0}>", drLink[i]["PHONE"].ToString());
+                    sb.AppendFormat("{0}[{1}] </font>", drLink[i]["NAME"].ToString(), drLink[i]["USERJOB"].ToString());
+                    JObject rootc = new JObject
+                        { 
+                           { "id",drLink[i]["PHONE"].ToString()},
+                           { "text",sb.ToString() } ,
+                           { "flag",drLink[i]["NAME"].ToString() }, 
+                           { "phone",drLink[i]["PHONE"].ToString() }
+                        };
+                    jObjectsC.Add(rootc);
+                    if (string.IsNullOrEmpty(OrgNo) == false)//异步加载，不显示县名
+                    {
+                        jObjects.Add(rootc);
+                    }
+                }
+                DataRow[] drOrgC = dtOrg.Select("SUBSTRING(ORGNO,1,6) = '" + curUserOrg.Substring(0, 6) + "' AND ORGNO<>'" + curUserOrg + "' and SUBSTRING(ORGNO,10,6)='000000'", ""); //获取所有镇且〈〉县的
+                for (int i = 0; i < drOrgC.Length; i++)
+                {
+                    JObject rootd = new JObject
+                        {
+                         {"id",drOrgC[i]["ORGNO"].ToString()},//ORGNO
+                         {"text",drOrgC[i]["ORGNAME"].ToString()},
+                         {"flag","" }, 
+                         {"state","closed"} ,
+                       };
+                    jObjectsC.Add(rootd);
+                    if (string.IsNullOrEmpty(OrgNo) == false)//异步加载，不显示县名
+                    {
+                        jObjects.Add(rootd);
+                    }
+                }
+                if (string.IsNullOrEmpty(OrgNo))//县级用户登录
+                {
+                    jObjects.Add(root1);
+                    root1.Add("children", jObjectsC);
+                }
+            }
+            #endregion
+
+            #region 乡镇级用户
+            else if (PublicCls.OrgIsZhen(curUserOrg))
+            {
+                DataRow[] drOrg = dtOrg.Select("", "ORGNO");
+                //JArray childArrayroot = new JArray();
+                JObject root1 = new JObject 
+                  { 
+                   { "id", drOrg[0]["ORGNO"].ToString()}, 
+                   { "text", drOrg[0]["ORGNAME"].ToString() } ,
+                   { "flag","" }, 
+                   {"treeType","1"},
+                  };
+                //childArrayroot.Add(root1);
+                //root.Add("children", childArrayroot);
+                JArray childArray = new JArray();
+                DataRow[] drLink = dtLink.Select("BYORGNO = '" + curUserOrg + "'", "");
+                for (int i = 0; i < drLink.Length; i++)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendFormat("<font title={0}>", drLink[i]["PHONE"].ToString());
+                    sb.AppendFormat("{0}[{1}] </font>", drLink[i]["NAME"].ToString(), drLink[i]["USERJOB"].ToString());
+                    JObject rootf = new JObject
+                        { 
+                           { "id", drLink[i]["PHONE"].ToString()},
+                           { "text",sb.ToString() } ,
+                           { "flag",drLink[i]["NAME"].ToString() }, 
+                           { "phone",drLink[i]["PHONE"].ToString() }
+                        };
+                    childArray.Add(rootf);
+                    if (string.IsNullOrEmpty(OrgNo) == false)//异步加载
+                    {
+                        jObjects.Add(rootf);
+                    }
+                }
+                DataRow[] drVillagecommittee = dtVillagecommittee.Select("BYORGNO = '" + curUserOrg + "'", "");//获取乡下面的村委会
+                for (int i = 0; i < drVillagecommittee.Length; i++)
+                {
+                    JObject rootg = new JObject
+                     {
+                         {"id",drVillagecommittee[i]["CWHID"].ToString()},//ORGNO
+                         {"text",drVillagecommittee[i]["CWHNAME"].ToString()},
+                         {"state","closed"}
+                     };
+                    childArray.Add(rootg);
+                    if (string.IsNullOrEmpty(OrgNo) == false)//异步加载
+                    {
+                        jObjects.Add(rootg);
+                    }
+                }
+                if (string.IsNullOrEmpty(OrgNo))//乡镇用户登录
+                {
+                    //jObjects.Add(root);
+                    root1.Add("children", childArray);
+                }
+            }
+            else
+            {
+                JArray childArray = new JArray();
+                DataRow[] drLink = dtLink.Select("BYORGNO = '" + curUserOrg + "'", "");
+                for (int i = 0; i < drLink.Length; i++)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendFormat("<font title={0}>", drLink[i]["PHONE"].ToString());
+                    if (string.IsNullOrEmpty(drLink[i]["UNITNAME"].ToString()) == false)
+                    {
+                        sb.AppendFormat("{0}[{1}][{2}] </font>", drLink[i]["NAME"].ToString(), drLink[i]["USERJOB"].ToString(), drLink[i]["UNITNAME"].ToString());
+                    }
+                    else
+                    {
+                        sb.AppendFormat("{0}[{1}][{2}] </font>", drLink[i]["NAME"].ToString(), drLink[i]["USERJOB"].ToString(), "--");
+                    }
+                    JObject rootf = new JObject
+                        { 
+                           { "id", drLink[i]["PHONE"].ToString()},
+                           { "text",sb.ToString() } ,
+                           { "flag",drLink[i]["NAME"].ToString() }, 
+                           { "phone",drLink[i]["PHONE"].ToString() }
+                        };
+                    childArray.Add(rootf);
+                    if (string.IsNullOrEmpty(OrgNo) == false)//异步加载
+                    {
+                        jObjects.Add(rootf);
+                    }
+                }
+            }
+            #endregion
+
+            dtOrg.Clear();
+            dtOrg.Dispose();
+            return JsonConvert.SerializeObject(jObjects);
         }
         #endregion
 

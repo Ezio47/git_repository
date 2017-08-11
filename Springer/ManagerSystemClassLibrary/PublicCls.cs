@@ -227,7 +227,7 @@ namespace ManagerSystemClassLibrary
                 return false;
             if (str.Length != 15)
                 return false;
-            if (str.Substring(9, 6) == "000000"  && str.Substring(6, 9) != "000000000")
+            if (str.Substring(9, 6) == "000000" && str.Substring(6, 9) != "000000000")
                 return true;
             return false;
         }
@@ -322,6 +322,17 @@ namespace ManagerSystemClassLibrary
                 return str3;
             else
                 return str3;
+        }
+
+        /// <summary>
+        /// 获取图层渐进名称
+        /// </summary>
+        /// <param name="LAYERCODE">图层编码</param>
+        /// <returns></returns>
+        public static string getLAYERNameClass(string LAYERCODE)
+        {
+            int lenth = LAYERCODE.Length / 2;
+            return "padding-left:" + ((lenth - 1) * 20).ToString() + "px;"; ;
         }
 
         /// <summary>

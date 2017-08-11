@@ -1,56 +1,48 @@
 ﻿@{
-    //ViewBag.Title =  "首页";
     Layout = "~/Views/Shared/_LayoutIndex.cshtml";
-    // Layout = null;
 }
 @section Header{
 }
 <div class="easyui-layout" data-options="fit:true" style=" border:0;">
-
-
-    <div data-options="region:'west'" title="" style=" width:220px">        
+    <div data-options="region:'west'" title="" style=" width:220px">
         @Html.Raw(@ViewBag.PageLeftMenu)
     </div>
+
     <div data-options="region:'center'" title="" style=" border: none;">
-
         <div class="easyui-layout" data-options="fit:true" style=" border:0;">
-
-
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
                 <div class="divOP">
                     <div class="home">
                         主题:<input id="tbxEMAILTITLE" type="text" style="width:200px" value="@ViewBag.EMAILTITLE" />
-
-
                         处理结果：<select id="tbxEMAILRECEIVESTATUS" style="width:90px">
                             <option value="0,1">全部</option>
                             <option value="0">未读</option>
                             <option value="1">已读</option>
                         </select>
-                        <input type="button" value="搜索" onclick="query()" class="btnSearchCss" /> 
+                        <input type="button" value="搜索" onclick="query()" class="btnSearchCss" />
                         <input type="button" value="删除" onclick="Manager('SendMdy')" class="btnDelCss" />
                     </div>
                 </div>
             </div>
+
             <div data-options="region:'center'" title="" class="LayoutCenterBG">
                 <div class="divTable">
                     @Html.Raw(@ViewBag.EmailRecieveList)
                 </div>
             </div>
+
             <div data-options="region:'south'" title="" style=" height:40px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
                 @Html.Raw(@ViewBag.PagerInfo)
             </div>
-
         </div>
     </div>
-
 </div>
+
 <script type="text/javascript">
-    //$('#tbxEMAILRECEIVESTATUS').val()= '@ViewBag.EMAILRECEIVESTATUS';
     document.getElementById("tbxEMAILRECEIVESTATUS").value = '@ViewBag.EMAILRECEIVESTATUS';
     function query() {
         $.ajax({
-            url: '/Email/EmailRecieveListQuery', 
+            url: '/Email/EmailRecieveListQuery',
             data: {
                 PageSize: document.getElementById("selPageSize").value,
                 Page: document.getElementById("selPage").value,
@@ -62,48 +54,38 @@
                 var ar = eval('(' + data + ')');
                 if (ar.Success) {
                     window.location.assign(ar.Url);
-
                 }
                 else {
-                    layer.msg(ar.Msg);
+                    layer.msg(ar.Msg, { icon: 5 });
                 }
             },
             error: function (err, ioArgs) {
-                layer.msg('登录异常');
+                layer.msg('系统异常!', { icon: 5 });
             }
         });
     }
+
     function Manager() {
-        //var check_val = [];
-        //$("input[name='chk1']:checkbox").each(function () {
-        //    if ($(this).is(':checked')) {
-        //        check_val.push($(this).val());
-        //    }
-        //});
         var check_val = $("input:checkbox[name='chk1']:checked").map(function (index, elem) {
             return $(elem).val();
         }).get().join(',');
         $.ajax({
             url: '/Email/EmailRECManger',
-            data: {
-                ERID: check_val,
-                Method: 'SendMdy',
-                @*returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)',*@
-            },
+            data: { ERID: check_val, Method: 'SendMdy' },
             type: 'post',
             success: function (data) {
                 var ar = eval('(' + data + ')');
                 if (ar.Success) {
-                    if (confirm(ar.Msg + ' 请返回！')) {
+                    if (confirm(ar.Msg + ' 请返回?')) {
                         window.location.reload();
                     }
                 }
                 else {
-                    layer.msg(ar.Msg);
+                    layer.msg(ar.Msg, { icon: 5 });
                 }
             },
             error: function (err, ioArgs) {
-                layer.msg('保存异常');
+                layer.msg('保存异常!', { icon: 5 });
             }
         });
     }

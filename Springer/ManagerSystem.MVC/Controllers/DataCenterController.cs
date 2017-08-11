@@ -1117,7 +1117,7 @@ namespace ManagerSystem.MVC.Controllers
         }
 
         /// <summary>
-        /// 仓库管理首页-展示盘点的页面
+        /// 仓库管理
         /// </summary>
         /// <returns></returns>
         public ActionResult DEPTlist()
@@ -1133,6 +1133,24 @@ namespace ManagerSystem.MVC.Controllers
             //ViewBag.isinport = (SystemCls.isRight("011008003")) ? "1" : "0";
             ViewBag.repository = DC_REPOSITORYCls.getSelectOption(new DC_REPOSITORY_SW { });
             ViewBag.isAdd = (SystemCls.isRight("011008004")) ? "1" : "0";
+            return View();
+        }
+        /// <summary>
+        /// 增删改页面
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult DEPTlistMan()
+        {
+            pubViewBag("011008", "011008", "");
+            if (ViewBag.isPageRight == false)
+                return View();
+            ViewBag.ID = Request.Params["ID"];
+            //操作方法　Add Mdy Del
+            ViewBag.T_Method = Request.Params["Method"];
+            ViewBag.JD = Request.Params["JD"];
+            ViewBag.WD = Request.Params["WD"];
+            if (string.IsNullOrEmpty(ViewBag.T_Method))
+                ViewBag.T_Method = "Add";
             return View();
         }
         /// <summary>
@@ -1197,7 +1215,7 @@ namespace ManagerSystem.MVC.Controllers
                 sb.AppendFormat("<a href=\"#\" onclick=\"See('{0}','{1}')\" title='查看' class=\"searchBox_01 LinkSee\">查看</a>", s.DCREPOSITORYID, "DCREPOSITORY");
                 if (SystemCls.isRight("011008005") == true)
                 {
-                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}','{1}')\" title='编辑' class=\"searchBox_01 LinkMdy\">修改</a>", s.DCREPOSITORYID, page);
+                    sb.AppendFormat("<a href=\"#\" onclick=\"Mdy('Mdy','{0}','{1}')\" title='编辑' class=\"searchBox_01 LinkMdy\">修改</a>", s.DCREPOSITORYID, page);
                 }
                 if (SystemCls.isRight("011008002") == true)
                 {
@@ -1211,7 +1229,7 @@ namespace ManagerSystem.MVC.Controllers
                 sb.AppendFormat("<a href=\"#\" onclick=\"Detail('{0}','{1}')\" title='明细查询' class=\"searchBox_01 LinkMdy\">明细查询</a>", s.DCREPOSITORYID, s.NAME);
                 if (SystemCls.isRight("011008006") == true)
                 {
-                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Del','{0}','{1}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", s.DCREPOSITORYID, page);
+                    sb.AppendFormat("<a href=\"#\" onclick=\"Del('Del','{0}','{1}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", s.DCREPOSITORYID, page);
                 }
                 sb.AppendFormat("    </td>");
                 sb.AppendFormat("</tr>");
@@ -1464,6 +1482,27 @@ namespace ManagerSystem.MVC.Controllers
             return View();
         }
         /// <summary>
+        /// 车辆增删改页面
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult CarManIndex()
+        {
+            pubViewBag("011009", "011009", "");
+            if (ViewBag.isPageRight == false)
+                return View();
+            //主键id
+            ViewBag.ID = Request.Params["ID"];
+            //操作方法　Add Mdy Del
+            ViewBag.T_Method = Request.Params["Method"];
+            ViewBag.JD = Request.Params["JD"];
+            ViewBag.WD = Request.Params["WD"];
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = SystemCls.getCurUserOrgNo() });
+            //ViewBag.cartype = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "33", isShowAll = "1" });
+            ViewBag.cartypeadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "33" });
+            
+            return View();
+        }
+        /// <summary>
         /// 获取查看和修改前的数据
         /// </summary>
         /// <returns></returns>
@@ -1587,9 +1626,9 @@ namespace ManagerSystem.MVC.Controllers
                 }
                 sb.AppendFormat("<a href=\"#\" onclick=\"See('{0}','{1}')\" class=\"searchBox_01 LinkSee\">查看</a>", s.DC_CAR_ID, "DC_CAR");
                 if (SystemCls.isRight("011009003") == true)
-                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}','{1}')\" title='编辑' class=\"searchBox_01 LinkMdy\">修改</a>", s.DC_CAR_ID, page);
+                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}','{1}','{2}')\" title='编辑' class=\"searchBox_01 LinkMdy\">修改</a>", s.DC_CAR_ID, s.JD, s.WD);
                 if (SystemCls.isRight("011009004") == true)
-                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Del','{0}','{1}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", s.DC_CAR_ID, page);
+                    sb.AppendFormat("<a href=\"#\" onclick=\"Del('Del','{0}','{1}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", s.DC_CAR_ID,page);
                 sb.AppendFormat("    </td>");
                 sb.AppendFormat("</tr>");
                 i++;
@@ -1643,7 +1682,7 @@ namespace ManagerSystem.MVC.Controllers
                         //DC_CARCls.CarUpload(savePath);
                         HSSFWorkbook hssfworkbook;
                         FileStream file = new FileStream(savePath, FileMode.Open, FileAccess.Read);
-                         hssfworkbook = new HSSFWorkbook(file);
+                        hssfworkbook = new HSSFWorkbook(file);
                         NPOI.SS.UserModel.ISheet sheet = hssfworkbook.GetSheetAt(0);
                         int rowCount = sheet.LastRowNum;
                         for (int i = (sheet.FirstRowNum + 1); i <= rowCount; i++)
@@ -2129,7 +2168,7 @@ namespace ManagerSystem.MVC.Controllers
                     {
                         return Content(@"<script>alert('上传文件模板错误，请确认后再上传！');history.go(-1);</script>");
                     }
-                
+
                 }
                 else
                 {
@@ -2137,7 +2176,7 @@ namespace ManagerSystem.MVC.Controllers
                 }
             }
             return Content("<script>alert('导入成功');window.location.href='EQUIP_NEWIndex';</script>");
-        
+
         }
         #endregion
         #endregion
@@ -2158,6 +2197,25 @@ namespace ManagerSystem.MVC.Controllers
             ViewBag.structure = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "34", isShowAll = "1" });
             ViewBag.structureadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "34" });
             ViewBag.isAdd = (SystemCls.isRight("016001002")) ? "1" : "0";
+            return View();
+        }
+        /// <summary>
+        /// 增删改页面
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult CAMPManIndex()
+        {
+            pubViewBag("016001", "016001", "");
+            if (ViewBag.isPageRight == false)
+                return View();
+            ViewBag.structureadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "34" });
+            ViewBag.ID = Request.Params["ID"];
+            //操作方法　Add Mdy Del
+            ViewBag.T_Method = Request.Params["Method"];
+            ViewBag.JD = Request.Params["JD"];
+            ViewBag.WD = Request.Params["WD"];
+            if (string.IsNullOrEmpty(ViewBag.T_Method))
+                ViewBag.T_Method = "Add";
             return View();
         }
         /// <summary>
@@ -2321,9 +2379,9 @@ namespace ManagerSystem.MVC.Controllers
                 sb.AppendFormat("<a href=\"#\" onclick=\"See('{0}','{1}')\" class=\"searchBox_01 LinkSee\">查看</a>", s.DC_UTILITY_CAMP_ID, "DC_UTILITY_CAMP");
                 sb.AppendFormat("<a href=\"#\" onclick=\"Photo('{0}','{1}')\" title='照片' class=\"searchBox_01 LinkPhoto\">照片</a>", s.DC_UTILITY_CAMP_ID, "DC_UTILITY_CAMP");
                 if (SystemCls.isRight("016001003") == true)
-                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}','{1}')\" title='编辑' class=\"searchBox_01 LinkMdy\">修改</a>", s.DC_UTILITY_CAMP_ID, page);
+                    sb.AppendFormat("<a href=\"#\" onclick=\"Mdy('Mdy','{0}','{1}')\" title='编辑' class=\"searchBox_01 LinkMdy\">修改</a>", s.DC_UTILITY_CAMP_ID, page);
                 if (SystemCls.isRight("016001004") == true)
-                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Del','{0}','{1}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", s.DC_UTILITY_CAMP_ID, page);
+                    sb.AppendFormat("<a href=\"#\" onclick=\"Del('Del','{0}','{1}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", s.DC_UTILITY_CAMP_ID, page);
                 sb.AppendFormat("    </td>");
                 sb.AppendFormat("</tr>");
                 i++;
@@ -2376,7 +2434,7 @@ namespace ManagerSystem.MVC.Controllers
                         //DC_UTILITY_CAMPCls.CAMPUpload(savePath);
                         HSSFWorkbook hssfworkbook;
                         FileStream file = new FileStream(savePath, FileMode.Open, FileAccess.Read);
-                            hssfworkbook = new HSSFWorkbook(file);
+                        hssfworkbook = new HSSFWorkbook(file);
                         NPOI.SS.UserModel.ISheet sheet = hssfworkbook.GetSheetAt(0);
                         int rowCount = sheet.LastRowNum;
                         for (int i = (sheet.FirstRowNum + 1); i <= rowCount; i++)
@@ -2401,7 +2459,7 @@ namespace ManagerSystem.MVC.Controllers
                             if (string.IsNullOrEmpty(m.ORGNOS))
                             {
                                 return Content(@"<script>alert('表格中组织机构名称错误，请确认后再上传！');history.go(-1);</script>");
-                                
+
                             }
                             m.opMethod = "Add";
                             m.NAME = arr[2];
@@ -2487,7 +2545,26 @@ namespace ManagerSystem.MVC.Controllers
             return View();
         }
         /// <summary>
-        /// 
+        /// 增删改页面
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult OVERWATCHManIndex()
+        {
+            pubViewBag("016002", "016002", "");
+            if (ViewBag.isPageRight == false)
+                return View();
+            ViewBag.structureadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "34" });
+            ViewBag.ID = Request.Params["ID"];
+            //操作方法　Add Mdy Del
+            ViewBag.T_Method = Request.Params["Method"];
+            ViewBag.JD = Request.Params["JD"];
+            ViewBag.WD = Request.Params["WD"];
+            if (string.IsNullOrEmpty(ViewBag.T_Method))
+                ViewBag.T_Method = "Add";
+            return View();
+        }
+        /// <summary>
+        /// 获取记录
         /// </summary>
         /// <returns></returns>
         public ActionResult GetOVERWATCHjson()
@@ -2644,9 +2721,9 @@ namespace ManagerSystem.MVC.Controllers
                 sb.AppendFormat("<a href=\"#\" onclick=\"See('{0}','{1}')\" class=\"searchBox_01 LinkSee\">查看</a>", s.DC_UTILITY_OVERWATCH_ID, "DC_UTILITY_OVERWATCH");
                 sb.AppendFormat("<a href=\"#\" onclick=\" Photo('{0}','{1}')\" title='照片管理' class=\"searchBox_01 LinkPhoto\">照片</a>", s.DC_UTILITY_OVERWATCH_ID, "DC_UTILITY_OVERWATCH");
                 if (SystemCls.isRight("016002003") == true)
-                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}','{1}')\" title='编辑' class=\"searchBox_01 LinkMdy\">修改</a>", s.DC_UTILITY_OVERWATCH_ID, page);
+                    sb.AppendFormat("<a href=\"#\" onclick=\"Mdy('Mdy','{0}','{1}')\" title='编辑' class=\"searchBox_01 LinkMdy\">修改</a>", s.DC_UTILITY_OVERWATCH_ID, page);
                 if (SystemCls.isRight("016002004") == true)
-                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Del','{0}','{1}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", s.DC_UTILITY_OVERWATCH_ID, page);
+                    sb.AppendFormat("<a href=\"#\" onclick=\"Del('Del','{0}','{1}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", s.DC_UTILITY_OVERWATCH_ID, page);
                 sb.AppendFormat("    </td>");
                 sb.AppendFormat("</tr>");
                 i++;
@@ -2698,9 +2775,9 @@ namespace ManagerSystem.MVC.Controllers
                         File.SaveAs(savePath);
                         //DC_UTILITY_OVERWATCHCls.OVERWATCHUpload(savePath);
                         HSSFWorkbook hssfworkbook;
-                        
-                            FileStream file = new FileStream(savePath, FileMode.Open, FileAccess.Read);
-                            hssfworkbook = new HSSFWorkbook(file);
+
+                        FileStream file = new FileStream(savePath, FileMode.Open, FileAccess.Read);
+                        hssfworkbook = new HSSFWorkbook(file);
                         NPOI.SS.UserModel.ISheet sheet = hssfworkbook.GetSheetAt(0);
                         int rowCount = sheet.LastRowNum;
                         for (int i = (sheet.FirstRowNum + 1); i <= rowCount; i++)
@@ -2817,6 +2894,31 @@ namespace ManagerSystem.MVC.Controllers
             ViewBag.positionadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "53" });
             ViewBag.isAdd = (SystemCls.isRight("016003002")) ? "1" : "0";//除了规划生物隔离带的添加权限
             ViewBag.isAddplan = (SystemCls.isRight("016003005")) ? "1" : "0";//规划生物隔离带的添加权限
+            return View();
+        }
+        /// <summary>
+        /// 增删改
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult ISOLATIONSTRIPManIndex()
+        {
+            pubViewBag("016003", "016003", "");
+            if (ViewBag.isPageRight == false)
+                return View();
+            ViewBag.isolationtypeadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "35" });
+            ViewBag.usestateadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "36" });
+            ViewBag.managerstateadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "37" });
+            ViewBag.treetypeadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "52" });
+            ViewBag.positionadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "53" });
+            ViewBag.isAdd = (SystemCls.isRight("016003002")) ? "1" : "0";
+            ViewBag.isAddplan = (SystemCls.isRight("016003005")) ? "1" : "0";//规划生物隔离带的添加权限
+            ViewBag.ID = Request.Params["ID"];
+            //操作方法　Add Mdy Del
+            ViewBag.T_Method = Request.Params["Method"];
+            ViewBag.JD = Request.Params["JD"];
+            ViewBag.WD = Request.Params["WD"];
+            if (string.IsNullOrEmpty(ViewBag.T_Method))
+                ViewBag.T_Method = "Add";
             return View();
         }
         /// <summary>
@@ -3113,17 +3215,17 @@ namespace ManagerSystem.MVC.Controllers
                 if (s.ISOLATIONTYPE != "5")
                 {
                     if (SystemCls.isRight("016003003") == true)
-                        sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}','{1}')\" title='编辑' class=\"searchBox_01 LinkMdy\">修改</a>", s.DC_UTILITY_ISOLATIONSTRIP_ID, page);
+                        sb.AppendFormat("<a href=\"#\" onclick=\"Mdy('Mdy','{0}','{1}')\" title='编辑' class=\"searchBox_01 LinkMdy\">修改</a>", s.DC_UTILITY_ISOLATIONSTRIP_ID, page);
 
                     if (SystemCls.isRight("016003004") == true)
-                        sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Del','{0}','{1}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", s.DC_UTILITY_ISOLATIONSTRIP_ID, page);
+                        sb.AppendFormat("<a href=\"#\" onclick=\"Del('Del','{0}','{1}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", s.DC_UTILITY_ISOLATIONSTRIP_ID, page);
                 }
                 else
                 {
                     if (SystemCls.isRight("016003006") == true)
-                        sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}','{1}')\" title='编辑' class=\"searchBox_01 LinkMdy\">修改</a>", s.DC_UTILITY_ISOLATIONSTRIP_ID, page);
+                        sb.AppendFormat("<a href=\"#\" onclick=\"Mdy('Mdy','{0}','{1}')\" title='编辑' class=\"searchBox_01 LinkMdy\">修改</a>", s.DC_UTILITY_ISOLATIONSTRIP_ID, page);
                     if (SystemCls.isRight("016003007") == true)
-                        sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Del','{0}','{1}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", s.DC_UTILITY_ISOLATIONSTRIP_ID, page);
+                        sb.AppendFormat("<a href=\"#\" onclick=\"Del('Del','{0}','{1}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", s.DC_UTILITY_ISOLATIONSTRIP_ID, page);
                 }
                 sb.AppendFormat("    </td>");
                 sb.AppendFormat("</tr>");
@@ -3179,10 +3281,10 @@ namespace ManagerSystem.MVC.Controllers
                         HSSFWorkbook hssfworkbook;
 
                         FileStream file = new FileStream(savePath, FileMode.Open, FileAccess.Read);
-                            
-                                hssfworkbook = new HSSFWorkbook(file);
-                            
-                       
+
+                        hssfworkbook = new HSSFWorkbook(file);
+
+
 
                         NPOI.SS.UserModel.ISheet sheet = hssfworkbook.GetSheetAt(0);
                         int rowCount = sheet.LastRowNum;
@@ -3231,7 +3333,7 @@ namespace ManagerSystem.MVC.Controllers
                             {
                                 m.ISOLATIONTYPE = "4";
                             }
-                             else if (arr[1].Trim() == "规划生物隔离带")
+                            else if (arr[1].Trim() == "规划生物隔离带")
                             {
                                 m.ISOLATIONTYPE = "5";
                             }
@@ -3310,6 +3412,30 @@ namespace ManagerSystem.MVC.Controllers
             ViewBag.fireusetype = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "39", isShowAll = "1" });
             ViewBag.fireusetypeadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "39" });
             ViewBag.isAdd = (SystemCls.isRight("016007002")) ? "1" : "0";
+            return View();
+        }
+        /// <summary>
+        /// 防火通道增删改页面
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult FIRECHANNELManIndex()
+        {
+            pubViewBag("016007", "016007", "");
+            if (ViewBag.isPageRight == false)
+                return View();
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = SystemCls.getCurUserOrgNo() });
+            ViewBag.usestateadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "36" });
+            ViewBag.managerstateadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "37" });
+            ViewBag.fireleveltypeadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "38" });
+            ViewBag.fireusetypeadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "39" });
+            ViewBag.isAdd = (SystemCls.isRight("016007002")) ? "1" : "0";
+            ViewBag.ID = Request.Params["ID"];
+            //操作方法　Add Mdy Del
+            ViewBag.T_Method = Request.Params["Method"];
+            ViewBag.JD = Request.Params["JD"];
+            ViewBag.WD = Request.Params["WD"];
+            if (string.IsNullOrEmpty(ViewBag.T_Method))
+                ViewBag.T_Method = "Add";
             return View();
         }
         ///<summary>
@@ -3515,9 +3641,9 @@ namespace ManagerSystem.MVC.Controllers
                 }
                 sb.AppendFormat("<a href=\"#\" onclick=\"See('{0}','{1}')\" class=\"searchBox_01 LinkSee\">查看</a>", s.DC_UTILITY_FIRECHANNEL_ID, "DC_UTILITY_FIRECHANNEL");
                 if (SystemCls.isRight("016007003") == true)
-                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}','{1}')\" title='编辑' class=\"searchBox_01 LinkMdy\">修改</a>", s.DC_UTILITY_FIRECHANNEL_ID, page);
+                    sb.AppendFormat("<a href=\"#\" onclick=\"Mdy('Mdy','{0}','{1}')\" title='编辑' class=\"searchBox_01 LinkMdy\">修改</a>", s.DC_UTILITY_FIRECHANNEL_ID, page);
                 if (SystemCls.isRight("016007004") == true)
-                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Del','{0}','{1}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", s.DC_UTILITY_FIRECHANNEL_ID, page);
+                    sb.AppendFormat("<a href=\"#\" onclick=\"Del('Del','{0}','{1}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", s.DC_UTILITY_FIRECHANNEL_ID, page);
                 sb.AppendFormat("    </td>");
                 sb.AppendFormat("</tr>");
                 i++;
@@ -3570,8 +3696,8 @@ namespace ManagerSystem.MVC.Controllers
                         File.SaveAs(savePath);
                         //DC_UTILITY_FIRECHANNELCls.FIRECHANNELUpload(savePath);
                         HSSFWorkbook hssfworkbook;
-                            FileStream file = new FileStream(savePath, FileMode.Open, FileAccess.Read);
-                                hssfworkbook = new HSSFWorkbook(file);
+                        FileStream file = new FileStream(savePath, FileMode.Open, FileAccess.Read);
+                        hssfworkbook = new HSSFWorkbook(file);
                         NPOI.SS.UserModel.ISheet sheet = hssfworkbook.GetSheetAt(0);
                         int rowCount = sheet.LastRowNum;
                         for (int i = (sheet.FirstRowNum + 1); i <= rowCount; i++)
@@ -3597,7 +3723,7 @@ namespace ManagerSystem.MVC.Controllers
                             if (string.IsNullOrEmpty(m.BYORGNO))
                             {
                                 return Content(@"<script>alert('表格中组织机构名称错误，请确认后再上传！');history.go(-1);</script>");
-                               
+
                             }
                             m.opMethod = "Add";
                             m.NAME = arr[1];
@@ -3702,6 +3828,30 @@ namespace ManagerSystem.MVC.Controllers
             ViewBag.propagandasteletype = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "40", isShowAll = "1" });
             ViewBag.propagandasteletypeadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "40" });
             ViewBag.isAdd = (SystemCls.isRight("016004002")) ? "1" : "0";
+            return View();
+        }
+        /// <summary>
+        /// 宣传碑牌增删改页面
+        /// </summary>
+        /// <returns></returns>
+
+        public ActionResult PROPAGANDASTELEManIndex()
+        {
+            pubViewBag("016004", "016004", "");
+            if (ViewBag.isPageRight == false)
+                return View();
+            ViewBag.structureadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "34" });
+            ViewBag.usestateadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "36" });
+            ViewBag.managerstateadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "37" });
+            ViewBag.propagandasteletypeadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "40" });
+            ViewBag.isAdd = (SystemCls.isRight("016004002")) ? "1" : "0";
+            ViewBag.ID = Request.Params["ID"];
+            //操作方法　Add Mdy Del
+            ViewBag.T_Method = Request.Params["Method"];
+            ViewBag.JD = Request.Params["JD"];
+            ViewBag.WD = Request.Params["WD"];
+            if (string.IsNullOrEmpty(ViewBag.T_Method))
+                ViewBag.T_Method = "Add";
             return View();
         }
         /// <summary>
@@ -3878,9 +4028,9 @@ namespace ManagerSystem.MVC.Controllers
                 }
                 sb.AppendFormat("<a href=\"#\" onclick=\"See('{0}','{1}')\" class=\"searchBox_01 LinkSee\">查看</a>", s.DC_UTILITY_PROPAGANDASTELE_ID, "DC_UTILITY_PROPAGANDASTELE");
                 if (SystemCls.isRight("016004003") == true)
-                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}','{1}')\" title='编辑' class=\"searchBox_01 LinkMdy\">修改</a>", s.DC_UTILITY_PROPAGANDASTELE_ID, page);
+                    sb.AppendFormat("<a href=\"#\" onclick=\"Mdy('Mdy','{0}','{1}')\" title='编辑' class=\"searchBox_01 LinkMdy\">修改</a>", s.DC_UTILITY_PROPAGANDASTELE_ID, page);
                 if (SystemCls.isRight("016004004") == true)
-                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Del','{0}','{1}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", s.DC_UTILITY_PROPAGANDASTELE_ID, page);
+                    sb.AppendFormat("<a href=\"#\" onclick=\"Del('Del','{0}','{1}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", s.DC_UTILITY_PROPAGANDASTELE_ID, page);
                 sb.AppendFormat("    </td>");
                 sb.AppendFormat("</tr>");
                 i++;
@@ -3934,9 +4084,9 @@ namespace ManagerSystem.MVC.Controllers
                         HSSFWorkbook hssfworkbook;
 
                         FileStream file = new FileStream(savePath, FileMode.Open, FileAccess.Read);
-                            
-                                hssfworkbook = new HSSFWorkbook(file);
-                           
+
+                        hssfworkbook = new HSSFWorkbook(file);
+
 
                         NPOI.SS.UserModel.ISheet sheet = hssfworkbook.GetSheetAt(0);
                         int rowCount = sheet.LastRowNum;
@@ -4087,6 +4237,24 @@ namespace ManagerSystem.MVC.Controllers
             ViewBag.communicationway = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "41", isShowAll = "1" });
             ViewBag.communicationwayadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "41" });
             ViewBag.isAdd = (SystemCls.isRight("016005002")) ? "1" : "0";
+            return View();
+        }
+        public ActionResult RELAYManIndex()
+        {
+            pubViewBag("016005", "016005", "");
+            if (ViewBag.isPageRight == false)
+                return View();
+            ViewBag.usestateadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "36" });
+            ViewBag.managerstateadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "37" });
+            ViewBag.communicationwayadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "41" });
+            ViewBag.isAdd = (SystemCls.isRight("016005002")) ? "1" : "0";
+            ViewBag.ID = Request.Params["ID"];
+            //操作方法　Add Mdy Del
+            ViewBag.T_Method = Request.Params["Method"];
+            ViewBag.JD = Request.Params["JD"];
+            ViewBag.WD = Request.Params["WD"];
+            if (string.IsNullOrEmpty(ViewBag.T_Method))
+                ViewBag.T_Method = "Add";
             return View();
         }
         /// <summary>
@@ -4265,9 +4433,9 @@ namespace ManagerSystem.MVC.Controllers
                 }
                 sb.AppendFormat("<a href=\"#\" onclick=\"See('{0}','{1}')\" class=\"searchBox_01 LinkSee\">查看</a>", s.DC_UTILITY_RELAY_ID, "DC_UTILITY_RELAY");
                 if (SystemCls.isRight("016005003") == true)
-                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}','{1}')\" title='编辑' class=\"searchBox_01 LinkMdy\">修改</a>", s.DC_UTILITY_RELAY_ID, page);
+                    sb.AppendFormat("<a href=\"#\" onclick=\"Mdy('Mdy','{0}','{1}')\" title='编辑' class=\"searchBox_01 LinkMdy\">修改</a>", s.DC_UTILITY_RELAY_ID, page);
                 if (SystemCls.isRight("016005004") == true)
-                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Del','{0}','{1}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", s.DC_UTILITY_RELAY_ID, page);
+                    sb.AppendFormat("<a href=\"#\" onclick=\"Del('Del','{0}','{1}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", s.DC_UTILITY_RELAY_ID, page);
                 sb.AppendFormat("    </td>");
                 sb.AppendFormat("</tr>");
                 i++;
@@ -4321,10 +4489,10 @@ namespace ManagerSystem.MVC.Controllers
                         HSSFWorkbook hssfworkbook;
 
                         FileStream file = new FileStream(savePath, FileMode.Open, FileAccess.Read);
-                            
-                                hssfworkbook = new HSSFWorkbook(file);
-                           
-                       
+
+                        hssfworkbook = new HSSFWorkbook(file);
+
+
 
                         NPOI.SS.UserModel.ISheet sheet = hssfworkbook.GetSheetAt(0);
                         int rowCount = sheet.LastRowNum;
@@ -4350,7 +4518,7 @@ namespace ManagerSystem.MVC.Controllers
                             if (string.IsNullOrEmpty(m.BYORGNO))
                             {
                                 return Content(@"<script>alert('表格中组织机构名称错误，请确认后再上传！');history.go(-1);</script>");
-                                
+
                             }
                             m.opMethod = "Add";
                             m.NAME = arr[2];
@@ -4467,6 +4635,30 @@ namespace ManagerSystem.MVC.Controllers
             //ViewBag.monicontent = getMONICONTENT(new T_SYS_DICTSW { DICTTYPEID = "43" });
 
             ViewBag.isAdd = (SystemCls.isRight("016006002")) ? "1" : "0";
+            return View();
+        }
+        /// <summary>
+        /// 监测站页面增删改
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult MONITORINGSTATIONManIndex()
+        {
+            pubViewBag("016006", "016006", "");
+            if (ViewBag.isPageRight == false)
+                return View();
+            ViewBag.usestateadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "36" });
+            ViewBag.managerstateadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "37" });
+            ViewBag.transfermodetypeadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "42" });
+            //ViewBag.monicontent = getMONICONTENT(new T_SYS_DICTSW { DICTTYPEID = "43" });
+
+            ViewBag.isAdd = (SystemCls.isRight("016006002")) ? "1" : "0";
+            ViewBag.ID = Request.Params["ID"];
+            //操作方法　Add Mdy Del
+            ViewBag.T_Method = Request.Params["Method"];
+            ViewBag.JD = Request.Params["JD"];
+            ViewBag.WD = Request.Params["WD"];
+            if (string.IsNullOrEmpty(ViewBag.T_Method))
+                ViewBag.T_Method = "Add";
             return View();
         }
         /// <summary>
@@ -4645,9 +4837,9 @@ namespace ManagerSystem.MVC.Controllers
                 }
                 sb.AppendFormat("<a href=\"#\" onclick=\"See('{0}','{1}')\"  class=\"searchBox_01 LinkSee\">查看</a>", s.DC_UTILITY_MONITORINGSTATION_ID, "DC_UTILITY_MONITORINGSTATION");
                 if (SystemCls.isRight("016006003") == true)
-                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}','{1}')\" title='编辑' class=\"searchBox_01 LinkMdy\">修改</a>", s.DC_UTILITY_MONITORINGSTATION_ID, page);
+                    sb.AppendFormat("<a href=\"#\" onclick=\"Mdy('Mdy','{0}','{1}')\" title='编辑' class=\"searchBox_01 LinkMdy\">修改</a>", s.DC_UTILITY_MONITORINGSTATION_ID, page);
                 if (SystemCls.isRight("016006004") == true)
-                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Del','{0}','{1}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", s.DC_UTILITY_MONITORINGSTATION_ID, page);
+                    sb.AppendFormat("<a href=\"#\" onclick=\"Del('Del','{0}','{1}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", s.DC_UTILITY_MONITORINGSTATION_ID, page);
                 sb.AppendFormat("    </td>");
                 sb.AppendFormat("</tr>");
                 i++;
@@ -4701,9 +4893,9 @@ namespace ManagerSystem.MVC.Controllers
                         HSSFWorkbook hssfworkbook;
 
                         FileStream file = new FileStream(savePath, FileMode.Open, FileAccess.Read);
-                            
-                                hssfworkbook = new HSSFWorkbook(file);
-                       
+
+                        hssfworkbook = new HSSFWorkbook(file);
+
                         NPOI.SS.UserModel.ISheet sheet = hssfworkbook.GetSheetAt(0);
                         int rowCount = sheet.LastRowNum;
                         for (int i = (sheet.FirstRowNum + 1); i <= rowCount; i++)
@@ -4728,7 +4920,7 @@ namespace ManagerSystem.MVC.Controllers
                             if (string.IsNullOrEmpty(m.BYORGNO))
                             {
                                 return Content(@"<script>alert('表格中组织机构名称错误，请确认后再上传！');history.go(-1);</script>");
-                             
+
                             }
                             m.opMethod = "Add";
                             m.NAME = arr[2];
@@ -4839,6 +5031,28 @@ namespace ManagerSystem.MVC.Controllers
             ViewBag.transfermodetype = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "42", isShowAll = "1" });
             ViewBag.transfermodetypeadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "42" });
             ViewBag.isAdd = (SystemCls.isRight("016008002")) ? "1" : "0";
+            return View();
+        }
+        /// <summary>
+        /// 因子采集页面增删改
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult FACTORCOLLECTSTATIONManIndex()
+        {
+            pubViewBag("016008", "016008", "");
+            if (ViewBag.isPageRight == false)
+                return View();
+            ViewBag.usestateadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "36" });
+            ViewBag.managerstateadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "37" });
+            ViewBag.transfermodetypeadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "42" });
+            ViewBag.isAdd = (SystemCls.isRight("016008002")) ? "1" : "0";
+            ViewBag.ID = Request.Params["ID"];
+            //操作方法　Add Mdy Del
+            ViewBag.T_Method = Request.Params["Method"];
+            ViewBag.JD = Request.Params["JD"];
+            ViewBag.WD = Request.Params["WD"];
+            if (string.IsNullOrEmpty(ViewBag.T_Method))
+                ViewBag.T_Method = "Add";
             return View();
         }
         /// <summary>
@@ -5017,9 +5231,9 @@ namespace ManagerSystem.MVC.Controllers
                 }
                 sb.AppendFormat("<a href=\"#\" onclick=\"See('{0}','{1}')\" class=\"searchBox_01 LinkSee\">查看</a>", s.DC_UTILITY_FACTORCOLLECTSTATION_ID, "DC_UTILITY_FACTORCOLLECTSTATION");
                 if (SystemCls.isRight("016008003") == true)
-                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}','{1}')\" title='编辑' class=\"searchBox_01 LinkMdy\">修改</a>", s.DC_UTILITY_FACTORCOLLECTSTATION_ID, page);
+                    sb.AppendFormat("<a href=\"#\" onclick=\"Mdy('Mdy','{0}','{1}')\" title='编辑' class=\"searchBox_01 LinkMdy\">修改</a>", s.DC_UTILITY_FACTORCOLLECTSTATION_ID, page);
                 if (SystemCls.isRight("016008004") == true)
-                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Del','{0}','{1}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", s.DC_UTILITY_FACTORCOLLECTSTATION_ID, page);
+                    sb.AppendFormat("<a href=\"#\" onclick=\"Del('Del','{0}','{1}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", s.DC_UTILITY_FACTORCOLLECTSTATION_ID, page);
                 sb.AppendFormat("    </td>");
                 sb.AppendFormat("</tr>");
                 i++;
@@ -5098,7 +5312,7 @@ namespace ManagerSystem.MVC.Controllers
                             if (string.IsNullOrEmpty(m.BYORGNO))
                             {
                                 return Content(@"<script>alert('表格中组织机构名称错误，请确认后再上传！');history.go(-1);</script>");
-                                
+
                             }
                             m.opMethod = "Add";
                             m.NAME = arr[2];
@@ -5215,6 +5429,30 @@ namespace ManagerSystem.MVC.Controllers
             ViewBag.burntypeadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "30" });
             ViewBag.treetype = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "31", isShowAll = "1" });
             ViewBag.treetypeadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "31" });
+            ViewBag.isAdd = (SystemCls.isRight("011003002")) ? "1" : "0";
+            return View();
+        }
+        /// <summary>
+        /// 增删改页面
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult RESOURCE_NEWManIndex()
+        {
+            pubViewBag("011003", "011003", "");
+            if (ViewBag.isPageRight == false)
+                return View();
+            ViewBag.ID = Request.Params["ID"];
+            //操作方法　Add Mdy Del
+            ViewBag.T_Method = Request.Params["Method"];
+            ViewBag.JD = Request.Params["JD"];
+            ViewBag.WD = Request.Params["WD"];
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = SystemCls.getCurUserOrgNo() });
+            ViewBag.agetypeadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "27" });
+            ViewBag.resourcetypeadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "28" });
+            ViewBag.originttypeadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "29" });
+            ViewBag.burntypeadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "30" });
+            ViewBag.treetypeadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "31" });
+
             ViewBag.isAdd = (SystemCls.isRight("011003002")) ? "1" : "0";
             return View();
         }
@@ -5434,9 +5672,9 @@ namespace ManagerSystem.MVC.Controllers
                 sb.AppendFormat("<a href=\"#\" onclick=\"See('{0}','{1}')\" class=\"searchBox_01 LinkSee\">查看</a>", s.DC_RESOURCE_NEW_ID, "DC_RESOURCE_NEW");
                 sb.AppendFormat("<a href=\"#\" onclick=\" Photo('{0}','{1}')\" title='照片管理' class=\"searchBox_01 LinkPhoto\">照片</a>", s.DC_RESOURCE_NEW_ID, "DC_RESOURCE_NEW");
                 if (SystemCls.isRight("011003003") == true)
-                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}','{1}')\" title='编辑' class=\"searchBox_01 LinkMdy\">修改</a>", s.DC_RESOURCE_NEW_ID, page);
+                    sb.AppendFormat("<a href=\"#\" onclick=\"Mdy('Mdy','{0}','{1}')\" title='编辑' class=\"searchBox_01 LinkMdy\">修改</a>", s.DC_RESOURCE_NEW_ID, page);
                 if (SystemCls.isRight("011003004") == true)
-                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Del','{0}','{1}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", s.DC_RESOURCE_NEW_ID, page);
+                    sb.AppendFormat("<a href=\"#\" onclick=\"Del('Del','{0}','{1}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", s.DC_RESOURCE_NEW_ID, page);
                 sb.AppendFormat("    </td>");
                 sb.AppendFormat("</tr>");
                 i++;
@@ -5491,7 +5729,7 @@ namespace ManagerSystem.MVC.Controllers
                         //DC_RESOURCE_NEWCls.RESOURCEUpload(savePath);
                         HSSFWorkbook hssfworkbook;
                         FileStream file = new FileStream(savePath, FileMode.Open, FileAccess.Read);
-                         hssfworkbook = new HSSFWorkbook(file);
+                        hssfworkbook = new HSSFWorkbook(file);
                         NPOI.SS.UserModel.ISheet sheet = hssfworkbook.GetSheetAt(0);
                         int rowCount = sheet.LastRowNum;
                         for (int i = (sheet.FirstRowNum + 1); i <= rowCount; i++)
@@ -5509,12 +5747,12 @@ namespace ManagerSystem.MVC.Controllers
                             {
                                 continue;
                             }
-                             m.ORGNOS = T_SYS_ORGCls.getCodeByName(arr[0]);
+                            m.ORGNOS = T_SYS_ORGCls.getCodeByName(arr[0]);
                             if (string.IsNullOrEmpty(m.ORGNOS))
                             {
-                                   return Content(@"<script>alert('表格中组织机构名称错误，请确认后再上传！');history.go(-1);</script>");
+                                return Content(@"<script>alert('表格中组织机构名称错误，请确认后再上传！');history.go(-1);</script>");
                             }
-                            m.opMethod= "Add";
+                            m.opMethod = "Add";
                             m.NAME = arr[2];
                             m.NUMBER = arr[3];
                             m.KINDTYPE = arr[8];
@@ -5645,6 +5883,22 @@ namespace ManagerSystem.MVC.Controllers
                 return View();
             ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = SystemCls.getCurUserOrgNo() });
             ViewBag.armytype = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "26", isShowAll = "1" });
+            ViewBag.armytypeadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "26" });
+            ViewBag.vdSex = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTFLAG = "性别" });
+            ViewBag.isAdd = (SystemCls.isRight("011002002")) ? "1" : "0";
+            return View();
+        }
+        public ActionResult ARMY_NEWManIndex()
+        {
+            pubViewBag("011002", "011002", "");
+            if (ViewBag.isPageRight == false)
+                return View();
+            ViewBag.ID = Request.Params["ID"];
+            //操作方法　Add Mdy Del
+            ViewBag.T_Method = Request.Params["Method"];
+            ViewBag.JD = Request.Params["JD"];
+            ViewBag.WD = Request.Params["WD"];
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = SystemCls.getCurUserOrgNo() });
             ViewBag.armytypeadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "26" });
             ViewBag.vdSex = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTFLAG = "性别" });
             ViewBag.isAdd = (SystemCls.isRight("011002002")) ? "1" : "0";
@@ -5806,9 +6060,9 @@ namespace ManagerSystem.MVC.Controllers
                 sb.AppendFormat("<a href=\"#\" onclick=\" GetArmyEQUIP('{0}')\" title='准备管理' class=\"searchBox_01 LinkEquip\">装备</a>", s.DC_ARMY_ID);
                 sb.AppendFormat("<a href=\"#\" onclick=\" Photo('{0}','{1}')\" title='照片管理' class=\"searchBox_01 LinkPhoto\">照片</a>", s.DC_ARMY_ID, "DC_ARMY");
                 if (SystemCls.isRight("011002003") == true)
-                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}','{1}')\" title='编辑' class=\"searchBox_01 LinkMdy\">修改</a>", s.DC_ARMY_ID, page);
+                    sb.AppendFormat("<a href=\"#\" onclick=\"Mdy('Mdy','{0}','{1}')\" title='编辑' class=\"searchBox_01 LinkMdy\">修改</a>", s.DC_ARMY_ID, page);
                 if (SystemCls.isRight("011002004") == true)
-                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Del','{0}','{1}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", s.DC_ARMY_ID, page);
+                    sb.AppendFormat("<a href=\"#\" onclick=\"Del('Del','{0}','{1}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", s.DC_ARMY_ID, page);
                 sb.AppendFormat("    </td>");
                 sb.AppendFormat("</tr>");
                 i++;
@@ -6400,6 +6654,7 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult getArchivallist()
         {
+            string JCFID = Request.Params["JCFID"];
             string PageSize = Request.Params["PageSize"];
             if (PageSize == "0")
                 PageSize = ConfigCls.getTableDefaultPageSize();
@@ -6410,10 +6665,6 @@ namespace ManagerSystem.MVC.Controllers
             string YEAR = Request.Params["YEAR"];
             string fireTime = !string.IsNullOrEmpty(YEAR) ? Convert.ToDateTime(YEAR + "-01-01 00:00:00").ToString() : "";
             string fireEndTime = !string.IsNullOrEmpty(YEAR) ? Convert.ToDateTime(YEAR + "-12-31 23:59:59").ToString() : "";
-            //DateTime startYear = new DateTime(int.Parse(YEAR), 1, 1);  //本年年初
-            //DateTime endYear = new DateTime(int.Parse(YEAR), 12, 31).AddDays(1).AddSeconds(-1);  //本年年末
-            //string fireTime = startYear.ToString();
-            //string fireEndTime = endYear.ToString();
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
             sb.AppendFormat("<thead>");
@@ -6431,8 +6682,9 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("<tbody>");
             int i = 0;
             int total = 0;
-            var result = JC_FIRECls.getModelList(new JC_FIRE_SW { BYORGNO = orgno, FIREFROM = firefrom, FIRETIME = fireTime, FIREENDTIME = fireEndTime, curPage = int.Parse(page), pageSize = int.Parse(PageSize), ISOUTFIRE = "1" }, out total);
-
+            List<JC_FIRE_Model> result = JC_FIRECls.getModelList(new JC_FIRE_SW { BYORGNO = orgno, FIREFROM = firefrom, FIRETIME = fireTime, FIREENDTIME = fireEndTime, curPage = int.Parse(page), pageSize = int.Parse(PageSize), ISOUTFIRE = "1", }, out total).ToList();
+           // var result = result1ist.FindAll(a => a.FIREFROM == "50" || a.HOTTYPE == "1" || a.HOTTYPE == "6" || a.HOTTYPE == "10");
+            var firerecord = FIRERECORD_FIREINFOCls.getListModel(new FIRERECORD_FIREINFO_SW { JCFID = JCFID });
             foreach (var s in result)
             {
                 //if (i % 2 == 0)
@@ -6470,8 +6722,22 @@ namespace ManagerSystem.MVC.Controllers
                 //sb.AppendFormat("<a href=\"#\" onclick=\"Feedback({0})\" title='反馈信息' class=\"searchBox_01 LinkFeedback\">反馈信息</a>", s.JCFID);
                 //sb.AppendFormat("<a href=\"#\" onclick=\"FireReport({0})\" title='火情报告' class=\"searchBox_01 LinkFireReport\">火情报告</a>", s.JCFID);
                 //sb.AppendFormat("<a href=\"#\" onclick=\"Manager('{0}','See1',{1})\" title='查看火情档案' class=\"searchBox_01 LinkFireReport\">查看火情档案</a>", s.FRFIID, s.JCFID);
-                sb.AppendFormat("<a href=\"#\" onclick=\"Manager('{0}','Mdy','{1}')\" title='修改' class=\"searchBox_01 LinkFireReport\">修改</a>", s.FRFIID, s.JCFID);
-                sb.AppendFormat("<a href=\"#\"onclick=\"Manager('{0}','Del','{1}')\" title='删除' class=\"searchBox_01 LinkFireReport\">删除</a>", s.FRFIID, s.JCFID);
+                string color = "";
+                foreach (var v in firerecord)
+                {
+                    if (s.JCFID == v.JCFID)
+                    {
+                        color = "white";
+                        break;
+                    }
+                    else
+                    {
+                        color = "red";
+                    }
+                }
+                sb.AppendFormat("<a href=\"#\" style=\"color:{2}\"onclick=\"Manager('{0}','Mdy','{1}')\" title='修改' class=\"searchBox_01 LinkFireReport\">修改</a>", s.FRFIID, s.JCFID, color);
+                if (SystemCls.isRight("011006001") == true)
+                    sb.AppendFormat("<a href=\"#\"onclick=\"Manager('{0}','Del','{1}')\" title='删除' class=\"searchBox_01 LinkFireReport\">删除</a>", s.FRFIID, s.JCFID);
                 sb.AppendFormat("  </td>");
                 sb.AppendFormat("</tr>");
                 i++;
@@ -7795,7 +8061,7 @@ namespace ManagerSystem.MVC.Controllers
 
         #region 地图数据标记
         /// <summary>
-        /// 山数据管理页面
+        /// 地图数据标记页面
         /// </summary>
         /// <returns></returns>
         public ActionResult MountainIndex()
@@ -7807,6 +8073,26 @@ namespace ManagerSystem.MVC.Controllers
             ViewBag.isAdd = (SystemCls.isRight("011011002")) ? "1" : "0";
             ViewBag.type = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "51", isShowAll = "1" });
             ViewBag.typeadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "51" });
+            return View();
+        }
+        /// <summary>
+        /// 地图数据标记增删改页面
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult MountainManIndex()
+        {
+            pubViewBag("011011", "011011", "");
+            if (ViewBag.isPageRight == false)
+                return View();
+            ViewBag.typeadd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "51" });
+            ViewBag.ID = Request.Params["ID"];
+            ViewBag.TYPE1 = Request.Params["TYPE1"];
+            //操作方法　Add Mdy Del
+            ViewBag.T_Method = Request.Params["Method"];
+            ViewBag.JD = Request.Params["JD"];
+            ViewBag.WD = Request.Params["WD"];
+            if (string.IsNullOrEmpty(ViewBag.T_Method))
+                ViewBag.T_Method = "Add";
             return View();
         }
         /// <summary>
@@ -8020,9 +8306,9 @@ namespace ManagerSystem.MVC.Controllers
                     sb.AppendFormat("<a href=\"#\" onclick=\"See('{0}','{1}')\" class=\"searchBox_01 LinkSee\">查看</a>", s.OBJECTID, "TD_POINTMARK");
                 }
                 if (SystemCls.isRight("011011003") == true)
-                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}','{1}','{2}')\" title='编辑' class=\"searchBox_01 LinkMdy\">修改</a>", s.OBJECTID, page, s.TYPE);
+                    sb.AppendFormat("<a href=\"#\" onclick=\"Mdy('Mdy','{0}','{1}','{2}')\" title='编辑' class=\"searchBox_01 LinkMdy\">修改</a>", s.OBJECTID, page, s.TYPE);
                 if (SystemCls.isRight("011011004") == true)
-                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Del','{0}','{1}','{2}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", s.OBJECTID, page, s.TYPE);
+                    sb.AppendFormat("<a href=\"#\" onclick=\"Del('Del','{0}','{1}','{2}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", s.OBJECTID, page, s.TYPE);
                 sb.AppendFormat("    </td>");
                 sb.AppendFormat("</tr>");
                 i++;

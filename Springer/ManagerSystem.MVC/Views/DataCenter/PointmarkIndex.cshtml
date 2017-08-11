@@ -188,7 +188,7 @@
     }
     function Manager(Method, ID, page) {
         if (Method == 'Del') {
-            if (confirm('确实要删除该内容吗?')) {
+            layer.confirm('确实要删除吗?', { icon: 3, title: '提示' }, function (index) {
                 $.ajax({
                     type: "Post",
                     url: "/DataCenter/POINTMARKManager",
@@ -210,7 +210,7 @@
                         }
                     }
                 });
-            }
+            });
         }
         else {
             if (Method == 'Mdy' || Method == 'See') {

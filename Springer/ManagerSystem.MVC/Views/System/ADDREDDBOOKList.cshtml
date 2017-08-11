@@ -1,25 +1,17 @@
 ﻿@{
-    //ViewBag.Title =  "首页";
     Layout = "~/Views/Shared/_LayOutIndex.cshtml";
-    // Layout = null;
 }
 @section Header{
-
     <script src="~/Scripts/SpringerCommonValidate.js"></script>
-
 }
+
 <div class="easyui-layout" data-options="fit:true" style=" border:0;">
-
-
     <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
-
         @Html.Raw(@ViewBag.PageLeftMenu)
     </div>
+
     <div data-options="region:'east'" title="" style=" width:380px; border: none; ">
-
         <div class="easyui-layout" data-options="fit:true" style=" border:0;">
-
-
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
                 <div class="divOP">
                     <div class="homeUL">
@@ -27,6 +19,7 @@
                     </div>
                 </div>
             </div>
+
             <div data-options="region:'center'" title="" style=" border: none;">
                 <div class="divMan">
                     <table cellpadding="0" cellspacing="0">
@@ -60,7 +53,6 @@
                                 <input type="button" value="删除" id="btnDel" onclick="Manager('Del')" style="display :none;" class="btnDelCss" />
                             </td>
                         </tr>
-
                         <tr class='row1'>
                             <td style="width:80px;">类别名称:</td>
                             <td><input id="tbxRTNAME" type="text" value="" style="width:180px;" /> </td>
@@ -71,8 +63,8 @@
                         </tr>
                         <tr class=''>
                             <td colspan="3" style="text-align:center;">
-                                <input type="button" value="增加" id="btnTAdd" onclick="ManagerT('Add')" class="btnAddCss" />
-                                <input type="button" value="增加子类" id="btnTAddS" onclick="ManagerT('AddS')" class="btnAddClassCss" />
+                                <input type="button" value="添加" id="btnTAdd" onclick="ManagerT('Add')" class="btnAddCss" />
+                                <input type="button" value="添加子类" id="btnTAddS" onclick="ManagerT('AddS')" class="btnAddClassCss" style="width:100px;" />
                                 <input type="button" value="修改" id="btnTMdy" onclick="ManagerT('Mdy')" class="btnMdyCss" />
                                 <input type="button" value="删除" id="btnTDel" onclick="ManagerT('Del')" class="btnMdyCss" />
                             </td>
@@ -81,8 +73,8 @@
                 </div>
             </div>
         </div>
-
     </div>
+
     <div data-options="region:'center'" title="" style=" border: none;">
         <div class="easyui-layout" data-options="fit:true" style=" border:0;">
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
@@ -102,6 +94,9 @@
 
 </div>
 <script type="text/javascript">
+    bindTree('', '');
+    clear();
+
     function bindTree(AddressID, typeID) {
         $('#tt').tree({
             url: '/System/AddressTreeget',
@@ -112,17 +107,14 @@
             cache: false,
             checkbox: false,
             onLoadSuccess: function (data) {
-                //$('#tt').tree('collapseAll');
                 if (AddressID != '') {
-                    //alert(AddressID);
                     var node = $('#tt').tree('find', AddressID);
                     if (node != null) {
                         $('#tt').tree('expandTo', node.target);
                     }
                 }
                 if (typeID != '') {
-                    //alert(typeID);
-                    var node = $('#tt').tree('find', typeID);//.tree('getChildren');
+                    var node = $('#tt').tree('find', typeID);
                     if (node != null) {
                         var children = $('#tt').tree('getChildren', node.target);
                         if (children.length > 0) {
@@ -135,22 +127,11 @@
                             $('#tt').tree('expandTo', node.target);
                         }
                     }
-                    //var node = $('#tt2').tree('getSelected');
-                    //if (node) {
-                    //    var children = $('#tt2').tree('getChildren', node.target);
-                    //}
-                    //else {
-                    //    var children = $('#tt2').tree('getChildren');
-                    //}
-                    //var s = '';
-                    //for (var i = 0; i < children.length; i++) {
-                    //    s += children[i].text + ',';
-                    //}
                 }
             },
             onClick: function (node) {
                 if ($.trim(node.id) == "") {
-                    layer.alert('node.id出错', { icon: 2 });
+                    layer.alert('node.id出错!', { icon: 2 });
                     return false;
                 }
                 else {
@@ -159,20 +140,20 @@
             }
         });
     }
-    bindTree('', '');
+
     function Manager(Method) {
         var t3 = $('#tbxPHONE').val();
         var t4 = $('#tbxTell').val();
         if ($.trim(t3) != "") {
             if (checkPhone(t3) == false) {
-                layer.msg('手机号码格式不正确！', { icon: 5 });
+                layer.msg('手机号码格式不正确!', { icon: 5 });
                 $('#tbxPHONE').focus();
                 return;
             }
         }
         if ($.trim(t4) != "") {
             if (checkTel(t4) == false) {
-                layer.msg('办公电话不正确！', { icon: 5 });
+                layer.msg('办公电话不正确!', { icon: 5 });
                 $('#tbxTell').focus();
                 return;
             }
@@ -198,14 +179,12 @@
             success: function (data, ioArgs) {
                 var ar = eval('(' + data + ')');
                 if (ar.Success) {
-                    layer.msg(ar.Msg);//   alert('保存成功!！');
-                    //$('#tt').tree('reload');
+                    layer.msg(ar.Msg, { icon: 6 });
                     if (Method == 'Mdy') {
                         bindTree(document.getElementById("tbxADID").value, '');
                     }
                     else {
                         bindTree('', 'typeid' + document.getElementById("tbxATID").value);
-                        //该类别ID为去除了typeid的，所以此处需要加上
                     }
                     clear();
                 }
@@ -214,14 +193,16 @@
                 }
             },
             error: function (err, ioArgs) {
-                layer.msg('保存异常', { icon: 5 });
+                layer.msg('保存异常!', { icon: 5 });
             }
         });
     }
+
     function ManagerT(Method) {
         if (Method == "Del") {
-            if (confirm('确实要删除该内容吗?') == false)
+            if (confirm('确实要删除该吗?') == false) {
                 return false;
+            }
         }
         var ratid = document.getElementById("tbxRATID").value;
         if (Method == "AddS") {
@@ -242,7 +223,7 @@
             success: function (data, ioArgs) {
                 var ar = eval('(' + data + ')');
                 if (ar.Success) {
-                    layer.msg(ar.Msg);
+                    layer.msg(ar.Msg, { icon: 6 });
                     clear();
                     bindTree('', 'typeid' + ratid);
                     $('#tt').tree('reload');
@@ -252,11 +233,11 @@
                 }
             },
             error: function (err, ioArgs) {
-                layer.msg('保存异常');
+                layer.msg('保存异常', { icon: 5 });
             }
         });
     }
-    clear();
+
     function clear() {
         document.getElementById('btnMdy').style.display = "none";
         document.getElementById('btnDel').style.display = "none";
@@ -275,6 +256,7 @@
         document.getElementById("tbxRTNAME").value = '';
         document.getElementById("tbxRTORDERBY").value = '';
     }
+
     function show(id, text, rid, flag) {
         clear();
         if (flag == "type") {
@@ -297,7 +279,9 @@
                         document.getElementById("tbxRTORDERBY").value = ar.ORDERBY;
                         document.getElementById("tbxRATID").value = ar.RATID;
                     }
-                    else layer.msg("erro", { icon: 5 });
+                    else {
+                        layer.msg("erro", { icon: 5 });
+                    }
                 },
                 error: function (err, ioArgs) {
                     layer.msg('登录异常', { icon: 5 });

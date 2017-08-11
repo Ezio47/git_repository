@@ -31,17 +31,17 @@ namespace ManagerSystemClassLibrary.BaseDT
             StringBuilder sb = new StringBuilder();
             if (PublicCls.OrgIsShi(sw.TopORGNO))
             {
-                sb.AppendFormat(" select count(substring(BYORGNO,1,6)+'000') as C,substring(BYORGNO,1,6)+'000' as BYORGNO,cast(CONVERT(varchar(100), sbtime, 111) as date) as SBDATE");
+                sb.AppendFormat(" select count(substring(BYORGNO,1,6)+'000000000') as C,substring(BYORGNO,1,6)+'000000000' as BYORGNO,cast(CONVERT(varchar(100), sbtime, 111) as date) as SBDATE");
                 sb.AppendFormat(" FROM T_IPSFR_ROUTERAIL_RAIL a  LEFT OUTER JOIN T_IPSFR_USER b ON a.HID = b.HID");
                 sb.AppendFormat(" WHERE   (sbtime >= '{0}') AND (sbtime <= '{1}')", sw.DateBegin, sw.DateEnd);
-                sb.AppendFormat(" group by  substring(BYORGNO,1,6)+'000',cast(CONVERT(varchar(100), sbtime, 111) as date)");
+                sb.AppendFormat(" group by  substring(BYORGNO,1,6)+'000000000',cast(CONVERT(varchar(100), sbtime, 111) as date)");
             }
             else if (PublicCls.OrgIsXian(sw.TopORGNO))
             {
                 sb.AppendFormat(" select count(BYORGNO) as C, BYORGNO,cast(CONVERT(varchar(100), sbtime, 111) as date) as SBDATE");
                 sb.AppendFormat(" FROM T_IPSFR_ROUTERAIL_RAIL a  LEFT OUTER JOIN T_IPSFR_USER b ON a.HID = b.HID");
                 sb.AppendFormat(" WHERE   (sbtime >= '{0}') AND (sbtime <= '{1}')", sw.DateBegin, sw.DateEnd);
-                sb.AppendFormat(" and   substring(BYORGNO,1,6)+'000'='{0}'", sw.TopORGNO);
+                sb.AppendFormat(" and   substring(BYORGNO,1,6)+'000000000'='{0}'", sw.TopORGNO);
                 sb.AppendFormat(" group by  BYORGNO,cast(CONVERT(varchar(100), sbtime, 111) as date)");
             }
             else

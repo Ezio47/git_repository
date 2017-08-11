@@ -223,7 +223,6 @@ namespace ManagerSystemClassLibrary
                 if (m.BYORGNO.Substring(6, 3) != "000" && m.BYORGNO.Substring(9, 6) == "000000")
                 {
                     m.ORGName = BaseDT.T_SYS_ORG.getName(dtORG, m.BYORGNO);
-
                 }
                 m.ORGXSName = BaseDT.T_SYS_ORG.getSXName(dtORG, m.BYORGNO);
                 m.MODEL = dt.Rows[i]["MODEL"].ToString();

@@ -1,0 +1,482 @@
+﻿@using ManagerSystemClassLibrary;
+@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+    var curorgno1 = SystemCls.getCurUserOrgNo();//添加的时候组织机判断
+}
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'center'" title="" style=" border: none; ">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="homeUL">
+                        <input type="button" value="保存" onclick="Manager()" id="btnSave" class="btnSaveCss">
+                    </div>
+                </div>
+            </div>
+
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <div class="divMan">
+                    <table cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td style="width:80px;">
+                                单位：
+                            </td>
+                            <td>
+                                <select id="BYORGNO" class="easyui-combotree" style="width:160px;"></select>
+                            </td>
+                            <td style="width:80px;">
+                                隔离带类型：
+                            </td>
+                            <td>
+                                <select id="ISOLATIONTYPE" onchange="upperCase(this.id)">
+                                    @Html.Raw(@ViewBag.isolationtypeadd)
+                                </select>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="width:80px;">
+                                <span style="color:red;">*</span>
+                                名称：
+                            </td>
+                            <td>
+                                <input type="text" id="NAME" class="input-small" value="" />
+                            </td>
+                            <td style="width:80px;">
+                                <span style="color:red;">*</span>
+                                编号：
+                            </td>
+                            <td>
+                                <input id="NUMBER" type="text" class="input-small" value="" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:80px;">
+                                使用现状类型：
+                            </td>
+                            <td>
+                                <select id="USESTATE">
+                                    @Html.Raw(@ViewBag.usestateadd)
+                                </select>
+                            </td>
+                            <td style="width:80px;">
+                                维护类型：
+                            </td>
+                            <td>
+                                <select id="MANAGERSTATE">
+                                    @Html.Raw(@ViewBag.managerstateadd)
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:140px;">
+                                经纬度点：
+                            </td>
+                            <td colspan="2">
+                                <input id="JWDLIST" type="text" style="width:97%" value="" readonly />
+                            </td>
+                            <td>
+                                <input type="button" value="地图定位" onclick="setLine()" class="btnMapLoaclCss" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:80px;">
+                                <span style="color:red;">*</span>
+                                宽度：
+                            </td>
+                            <td>
+                                <input id="WIDTH" type="text" class="input-small" value="" />米
+                            </td>
+                            <td style="width:80px;">
+                                <span style="color:red;">*</span>
+                                长度：
+                            </td>
+                            <td>
+                                <input id="LENGTH" type="text" class="input-small" value="" />米
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:80px;">
+                                计划面积：
+                            </td>
+                            <td>
+                                <input id="PLANAREA" type="text" class="input-small" value="" />公顷
+                            </td>
+                            <td style="width:80px;">
+                                实际面积：
+                            </td>
+                            <td>
+                                <input id="REALAREA" type="text" class="input-small" value="" />公顷
+                            </td>
+                        </tr>
+                        <tr id="Kind" style="display:none">
+                            <td style="width:80px;">
+                                <span style="color:red;">*</span>
+                                树种：
+                            </td>
+                            <td>
+                                <input id="KINDTYPE" type="text" class="input-small" value="" />
+                            </td>
+                            <td style="width:80px;">
+                                树种组成：
+                            </td>
+                            <td>
+                                <select id="TREETYPE">
+                                    @Html.Raw(@ViewBag.treetypeadd)
+                                </select>
+                            </td>
+                        </tr>
+                        <tr id="Alleyway" style="display:none">
+                            <td style="width:80px;">
+                                步行通道宽度：
+                            </td>
+                            <td>
+                                <input id="AlleywayWideth" type="text" class="input-small" value="" />米
+                            </td>
+                            <td style="width:80px;">
+                                位置：
+                            </td>
+                            <td>
+                                <select id="Position">
+                                    @Html.Raw(@ViewBag.positionadd)
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:160px;">
+                                单价：
+                            </td>
+                            <td>
+                                <input id="PRICE" type="text" class="input-small" value="" onblur="jsfunc(this)" />元
+                            </td>
+                            <td style="width:80px;">
+                                总价：
+                            </td>
+                            <td>
+                                <input id="WORTH" type="text" class="input-small" value="" />元
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:100px;">
+                                规划建设日期：
+                            </td>
+                            <td>
+                                开始日期:<input class="easyui-datebox" id="BUILDDATEBEGIN" type="text" style="width:90px;height:28px;" value="" />&nbsp;&nbsp;&nbsp;
+                                结束日期<input class="easyui-datebox" id="BUILDDATEEND" type="text" style="width:90px;height:28px;" value="" />
+                            </td>
+                            <td style="width:80px;">
+                                建成日期：
+                            </td>
+                            <td>
+                                <input class="easyui-datebox" id="BUILDDATE" type="text" style="width:90px;height:28px;" value="" />
+                            </td>
+
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var bln1 = '@ViewBag.isAddplan';
+    var bln = '@ViewBag.isAdd';
+    if (bln == "1" && bln1 == "0") {
+        var objItemValue = "5";
+        var objSelect = document.getElementById("ISOLATIONTYPE");
+        for (var i = 0; i < objSelect.options.length; i++) {
+            if (objSelect.options[i].value == objItemValue) {
+                objSelect.options.remove(i);
+                break;
+            }
+        };
+    }
+    if (bln == "0" && bln1 == "1") {
+        var objItemValue = [1, 2, 3, 4];
+        var objSelect = document.getElementById("ISOLATIONTYPE");
+        for (var i = 0; i < objSelect.options.length; i++) {
+            for (var j = 0; j < objItemValue.length; j++) {
+                if (objSelect.options[i].value == objItemValue[j]) {
+                    objSelect.options.remove(i);
+                }
+            }
+        };
+    }
+    $(function () {
+        $('#BYORGNO').combotree({
+            url: '/DataCenter/OnlyOrgTreeget',
+            editable: false,
+            required: true,
+            panelHeight: 300,
+            onLoadSuccess: function (node, data) {
+                var t = $("#BYORGNO").combotree('tree');//获取tree
+                t.tree("collapseAll");
+                node = t.tree("find", data[0].id);
+                t.tree("expand", node.target);//展开节点 expandTo
+            }
+        });
+        $('#BYORGNO').combotree('setValue', "@curorgno1");
+    });
+    if ('@ViewBag.T_Method' == "Del") {
+        Manager();
+    }
+    if ('@ViewBag.T_Method' == 'Mdy') {
+        $.ajax({
+            url: '/DataCenter/GetISOLATIONSTRIPjson',
+            cache: false,
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: { DC_UTILITY_ISOLATIONSTRIP_ID: '@ViewBag.ID' },
+            success: function (data, ioArgs) {
+                var data = eval('(' + data + ')');
+                if (data.DC_UTILITY_ISOLATIONSTRIP_ID != null) {
+                    document.getElementById("ISOLATIONTYPE").value = data.ISOLATIONTYPE;
+                    document.getElementById("NUMBER").value = data.NUMBER;
+                    document.getElementById("NAME").value = data.NAME;
+                    $('#BYORGNO').combotree('setValue', data.BYORGNO);
+                    document.getElementById("USESTATE").value = data.USESTATE;
+                    document.getElementById("MANAGERSTATE").value = data.MANAGERSTATE;
+                    document.getElementById("WIDTH").value = data.WIDTH;
+                    document.getElementById("LENGTH").value = data.LENGTH;
+                    var str = data.JWDLIST;
+                    if (str.substring(str.length - 1) != ";") {
+                        document.getElementById("JWDLIST").value = str + ";";
+                    } else {
+                        document.getElementById("JWDLIST").value = str;
+                    }
+                    document.getElementById("PLANAREA").value = data.PLANAREA;
+                    document.getElementById("REALAREA").value = data.REALAREA;
+                    document.getElementById("WORTH").value = data.WORTH;
+                    document.getElementById("KINDTYPE").value = data.KINDTYPE;
+                    document.getElementById("TREETYPE").value = data.TREETYPE;
+                    document.getElementById("AlleywayWideth").value = data.AlleywayWideth;
+                    document.getElementById("PRICE").value = data.Price;
+                    document.getElementById("Position").value = data.Position;
+                    $('#BUILDDATE').datebox('setValue', data.BUILDDATE);
+                    $('#BUILDDATEBEGIN').datebox('setValue', data.BUILDDATEBEGIN);
+                    $('#BUILDDATEEND').datebox('setValue', data.BUILDDATEND);
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('登录异常');
+            }
+        });
+    }
+
+    function setLine() {
+        var name = document.getElementById("NAME").value;
+        var str = document.getElementById("JWDLIST").value;
+        var line = "";
+        var isolationtype = document.getElementById("ISOLATIONTYPE").value;
+        if (isolationtype != "4") {
+            line = "1"
+        }
+        else {
+            line = "2"
+        }
+        layer.open({
+            type: 2,
+            title: name + '地图位置设置',
+            btn: ['保存', '关闭'],
+            area: ['100%', '100%'],
+            fix: false, //不固定
+            maxmin: true,
+            content: '/MapCommon/GetMapPontIndex?LINE=' + line,
+            success: function (layero, index) {
+                var body = layer.getChildFrame('body', index);
+                body.find('#editcollecttxt').text(str);
+                if (line == "2") {
+                    window["layui-layer-iframe" + index].getLocaCollectPolygon();//面
+                }
+                else {
+                    window["layui-layer-iframe" + index].getLocaCollectLine();//线
+                }
+            },
+            yes: function (index, layero) { //或者使用btn1
+                var ptxt = layer.getChildFrame("#editcollecttxt", index);
+                $('#JWDLIST').val(ptxt.html());
+
+                var lm = layer.getChildFrame("#MjACdtxt", index)//面积
+                if (line == "2") {
+                    $('#REALAREA').val(lm.html());//面积
+                }
+                if (line == "1") {
+                    $('#LENGTH').val(lm.html());//长度
+                }
+                layer.close(index);
+            },
+            cancel: function (index) {
+                layer.close(index);
+            }
+        });
+    }
+    function Manager() {
+        var t1 = $('#WIDTH ').val();
+        var t2 = $('#LENGTH ').val();
+        var t3 = $('#PLANAREA ').val();
+        var t4 = $('#REALAREA').val();
+        var t5 = $('#WORTH').val();
+        var t6 = $('#NAME').val();
+        var t7 = $('#NUMBER').val();
+        if ($.trim(t1) == "") {
+            layer.msg('请填写宽度！', { icon: 5 });
+            $('#WIDTH').focus();
+            return;
+        }
+        if ($.trim(t2) == "") {
+            layer.msg('请填写长度！', { icon: 5 });
+            $('#LENGTH').focus();
+            return;
+        }
+        if ($.trim(t1) != "") {
+            if (CheckNUM($.trim(t1)) == false) {
+                layer.msg('宽度请填写数字！', { icon: 5 });
+                $('#WIDTH').focus();
+                return;
+            }
+        }
+        if ($.trim(t2) != "") {
+            if (CheckNUM($.trim(t2)) == false) {
+                layer.msg('长度请填写数字！', { icon: 5 });
+                $('#LENGTH').focus();
+                return;
+            }
+        }
+        if ($.trim(t3) != "") {
+            if (CheckNUM($.trim(t3)) == false) {
+                layer.msg('计划面积请填写数字！', { icon: 5 });
+                $('#PLANAREA').focus();
+                return;
+            }
+        }
+        if ($.trim(t4) != "") {
+            if (CheckNUM($.trim(t4)) == false) {
+                layer.msg('实际面积请填写数字！', { icon: 5 });
+                $('#REALAREA').focus();
+                return;
+            }
+        }
+        if ($.trim(t5) != "") {
+            if (CheckNUM($.trim(t5)) == false) {
+                layer.msg('价值请填写数字！', { icon: 5 });
+                $('#WORTH').focus();
+                return;
+            }
+        }
+        if ($.trim(t6) == "") {
+            layer.msg('请填写名称！', { icon: 5 });
+            $('#NAME').focus();
+            return;
+        }
+        if ($.trim(t7) == "") {
+            layer.msg('请填写编号！', { icon: 5 });
+            $('#NUMBER').focus();
+            return;
+        }
+        //if ($.trim(t8) == "") {
+        //    layer.msg('请填写树种！', { icon: 5 });
+        //    $('#KINDTYPE').focus();
+        //    return;
+        //}
+        var tt = document.getElementById("JWDLIST").value;
+        var tp = document.getElementById("ISOLATIONTYPE").value;
+        if ($.trim(tp) == "4") {
+            if (tt.split('|').length == 1) {
+                layer.msg('请在地图上画出面！', { icon: 5 });
+                return;
+            }
+        }
+        else {
+            if (tt.split('|').length == 1) {
+                layer.msg('请在地图上画出线！', { icon: 5 });
+                return;
+            }
+        }
+        if ($.trim(tp) == "5") {
+            var t8 = $('#KINDTYPE').val();
+            if ($.trim(t8) == "") {
+                layer.msg('请填写树种！', { icon: 5 });
+                $('#KINDTYPE').focus();
+                return;
+            }
+        }
+
+        $.ajax({
+            type: "Post",
+            url: "/DataCenter/ISOLATIONSTRIPManager",
+            data: {
+                DC_UTILITY_ISOLATIONSTRIP_ID: '@ViewBag.ID',
+                Method: '@ViewBag.T_Method',
+                ISOLATIONTYPE: document.getElementById("ISOLATIONTYPE").value,
+                NUMBER: document.getElementById("NUMBER").value,
+                NAME: document.getElementById("NAME").value,
+                BYORGNO: $('#BYORGNO').combotree('getValue'),
+                USESTATE: document.getElementById("USESTATE").value,
+                MANAGERSTATE: document.getElementById("MANAGERSTATE").value,
+                WIDTH: document.getElementById("WIDTH").value,
+                LENGTH: document.getElementById("LENGTH").value,
+                JWDLIST: document.getElementById("JWDLIST").value,
+                PLANAREA: document.getElementById("PLANAREA").value,
+                REALAREA: document.getElementById("REALAREA").value,
+                WORTH: document.getElementById("WORTH").value,
+                KINDTYPE: document.getElementById("KINDTYPE").value,
+                TREETYPE: document.getElementById("TREETYPE").value,
+                BUILDDATE: $('#BUILDDATE').datebox('getValue'),
+                BUILDDATEBEGIN: $('#BUILDDATEBEGIN').datebox('getValue'),
+                BUILDDATEEND: $('#BUILDDATEEND').datebox('getValue'),
+                AlleywayWideth: document.getElementById("AlleywayWideth").value,
+                Price: document.getElementById("PRICE").value,
+                Position: document.getElementById("Position").value,
+            },
+            dataType: "json",
+            success: function (data) {
+                if (data.Success) {
+                    parent.layer.msg(data.Msg, { icon: 6 });
+                    var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                    parent.layer.close(index);
+                }
+                else {
+                    layer.msg(data.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('保存异常!');
+            }
+        });
+    }
+    function upperCase(x) {
+        var y = document.getElementById('ISOLATIONTYPE').value;
+        if (y != "4") {
+            document.getElementById("PLANAREA").disabled = true;
+            document.getElementById("REALAREA").disabled = true;
+            document.getElementById("PLANAREA").value = "";
+            document.getElementById("REALAREA").value = "";
+            document.getElementById("WIDTH").disabled = false;
+            document.getElementById("LENGTH").disabled = false;
+        }
+        else {
+            document.getElementById("PLANAREA").disabled = false;
+            document.getElementById("REALAREA").disabled = false;
+        }
+        if (y != "5") {
+            document.getElementById("Kind").style.display = "none";
+            document.getElementById("Alleyway").style.display = "none";
+        }
+        else {
+            document.getElementById("Kind").style.display = "";
+            document.getElementById("Alleyway").style.display = "";
+        }
+    }
+    //自动计算总价
+    function jsfunc(obj) {
+        var count = $('#LENGTH').val();
+        var price = $('#PRICE').val();
+        if ($.trim(count) == "" || $.trim(price) == "") {
+            $('#WORTH').val('');
+        }
+        var currency = (Number(price) * Number(count)).toFixed(2);//总金额
+        $('#WORTH').val(currency);
+
+    }
+</script>
+

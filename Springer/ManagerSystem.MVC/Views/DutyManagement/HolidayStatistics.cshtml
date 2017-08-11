@@ -2,19 +2,18 @@
     Layout = "~/Views/Shared/_LayoutIndex.cshtml";
 }
 <script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+
 <div class="easyui-layout" data-options="fit:true" style="border: 0;">
     <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
         @Html.Raw(@ViewBag.PageLeftMenu)
     </div>
-    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
 
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
         <div class="easyui-layout" data-options="fit:true" style=" border:0;">
             <div data-options="region:'north'" title="" style="height: 35px; border: none; overflow: hidden;">
                 <div class="divOP">
                     <div class="home ">
-                        单位名称：<select id="tbxBYORGNO">
-                            @Html.Raw(@ViewBag.vdOrg)
-                        </select>
+                        单位名称：<select id="tbxBYORGNO">@Html.Raw(@ViewBag.vdOrg)</select>
                         开始日期：<input class="Wdate" id="tbxTIMEBegin" value="@ViewBag.dateB" type="text" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd'})" />
                         结束日期：<input class="Wdate" id="tbxTIMEEnd" value="@ViewBag.dateE" type="text" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd'})" />
                         <input type="button" value="查 询" onclick="query()" class="btnSearchCss">
@@ -22,7 +21,6 @@
                 </div>
             </div>
             <div data-options="region:'center'" title="" class="LayoutCenterBG">
-
                 <div id="msg" class="divTable">
                 </div>
             </div>
@@ -39,8 +37,6 @@
     function query() {
         $.ajax({
             url: '/DutyManagement/HolidayQuery',
-            // timeout: 10000, //10秒后超时，如果为0则永不超时
-
             data: {
                 BEGTIME: $('#tbxTIMEBegin').val(),//开始日期
                 ENDTIME: $('#tbxTIMEEnd').val(),//结束日期
@@ -48,7 +44,6 @@
             },
             success: function (data, ioArgs) {
                 var ar = eval('(' + data + ')');
-                //alert(ar.Success);
                 if (ar.Success) {
                     $('#msg').html('').removeAttr("style");
                     $('#msg').html(ar.Msg);
@@ -60,7 +55,7 @@
             },
             error: function (err, ioArgs) {
                 $('#msg').html('');
-                $('#msg').html('查询异常，请重试或与管理员联系！').css("color", "red");
+                $('#msg').html('查询异常，请重试或与管理员联系!').css("color", "red");
             }
         });
     }

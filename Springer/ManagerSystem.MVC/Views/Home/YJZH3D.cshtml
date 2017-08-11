@@ -21,41 +21,41 @@
 }
 <ul class="ulhlytree" id="yjczid" style="width:99%">
     @if (Rightstr.Contains(",012001,"))
-{
-    <li id="li6">
-        <label><h1><span>当前火情</span></h1></label>
-        <ul id="curfireul" class="warnPanel_list">
-            @if (Model.Any())
-            {
-                foreach (var item in Model)
+    {
+        <li id="li6">
+            <label><h1><span>当前火情</span></h1></label>
+            <ul id="curfireul" class="warnPanel_list">
+                @if (Model.Any())
                 {
-                    <li class="list">
-                        <h1 class="floatLeft">@(++i)</h1>
-                        <dl class="list_content border_ty2 floatLeft">
-                            <dt class="floatLeft">
-                                <b class="category">【@item.JCFID】</b>
-                                <a href="javascript:void(0)" onclick="AroundJWD(@item.JD,@item.WD);moveto(@item.JD,@item.WD,'@item.FIRENAME',@item.JCFID);" class="theme">@item.FIRENAME </a>
-                            </dt>
-                            <dd class="floatLeft">
-                                <a href="javascript:void(0)" onclick="DangYAShow('火情信息', 'http://'+window.location.host+'/EmergencyHand/FireSXIndex?jcfid=@item.JCFID', 850, 430)" class="border_ty3">火情信息</a>
-                                <a href="javascript:void(0)" onclick="DangYAShow('预案展示', 'http://'+window.location.host+'/EmergencyHand/YAIndex?level=@item.FIRELEVEL&org=@item.ORGNO', 500, 400)" class="border_ty4">预案</a>
-                                <a href="javascript:void(0)" onclick="setJWValue('@item.JD','@item.WD');movetoMap(@item.JD,@item.WD,'@item.FIRENAME');menuOclick('1')" class="border_ty4">态势分析</a>
-                                <a href="javascript:void(0)" onclick="FireOver(@item.JCFID)" class="border_ty4">标记为已灭</a>
-                            </dd>
+                    foreach (var item in Model)
+                    {
+                        <li class="list">
+                            <h1 class="floatLeft">@(++i)</h1>
+                            <dl class="list_content border_ty2 floatLeft">
+                                <dt class="floatLeft">
+                                    <b class="category">【@item.JCFID】</b>
+                                    <a href="javascript:void(0)" onclick="AroundJWD(@item.JD,@item.WD);moveto(@item.JD,@item.WD,'@item.FIRENAME',@item.JCFID);" class="theme">@item.FIRENAME </a>
+                                </dt>
+                                <dd class="floatLeft">
+                                    <a href="javascript:void(0)" onclick="DangYAShow('火情信息', 'http://'+window.location.host+'/EmergencyHand/FireSXIndex?jcfid=@item.JCFID', 850, 430)" class="border_ty3">火情信息</a>
+                                    <a href="javascript:void(0)" onclick="DangYAShow('预案展示', 'http://'+window.location.host+'/EmergencyHand/YAIndex?level=@item.FIRELEVEL&org=@item.ORGNO', 500, 400)" class="border_ty4">预案</a>
+                                    <a href="javascript:void(0)" onclick="setJWValue('@item.JD','@item.WD');movetoMap(@item.JD,@item.WD,'@item.FIRENAME');menuOclick('1')" class="border_ty4">态势分析</a>
+                                    <a href="javascript:void(0)" onclick="FireOver(@item.JCFID)" class="border_ty4">标记为已灭</a>
+                                </dd>
+                                <div class="clear"></div>
+                            </dl>
                             <div class="clear"></div>
-                        </dl>
-                        <div class="clear"></div>
-                    </li>
+                        </li>
+                    }
                 }
-            }
-            else
-            {
-                <li><em>暂无火情</em></li>
-            }
-            <div class="clear"></div>
-        </ul>
-    </li>
-}
+                else
+                {
+                    <li><em>暂无火情</em></li>
+                }
+                <div class="clear"></div>
+            </ul>
+        </li>
+    }
     @if (Rightstr.Contains(",012002,"))
     {
         <li id="li7">

@@ -39,7 +39,6 @@ namespace ManagerSystemClassLibrary
             }
             return new Message(false, "无效操作", "");
         }
-
         #endregion
 
         #region 获取单条数据

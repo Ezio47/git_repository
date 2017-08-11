@@ -21,12 +21,9 @@
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
                 <div class="divOP">
                     <div class="home ">
-                        单位：<select id="tbxBYORGNO">
-                            @Html.Raw(@ViewBag.vdOrg)
-                        </select>
+                        单位：<select id="tbxBYORGNO">@Html.Raw(@ViewBag.vdOrg)</select>
                         开始时间：<input class="easyui-datebox" id="tbxTIMEBegin" type="text" style="width:90px;height:28px;" value="@ViewBag.TIMEBegin" />
                         结束时间<input class="easyui-datebox" id="tbxTIMEEnd" type="text" value="@ViewBag.TIMEEnd" style="width:90px;height:28px;" />
-
                         <input type="button" value="查询" onclick="query()" class="btnSearchCss" />
                         <input type="button" value="导出" onclick="exportExcel()" class="btnOutputCss" />
                         <input type="button" value="图形展示" onclick="Echarts()" class="btnEchartsCss" />
@@ -35,7 +32,7 @@
             </div>
             <div data-options="region:'center'" title="" style=" border: none; ">
                 <div class="divTable" id="tableContainer" style="height:100%;margin:0 0;">
-                    @*@Html.Raw(@ViewBag.pageList)*@
+
                 </div>
             </div>
         </div>
@@ -43,7 +40,6 @@
 </div>
 
 <script type="text/javascript">
-
     function query() {
         $.ajax({
             url: '/HUReport/getCollectCountJson',
@@ -68,20 +64,17 @@
         });
     }
 
-
-    //$(document).ready(function () {
-    //    $("#tableContainer").FixedHead({ tableLayout: "fixed" });
-    //});
     function exportExcel() {
         var url = '/HUReport/CollectCountExportExcel?TIMEBegin=' + $('#tbxTIMEBegin').datebox('getValue') + '&TIMEEnd=' + $('#tbxTIMEEnd').datebox('getValue') + '&BYORGNO=' + document.getElementById("tbxBYORGNO").value + '';
         //var url = '@Html.Raw(@ViewBag.ExportExcelUrl)';
         if (url == '') {
-            alert('请先查询!');
+            layer.msg('请先查询!', { icon: 5 });
         }
         else {
             window.location = url;
         }
     }
+
     function Echarts() {
         layer.open({
             type: 2,

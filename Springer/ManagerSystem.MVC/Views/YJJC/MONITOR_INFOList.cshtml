@@ -59,7 +59,7 @@
                 },
                 type: 'post',
                 error: function () {
-                    alert('错误:异常!', 'error');
+                    layer.msg('错误:异常!', { icon: 5 });
                 },
                 success: function (re) {
 
@@ -70,7 +70,7 @@
                         }
                     }
                     else {
-                        alert(ar.Msg, "Error");
+                        layer.msg(ar.Msg, { icon: 5 });
                     }
                 }
             });
@@ -138,11 +138,11 @@
                     //window.location.assign(ar.Url);
                 }
                 else {
-                    alert(ar.Msg);
+                    layer.msg(ar.Msg);
                 }
             },
             error: function (err, ioArgs) {
-                alert('登录异常');
+                layer.msg('登录异常');
             }
         });
     }

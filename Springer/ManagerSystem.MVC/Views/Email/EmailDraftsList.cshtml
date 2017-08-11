@@ -1,48 +1,40 @@
 ﻿@{
-    //ViewBag.Title =  "首页";
     Layout = "~/Views/Shared/_LayOutIndex.cshtml";
-    // Layout = null;
 }
 @section Header{
 }
 
 <div class="easyui-layout" data-options="fit:true" style=" border:0;">
-
-
-    <div data-options="region:'west'" title="" style=" width:220px;">       
-         @Html.Raw(@ViewBag.PageLeftMenu)
+    <div data-options="region:'west'" title="" style=" width:220px;">
+        @Html.Raw(@ViewBag.PageLeftMenu)
     </div>
+
     <div data-options="region:'center'" title="">
-
         <div class="easyui-layout" data-options="fit:true" style=" border:0;">
-
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
                 <div class="divOP">
                     <div class="home">
                         主题:<input id="tbxEMAILTITLE" type="text" style="width:200px" value="@ViewBag.EMAILTITLE" />
-                        <input type="button" value="搜索" onclick="query()" class="btnSearchCss"/>
+                        <input type="button" value="搜索" onclick="query()" class="btnSearchCss" />
                         <input type="button" value="删除" onclick="Manager('Del')" class="btnDelCss" />
                     </div>
                 </div>
             </div>
 
             <div data-options="region:'center'" title="" class="LayoutCenterBG">
-
                 <div class="divTable">
                     @Html.Raw(ViewBag.EmailDraftsList)
                 </div>
             </div>
+
             <div data-options="region:'south'" title="" style=" height:40px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
                 @Html.Raw(@ViewBag.PagerInfo)
             </div>
-
         </div>
     </div>
-
 </div>
 
-
-<script type="text/javascript"> 
+<script type="text/javascript">
     function query() {
         $.ajax({
             url: '/Email/EmailDraftsListQuery',
@@ -55,50 +47,35 @@
                 var ar = eval('(' + data + ')');
                 if (ar.Success) {
                     window.location.assign(ar.Url);
-
                 }
                 else {
-                    layer.msg(ar.Msg);
+                    layer.msg(ar.Msg, { icon: 5 });
                 }
             },
             error: function (err, ioArgs) {
-                layer.msg('登录异常');
+                layer.msg('系统异常!', { icon: 5 });
             }
         });
     }
     function Manager(Method) {
-
-        //var check_val = [];
-        //$("input[name='chk1']:checkbox").each(function () {
-        //    if ($(this).is(':checked')) {
-        //        check_val.push($(this).val());
-        //    }
-        //});
-        var check_val = $("input:checkbox[name='chk1']:checked").map(function (index, elem) {
-            return $(elem).val();
-        }).get().join(',');
+        var check_val = $("input:checkbox[name='chk1']:checked").map(function (index, elem) { return $(elem).val(); }).get().join(',');
         $.ajax({
             url: '/Email/EmailDraftDEL',
-            data: {
-                EMAILID: check_val,
-                Method: Method,
-                @*returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)',*@
-            },
+            data: {EMAILID: check_val,Method: Method,},
             success: function (data) {
                 var ar = eval('(' + data + ')');
                 if (ar.Success) {
-                    if (confirm(ar.Msg + ' 请返回！')) {
+                    if (confirm(ar.Msg + ' 请返回?')) {
                         window.location.reload();
                     }
                 }
                 else {
-                    layer.msg(ar.Msg);
+                    layer.msg(ar.Msg, { icon: 5 });
                 }
             },
             error: function (err, ioArgs) {
-                layer.msg('保存异常');
+                layer.msg('保存异常!', { icon: 5 });
             }
         });
     }
-
 </script>

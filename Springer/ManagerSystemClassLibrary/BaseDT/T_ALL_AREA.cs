@@ -27,19 +27,26 @@ namespace ManagerSystemClassLibrary.BaseDT
             if (isExists(new T_ALL_AREA_SW { AREACODE = m.AREACODE, }) == true)
                 return new Message(false, "添加失败，该区划编码已存在！", "");
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("INSERT INTO  T_ALL_AREA(AREACODE, AREANAME, AREAJC, JD, WD )");
-            sb.AppendFormat("VALUES(");
-            sb.AppendFormat("'{0}'", ClsSql.EncodeSql(m.AREACODE));
+            sb.AppendFormat("INSERT INTO  T_ALL_AREA(AREACODE, AREANAME, AREAJC, JD, WD ) OUTPUT INSERTED.AREAID ");
+            sb.AppendFormat(" VALUES(");
+            sb.AppendFormat(" '{0}'", ClsSql.EncodeSql(m.AREACODE));
             sb.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.AREANAME));
             sb.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.AREAJC));
-            sb.AppendFormat(",{0}", ClsSql.saveNullField(m.JD));
-            sb.AppendFormat(",{0}", ClsSql.saveNullField(m.WD));
+            sb.AppendFormat(" ,{0}", ClsSql.saveNullField(m.JD));
+            sb.AppendFormat(" ,{0}", ClsSql.saveNullField(m.WD));
             sb.AppendFormat(")");
-            bool bln = DataBaseClass.ExeSql(sb.ToString());
-            if (bln == true)
-                return new Message(true, "添加成功！", m.returnUrl);
-            else
-                return new Message(false, "添加失败，请检查各输入框是否正确！", m.returnUrl);
+            try
+            {
+                string sId = DataBaseClass.ReturnSqlField(sb.ToString());
+                if (sId != "")
+                    return new Message(true, "添加成功!", m.returnUrl + "," + sId);
+                else
+                    return new Message(false, "添加失败!", m.returnUrl);
+            }
+            catch
+            {
+                return new Message(false, "添加失败!", m.returnUrl);
+            }
         }
         #endregion
 
@@ -52,9 +59,8 @@ namespace ManagerSystemClassLibrary.BaseDT
         public static Message Mdy(T_ALL_AREA_Model m)
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("UPDATE T_ALL_AREA");
-            sb.AppendFormat(" set ");
-            sb.AppendFormat("AREANAME='{0}'", ClsSql.EncodeSql(m.AREANAME));
+            sb.AppendFormat("UPDATE T_ALL_AREA SET ");
+            sb.AppendFormat(" AREANAME='{0}'", ClsSql.EncodeSql(m.AREANAME));
             sb.AppendFormat(",AREACODE='{0}'", ClsSql.EncodeSql(m.AREACODE));
             sb.AppendFormat(",AREAJC='{0}'", ClsSql.EncodeSql(m.AREAJC));
             sb.AppendFormat(",JD={0}", ClsSql.saveNullField(m.JD));
@@ -62,9 +68,9 @@ namespace ManagerSystemClassLibrary.BaseDT
             sb.AppendFormat(" where AREAID= '{0}'", ClsSql.EncodeSql(m.AREAID));
             bool bln = DataBaseClass.ExeSql(sb.ToString());
             if (bln == true)
-                return new Message(true, "修改成功！", m.returnUrl);
+                return new Message(true, "修改成功!", m.returnUrl + "," + m.AREAID);
             else
-                return new Message(false, "修改失败，请检查各输入框是否正确！", m.returnUrl);
+                return new Message(false, "修改失败，请检查各输入框是否正确!", m.returnUrl);
         }
 
         #endregion
@@ -77,24 +83,19 @@ namespace ManagerSystemClassLibrary.BaseDT
         /// <returns>参见模型</returns>
         public static Message Del(T_ALL_AREA_Model m)
         {
-            //if (isExists(new T_ALL_AREA_SW { AREACODE = m.AREACODE}) == false)
-            // return new Message(false, "删除失败，该区划编码不存在！", "");
-
-            //删除所有的子目录
-            //DataBaseClass.ExeSql("delete T_ALL_AREA where AREACODE= '"+ClsSql.EncodeSql(m.SYSFLAG)+"'");
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("delete T_ALL_AREA");
-            if (m.AREACODE.Substring(2,7)=="0000000")
+            if (m.AREACODE.Substring(2, 7) == "0000000")
             {
-                sb.AppendFormat(" where substring(AREACODE,1,2)= '{0}'",  ClsSql.EncodeSql(m.AREACODE.Substring(0,2)));
+                sb.AppendFormat(" where substring(AREACODE,1,2)= '{0}'", ClsSql.EncodeSql(m.AREACODE.Substring(0, 2)));
             }
-            else if (m.AREACODE.Substring(4,5)=="00000")
+            else if (m.AREACODE.Substring(4, 5) == "00000")
             {
-                sb.AppendFormat(" where substring(AREACODE,1,4)= '{0}'", ClsSql.EncodeSql(m.AREACODE.Substring(0,4)));
+                sb.AppendFormat(" where substring(AREACODE,1,4)= '{0}'", ClsSql.EncodeSql(m.AREACODE.Substring(0, 4)));
             }
-            else if (m.AREACODE.Substring(6,3)=="000")
+            else if (m.AREACODE.Substring(6, 3) == "000")
             {
-                sb.AppendFormat(" where substring(AREACODE,1,6)= '{0}'", ClsSql.EncodeSql(m.AREACODE.Substring(0,6)));
+                sb.AppendFormat(" where substring(AREACODE,1,6)= '{0}'", ClsSql.EncodeSql(m.AREACODE.Substring(0, 6)));
             }
             else
             {
@@ -102,9 +103,9 @@ namespace ManagerSystemClassLibrary.BaseDT
             }
             bool bln = DataBaseClass.ExeSql(sb.ToString());
             if (bln == true)
-                return new Message(true, "删除成功！", m.returnUrl);
+                return new Message(true, "删除成功!", m.returnUrl);
             else
-                return new Message(false, "删除失败，请检查各输入框是否正确！", m.returnUrl);
+                return new Message(false, "删除失败，请检查各输入框是否正确!", m.returnUrl);
         }
 
         #endregion

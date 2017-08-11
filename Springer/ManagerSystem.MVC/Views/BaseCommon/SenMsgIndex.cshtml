@@ -1,9 +1,8 @@
 ﻿@{
     ViewBag.Title = "短信发送";
-    Layout = null;
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
 }
 @Scripts.Render("~/bundles/jquery")
-
 <script src="~/Scripts/jquery-easyui-1.4/jquery.easyui.min.js"></script>
 <script src="~/Scripts/jquery-easyui-1.4/locale/easyui-lang-zh_CN.js"></script>
 <script src="~/Scripts/jquery-easyui-1.4/validateHelper.js"></script>
@@ -11,8 +10,6 @@
 <link href="~/Content/themes/easyui/easyui.css" rel="stylesheet" />
 <link href="~/Content/themes/easyui/color.css" rel="stylesheet" />
 <link href="~/Content/themes/easyui/icon.css" rel="stylesheet" />
-
-
 <style type="text/css">
     body, table, th, tr, td {
         margin: 0;
@@ -79,7 +76,7 @@
             <tr>
                 <td>短信内容</td>
                 <td>
-                    <textarea id="msgContext" style="width:50%;height:50px;"></textarea>
+                    <textarea id="msgContext" style="width:50%;height:100px;"></textarea>
                     <input type="button" value="短信模板" onclick="openscmb()" class="btnMsgCss" />
                 </td>
             </tr>

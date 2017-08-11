@@ -94,6 +94,7 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult From2Dto3D()
         {
+            ViewBag.AllNAME = T_SYS_LAYERCls.getLayerAllNAME();
             var result = new List<MapShowModel>();
             var sw = new JC_FIRE_SW();
             string jcfid = Request.Params["jcfid"];

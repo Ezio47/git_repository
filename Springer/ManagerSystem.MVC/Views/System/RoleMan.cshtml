@@ -5,9 +5,6 @@
 }
 
 <div class="easyui-layout" data-options="fit:true" style=" border:0;">
-    @*<div data-options="region:'west'" title="" style=" width:220px; border: none;">
-            @Html.Raw(@ViewBag.PageLeftMenu)
-        </div>*@
     <div data-options="region:'center'" title="" style=" border: none; ">
         <div class="easyui-layout" data-options="fit:true" style=" border:0;">
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
@@ -18,7 +15,6 @@
                         级别：<input id="tbxROLELEVEL" type="text" value="" style="width:40px;" />
                         排序号：<input id="tbxORDERBY" type="text" value="" style="width:40px;" />
                         <input type="button" value="保存" onclick="Manager()" id="btnSave" style="display:none;" class="btnSaveCss">
-                        @*<input type="button" value="返回" onclick="javascript: history.go(-1);" class="btnReturnCss">*@
                         说明：级别：1州级别2市县级别3乡镇级别
                     </div>
                 </div>
@@ -59,6 +55,7 @@
             layer.msg('系统异常!', { icon: 5 });
         }
     });
+
     function Manager() {
         //var id = document.getElementsByName('tbxRightID');
         //var RightIDList = new Array();
@@ -86,11 +83,12 @@
             success: function (data, ioArgs) {
                 var ar = eval('(' + data + ')');
                 if (ar.Success) {
-                    if (confirm(ar.Msg)) {
+                    layer.confirm(ar.Msg + ' 请返回?', { icon: 3, title: '提示' }, function (index2) {
+                        layer.close(index2);
                         var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
                         parent.layer.close(index);
                         window.location.assign(ar.Url);
-                    }
+                    });
                 }
                 else {
                     layer.msg(ar.Msg, { icon: 5 });

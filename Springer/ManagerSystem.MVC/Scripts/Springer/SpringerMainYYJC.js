@@ -97,11 +97,41 @@ function CityQSOrgSelect(id, ftype, freshtype) {
                         }
                     }
                     else {
-                        var p = $('#txtperson').val();
-                        if ($.trim(p) == "") {
-                            layer.alert("本单位人员不可为空", { icon: 5 });
-                            return false;
+                        //var p = $('#txtperson').val();
+                        //if ($.trim(p) == "") {
+                        //    layer.alert("本单位人员不可为空", { icon: 5 });
+                        //    return false;
+                        //}
+                        var fsperson = $('#hidtxt').val();
+                        var xgperson = $('#hidxgtxt').val();
+                        if (fsperson == "" && xgperson == "") {
+                            layer.alert("人员不可为空", { icon: 5 });
+                            return;
                         }
+                        //发送 短信
+                        $.ajax({
+                            type: "Post",
+                            url: '/JCFireInfo/SendMessage',
+                            data: { jcfid: id, fsperson: fsperson, xgperson: xgperson },
+                            dataType: "json",
+                            async: false, //默认为true 异步 
+                            success: function (str) {
+                                if (str.Success) {
+                                    layer.alert("签收下派成功", function (index) {
+                                        if (freshtype == "") {
+                                            FireAjax(ftype);//ajax更新状态
+                                        }
+                                        else {
+                                            window.location.reload();//页面重载
+                                        }
+                                        layer.close(index);
+                                    });
+                                }
+                                else {
+                                    layer.msg(str.Msg);
+                                }
+                            }
+                        });
                     }
                     cityQS(id, orgno, val, ftype, freshtype);
                     layer.close(index); //如果设定了yes回调，需进行手工关闭
@@ -116,7 +146,7 @@ function CityQSOrgSelect(id, ftype, freshtype) {
 
 var orgno = "";
 //（县局）签收派发核查单位选择
-function QSSXJOrgSelect(id, ftype, freshtype) {
+function QSSXJOrgSelect(id, ftype, freshtype) { 
     $.ajax({
         type: "Post",
         url: '/JCFireInfo/getSXJQSSelect',
@@ -142,11 +172,41 @@ function QSSXJOrgSelect(id, ftype, freshtype) {
                         }
                     }
                     else {
-                        var p = $('#txtperson').val();
-                        if ($.trim(p) == "") {
-                            layer.alert("本单位人员不可为空", { icon: 5 });
-                            return false;
+                        //var p = $('#txtperson').val();
+                        //if ($.trim(p) == "") {
+                        //    layer.alert("本单位人员不可为空", { icon: 5 });
+                        //    return false;
+                        //}
+                        //发送 短信
+                        var fsperson = $('#hidtxt').val();
+                        var xgperson = $('#hidxgtxt').val();
+                        if (fsperson=="" && xgperson=="") {
+                            layer.alert("人员不可为空", { icon: 5 });
+                            return;
                         }
+                        $.ajax({
+                            type: "Post",
+                            url: '/JCFireInfo/SendMessage',
+                            data: { jcfid: id, fsperson: fsperson, xgperson: xgperson },
+                            dataType: "json",
+                            async: false, //默认为true 异步 
+                            success: function (str) {
+                                if (str.Success) {
+                                    layer.alert("签收下派成功", function (index) {
+                                        if (freshtype == "") {
+                                            FireAjax(ftype);//ajax更新状态
+                                        }
+                                        else {
+                                            window.location.reload();//页面重载
+                                        }
+                                        layer.close(index);
+                                    });
+                                }
+                                else {
+                                    layer.msg(str.Msg);
+                                }
+                            }
+                        });
                     }
                     contyQS(id, orgno, val, ftype, freshtype);
                     layer.close(index); //如果设定了yes回调，需进行手工关闭
@@ -320,8 +380,9 @@ function SelctOrgPeron(orgno) {
         yes: function (index, layero) {
             var body = layer.getChildFrame('body', index);
             var ss = body.find('input[name="txtid"]').val();
+            var sphone = body.find('input[name="txtphone"]').val();
             var sn = body.find('input[name="txtname"]').val();
-            $('#hidtxt').val(ss);
+            $('#hidtxt').val(sphone);
             $('#txtperson').val(sn);
             layer.close(index);
         },
@@ -367,6 +428,41 @@ function SelctHLYPerson() {
         }
     });
 }
+
+//组织机构人员选择
+function SelectOrgPerson(orgno)
+{
+    layer.open({
+        type: 2,
+        title: '相关人员选择',
+        //skin: 'layui-layer-molv',
+        area: ['660px', '400px'],
+        zIndex: layer.zIndex,
+        content: '/JCFireInfo/GetOrgUserIndex',//注意，如果str是object，那么需要字符拼接。$('#persontree'),
+        shadeClose: false,
+        offset: ['100px', '280px'],
+        btn: ["确定", "取消"],
+        yes: function (index, layero) {
+            var body = layer.getChildFrame('body', index);
+            console.info(body);
+            var ss = body.find('input[name="txtid"]').val();
+            var sn = body.find('input[name="txtname"]').val();
+            $('#hidxgtxt').val(ss);
+            $('#txtxgperson').val(sn);
+            layer.close(index);
+        },
+        cancel: function (index) {
+            layer.close(index);
+        },
+        success: function (layero, index) {
+            var s = $('#hidxgtxt').val();
+            var body = layer.getChildFrame('body', index);
+            body.find('input[name="txtid"]').val(s);
+        }
+    });
+}
+
+
 //通讯录人员选择
 function SelctTXLPeron(orgno) {
     layer.open({
@@ -381,6 +477,7 @@ function SelctTXLPeron(orgno) {
         btn: ["确定", "取消"],
         yes: function (index, layero) {
             var body = layer.getChildFrame('body', index);
+            console.info(body);
             var ss = body.find('input[name="txtid"]').val();
             var sn = body.find('input[name="txtname"]').val();
             $('#hidxgtxt').val(ss);

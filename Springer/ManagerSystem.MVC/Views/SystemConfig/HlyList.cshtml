@@ -2,11 +2,11 @@
     Layout = "~/Views/Shared/_LayOutIndex.cshtml";
 }
 
-
 <div class="easyui-layout" data-options="fit:true" style=" border:0;">
     <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
         @Html.Raw(@ViewBag.PageLeftMenu)
     </div>
+
     <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
         <div class="easyui-layout" data-options="fit:true" style=" border:0;">
             <div data-options="region:'center'" title="" style=" border: none; ">
@@ -14,50 +14,26 @@
                     @Html.Raw(@ViewBag.pageList)
                 </div>
             </div>
+
             <div data-options="region:'south'" title="" style=" height:120px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
                 <div class="divMan" style="text-align:left;">
                     <table cellpadding="0" cellspacing="0">
-
                         <tr class='row1'>
                             <td id='DW' rowspan="2"></td>
-                            <td>
-                                呼救号码:
-                            </td>
-                            <td>
-                                <input type="text" id="tbxNumber" value="" style="width:180px" />
-                            </td>
-                            <td>
-                                回传频率:
-                            </td>
-                            <td>
-                                <input type="text" id="tbxFrequence" value="" style="width:80px" />秒
-                            </td>
-                            <td>
-                                回传开始时间:
-                            </td>
-                            <td>
-                                <input type="text" id="tbxStartTime" value="" style="width:180px" />
-                            </td>
+                            <td>呼救号码:</td>
+                            <td><input type="text" id="tbxNumber" value="" style="width:180px" /></td>
+                            <td>回传频率:</td>
+                            <td><input type="text" id="tbxFrequence" value="" style="width:80px" />秒</td>
+                            <td> 回传开始时间:</td>
+                            <td><input type="text" id="tbxStartTime" value="" style="width:180px" /></td>
                         </tr>
                         <tr>
-                            <td>
-                                Web Service地址:
-                            </td>
-                            <td>
-                                <input type="text" id="tbxAddr" value="" style="width:180px" />
-                            </td>
-                            <td>
-                                回传有效日期:
-                            </td>
-                            <td>
-                                <input type="text" id="tbxDate" value="" style="width:180px" />
-                            </td>
-                            <td>
-                                回传结束时间:
-                            </td>
-                            <td>
-                                <input type="text" id="tbxEndTime" value="" style="width:180px" />
-                            </td>
+                            <td>Web Service地址:</td>
+                            <td><input type="text" id="tbxAddr" value="" style="width:180px" /></td>
+                            <td>回传有效日期:</td>
+                            <td><input type="text" id="tbxDate" value="" style="width:180px" /></td>
+                            <td>回传结束时间:</td>
+                            <td><input type="text" id="tbxEndTime" value="" style="width:180px" /></td>
                         </tr>
                         <tr>
                             <td colspan="7" style="text-align:center; vertical-align:middle;">
@@ -93,9 +69,7 @@
             url: '/SystemConfig/getHlyData',
             cache: false,
             timeout: 10000, //10秒后超时，如果为0则永不超时
-            data: {
-                orgno: orgno
-            },
+            data: { orgno: orgno },
             success: function (data, ioArgs) {
                 var ar = eval('(' + data + ')');
                 var arr = ar.split('$');
@@ -111,7 +85,7 @@
                 }
             },
             error: function (err, ioArgs) {
-                alert('登录异常');
+                layer.msg("系统异常!", { icon: 5 });
             }
         });
     }
@@ -124,8 +98,8 @@
         var tbxAddr = document.getElementById("tbxAddr").value.trim();
         var tbxDate = document.getElementById("tbxDate").value.trim();
         var dw = document.getElementById("DW").innerHTML;
-        if (dw =="" && tbxNumber == "" && tbxFrequence == "" && tbxStartTime == "" && tbxEndTime == "" && tbxAddr == "" && tbxDate == "") {
-            alert("请选中需要修改的单位！");
+        if (dw == "" && tbxNumber == "" && tbxFrequence == "" && tbxStartTime == "" && tbxEndTime == "" && tbxAddr == "" && tbxDate == "") {
+            layer.msg("请选中需要修改的单位!", { icon: 5 });
             return false;
         }
         $.ajax({
@@ -144,16 +118,17 @@
             success: function (data, ioArgs) {
                 var ar = eval('(' + data + ')');
                 if (ar.Success) {
-                    if (confirm(ar.Msg))
-                        //window.location.assign(ar.Url);
+                    layer.confirm(ar.Msg + ' 请返回?', { icon: 3, title: '提示' }, function (index) {
+                        layer.close(index);
                         window.location.reload();
+                    });
                 }
                 else {
-                    alert(ar.Msg);
+                    layer.msg(ar.Msg, { icon: 5 });
                 }
             },
             error: function (err, ioArgs) {
-                alert('保存异常');
+                layer.msg('保存异常!', { icon: 5 });
             }
         });
     }
@@ -166,33 +141,30 @@
         var tbxAddr = document.getElementById("tbxAddr").value.trim();
         var tbxDate = document.getElementById("tbxDate").value.trim();
         var dw = document.getElementById("DW").innerHTML;
-        if (dw == "" && tbxNumber == "" && tbxFrequence == "" && tbxStartTime == "" && tbxEndTime == "" && tbxAddr == "" && tbxDate == "")
-        {
-            alert("请选中需要修改的单位！");
+        if (dw == "" && tbxNumber == "" && tbxFrequence == "" && tbxStartTime == "" && tbxEndTime == "" && tbxAddr == "" && tbxDate == "") {
+            layer.msg('请选中需要修改的单位!', { icon: 5 });
             return false;
         }
-        if (confirm('要把参数设置默认值吗?')) {
+        layer.confirm('确认要把参数设置默认值吗?', { icon: 3, title: '提示' }, function (index) {
             $.ajax({
                 url: '/SystemConfig/Cancel',
                 cache: false,
-                data: {
-                    orgno: document.getElementById("txtOrgNo").value
-                },
+                data: { orgno: document.getElementById("txtOrgNo").value },
                 type: 'post',
                 error: function () {
-                    alert('错误:异常!', 'error');
+                    layer.msg("系统异常!", { icon: 5 });
                 },
                 success: function (re) {
                     var ar = eval('(' + re + ')');
                     if (ar.Success) {
-                        layer.msg('操作成功');
+                        layer.msg("操作成功!", { icon: 6 });
                         window.location.reload();
                     }
                     else {
-                        alert(ar.Msg, "Error");
+                        layer.msg(ar.Msg, { icon: 5 });
                     }
                 }
             });
-        }
+        });
     }
 </script>

@@ -1,0 +1,174 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+}
+@section Header{
+    <script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.8.2.min.js")"></script>
+    <link rel="stylesheet" href="~/js/esri/css/esri.css" />
+    <link rel="stylesheet" href="~/Content/themes/dijit/themes/tundra/tundra.css" />
+    <script src="~/js/init.js"></script>
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'center'" title="" style=" border: none;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <ul>
+                        <li class="homeUL">
+                            单位：<select id="tbxORGNO" onchange="query()">@Html.Raw(@ViewBag.vdOrg)</select>&nbsp;&nbsp;&nbsp;
+                            <select id="tbxType" style="width:85px;" onchange="query()">
+                                <option value="0">距离为零</option>
+                                <option value="">更新全部</option>
+                            </select>&nbsp;&nbsp;&nbsp;
+                            <input type="button" value="更新" onclick="update()" class="btnMdyCss" />
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; " class="LayoutCenterBG">
+                <div class="divTable" id="tableList">
+                    <input id="HidList" name="HidList" type="hidden" value="" />
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: red; font-size: 20px;" id="span1"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    query();
+    function query() {
+        $('#span1').html('');
+        $.ajax({
+            url: '/SystemConfig/GetHIdList',
+            type: "get",
+            data: { ORGNO: $('#tbxORGNO').val(), Type: $('#tbxType').val() },
+            dataType: 'json',
+            success: function (data) {
+                if (data.Success) {
+                    $('#HidList').val(data.Msg);
+                }
+                else {
+                    $('#HidList').val('');
+                }
+            },
+            error: function (error) {
+                layer.msg('查询异常!', { icon: 5 });
+            }
+        });
+    }
+
+    function update() {
+        var arrHid = $('#HidList').val().split(',');
+        if (arrHid.length > 1) {
+            $('#span1').html('开始更新护林员巡检路线距离。。。');
+            for (var i = 0; i < arrHid.length; i++) {
+                var num = i + 1;
+                $('#span1').html('正在更新第【' + num + '】条,总共【' + arrHid.length + '】条');
+                var patRollLength = getLocaCollectLine(arrHid[i]);
+                $.ajax({
+                    url: '/SystemConfig/HlyRouteManager',
+                    timeout: 10000, //10秒后超时，如果为0则永不超时
+                    data: { Hid: arrHid[i], PatRollLength: patRollLength },
+                    async: false,
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.Success) {
+                            
+                        }
+                        else {
+                            layer.msg(data.Msg, { icon: 5 });
+                        }
+                    },
+                    error: function (error) {
+                        layer.msg('巡检路线距离更新异常!', { icon: 5 });
+                    }
+                });
+            }
+            $('#span1').html('巡检路线距离更新完毕!');
+        }
+        else {
+            $('#span1').html('暂无可更新的巡检路线!');
+        }
+    }
+
+    //计算线长度
+    function getLocaCollectLine(id) {
+        var lenth = 0;
+        $.ajax({
+            type: "Post",
+            url: "/MapCommon/GetFRUserRots1",
+            data: { id: id, type: '0' },
+            dataType: "json",
+            async: false,
+            success: function (obj) {
+                if (obj != null && obj.Success) {
+                    var data = obj.Data;
+                    if (data != null) {
+                        var datalist = data.DataList;
+                        var arr = [];
+                        if (datalist.length > 0) {
+                            for (var j = 0; j < datalist.length; j++) {
+                                var ring = [];
+                                var ss = datalist[j];
+                                var str = "";
+                                var polyline = "";
+                                var s = "0";
+                                for (var i = 0; i < ss.length; i++) {
+                                    var lng = ss[i].LONGITUDE;
+                                    var lat = ss[i].LATITUDE;
+                                    if (!isNaN(lng) && !isNaN(lat)) {
+                                        var latlng = new esri.geometry.Point(parseFloat(lng), parseFloat(lat));
+                                        ring.push(latlng);
+                                        str += lng + "," + lat + "|";
+                                    }
+                                    var lineSymbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([255, 0, 0]), 5);
+                                    //获取线的点
+                                    polyline = new esri.geometry.Polyline(new esri.SpatialReference({ wkid: 4326 }));
+                                    polyline.addPath(ring);
+                                }
+                                arr.push(str);
+                                //计算线面的长度和面积
+                                length = parseFloat(parseFloat(length) + parseFloat(GetLenthorArea(polyline, "1"))).toFixed(2);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        return length;
+    }
+
+    //量算面积和长度方法：画图完毕后计算距离或者面积 type 1 为无需转经纬度坐标
+    function GetLenthorArea(geometry, type) {
+        var result = 0;
+        if (geometry.type == "polyline") {
+            var geo = new esri.geometry.webMercatorToGeographic(geometry);//投影坐标转84经纬度
+            if (type == "1") {//2 为经纬度坐标的地图
+                geo = geometry;
+            }
+            var Length = new esri.geometry.geodesicLengths([geo], esri.Units.METERS);
+            result = parseFloat(Length).toFixed(2);
+        }
+        else if (geometry.type == "polygon") {
+            var geo = new esri.geometry.webMercatorToGeographic(geometry);
+            if (type == "1") {//2 为经纬度坐标的地图
+                geo = geometry;
+            }
+            var Area = new esri.geometry.geodesicAreas([geo], esri.Units.SQUARE_METERS);
+            result = parseFloat(Area / 10000).toFixed(2);
+        }
+        return result;
+    }
+
+    //等待执行
+    function sleep(numberMillis) {
+        var now = new Date();
+        var exitTime = now.getTime() + numberMillis;
+        while (true) {
+            now = new Date();
+            if (now.getTime() > exitTime)
+                return;
+        }
+    }
+</script>

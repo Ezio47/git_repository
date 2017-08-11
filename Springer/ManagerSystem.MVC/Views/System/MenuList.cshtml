@@ -42,7 +42,7 @@
                     $('#divTable').html(ar.Msg);
                 }
                 else {
-                    layer.msg(ar.Msg);
+                    layer.msg(ar.Msg, { icon: 5 });
                 }
             },
             error: function () {
@@ -81,8 +81,9 @@
                 }
             });
         }
+
         if (Method == 'Del') {
-            if (confirm('确实要删除吗?')) {
+            layer.confirm('确实要删除吗?', { icon: 3, title: '提示' }, function (index) {
                 $.ajax({
                     url: '/System/MenuManager',
                     cache: false,
@@ -91,7 +92,7 @@
                     success: function (data) {
                         var ar = eval('(' + data + ')');
                         if (ar.Success) {
-                            alert(ar.Msg, { icon: 5 });
+                            layer.msg(ar.Msg, { icon: 6 });
                             Query();
                         }
                         else {
@@ -99,10 +100,10 @@
                         }
                     },
                     error: function () {
-                        layer.msg("删除异常!");
+                        layer.msg("删除异常!", { icon: 5 });
                     }
                 });
-            }
+            });
         }
     }  
 </script>

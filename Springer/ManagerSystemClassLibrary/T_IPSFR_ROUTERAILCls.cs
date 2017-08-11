@@ -63,7 +63,6 @@ namespace ManagerSystemClassLibrary
        }
        #endregion
 
-
        #region 获取一条记录
        /// <summary>
        /// 获取一条记录
@@ -99,9 +98,9 @@ namespace ManagerSystemClassLibrary
 
        #endregion
 
-       #region 获取列表
+       #region 获取数据列表
        /// <summary>
-       /// 获取列表
+       /// 获取数据列表
        /// </summary>
        /// <param name="sw">参见条件模型T_IPSFR_ROUTERAIL_SW</param>
        /// <returns>参见模型</returns>
@@ -128,5 +127,18 @@ namespace ManagerSystemClassLibrary
        }
 
        #endregion
-    }
+
+       #region 获取护林员的巡检路线数
+       /// <summary>
+       /// 获取护林员的巡检路线路
+       /// </summary>
+       /// <param name="sw">参见模型</param>
+       /// <returns></returns>
+       public static int GetRouteCount(T_IPSFR_ROUTERAIL_SW sw)
+       {
+           return BaseDT.T_IPSFR_ROUTERAIL.GetRouteCount(sw);
+       }
+       #endregion
+
+   }
 }

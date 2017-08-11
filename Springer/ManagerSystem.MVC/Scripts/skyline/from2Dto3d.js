@@ -176,7 +176,16 @@ function OnProjectLoadFinished() {
         sgworld.ProjectTree.SetVisibility(sgworld.ProjectTree.FindItem("电子监控"), false);
     if (sgworld.ProjectTree.FindItem("红外相机") != 0)
         sgworld.ProjectTree.SetVisibility(sgworld.ProjectTree.FindItem("红外相机"), false);
-
+    if (sgworld.ProjectTree.FindItem("火情档案") != 0)
+        sgworld.ProjectTree.SetVisibility(sgworld.ProjectTree.FindItem("火情档案"), false);
+    if (sgworld.ProjectTree.FindItem("有害生物监测点") != 0)
+        sgworld.ProjectTree.SetVisibility(sgworld.ProjectTree.FindItem("有害生物监测点"), false);
+    var AllNAME = $("#AllNAME").val();
+    var Allarr = AllNAME.split(',');
+    for (var i = 0; i < Allarr.length; i++) {
+        if (sgworld.ProjectTree.FindItem(Allarr[i]) != 0)
+            sgworld.ProjectTree.SetVisibility(sgworld.ProjectTree.FindItem(Allarr[i]), false);
+    }
     //边界
     if (sgworld.ProjectTree.FindItem("个旧边界") != 0)
         sgworld.ProjectTree.SetVisibility(sgworld.ProjectTree.FindItem("个旧边界"), false);

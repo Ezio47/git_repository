@@ -31,7 +31,7 @@
             </div>
             <div data-options="region:'center'" title="" style=" border: none; ">
                 <div class="divTable" id="tableContainer" style="height:100%;margin:0 0;">
-                    
+
                 </div>
             </div>
         </div>
@@ -39,8 +39,8 @@
 
 </div>
 <script type="text/javascript">
-    
-    function query(){
+
+    function query() {
         $.ajax({
             url: '/HUReport/getReportCountJson',
             cache: false,
@@ -64,18 +64,16 @@
         });
     }
 
-    //$(document).ready(function () {
-    //    $("#tableContainer").FixedHead({ tableLayout: "fixed" });
-    //});/HUReport/ReportCountExportExcel?TIMEBegin={0}&TIMEEnd={1}&BYORGNO={2}&HID={3}&SYSTYPEVALUE={4}
     function exportExcel() {
-        var url = '/HUReport/ReportCountExportExcel?TIMEBegin='+$('#tbxTIMEBegin').datebox('getValue')+'&TIMEEnd='+$('#tbxTIMEEnd').datebox('getValue')+'&BYORGNO='+document.getElementById("tbxBYORGNO").value+'';
+        var url = '/HUReport/ReportCountExportExcel?TIMEBegin=' + $('#tbxTIMEBegin').datebox('getValue') + '&TIMEEnd=' + $('#tbxTIMEEnd').datebox('getValue') + '&BYORGNO=' + document.getElementById("tbxBYORGNO").value + '';
         if (url == '') {
-            alert('请先查询!');
+            layer.msg('请先查询!', { icon: 5 });
         }
         else {
             window.location = url;
         }
     }
+
     function Echarts() {
         layer.open({
             type: 2,

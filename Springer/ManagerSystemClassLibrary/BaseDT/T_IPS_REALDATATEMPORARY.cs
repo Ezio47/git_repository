@@ -60,9 +60,13 @@ namespace ManagerSystemClassLibrary.BaseDT
                 {
                     sb.AppendFormat(" and a.BYORGNO like '{0}%'", PublicCls.getXianIncOrgNo(sw.ORGNO));
                 }
-                else
+                else if (PublicCls.OrgIsZhen(sw.ORGNO))
                 {
-                    sb.AppendFormat(" and a.BYORGNO = '{0}'", PublicCls.getZhenIncOrgNo(sw.ORGNO));
+                    sb.AppendFormat(" and a.BYORGNO like '{0}%'", PublicCls.getZhenIncOrgNo(sw.ORGNO));
+                }
+                else if (PublicCls.OrgIsCun(sw.ORGNO))
+                {
+                    sb.AppendFormat(" and a.BYORGNO like '{0}'", PublicCls.getCunIncOrgNo(sw.ORGNO));
                 }
             }
             if (string.IsNullOrEmpty(sw.PhoneHname) == false)
@@ -178,10 +182,10 @@ namespace ManagerSystemClassLibrary.BaseDT
     --and substring(BYORGNO,1,6)+'000'='532501000'
     group by  substring(BYORGNO,1,6)+'000',CONVERT(varchar(100),SBDATE, 111)
                  */
-                sb.AppendFormat(" select count(substring(BYORGNO,1,6)+'000') as C,substring(BYORGNO,1,6)+'000' as BYORGNO,SBDATE");
+                sb.AppendFormat(" select count(substring(BYORGNO,1,6)+'000000000') as C,substring(BYORGNO,1,6)+'000000000' as BYORGNO,SBDATE");
                 sb.AppendFormat(" FROM T_IPS_REALDATATEMPORARY a  LEFT OUTER JOIN T_IPSFR_USER b ON a.USERID = b.HID");
                 sb.AppendFormat(" WHERE   (SBDATE >= '{0}') AND (SBDATE <= '{1}')", sw.DateBegin, sw.DateEnd);
-                sb.AppendFormat(" group by  substring(BYORGNO,1,6)+'000',SBDATE");
+                sb.AppendFormat(" group by  substring(BYORGNO,1,6)+'000000000',SBDATE");
             }
             else if (PublicCls.OrgIsXian(sw.TopORGNO))
             {
@@ -193,7 +197,7 @@ namespace ManagerSystemClassLibrary.BaseDT
                 sb.AppendFormat(" select count(BYORGNO) as C, BYORGNO,SBDATE");
                 sb.AppendFormat(" FROM T_IPS_REALDATATEMPORARY a  LEFT OUTER JOIN T_IPSFR_USER b ON a.USERID = b.HID");
                 sb.AppendFormat(" WHERE   (SBDATE >= '{0}') AND (SBDATE <= '{1}')", sw.DateBegin, sw.DateEnd);
-                sb.AppendFormat(" and   substring(BYORGNO,1,6)+'000'='{0}'", sw.TopORGNO);
+                sb.AppendFormat(" and   substring(BYORGNO,1,6)+'000000000'='{0}'", sw.TopORGNO);
                 sb.AppendFormat(" group by  BYORGNO,SBDATE");
             }
             else
@@ -226,17 +230,17 @@ namespace ManagerSystemClassLibrary.BaseDT
             StringBuilder sb = new StringBuilder();
             if (PublicCls.OrgIsShi(sw.TopORGNO))
             {
-                sb.AppendFormat(" select sum(PATROLCOUNT) as C1,sum(PATROLYESCOUNT) as C2,sum(PATROLNOCOUNT) as C3,substring(BYORGNO,1,6)+'000' as BYORGNO");
+                sb.AppendFormat(" select sum(PATROLCOUNT) as C1,sum(PATROLYESCOUNT) as C2,sum(PATROLNOCOUNT) as C3,substring(BYORGNO,1,6)+'000000000' as BYORGNO");
                 sb.AppendFormat(" FROM T_IPS_REALDATATEMPORARY a  LEFT OUTER JOIN T_IPSFR_USER b ON a.USERID = b.HID");
                 sb.AppendFormat(" WHERE   (SBDATE >= '{0}') AND (SBDATE <= '{1}')", sw.DateBegin, sw.DateEnd);
-                sb.AppendFormat(" group by  substring(BYORGNO,1,6)+'000'");
+                sb.AppendFormat(" group by  substring(BYORGNO,1,6)+'000000000'");
             }
             else if (PublicCls.OrgIsXian(sw.TopORGNO))
             {
                 sb.AppendFormat(" select sum(PATROLCOUNT) as C1,sum(PATROLYESCOUNT) as C2,sum(PATROLNOCOUNT) as C3, BYORGNO");
                 sb.AppendFormat(" FROM T_IPS_REALDATATEMPORARY a  LEFT OUTER JOIN T_IPSFR_USER b ON a.USERID = b.HID");
                 sb.AppendFormat(" WHERE   (SBDATE >= '{0}') AND (SBDATE <= '{1}')", sw.DateBegin, sw.DateEnd);
-                sb.AppendFormat(" and   substring(BYORGNO,1,6)+'000'='{0}'", sw.TopORGNO);
+                sb.AppendFormat(" and   substring(BYORGNO,1,6)+'000000000'='{0}'", sw.TopORGNO);
                 sb.AppendFormat(" group by  BYORGNO");
             }
             else
@@ -263,17 +267,17 @@ namespace ManagerSystemClassLibrary.BaseDT
             StringBuilder sb = new StringBuilder();
             if (PublicCls.OrgIsShi(sw.TopORGNO))
             {
-                sb.AppendFormat(" select count(substring(BYORGNO,1,6)+'000') as C,sum(PATROLCOUNT) as C1,sum(PATROLYESCOUNT) as C2,sum(PATROLNOCOUNT) as C3,substring(BYORGNO,1,6)+'000' as BYORGNO");
+                sb.AppendFormat(" select count(substring(BYORGNO,1,6)+'000000000') as C,sum(PATROLCOUNT) as C1,sum(PATROLYESCOUNT) as C2,sum(PATROLNOCOUNT) as C3,substring(BYORGNO,1,6)+'000000000' as BYORGNO");
                 sb.AppendFormat(" FROM T_IPS_REALDATATEMPORARY a  LEFT OUTER JOIN T_IPSFR_USER b ON a.USERID = b.HID");
                 sb.AppendFormat(" WHERE   (SBDATE >= '{0}') AND (SBDATE <= '{1}')", sw.DateBegin, sw.DateEnd);
-                sb.AppendFormat(" group by  substring(BYORGNO,1,6)+'000'");
+                sb.AppendFormat(" group by  substring(BYORGNO,1,6)+'000000000'");
             }
             else if (PublicCls.OrgIsXian(sw.TopORGNO))
             {
                 sb.AppendFormat(" select count(BYORGNO) as C,sum(PATROLCOUNT) as C1,sum(PATROLYESCOUNT) as C2,sum(PATROLNOCOUNT) as C3, BYORGNO");
                 sb.AppendFormat(" FROM T_IPS_REALDATATEMPORARY a  LEFT OUTER JOIN T_IPSFR_USER b ON a.USERID = b.HID");
                 sb.AppendFormat(" WHERE   (SBDATE >= '{0}') AND (SBDATE <= '{1}')", sw.DateBegin, sw.DateEnd);
-                sb.AppendFormat(" and   substring(BYORGNO,1,6)+'000'='{0}'", sw.TopORGNO);
+                sb.AppendFormat(" and   substring(BYORGNO,1,6)+'000000000'='{0}'", sw.TopORGNO);
                 sb.AppendFormat(" group by  BYORGNO");
             }
             else
@@ -323,33 +327,33 @@ namespace ManagerSystemClassLibrary.BaseDT
             StringBuilder sb = new StringBuilder();
             if (PublicCls.OrgIsShi(sw.TopORGNO))
             {
-                sb.AppendFormat(" select count(substring(BYORGNO,1,6)+'000') as C,substring(BYORGNO,1,6)+'000' as BYORGNO,SBDATE,");
-                sb.AppendFormat(" case when(a.PATROLLENGTH-b.PATROLLENGTH)<{0} then 1 else 0 end as PatrolLenErro", LengthError);
+                sb.AppendFormat(" select count(substring(BYORGNO,1,6)+'000000000') as C,substring(BYORGNO,1,6)+'000000000' as BYORGNO,SBDATE,");
+                sb.AppendFormat(" case when(a.PATROLLENGTH/1000-b.PATROLLENGTH)<{0} then 1 else 0 end as PatrolLenErro", LengthError);
                 sb.AppendFormat(" FROM      T_IPSFR_USER a left outer join T_IPS_REALDATATEMPORARY  b on a.HID=b.USERID");
-                sb.AppendFormat(" where a.ISENABLE=1 and b.USERID is not null and a.PATROLLENGTH>0");
+                sb.AppendFormat(" where a.ISENABLE=1 and b.USERID is not null and a.PATROLLENGTH/1000>0");
                 sb.AppendFormat(" and   (SBDATE >= '{0}') AND (SBDATE <= '{1}')", sw.DateBegin, sw.DateEnd);
-                sb.AppendFormat(" group by SBDATE,substring(BYORGNO,1,6)+'000',case when(a.PATROLLENGTH-b.PATROLLENGTH)<{0} then 1 else 0 end", LengthError);
+                sb.AppendFormat(" group by SBDATE,substring(BYORGNO,1,6)+'000000000',case when(a.PATROLLENGTH/1000-b.PATROLLENGTH)<{0} then 1 else 0 end", LengthError);
             }
             else if (PublicCls.OrgIsXian(sw.TopORGNO))
             {
                 sb.AppendFormat(" select count(BYORGNO) as C,BYORGNO,SBDATE,");
-                sb.AppendFormat(" case when(a.PATROLLENGTH-b.PATROLLENGTH)<{0} then 1 else 0 end as PatrolLenErro", LengthError);
+                sb.AppendFormat(" case when(a.PATROLLENGTH/1000-b.PATROLLENGTH)<{0} then 1 else 0 end as PatrolLenErro", LengthError);
                 sb.AppendFormat(" FROM      T_IPSFR_USER a left outer join T_IPS_REALDATATEMPORARY  b on a.HID=b.USERID");
-                sb.AppendFormat(" where a.ISENABLE=1 and b.USERID is not null and a.PATROLLENGTH>0");
+                sb.AppendFormat(" where a.ISENABLE=1 and b.USERID is not null and a.PATROLLENGTH/1000>0");
                 sb.AppendFormat(" and   (SBDATE >= '{0}') AND (SBDATE <= '{1}')", sw.DateBegin, sw.DateEnd);
-                sb.AppendFormat(" and   substring(BYORGNO,1,6)+'000'='{0}'", sw.TopORGNO);
-                sb.AppendFormat(" group by SBDATE,BYORGNO,case when(a.PATROLLENGTH-b.PATROLLENGTH)<{0} then 1 else 0 end", LengthError);
+                sb.AppendFormat(" and   substring(BYORGNO,1,6)+'000000000'='{0}'", sw.TopORGNO);
+                sb.AppendFormat(" group by SBDATE,BYORGNO,case when(a.PATROLLENGTH/1000-b.PATROLLENGTH)<{0} then 1 else 0 end", LengthError);
 
             }
             else
             {
                 sb.AppendFormat(" select count(b.USERID) as C,b.USERID as BYORGNO,SBDATE,");
-                sb.AppendFormat(" case when(a.PATROLLENGTH-b.PATROLLENGTH)<{0} then 1 else 0 end as PatrolLenErro", LengthError);
+                sb.AppendFormat(" case when(a.PATROLLENGTH/1000-b.PATROLLENGTH)<{0} then 1 else 0 end as PatrolLenErro", LengthError);
                 sb.AppendFormat(" FROM      T_IPSFR_USER a left outer join T_IPS_REALDATATEMPORARY  b on a.HID=b.USERID");
-                sb.AppendFormat(" where a.ISENABLE=1 and b.USERID is not null and a.PATROLLENGTH>0");
+                sb.AppendFormat(" where a.ISENABLE=1 and b.USERID is not null and a.PATROLLENGTH/1000>0");
                 sb.AppendFormat(" and   (SBDATE >= '{0}') AND (SBDATE <= '{1}')", sw.DateBegin, sw.DateEnd);
                 sb.AppendFormat(" and   BYORGNO='{0}'", sw.TopORGNO);
-                sb.AppendFormat(" group by SBDATE,b.USERID,case when(a.PATROLLENGTH-b.PATROLLENGTH)<{0} then 1 else 0 end", LengthError);
+                sb.AppendFormat(" group by SBDATE,b.USERID,case when(a.PATROLLENGTH/1000-b.PATROLLENGTH)<{0} then 1 else 0 end", LengthError);
 
 
             }
@@ -368,7 +372,7 @@ namespace ManagerSystemClassLibrary.BaseDT
         public static DataTable getHRAndRealDataDT(T_IPS_REALDATATEMPORARYSW sw)
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormat(" SELECT   a.BYORGNO,a.HNAME,a.HID,a.PHONE,b.USERID, b.SBDATE,(b.PATROLLENGTH-a.PATROLLENGTH) as PatrolLenError,a.PATROLLENGTH,b.PATROLLENGTH as RealPATROLLENGTH");
+            sb.AppendFormat(" SELECT   a.BYORGNO,a.HNAME,a.HID,a.PHONE,b.USERID, b.SBDATE,(b.PATROLLENGTH-a.PATROLLENGTH/1000) as PatrolLenError,a.PATROLLENGTH/1000,b.PATROLLENGTH as RealPATROLLENGTH");
             sb.AppendFormat(" FROM      T_IPSFR_USER a left outer join T_IPS_REALDATATEMPORARY  b on a.HID=b.USERID");
             sb.AppendFormat(" where a.ISENABLE=1 and b.USERID is not null");//护林员启用状态
             if (string.IsNullOrEmpty(sw.DateBegin) == false)

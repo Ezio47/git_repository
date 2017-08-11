@@ -2,32 +2,27 @@
     Layout = "~/Views/Shared/_LayOutIndex.cshtml";
 }
 @section Header{
-<script src="~/Scripts/scroll.js"></script>
-<style type="text/css">
-    table tbody td {
-        word-break: break-all;
-        word-wrap: break-word;
-    }
-</style>
+    <script src="~/Scripts/scroll.js"></script>
+    <style type="text/css">
+        table tbody td {
+            word-break: break-all;
+            word-wrap: break-word;
+        }
+    </style>
 
 }
 <div class="easyui-layout" data-options="fit:true" style=" border:0;">
-
-
     <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
         @Html.Raw(@ViewBag.PageLeftMenu)
     </div>
-    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
 
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
         <div class="easyui-layout" data-options="fit:true" style=" border:0;">
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
                 <div class="divOP">
                     <div class="home ">
-                        单位：<select id="tbxBYORGNO">
-                            @Html.Raw(@ViewBag.vdOrg)
-                        </select>
-                       
-开始时间：<input class="easyui-datebox" id="tbxTIMEBegin" type="text" style="width:90px;height:28px;" value="@ViewBag.TIMEBegin" />
+                        单位：<select id="tbxBYORGNO">@Html.Raw(@ViewBag.vdOrg)</select>
+                        开始时间：<input class="easyui-datebox" id="tbxTIMEBegin" type="text" style="width:90px;height:28px;" value="@ViewBag.TIMEBegin" />
                         结束时间<input class="easyui-datebox" id="tbxTIMEEnd" type="text" value="@ViewBag.TIMEEnd" style="width:90px;height:28px;" />
 
                         <input type="button" value="查询" onclick="query()" class="btnSearchCss" />
@@ -39,15 +34,14 @@
             <div data-options="region:'center'" title="" style=" border: none; ">
 
                 <div class="divTable" id="tableContainer" style="height:100%;margin:0 0;">
-                   
+
                 </div>
             </div>
         </div>
     </div>
 
-</div>                                             
+</div>
 <script type="text/javascript">
-
     function query() {
         $.ajax({
             url: '/HUReport/getRouteDetailJson',
@@ -71,6 +65,7 @@
             }
         });
     }
+
     function exportExcel() {
         var url = '/HUReport/PatrolRouteStatExportExcel?TIMEBegin=' + $('#tbxTIMEBegin').datebox('getValue') + '&TIMEEnd=' + $('#tbxTIMEEnd').datebox('getValue') + '&BYORGNO=' + document.getElementById("tbxBYORGNO").value;
         window.location = url;

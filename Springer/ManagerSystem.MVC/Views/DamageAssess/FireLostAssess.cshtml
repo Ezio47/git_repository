@@ -187,7 +187,7 @@
         <div data-options="region:'south'" title="" style=" height:35px; border: none; overflow:hidden; text-align:center;">
             <div class="divOP">
                 <input type="button" value="保 存" onclick="SaveLostInfo('Save')" class="btnSaveCss" />&nbsp;&nbsp;&nbsp;
-                <input type="button" value="报 表" onclick="Report()" class="btnDefaultValueCss" />&nbsp;&nbsp;&nbsp;
+                <input type="button" value="报 表" onclick="LostInfoReport()" class="btnDefaultValueCss" />&nbsp;&nbsp;&nbsp;
             </div>
         </div>
     </div>
@@ -693,8 +693,8 @@
         });
     }
 
-    //火情信息报表
-    function Report() {
+    //灾损评估报表
+    function LostInfoReport() {
         SaveLostInfo('Report')
         layer.open({
             type: 2,

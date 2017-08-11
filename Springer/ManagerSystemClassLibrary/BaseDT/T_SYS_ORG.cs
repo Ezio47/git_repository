@@ -213,7 +213,7 @@ namespace ManagerSystemClassLibrary.BaseDT
                     sb.AppendFormat(" AND (SUBSTRING(ORGNO,1,4)='{0}' and SUBSTRING(ORGNO,7,3) = '000')", ClsSql.EncodeSql(sw.TopEchartORGNO.Substring(0, 4)));
                 else if (sw.TopEchartORGNO.Substring(6, 9) == "000000000")//获取县以及县下面的镇
                     sb.AppendFormat(" AND (SUBSTRING(ORGNO,1,6)='{0}')", ClsSql.EncodeSql(sw.TopEchartORGNO.Substring(0, 6)));
-                else if (sw.TopORGNO.Substring(9, 6) == "000000")//获取所有乡镇的
+                else if (sw.TopEchartORGNO.Substring(9, 6) == "000000")//获取所有乡镇的
                     sb.AppendFormat(" AND SUBSTRING(ORGNO,1,9) = '{0}'", ClsSql.EncodeSql(sw.TopEchartORGNO.Substring(0, 9)));
                 else
                     sb.AppendFormat(" AND ORGNO='{0}'", ClsSql.EncodeSql(sw.TopEchartORGNO));

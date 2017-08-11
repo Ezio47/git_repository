@@ -3,37 +3,30 @@
     Layout = "~/Views/Shared/_LayOutIndex.cshtml";
 }
 <div class="easyui-layout" data-options="fit:true" style=" border:0;">
-
-
     <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
         @Html.Raw(@ViewBag.PageLeftMenu)
     </div>
+
     <div data-options="region:'center'" title="">
-
         <div class="easyui-layout" data-options="fit:true" style=" border:0;">
-
-
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
                 <div class="divOP">
                     <div class="homeUL">
                         <input id="tbxPARAMID" type="hidden" value="" />
-
                         参数值：<input type="text" id="tbxPARAMVALUE" value="" style="width:350px" />
                         <input type="hidden" id="tbxParamaterFlag" />
-                        <input type="button" value="修 改" onclick="Manager('Mdy')" class="btnDelCss">
+                        <input type="button" value="修 改" onclick="Manager('Mdy')" class="btnMdyCss">
                     </div>
                 </div>
             </div>
-            <div data-options="region:'center'" title="" style=" border: none; " class="LayoutCenterBG">
 
+            <div data-options="region:'center'" title="" style=" border: none; " class="LayoutCenterBG">
                 <div class="divTable">
                     @Html.Raw(@ViewBag.PARAMETERlist)
                 </div>
             </div>
-
         </div>
     </div>
-
 </div>
 
 <script type="text/javascript">
@@ -43,10 +36,7 @@
             url: '/SystemConfig/getPARAMETERJson',
             cache: false,
             timeout: 10000, //10秒后超时，如果为0则永不超时
-
-            data: {
-                ID: ID
-            },
+            data: { ID: ID },
             success: function (data, ioArgs) {
                 var ar = eval('(' + data + ')');
                 if (ar.PARAMID != null) {
@@ -79,8 +69,10 @@
             success: function (data, ioArgs) {
                 var ar = eval('(' + data + ')');
                 if (ar.Success) {
-                    if (confirm(ar.Msg + ' 请返回！'))
+                    layer.confirm(ar.Msg + ' 请返回?', { icon: 3, title: '提示' }, function (index) {
+                        layer.close(index);
                         window.location.assign(ar.Url);
+                    })
                 }
                 else {
                     layer.msg(ar.Msg, { icon: 5 });

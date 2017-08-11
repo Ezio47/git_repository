@@ -95,6 +95,13 @@ namespace ManagerSystem.MVC.Controllers
             return View(model);
         }
 
+        public ActionResult TreeORGUSERGet()
+        {
+            string ID = Request.Params["id"];
+            string result = T_SYS_ORG_LINKCls.GetOrgTree(ID);
+            return Content(result, "application/json");
+        }
+
         /// <summary>
         /// 通讯录树形菜单
         /// </summary>

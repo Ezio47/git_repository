@@ -1,27 +1,20 @@
 ﻿@{
-    //ViewBag.Title =  "首页";
-    // Layout = "~/Views/Shared/_LayoutNoMap.cshtml";
     Layout = "~/Views/Shared/_LayoutIndex.cshtml";
 }
 @section Header{
     <link href="@Url.Content("~/Scripts/umeditor/themes/default/css/umeditor.css")" type="text/css" rel="stylesheet">
-
     <script type="text/javascript" charset="utf-8" src="@Url.Content("~/Scripts/umeditor/umeditor.config.js")"></script>
     <script type="text/javascript" charset="utf-8" src="@Url.Content("~/Scripts/umeditor/umeditor.min.js")"></script>
     <script type="text/javascript" src="@Url.Content("~/Scripts/umeditor/lang/zh-cn/zh-cn.js")"></script>
 }
 
 <div class="easyui-layout" data-options="fit:true" style=" border:0;">
-
-
-    <div data-options="region:'west'" title="" style=" width:220px;">       
-         @Html.Raw(@ViewBag.PageLeftMenu)
+    <div data-options="region:'west'" title="" style=" width:220px;">
+        @Html.Raw(@ViewBag.PageLeftMenu)
     </div>
-    <div data-options="region:'center'" title="" >
 
+    <div data-options="region:'center'" title="">
         <div class="easyui-layout" data-options="fit:true" style=" border:0;">
-
-
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
                 <div class="divOP">
                     <div class="homeUL ">
@@ -32,6 +25,7 @@
                     </div>
                 </div>
             </div>
+
             <div data-options="region:'center'" title="" class="LayoutCenterBG">
                 <div class="divMan">
                     <table cellpadding="0" cellspacing="0">
@@ -43,58 +37,46 @@
                             </td>
                         </tr>
                         <tr>
-                            <td>
-                                抄送:
-                            </td>
+                            <td>抄送: </td>
                             <td>
                                 <input type="text" id="tbxEMAILCOPYUSERLIST" readonly value="" onfocus="reset()" style="height:25px;width:700px" />
                                 <input type="hidden" id="csrid" />
                             </td>
                         </tr>
                         <tr>
-                            <td>
-                                密送:
-                            </td>
+                            <td>密送:</td>
                             <td>
                                 <input type="text" id="tbxEMAILSECRETUSERLIST" readonly value="" onfocus="reset()" style="height:25px;width:700px" />
                                 <input type="hidden" id="msrid" />
                             </td>
                         </tr>
                         <tr>
-                            <td>
-                                主题:
-                            </td>
+                            <td>主题:</td>
                             <td>
                                 <input type="text" id="tbxEMAILTITLE" value="" style="height:25px;width:700px" />
                                 <input type="hidden" id="hidvalue" value="0" />
                             </td>
                         </tr>
                         <tr>
-                            <td>
-                                附件:
-                            </td>
+                            <td>附件:</td>
                             <td>
                                 <input id="tbxEMAILID" name="tbxEMAILID" type="hidden" value="" style="width:700px;" />
-                                <form id="uploadForm" enctype="multipart/form-data">     
-                                            <input id="attachment" name="file" value="" style="height:25px;width:450px" />
+                                <form id="uploadForm" enctype="multipart/form-data">
+                                    <input id="attachment" name="file" value="" style="height:25px;width:450px" />
                                     <input type="button" onclick="upload()" value="上传" class="btnUploadCss" />
                                     <input type="button" onclick="cancel()" value="取消" class="btnCancelCss" />
-                                            <div id="div_files">
-                                                <ul id="ul_files"></ul>
-                                            </div>
+                                    <div id="div_files">
+                                        <ul id="ul_files"></ul>
+                                    </div>
                                 </form>
                             </td>
                         </tr>
                         <tr>
+                            <td>正文:</td>
                             <td>
-                                正文:
-                            </td>
-                            <td>
-                                <script type="text/plain" id="myEditor" style="width:700px;height:170px;">
-                                </script>
-                            </td>
+                            <script type="text/plain" id="myEditor" style="width:700px;height:170px;">
+                            </script></td>
                         </tr>
-
                     </table>
                 </div>
             </div>
@@ -102,10 +84,7 @@
     </div>
 
     <div data-options="region:'east'" title="" style=" width:250px; border: none; ">
-
         <div class="easyui-layout" data-options="fit:true" style=" border:0;">
-
-
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
                 <div class="divOP left ">
                     <div class="DefaultDivTitle wd_9">选择发送对象</div>
@@ -114,345 +93,332 @@
             <div data-options="region:'center'" title="" style=" border: none; ">
                 <div id="tt" style="width:auto;overflow:hidden;" data-options="fit:true" class="easyui-tree" checkbox="true"></div>
             </div>
-
         </div>
     </div>
-
 </div>
-        <script type="text/javascript">
-            var um = UM.getEditor('myEditor');
-            UM.getEditor('myEditor').setContent("", false);
-            $.ajax({
-                url: '/Email/GetEmailJson',
-                timeout: 10000, //10秒后超时，如果为0则永不超时
 
-                data: {
-                    ID: '@ViewBag.T_ID'
-                },
-                type: 'post',
-                success: function (data) {
-                    var ar = eval('(' + data + ')');
-                    if (ar.EMAILID != null) {
-                        document.getElementById("tbxEMAILID").value = ar.EMAILID;
-                        document.getElementById("tbxEMAILTITLE").value = ar.EMAILTITLE;
-                        document.getElementById("tbxEMAILRECUSERLIST").value = ar.EMAILRECUSERLIST1;
-                        document.getElementById("tbxEMAILCOPYUSERLIST").value = ar.EMAILCOPYUSERLIST1;
-                        document.getElementById("tbxEMAILSECRETUSERLIST").value = ar.EMAILSECRETUSERLIST1;
-                        document.getElementById("sjrid").value = ar.EMAILRECUSERLIST;
-                        document.getElementById("csrid").value = ar.EMAILCOPYUSERLIST;
-                        document.getElementById("msrid").value = ar.EMAILSECRETUSERLIST;
-                        UM.getEditor('myEditor').setContent(ar.EMAILCONTENT, false);
+<script type="text/javascript">
+    var um = UM.getEditor('myEditor');
+    UM.getEditor('myEditor').setContent("", false);
+
+    $.ajax({
+        url: '/Email/GetEmailJson',
+        timeout: 10000, //10秒后超时，如果为0则永不超时
+        data: { ID: '@ViewBag.T_ID' },
+        type: 'post',
+        success: function (data) {
+            var ar = eval('(' + data + ')');
+            if (ar.EMAILID != null) {
+                document.getElementById("tbxEMAILID").value = ar.EMAILID;
+                document.getElementById("tbxEMAILTITLE").value = ar.EMAILTITLE;
+                document.getElementById("tbxEMAILRECUSERLIST").value = ar.EMAILRECUSERLIST1;
+                document.getElementById("tbxEMAILCOPYUSERLIST").value = ar.EMAILCOPYUSERLIST1;
+                document.getElementById("tbxEMAILSECRETUSERLIST").value = ar.EMAILSECRETUSERLIST1;
+                document.getElementById("sjrid").value = ar.EMAILRECUSERLIST;
+                document.getElementById("csrid").value = ar.EMAILCOPYUSERLIST;
+                document.getElementById("msrid").value = ar.EMAILSECRETUSERLIST;
+                UM.getEditor('myEditor').setContent(ar.EMAILCONTENT, false);
+            }
+            else {
+                UM.getEditor('myEditor').setContent('', false);
+            }
+        },
+        error: function (err, ioArgs) {
+            layer.msg('系统异常!', { icon: 5 });
+        }
+    });
+
+    $.ajax({
+        url: '/Email/GetEmailFILEJson',
+        timeout: 10000, //10秒后超时，如果为0则永不超时
+        data: { ID: '@ViewBag.T_ID' },
+        success: function (data) {
+            var ar = eval('(' + data + ')');
+            if (ar.length > 0) {
+                for (var i = 0; i < ar.length; i++) {
+                    if (ar[i].BYEMAILID != null) {
+                        $li = $('<li><a href="' + ar[i].EMAILFILETITLE + '">' + ar[i].EMAILFILENAME + '</a> $nbsp;$nbsp;').appendTo($('#ul_files'));
+                        $del = $('<a id="' + ar[i].EMAILFILENAME + '"  href="javascript:void(0);" onclick="del(this,' + ar[i].EFID + ');"> 删 除</a>').appendTo($li);
+                        $end = $('<br /></li>').appendTo($del);
                     }
-                    else {
-                        UM.getEditor('myEditor').setContent('', false);
-                    }
-                },
-                error: function (err, ioArgs) {
-                    layer.msg('登录异常');
                 }
-            });
-            $.ajax({
-                url: '/Email/GetEmailFILEJson',
-                timeout: 10000, //10秒后超时，如果为0则永不超时
-
-                data: {
-                    ID: '@ViewBag.T_ID'
-                },
-                success: function (data) {
-                    var ar = eval('(' + data + ')');
-                    if (ar.length > 0) {
-                        for (var i = 0; i < ar.length; i++) {
-                            if (ar[i].BYEMAILID != null) {
-                                $li = $('<li><a href="' + ar[i].EMAILFILETITLE + '">' + ar[i].EMAILFILENAME + '</a> $nbsp;$nbsp;').appendTo($('#ul_files'));
-                                $del = $('<a id="' + ar[i].EMAILFILENAME + '"  href="javascript:void(0);" onclick="del(this,' + ar[i].EFID + ');"> 删 除</a>').appendTo($li);
-                                $end = $('<br /></li>').appendTo($del);
-                            }
-                        }
-                    }
-                },
-                error: function (err, ioArgs) {
-                    layer.msg('登录异常');
-                }
-            });
-            $(function () {
-                var sd = [];
-                $('#tt').tree({
-                    url: '/Email/TreeUSERGet',
-                    checked: false,
-                    animate: true,
-                    lines: true,
-                    cache: false,
-                    onCheck: function (node, checked) {
-                        if (checked) {
-                            var ss = getChecked();
-                        }
-                        else {
-                            var ss = getChecked();
-                        }
-                        if ($.trim(ss) != "") {
-                            sd = ss.split("|");
-                        }
-                        else {
-                            sd[0] = "";
-                            sd[1] = "";
-                        }
-                        var va = $('#hidvalue').val();
-                        if (va == "0") {
-                            // var sd = ss.split("|");
-                            $('#tbxEMAILRECUSERLIST').val(sd[0]);
-                            $('#sjrid').val(sd[1]);
-                        }
-                        else if (va == "1") {
-                            // var sd = ss.split("|");
-                            $('#tbxEMAILCOPYUSERLIST').val(sd[0]);
-                            $('#csrid').val(sd[1]);
-                        }
-                        else if (va == "2") {
-                            //var sd = ss.split("|");
-                            $('#tbxEMAILSECRETUSERLIST').val(sd[0]);
-                            $('#msrid').val(sd[1]);
-                        }
-                    }
-                });
-            })
-
-            function getChecked() {
-                var nodes = $('#tt').tree('getChecked');
-                var s = '';
-                var d = '';
-                if (nodes.length != 0) {
-                    for (var i = 0; i < nodes.length; i++) {
-                        if (nodes[i].id == '') {
-                            continue;
-                        }
-                        if (s != '') s += ',';
-                        if (d != '') d += ',';
-                        s += nodes[i].text;
-                        d += nodes[i].id;
-                    }
-                    return s + "|" + d;
+            }
+        },
+        error: function (err, ioArgs) {
+            layer.msg('系统异常!', { icon: 5 });
+        }
+    });
+    $(function () {
+        var sd = [];
+        $('#tt').tree({
+            url: '/Email/TreeUSERGet',
+            checked: false,
+            animate: true,
+            lines: true,
+            cache: false,
+            onCheck: function (node, checked) {
+                if (checked) {
+                    var ss = getChecked();
                 }
                 else {
-                    return "";
+                    var ss = getChecked();
+                }
+                if ($.trim(ss) != "") {
+                    sd = ss.split("|");
+                }
+                else {
+                    sd[0] = "";
+                    sd[1] = "";
+                }
+                var va = $('#hidvalue').val();
+                if (va == "0") {
+                    $('#tbxEMAILRECUSERLIST').val(sd[0]);
+                    $('#sjrid').val(sd[1]);
+                }
+                else if (va == "1") {
+                    $('#tbxEMAILCOPYUSERLIST').val(sd[0]);
+                    $('#csrid').val(sd[1]);
+                }
+                else if (va == "2") {
+                    $('#tbxEMAILSECRETUSERLIST').val(sd[0]);
+                    $('#msrid').val(sd[1]);
+                }
+            }
+        });
+    })
+
+    function getChecked() {
+        var nodes = $('#tt').tree('getChecked');
+        var s = '';
+        var d = '';
+        if (nodes.length != 0) {
+            for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].id == '') {
+                    continue;
+                }
+                if (s != '') s += ',';
+                if (d != '') d += ',';
+                s += nodes[i].text;
+                d += nodes[i].id;
+            }
+            return s + "|" + d;
+        }
+        else {
+            return "";
+        }
+    }
+
+    //初始化
+    function reset() {
+        var s1 = $('#tbxEMAILRECUSERLIST').val();//发件人
+        var s2 = $('#tbxEMAILCOPYUSERLIST').val();//抄送人
+        var s3 = $('#tbxEMAILSECRETUSERLIST').val();//密送人
+        var sd0 = $('#sjrid').val();//发件人id
+        var str0 = sd0.split(",");
+        var sd1 = $('#csrid').val();//抄送人id
+        var str1 = sd1.split(",");
+        var sd2 = $('#msrid').val();//秘送人id
+        var str2 = sd2.split(",");
+        if (document.activeElement.id == "tbxEMAILRECUSERLIST") {//收件人
+            $('#hidvalue').val(0);
+            if ($.trim(s1) == "") {
+                $('#tt').tree();
+                $('#sjrid').val('');
+            }
+            else {
+                //去除抄送人id
+                for (var i = 0; i < str1.length ; i++) {
+                    var node = $('#tt').tree('find', str1[i]);
+                    $('#tt').tree('uncheck', node.target);
+                }
+                //去除秘送人id
+                for (var i = 0; i < str2.length ; i++) {
+                    var node = $('#tt').tree('find', str2[i]);
+                    $('#tt').tree('uncheck', node.target);
+                }
+                //check 收件人
+                for (var i = 0; i < str0.length ; i++) {
+                    var node = $('#tt').tree('find', str0[i]);
+                    $('#tt').tree('check', node.target);
                 }
 
             }
-
-            //初始化
-            function reset() {
-
-                var s1 = $('#tbxEMAILRECUSERLIST').val();//发件人
-                var s2 = $('#tbxEMAILCOPYUSERLIST').val();//抄送人
-                var s3 = $('#tbxEMAILSECRETUSERLIST').val();//密送人
-                var sd0 = $('#sjrid').val();//发件人id
-                var str0 = sd0.split(",");
-                var sd1 = $('#csrid').val();//抄送人id
-                var str1 = sd1.split(",");
-                var sd2 = $('#msrid').val();//秘送人id
-                var str2 = sd2.split(",");
-                if (document.activeElement.id == "tbxEMAILRECUSERLIST") {//收件人
-                    $('#hidvalue').val(0);
-                    if ($.trim(s1) == "") {
-                        $('#tt').tree();
-                        $('#sjrid').val('');
-                    }
-                    else {
-                        //去除抄送人id
-                        for (var i = 0; i < str1.length ; i++) {
-                            var node = $('#tt').tree('find', str1[i]);
-                            $('#tt').tree('uncheck', node.target);
-                        }
-                        //去除秘送人id
-                        for (var i = 0; i < str2.length ; i++) {
-                            var node = $('#tt').tree('find', str2[i]);
-                            $('#tt').tree('uncheck', node.target);
-                        }
-                        //check 收件人
-                        for (var i = 0; i < str0.length ; i++) {
-                            var node = $('#tt').tree('find', str0[i]);
-                            $('#tt').tree('check', node.target);
-                        }
-
-                    }
-                } else if (document.activeElement.id == "tbxEMAILCOPYUSERLIST") {//抄送人
-                    $('#hidvalue').val(1);
-                    if ($.trim(s2) == "") {
-                        $('#tt').tree();
-                        $('#csrid').val('');
-                    }
-                    else {
-                        //去收件人id
-                        for (var i = 0; i < str0.length ; i++) {
-                            var node = $('#tt').tree('find', str0[i]);
-                            $('#tt').tree('uncheck', node.target);
-                        }
-                        //去除秘送人id
-                        for (var i = 0; i < str2.length ; i++) {
-                            var node = $('#tt').tree('find', str2[i]);
-                            $('#tt').tree('uncheck', node.target);
-                        }
-                        //check 抄送人
-                        for (var i = 0; i < str1.length ; i++) {
-                            var node = $('#tt').tree('find', str1[i]);
-                            $('#tt').tree('check', node.target);
-                        }
-
-                    }
-                } else {
-                    $('#hidvalue').val(2);
-                    if ($.trim(s3) == "") {
-                        $('#tt').tree();
-                        $('#msrid').val('');
-                    }
-                    else {
-                        //去收件人id
-                        for (var i = 0; i < str0.length ; i++) {
-                            var node = $('#tt').tree('find', str0[i]);
-                            $('#tt').tree('uncheck', node.target);
-                        }
-                        //去除抄送人id
-                        for (var i = 0; i < str1.length ; i++) {
-                            var node = $('#tt').tree('find', str1[i]);
-                            $('#tt').tree('uncheck', node.target);
-                        }
-                        //check 秘送人
-                        for (var i = 0; i < str2.length ; i++) {
-                            var node = $('#tt').tree('find', str2[i]);
-                            $('#tt').tree('check', node.target);
-                        }
-
-                    }
-                }
+        }
+        else if (document.activeElement.id == "tbxEMAILCOPYUSERLIST") {//抄送人
+            $('#hidvalue').val(1);
+            if ($.trim(s2) == "") {
+                $('#tt').tree();
+                $('#csrid').val('');
             }
-            function Manager() {
+            else {
+                //去收件人id
+                for (var i = 0; i < str0.length ; i++) {
+                    var node = $('#tt').tree('find', str0[i]);
+                    $('#tt').tree('uncheck', node.target);
+                }
+                //去除秘送人id
+                for (var i = 0; i < str2.length ; i++) {
+                    var node = $('#tt').tree('find', str2[i]);
+                    $('#tt').tree('uncheck', node.target);
+                }
+                //check 抄送人
+                for (var i = 0; i < str1.length ; i++) {
+                    var node = $('#tt').tree('find', str1[i]);
+                    $('#tt').tree('check', node.target);
+                }
+
+            }
+        }
+        else {
+            $('#hidvalue').val(2);
+            if ($.trim(s3) == "") {
+                $('#tt').tree();
+                $('#msrid').val('');
+            }
+            else {
+                //去收件人id
+                for (var i = 0; i < str0.length ; i++) {
+                    var node = $('#tt').tree('find', str0[i]);
+                    $('#tt').tree('uncheck', node.target);
+                }
+                //去除抄送人id
+                for (var i = 0; i < str1.length ; i++) {
+                    var node = $('#tt').tree('find', str1[i]);
+                    $('#tt').tree('uncheck', node.target);
+                }
+                //check 秘送人
+                for (var i = 0; i < str2.length ; i++) {
+                    var node = $('#tt').tree('find', str2[i]);
+                    $('#tt').tree('check', node.target);
+                }
+
+            }
+        }
+    }
+
+    function Manager() {
+        $.ajax({
+            url: '/Email/EmailManager',
+            data: {
+                EMAILID: document.getElementById("tbxEMAILID").value,
+                EMAILTITLE: document.getElementById("tbxEMAILTITLE").value,
+                EMAILRECUSERLIST: $('#sjrid').val(),
+                EMAILCOPYUSERLIST: $('#csrid').val(),
+                EMAILSECRETUSERLIST: $('#msrid').val(),
+                EMAILCONTENT: UM.getEditor('myEditor').getContent(),
+                Method: '@ViewBag.T_Method',
+                returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)',
+            },
+            type: 'post',
+            success: function (data) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    if (confirm(ar.Msg + ' 请返回?'))
+                        window.location.assign(ar.Url);
+                }
+                else {
+                    layer.alert(ar.Msg, { icon: 5 });
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('保存异常!', { icon: 5 });
+            }
+        });
+    }
+</script>
+
+<script type="text/javascript">
+    $(function () {
+        //附件
+        $('#attachment').filebox({
+            buttonText: '选择文件'
+        })
+    });
+
+    //增加附件
+    var attr = [];
+    function upload() {
+        var path = $("#attachment").filebox('getValue');
+        if (path == null || path == "" || path == undefined) {
+            layer.msg("请选择附件!", { icon: 5 });
+            return;
+        }
+        var name = path.split('\\')[path.split('\\').length - 1];
+        for (var i = 0; i < attr.length; i++) {
+            if (attr[i] == name) {
+                layer.msg("请勿重复上传附件!", { icon: 5 });
+                return;
+            }
+        }
+        var hz = name.split('.')[1];
+        if (hz == "exe") {
+            layer.msg("不允许上传exe文件!", { icon: 5 });
+            return;
+        }
+        var formData = new FormData($("#uploadForm")[0]);
+        formData.append("emailid", $('#tbxEMAILID').val())
+        $.ajax({
+            type: "post",
+            url: "@Url.Action("Uploadfire","Email")",
+            data: formData,
+            dataType: "json",
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (data) {
+                if (data.Success) {
+                    attr.push(name);
+                    $li = $('<li><a href="#">' + name + '</a> $nbsp;$nbsp;').appendTo($('#ul_files'));
+                    //$del = $('<img id="' + name + '" src="../Content/themes/easyui/icons/cancel.png" href="javascript:void(0);" onclick="del(this);" />').appendTo($li);
+                    $del = $('<a id="' + name + '"  href="javascript:void(0);" onclick="del(this,' + data.Url + ');"> 删 除</a>').appendTo($li);
+                    $end = $('<br /></li>').appendTo($del);
+                    $('#tbxEMAILID').val(data.Msg);
+                }
+            },
+            error: function (data) {
+                layer.msg("上传失败", { icon: 5 });
+            }
+        });
+        $("#attachment").filebox('clear');
+    };
+
+    function del(s, value) {
+        $.messager.confirm('确认', '您确认想要删除记录吗？', function (r) {
+            if (r) {
                 $.ajax({
-                    url: '/Email/EmailManager',
-                    data: {
-                        EMAILID: document.getElementById("tbxEMAILID").value,
-                        EMAILTITLE: document.getElementById("tbxEMAILTITLE").value,
-                        EMAILRECUSERLIST: $('#sjrid').val(),
-                        EMAILCOPYUSERLIST: $('#csrid').val(),
-                        EMAILSECRETUSERLIST: $('#msrid').val(),
-                        //EMAILRECUSERLIST: document.getElementById("tbxEMAILRECUSERLIST").value,
-                        //EMAILCOPYUSERLIST: document.getElementById("tbxEMAILCOPYUSERLIST").value,
-                        //EMAILSECRETUSERLIST: document.getElementById("tbxEMAILSECRETUSERLIST").value,
-                        EMAILCONTENT: UM.getEditor('myEditor').getContent(),
-                        Method: '@ViewBag.T_Method',
-                        returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)',
-                    },
+                    url: '/Email/DEL',
+                    data: { EFID: value,Method: 'DEL',},
                     type: 'post',
                     success: function (data) {
                         var ar = eval('(' + data + ')');
                         if (ar.Success) {
-                            if (confirm(ar.Msg + ' 请返回！')) 
-                                window.location.assign(ar.Url);                            
+                            s.parentNode.remove();
+                            attr.remove(s.id);
                         }
                         else {
-                            layer.alert(ar.Msg, { icon: 5 });
+                            layer.alert('删除失败!', { icon: 5 });
                         }
                     },
-                    error: function (err, ioArgs) {
-                        layer.msg('保存异常');
-                    }
-                });
-            }
-        </script>
-        <script type="text/javascript">
-            $(function () {
-                //附件
-                $('#attachment').filebox({
-                    buttonText: '选择文件'
-                })
-            });
-            //增加附件
-            var attr = [];
-            function upload(){
-                var path = $("#attachment").filebox('getValue');
-                if (path == null || path == "" || path == undefined) {
-                    layer.msg("请选择附件！");
-                    return;
-                }
-                var name = path.split('\\')[path.split('\\').length - 1];
-                for (var i = 0; i < attr.length; i++) {
-                    if (attr[i] == name) {
-                        layer.msg("请勿重复上传附件！");
-                        return;
-                    }
-                }
-                var hz = name.split('.')[1];
-                if (hz == "exe") {
-                    layer.msg("不允许上传exe文件!");
-                    return;
-                }
-
-                //upload method
-                var formData = new FormData($("#uploadForm")[0]);
-                formData.append("emailid", $('#tbxEMAILID').val())
-                $.ajax({
-                    type: "post",
-                    url: "@Url.Action("Uploadfire","Email")",
-                    data: formData,
-                    dataType: "json",
-                    async: false,
-                    cache: false,
-                    contentType: false,
-                    processData: false,
-                    success: function (data) {
-                        if (data.Success) {
-                            attr.push(name);
-                            $li = $('<li><a href="#">' + name + '</a> $nbsp;$nbsp;').appendTo($('#ul_files'));
-                            //$del = $('<img id="' + name + '" src="../Content/themes/easyui/icons/cancel.png" href="javascript:void(0);" onclick="del(this);" />').appendTo($li);
-                            $del = $('<a id="' + name + '"  href="javascript:void(0);" onclick="del(this,' + data.Url + ');"> 删 除</a>').appendTo($li);
-                            $end = $('<br /></li>').appendTo($del);
-                            $('#tbxEMAILID').val(data.Msg);
-                        }
+                    error: function () {
+                        layer.msg('系统异常!', { icon: 5 });
                     },
-                    error: function (data) {
-                        layer.msg("上传失败");
-                    }
                 });
-                $("#attachment").filebox('clear');
 
-            };
-            function del(s, value) {
-                $.messager.confirm('确认', '您确认想要删除记录吗？', function (r) {
-                    if (r) {
-                        $.ajax({
-                            url: '/Email/DEL',
-                            data: {
-                                EFID: value,
-                                Method: 'DEL',
-                            },
-                            type: 'post',
-                            success: function (data) {
-                                var ar = eval('(' + data + ')');
-                                if (ar.Success) {
-                                    s.parentNode.remove();
-                                    attr.remove(s.id);
-                                }
-                                else {
-                                    layer.alert('删除失败', { icon: 5 });
-                                }
-                            },
-                            error: function () {
-                                layer.msg('错误:异常!', 'error');
-                            },
-                        });
-
-                    }
-                })
             }
+        })
+    }
 
-            //删除JS数组中的某个元素
-            Array.prototype.remove = function (val) {
-                var index = this.indexOf(val);
-                if (index > -1) {
-                    this.splice(index, 1);
-                }
-            };
+    //删除JS数组中的某个元素
+    Array.prototype.remove = function (val) {
+        var index = this.indexOf(val);
+        if (index > -1) {
+            this.splice(index, 1);
+        }
+    };
 
-            //取消上传
-            function cancel() {
-                $("#attachment").filebox('clear');
-            }
-        </script>
+    //取消上传
+    function cancel() {
+        $("#attachment").filebox('clear');
+    }
+</script>

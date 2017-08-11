@@ -15,7 +15,7 @@
     <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
         <div class="divOP">
             <div style=" color: #3c7915;">
-                年份：<input id="tbxREPORTYEAR" type="text" class="Wdate" style="width:100px;" value="@ViewBag.REPORTYEAR" onclick="WdatePicker({ dateFmt: 'yyyy'})" />
+                年份：<input id="tbxREPORTYEAR" type="text" class="Wdate" style="width:100px;" value="@ViewBag.REPORTYEAR" onfocus="Query()" onclick="WdatePicker({ dateFmt: 'yyyy'})" />
                 单位：<select id="tbxBYORGNO" onchange="Query()">@Html.Raw(@ViewBag.vdOrg)</select>&nbsp;&nbsp;&nbsp;
                 <input type="button" class="btnSaveCss" value="保存" onclick="Manager()" id="Save" />
             </div>
@@ -175,6 +175,112 @@
 </div>
 
 <script type="text/javascript">
+    var dic305Value = $('#dic305Value').val().split(',');
+    var dic305Count = $('#dic305Count').val();
+    if (dic305Count != "") {
+        dic305Count = parseInt(dic305Count);
+    }
+    var dic311Value = $('#dic311Value').val().split(',');
+    var dic311Count = $('#dic311Count').val();
+    if (dic311Count != "") {
+        dic311Count = parseInt(dic311Count);
+    }
+    if ('@ViewBag.Method' == 'Add') {
+        var REPORTYEAR = $("#tbxREPORTYEAR").val();
+        var BYORGNO = $("#tbxBYORGNO").val();
+        $.ajax({
+            url: '/FIRERECORD/GetReport9json',
+            cache: false,
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: { REPORTYEAR: REPORTYEAR, BYORGNO: BYORGNO },//'ViewBag.REOPRTYEAR'
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                console.info(ar);
+                for (var i = 0; i < ar.length; i++) {
+                    if (ar[i].REPORTYEAR != null && ar[i].BYORGNO !== null) {
+                        for (var x = 0; x < dic305Count; x++) {
+                            for (var y = 0; y < dic311Count; y++) {
+                                var temp = x.toString() + y.toString();
+                                if (ar[i].SSXTYPELEVELCODE == dic305Value[x] && ar[i].REPORTCODE == dic311Value[y]) {
+                                    $('#tbx' + temp + '').val(ar[i].REPORTVALUE);
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("登录异常", { icon: 5 });
+
+            }
+        });
+    }
+    function Query() {
+        //var dic305Value = $('#dic305Value').val().split(',');
+        //var dic305Count = $('#dic305Count').val();
+        //if (dic305Count != "") {
+        //    dic305Count = parseInt(dic305Count);
+        //}
+        //var dic311Value = $('#dic311Value').val().split(',');
+        //var dic311Count = $('#dic311Count').val();
+        //if (dic311Count != "") {
+        //    dic311Count = parseInt(dic311Count);
+        //}
+        var REPORTYEAR = $("#tbxREPORTYEAR").val();
+        var BYORGNO = $("#tbxBYORGNO").val();
+        $.ajax({
+            url: '/FIRERECORD/GetReport9json',
+            cache: false,
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: { REPORTYEAR: REPORTYEAR, BYORGNO: BYORGNO },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.length > 0) {
+                    //将数据先都清零
+                    for (var x = 0; x < dic305Count; x++) {
+                        for (var y = 0; y < dic311Count; y++) {
+                            var temp = x.toString() + y.toString();
+                            if (temp !== x.toString() + (dic311Count - 1)) {
+                                $('#tbx' + temp + '').val("0");
+                            }
+                            else {
+                                $('#tbx' + temp + '').val("");
+                            }
+                        }
+                    }
+                    // 将取到的值赋值到界面
+                    for (var i = 0; i < ar.length; i++) {
+                        if (ar[i].REPORTYEAR != null && ar[i].BYORGNO !== null) {
+                            for (var x = 0; x < dic305Count; x++) {
+                                for (var y = 0; y < dic311Count; y++) {
+                                    var temp = x.toString() + y.toString();
+                                    if (ar[i].SSXTYPELEVELCODE == dic305Value[x] && ar[i].REPORTCODE == dic311Value[y]) {
+                                        $('#tbx' + temp + '').val(ar[i].REPORTVALUE);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    for (var x = 0; x < dic305Count; x++) {
+                        for (var y = 0; y < dic311Count; y++) {
+                            var temp = x.toString() + y.toString();
+                            if (temp !== x.toString() + (dic311Count - 1)) {
+                                $('#tbx' + temp + '').val("0");
+                            }
+                            else {
+                                $('#tbx' + temp + '').val("");
+                            }
+                        }
+                    }
+
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("查询异常!", { icon: 5 });
+            }
+        });
+    }
     function WriteBeiZhu() {
         document.getElementById('tbx118').value = $("#tbx018").val();
         document.getElementById('tbx218').value = $("#tbx018").val();
@@ -188,16 +294,6 @@
         }
     }
     function Manager() {
-        var dic305Value = $('#dic305Value').val().split(',');
-        var dic305Count = $('#dic305Count').val();
-        if (dic305Count != "") {
-            dic305Count = parseInt(dic305Count);
-        }
-        var dic311Value = $('#dic311Value').val().split(',');
-        var dic311Count = $('#dic311Count').val();
-        if (dic311Count != "") {
-            dic311Count = parseInt(dic311Count);
-        }
         var strREPORTCODE = "";
         var strSSXTYPELEVELCODE = "";
         var strREPORTVALUE = "";
@@ -247,10 +343,15 @@
             success: function (data, ioArgs) {
                 var ar = eval('(' + data + ')');
                 if (ar.Success) {
-                    if (confirm(ar.Msg + ' 请返回?')) {
+                    //if (confirm(ar.Msg + ' 请返回?')) {
+                    //    var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                    //    parent.layer.close(index);
+                    //}
+                    layer.confirm(ar.Msg + ' 请返回?', { icon: 3, title: '提示' }, function (index2) {
+                        layer.close(index2);
                         var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
                         parent.layer.close(index);
-                    }
+                    });
                 }
                 else {
                     layer.msg(ar.Msg, { icon: 5 });

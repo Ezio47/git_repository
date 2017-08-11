@@ -300,11 +300,11 @@
                     });
                 }
                 else {
-                    alert(ar.Msg);
+                    layer.msg(ar.Msg);
                 }
             },
             error: function (err, ioArgs) {
-                alert('保存异常');
+                layer.msg('保存异常');
             }
         });
     }

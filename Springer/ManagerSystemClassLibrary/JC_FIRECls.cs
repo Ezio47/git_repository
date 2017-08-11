@@ -51,6 +51,11 @@ namespace ManagerSystemClassLibrary
                 Message msgUser = BaseDT.JC_FIRE.PLAdd(m);
                 return new Message(msgUser.Success, msgUser.Msg, m.returnUrl);
             }
+            if (m.opMethod == "PLEnd")
+            {
+                Message msgUser = BaseDT.JC_FIRE.PLEnd(m);
+                return new Message(msgUser.Success, msgUser.Msg, m.returnUrl);
+            }
             return new Message(false, "无效操作", "");
         }
 
@@ -392,6 +397,7 @@ namespace ManagerSystemClassLibrary
                 m.PFUSERID = dt.Rows[i]["PFUSERID"].ToString();
                 m.PFNAME = BaseDT.T_SYSSEC_USER.getName(dtUser, m.PFUSERID);
                 m.FirePropModel = null;//需要再扩充
+                m.HOTTYPE = dt.Rows[i]["HOTTYPE"].ToString();
                 result.Add(m);
             }
             dt.Clear();

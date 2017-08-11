@@ -21,7 +21,6 @@ namespace ManagerSystemClassLibrary
     public class T_IPSFR_USERCls
     {
         #region 增、删、改
-
         /// <summary>
         /// 增、删、改
         /// </summary>
@@ -239,7 +238,6 @@ namespace ManagerSystemClassLibrary
             Model.LineInCount = dtRealTmp.Rows.Count.ToString();
             Model.LineOutCount = (dtFRUser.Rows.Count - dtRealTmp.Rows.Count).ToString();
             Model.LineOutRouteCount = dtRealTmp.Select("ISOUTRAIL=1").Count().ToString();//rRealTmp[0]["ISOUTRAIL"].ToString()
-
             return Model;
         }
         #endregion
@@ -563,7 +561,15 @@ namespace ManagerSystemClassLibrary
                     for (int i = 0; i < drFRUser.Length; i++)
                     {
                         JObject rootC = new JObject { { "id", drFRUser[i]["HID"].ToString() }, { "text", drFRUser[i]["HNAME"].ToString() }, { "treeType", "hly" } };
-                        jObjects.Add(rootC);
+                        //jObjectsC.Add(rootC);
+                        if (string.IsNullOrEmpty(OrgNo))//县级用户登录
+                        {
+                            jObjectsC.Add(rootC);
+                        }
+                        else
+                        {
+                            jObjects.Add(rootC);
+                        }
                     }
                     #endregion
 
@@ -809,7 +815,15 @@ namespace ManagerSystemClassLibrary
                         sb.AppendFormat("{0}[{1}]</font>", drFRUser[i]["HNAME"].ToString(), drFRUser[i]["PHONE"].ToString());
                         JObject rootC = new JObject { { "id", drFRUser[i]["HID"].ToString() }, { "text", sb.ToString() }, { "treeType", "hly" } };
                         //root.Add("children", getTreeChild(dtOrg, dtFRUser, drFRUser[i]["ORGNO"].ToString()));//继续获取护林员
-                        jObjects.Add(rootC);
+                        
+                        if (string.IsNullOrEmpty(OrgNo))//县级用户登录
+                        {
+                            jObjectsC.Add(rootC);
+                        }
+                        else
+                        {
+                            jObjects.Add(rootC);
+                        }
                     }
                     #endregion
 
@@ -1787,7 +1801,7 @@ namespace ManagerSystemClassLibrary
                     {
                         StringBuilder sb = new StringBuilder();
                         sb.AppendFormat("<font title={0}>", drLink[i]["PHONE"].ToString());
-                        sb.AppendFormat("{0}[{1}] </font>", drLink[i]["NAME"].ToString(), drLink[i]["USERJOB"].ToString());
+                        sb.AppendFormat("{0}[{1}{2}] </font>", drLink[i]["NAME"].ToString(), drOrg[0]["ORGNAME"].ToString().ToString(), drLink[i]["USERJOB"].ToString());
                         JObject roota = new JObject 
                         { 
                         { "id", drLink[i]["PHONE"].ToString()},
@@ -1835,7 +1849,7 @@ namespace ManagerSystemClassLibrary
                     {
                         StringBuilder sb = new StringBuilder();
                         sb.AppendFormat("<font title={0}>", drLink[i]["PHONE"].ToString());
-                        sb.AppendFormat("{0}[{1}] </font>", drLink[i]["NAME"].ToString(), drLink[i]["USERJOB"].ToString());
+                        sb.AppendFormat("{0}[{1}{2}] </font>", drLink[i]["NAME"].ToString(), drOrg[0]["ORGNAME"].ToString(), drLink[i]["USERJOB"].ToString());
                         JObject rootc = new JObject
                         { 
                            { "id",drLink[i]["PHONE"].ToString()},
@@ -1893,7 +1907,7 @@ namespace ManagerSystemClassLibrary
                     {
                         StringBuilder sb = new StringBuilder();
                         sb.AppendFormat("<font title={0}>", drLink[i]["PHONE"].ToString());
-                        sb.AppendFormat("{0}[{1}] </font>", drLink[i]["NAME"].ToString(), drLink[i]["USERJOB"].ToString());
+                        sb.AppendFormat("{0}[{1}{2}] </font>", drLink[i]["NAME"].ToString(), drOrg[0]["ORGNAME"].ToString(), drLink[i]["USERJOB"].ToString());
                         JObject rootf = new JObject
                         { 
                            { "id", drLink[i]["PHONE"].ToString()},

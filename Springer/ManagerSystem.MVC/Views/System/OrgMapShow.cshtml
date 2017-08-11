@@ -28,11 +28,11 @@
                     $('#divTable').html(ar.tableInfo);
                 }
                 else {
-                    alert('查询异常，请重试');
+                    layer.msg('查询异常，请重试');
                 }
             },
             error: function (err, ioArgs) {
-                alert('登录异常，请重试');
+                layer.msg('登录异常，请重试');
             }
         });
     }

@@ -1,0 +1,239 @@
+﻿@using ManagerSystemClassLibrary;
+@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+    var curorgno1 = SystemCls.getCurUserOrgNo();//添加的时候组织机判断
+}
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'center'" title="" style=" border: none; ">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="homeUL">
+                        <input type="button" value="保存" onclick="Manager()" id="btnSave" class="btnSaveCss">
+                    </div>
+                </div>
+            </div>
+
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <div class="divMan">
+                    <table cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td style="width:80px;">单位：</td>
+                            <td><select id="BYORGNO" class="easyui-combotree" style="width:200px;"></select></td>
+                            <td style="width:80px;">结构类型：</td>
+                            <td><select id="STRUCTURETYPE">@Html.Raw(@ViewBag.structureadd)</select></td>
+                        </tr>
+                        <tr>
+                            <td style="width:80px;"><span style="color:red;">*</span>名称：</td>
+                            <td><input type="text" id="NAME" class="input-small" value="" /></td>
+                            <td style="width:80px;"><span style="color:red;">*</span>编号：</td>
+                            <td><input id="NUMBER" type="text" class="input-small" value="" /></td>
+                        </tr>
+                        <tr>
+                            <td style="width:80px;"> 经度： </td>
+                            <td><input id="JD" type="text" class="input-small" value="" /></td>
+                            <td style="width:80px;"> 纬度：</td>
+                            <td>
+                                <input id="WD" type="text" class="input-small" value="" />
+                                <input type="button" value="地图定位" onclick="setPoint()" class="btnMapLoaclCss" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:80px;">建筑面积：</td>
+                            <td><input id="AREA" type="text" class="input-small" value="" />平方米 </td>
+                            <td style="width:80px;"> 楼层： </td>
+                            <td><input id="FLOOR" type="text" class="input-small" value="" /></td>
+                        </tr>
+                        <tr>
+                            <td style="width:80px;">附属设施：</td>
+                            <td colspan="3"><input id="SUBFACILITIES" type="text" class="input-small" value="" /></td>
+                        </tr>
+                        <tr>
+                            <td style="width:100px;">规划建设日期：</td>
+                            <td>
+                                开始时间:<input class="easyui-datebox" id="BUILDDATEBEGIN" type="text" style="width:90px;height:28px;" value="" />&nbsp;&nbsp;
+                                结束时间:<input class="easyui-datebox" id="BUILDDATEEND" type="text" style="width:90px;height:28px;" value="" />
+                            </td>
+                            <td style="width:80px;">建成日期：</td>
+                            <td><input class="easyui-datebox" id="BUILDDATE" type="text" style="width:90px;height:28px;" value="" /></td>
+                        </tr>
+                        <tr>
+                            <td style="width:80px;">总价：</td>
+                            <td><input id="WORTH" type="text" class="input-small" value="" />元</td>
+                            <td style="width:80px;">备注：</td>
+                            <td><input id="MARK" type="text" class="input-small" value="" /></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $('#BYORGNO').combotree({
+            url: '/DataCenter/OnlyOrgTreeget',
+            editable: false,
+            required: true,
+            panelHeight: 300,
+            onLoadSuccess: function (node, data) {
+                var t = $("#BYORGNO").combotree('tree');//获取tree
+                t.tree("collapseAll");
+                node = t.tree("find", data[0].id);
+                t.tree("expand", node.target);//展开节点 expandTo
+            }
+        });
+        $('#BYORGNO').combotree('setValue', "@curorgno1");
+    });
+    if ('@ViewBag.T_Method' == "Del") {
+        Manager();
+    }
+    if ('@ViewBag.T_Method' == 'Mdy') {
+        $.ajax({
+            url: '/DataCenter/GetCAMPjson',
+            cache: false,
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: { DC_UTILITY_CAMP_ID: '@ViewBag.ID' },
+            success: function (data, ioArgs) {
+                var data = eval('(' + data + ')');
+                if (data.DC_UTILITY_CAMP_ID != null) {
+                    document.getElementById("NUMBER").value = data.NUMBER;
+                    document.getElementById("NAME").value = data.NAME;
+                    document.getElementById("AREA").value = data.AREA;
+                    document.getElementById("FLOOR").value = data.FLOOR;
+                    document.getElementById("STRUCTURETYPE").value = data.STRUCTURETYPE;
+                    document.getElementById("SUBFACILITIES").value = data.SUBFACILITIES;
+                    document.getElementById("MARK").value = data.MARK;
+                    document.getElementById("JD").value = data.JD;
+                    document.getElementById("WD").value = data.WD;
+                    $('#BYORGNO').combotree('setValue', data.ORGNOS);
+                    document.getElementById("WORTH").value = data.WORTH;
+                    $('#BUILDDATE').datebox('setValue', data.BUILDDATE);
+                    $('#BUILDDATEBEGIN').datebox('setValue', data.BUILDDATEBEGIN);
+                    $('#BUILDDATEEND').datebox('setValue', data.BUILDDATEEND);
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('登录异常');
+            }
+        });
+    }
+
+    function setPoint() {
+        var name = document.getElementById("NAME").value;
+        var jd = document.getElementById("JD").value;
+        var wd = document.getElementById("WD").value;
+        layer.open({
+            type: 2,
+            title: name + '地图位置设置',
+            btn: ['保存', '关闭'],
+            area: ['100%', '100%'],
+            fix: true, //不固定
+            maxmin: true,
+            content: '/MapCommon/GetMapPontIndex?jd=' + jd + "&wd=" + wd,
+            shade: 0,
+            yes: function (index, layero) { //或者使用btn1
+                //按钮【按钮一】的回调
+                var ptxt = layer.getChildFrame("p", index);
+                var arr = ptxt.html().split(',');
+                if ($.trim(arr) != "") {
+                    var jd = parseFloat(arr[0]).toFixed(6);
+                    var wd = parseFloat(arr[1]).toFixed(6);
+                    $('#JD').val(jd);
+                    $('#WD').val(wd);
+                }
+                layer.close(index);
+            }, cancel: function (index) {
+                layer.close(index);
+            }
+        });
+    }
+    function Manager() {
+        var t1 = $('#JD').val();
+        var t2 = $('#WD').val();
+        var t3 = $('#WORTH').val();
+        var t4 = $('#AREA').val();
+        var t5 = $('#NAME').val();
+        var t6 = $('#NUMBER').val();
+        if ($.trim(t1) != "") {
+            reg = /^-?\d+\.\d{1,6}$/;
+            if (!reg.test(t1)) {
+                layer.msg('经度格式不正确！', { icon: 5 });
+                $('#JD').focus();
+                return;
+            }
+        }
+        if ($.trim(t2) != "") {
+            reg = /^-?\d+\.\d{1,6}$/;
+            if (!reg.test(t2)) {
+                layer.msg('纬度格式不正确！', { icon: 5 });
+                $('#WD').focus();
+                return;
+            }
+        }
+        if ($.trim(t3) != "") {
+            if (CheckNUM($.trim(t3)) == false) {
+                layer.msg('总价请填写数字！', { icon: 5 });
+                $('#WORTH').focus();
+                return;
+            }
+        }
+        if ($.trim(t4) != "") {
+            if (CheckNUM($.trim(t4)) == false) {
+                layer.msg('面积请填写数字！', { icon: 5 });
+                $('#AREA').focus();
+                return;
+            }
+        }
+        if ($.trim(t5) == "") {
+            layer.msg('请填写名称！', { icon: 5 });
+            $('#NAME').focus();
+            return;
+        }
+        if ($.trim(t6) == "") {
+            layer.msg('请填写编号！', { icon: 5 });
+            $('#NUMBER').focus();
+            return;
+        }
+
+        $.ajax({
+            type: "Post",
+            url: "/DataCenter/CAMPManager",
+            data: {
+                DC_UTILITY_CAMP_ID: '@ViewBag.ID',
+                Method: '@ViewBag.T_Method',
+                NUMBER: document.getElementById("NUMBER").value,
+                NAME: document.getElementById("NAME").value,
+                AREA: document.getElementById("AREA").value,
+                FLOOR: document.getElementById("FLOOR").value,
+                STRUCTURETYPE: document.getElementById("STRUCTURETYPE").value,
+                SUBFACILITIES: document.getElementById("SUBFACILITIES").value,
+                MARK: document.getElementById("MARK").value,
+                JD: document.getElementById("JD").value,
+                WD: document.getElementById("WD").value,
+                ORGNOS: $('#BYORGNO').combotree('getValue'),
+                WORTH: document.getElementById("WORTH").value,
+                BUILDDATE: $('#BUILDDATE').datebox('getValue'),
+                BUILDDATEBEGIN: $('#BUILDDATEBEGIN').datebox('getValue'),
+                BUILDDATEEND: $('#BUILDDATEEND').datebox('getValue'),
+            },
+            dataType: "json",
+            success: function (data) {
+                if (data.Success) {
+                    parent.layer.msg(data.Msg,{ icon: 6 });
+                    var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                    parent.layer.close(index);
+                }
+                else {
+                    layer.msg(data.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('保存异常!');
+            }
+        });
+    }
+</script>
+
+

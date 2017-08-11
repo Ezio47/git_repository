@@ -297,17 +297,17 @@ namespace ManagerSystemClassLibrary
        private static string getHUCountByOnstate(DataTable dt, string orgNo, string value)
        {
            string str = "";
-           if (orgNo.Substring(4, 5) == "00000")//统计市
+           if (orgNo.Substring(4, 11) == "00000000000")//统计市
            {
                    str = dt.Compute("count(HID)", "substring(BYORGNO,1,4)='" + orgNo.Substring(0, 4) + "' and ONSTATE=" + value + "").ToString();
            }
-           else if (orgNo.Substring(6, 3) == "000")//县
+           else if (orgNo.Substring(6, 9) == "000000000")//县
            {
                    str = dt.Compute("count(HID)", "substring(BYORGNO,1,6)='" + orgNo.Substring(0, 6) + "' and ONSTATE=" + value + "").ToString();
            }
            else
            {
-                   str = dt.Compute("count(HID)", "BYORGNO='" + orgNo + "' and ONSTATE=" + value + "").ToString();
+               str = dt.Compute("count(HID)", "substring(BYORGNO,1,9)='" + orgNo + "' and ONSTATE=" + value + "").ToString();
            }
            return str;
        }
@@ -321,14 +321,14 @@ namespace ManagerSystemClassLibrary
        private static string getHUCountBySex(DataTable dt, string orgNo, string value)
        {
            string str = "";
-           if (orgNo.Substring(4, 5) == "00000")//统计市
+           if (orgNo.Substring(4, 11) == "00000000000")//统计市
            {
                if (string.IsNullOrEmpty(value))
                    str = dt.Compute("count(HID)", "substring(BYORGNO,1,4)='" + orgNo.Substring(0, 4) + "'").ToString();
                else
                    str = dt.Compute("count(HID)", "substring(BYORGNO,1,4)='" + orgNo.Substring(0, 4) + "' and SEX=" + value + "").ToString();
            }
-           else if (orgNo.Substring(6, 3) == "000")//县
+           else if (orgNo.Substring(6, 9) == "000000000")//县
            {
                if (string.IsNullOrEmpty(value))
                    str = dt.Compute("count(HID)", "substring(BYORGNO,1,6)='" + orgNo.Substring(0, 6) + "'").ToString();
@@ -338,9 +338,9 @@ namespace ManagerSystemClassLibrary
            else
            {
                if (string.IsNullOrEmpty(value))
-                   str = dt.Compute("count(HID)", "BYORGNO='" + orgNo + "'").ToString();
+                   str = dt.Compute("count(HID)", "substring(BYORGNO,1,9)='" + orgNo + "'").ToString();
                else
-                   str = dt.Compute("count(HID)", "BYORGNO='" + orgNo + "' and SEX=" + value + "").ToString();
+                   str = dt.Compute("count(HID)", "substring(BYORGNO,1,9)='" + orgNo + "' and SEX=" + value + "").ToString();
            }
            return str;
        }

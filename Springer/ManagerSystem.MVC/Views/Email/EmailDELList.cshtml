@@ -1,34 +1,25 @@
 ﻿@{
-    //ViewBag.Title =  "首页";
     Layout = "~/Views/Shared/_LayOutIndex.cshtml";
-    // Layout = null;
 }
 @section Header{
 }
 
 <div class="easyui-layout" data-options="fit:true" style=" border:0;">
-
-
     <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
-       
-                    @Html.Raw(@ViewBag.PageLeftMenu)
+        @Html.Raw(@ViewBag.PageLeftMenu)
     </div>
+
     <div data-options="region:'center'" title="">
-
         <div class="easyui-layout" data-options="fit:true" style=" border:0;">
-
-
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
                 <div class="divOP">
                     <div class="home ">
                         主题:<input id="tbxEMAILTITLE" type="text" style="width:200px" value="@ViewBag.EMAILTITLE" />
-
                         <input type="button" value="搜索" onclick="query()" class="btnSearchCss" />
                     </div>
                 </div>
             </div>
             <div data-options="region:'center'" title="" class="LayoutCenterBG">
-
                 <div class="divTable">
                     @Html.Raw(ViewBag.EmaildelList)
                 </div>
@@ -36,40 +27,33 @@
             <div data-options="region:'south'" title="" style=" height:40px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
                 @Html.Raw(@ViewBag.PagerInfo)
             </div>
-
         </div>
     </div>
-
 </div>
 
-        <script type="text/javascript">
-          
-            function query() {
-                //alert(document.getElementById("tbxEMAILTITLE").value);
-                //alert(document.getElementById("selPageSize").value);
-                //alert(document.getElementById("selPage").value);
-                $.ajax({
-                    url: '/Email/EmailDELListQuery',
-                    timeout: 10000, //10秒后超时，如果为0则永不超时
-                    data: {
-                        EMAILTITLE: document.getElementById("tbxEMAILTITLE").value,
-                        PageSize: document.getElementById("selPageSize").value,
-                        Page: document.getElementById("selPage").value,
-                    },
-                    type: 'post',
-                    success: function (data) {
-                        var ar = eval('(' + data + ')');
-                        if (ar.Success) {
-                            window.location.assign(ar.Url);
-
-                        }
-                        else {
-                            layer.msg(ar.Msg);
-                        }
-                    },
-                    error: function (err, ioArgs) {
-                        layer.msg('登录异常');
-                    }
-                });
+<script type="text/javascript">
+    function query() {
+        $.ajax({
+            url: '/Email/EmailDELListQuery',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: {
+                EMAILTITLE: document.getElementById("tbxEMAILTITLE").value,
+                PageSize: document.getElementById("selPageSize").value,
+                Page: document.getElementById("selPage").value,
+            },
+            type: 'post',
+            success: function (data) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    window.location.assign(ar.Url);
+                }
+                else {
+                    layer.msg(ar.Msg, { icon: 5 });
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('系统异常!', { icon: 5 });
             }
-        </script>
+        });
+    }
+</script>
