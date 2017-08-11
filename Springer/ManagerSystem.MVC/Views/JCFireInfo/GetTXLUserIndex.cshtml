@@ -57,6 +57,7 @@
                 cache: false,
                 onlyLeafCheck: true,
                 onCheck: function (node, checked) {
+                    console.info(node);
                     if (0 < node.id.length < 9) {
                         if (checked == true) {
                             arr.push(node.id);

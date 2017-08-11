@@ -162,7 +162,7 @@ namespace ManagerSystemClassLibrary.BaseDT
         {
             StringBuilder sb = new StringBuilder();
 
-            sb.Append(" Left Join T_SYS_ORG_LINK b   on a.CWHID=b.BYORGNO ");
+            sb.Append(" Left Join T_SYS_ORG_LINK b   on convert(varchar,a.CWHID)=b.BYORGNO ");
             sb.AppendFormat(" WHERE   1=1");
             if (string.IsNullOrEmpty(sw.CWHID) == false)
                 sb.AppendFormat(" AND a.CWHID = '{0}'", ClsSql.EncodeSql(sw.CWHID));
@@ -173,13 +173,13 @@ namespace ManagerSystemClassLibrary.BaseDT
             if (!string.IsNullOrEmpty(sw.BYORGNO))
             {
                 if (sw.BYORGNO.Substring(4, 11) == "00000000000")//获取所有市的
-                    sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,4) = '{0}' or BYORGNO is null or BYORGNO='')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 4)));
+                    sb.AppendFormat(" AND (SUBSTRING(a.BYORGNO,1,4) = '{0}' or a.BYORGNO is null or a.BYORGNO='')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 4)));
                 else if (sw.BYORGNO.Substring(6, 9) == "000000000")//获取所有县的
-                    sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,6) = '{0}' or BYORGNO is null or BYORGNO='')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 6)));
+                    sb.AppendFormat(" AND (SUBSTRING(a.BYORGNO,1,6) = '{0}' or a.BYORGNO is null or a.BYORGNO='')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 6)));
                 else if (sw.BYORGNO.Substring(9, 6) == "000000")//获取所有乡镇的
-                    sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,9) = '{0}' or BYORGNO is null or BYORGNO='')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 9)));
+                    sb.AppendFormat(" AND (SUBSTRING(a.BYORGNO,1,9) = '{0}' or a.BYORGNO is null or a.BYORGNO='')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 9)));
                 else
-                    sb.AppendFormat(" AND BYORGNO = '{0}'", ClsSql.EncodeSql(sw.BYORGNO));
+                    sb.AppendFormat(" AND a.BYORGNO = '{0}'", ClsSql.EncodeSql(sw.BYORGNO));
             }
             if (!string.IsNullOrEmpty(sw.GetContyORGNOByCity))//市获取所有县
             {
@@ -218,7 +218,7 @@ namespace ManagerSystemClassLibrary.BaseDT
         {
             StringBuilder sb = new StringBuilder();
 
-            sb.Append(" Left Join T_SYS_ORG_LINK b   on a.CWHID=b.BYORGNO ");
+            sb.Append(" Left Join T_SYS_ORG_LINK b   on convert(varchar, a.CWHID)=b.BYORGNO ");
             sb.AppendFormat(" WHERE   1=1");
             if (string.IsNullOrEmpty(sw.CWHID) == false)
                 sb.AppendFormat(" AND a.CWHID = '{0}'", ClsSql.EncodeSql(sw.CWHID));
@@ -229,13 +229,13 @@ namespace ManagerSystemClassLibrary.BaseDT
             if (!string.IsNullOrEmpty(sw.BYORGNO))
             {
                 if (sw.BYORGNO.Substring(4, 11) == "00000000000")//获取所有市的
-                    sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,4) = '{0}' or BYORGNO is null or BYORGNO='')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 4)));
+                    sb.AppendFormat(" AND (SUBSTRING(a.BYORGNO,1,4) = '{0}' or a.BYORGNO is null or a.BYORGNO='')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 4)));
                 else if (sw.BYORGNO.Substring(6, 9) == "000000000")//获取所有县的
-                    sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,6) = '{0}' or BYORGNO is null or BYORGNO='')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 6)));
+                    sb.AppendFormat(" AND (SUBSTRING(a.BYORGNO,1,6) = '{0}' or a.BYORGNO is null or a.BYORGNO='')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 6)));
                 else if (sw.BYORGNO.Substring(9, 6) == "000000")//获取所有乡镇的
-                    sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,9) = '{0}' or BYORGNO is null or BYORGNO='')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 9)));
+                    sb.AppendFormat(" AND (SUBSTRING(a.BYORGNO,1,9) = '{0}' or a.BYORGNO is null or a.BYORGNO='')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 9)));
                 else
-                    sb.AppendFormat(" AND BYORGNO = '{0}'", ClsSql.EncodeSql(sw.BYORGNO));
+                    sb.AppendFormat(" AND a.BYORGNO = '{0}'", ClsSql.EncodeSql(sw.BYORGNO));
             }
             if (!string.IsNullOrEmpty(sw.GetContyORGNOByCity))//市获取所有县
             {

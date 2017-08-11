@@ -72,56 +72,91 @@
     }
 
     function Manager(Method) {
-        var t1 = $('#tbxJD').val();
-        var t2 = $('#tbxWD').val();
-        if ($.trim(t1) != "") {
-            reg = /^-?\d+\.\d{1,6}$/;
-            if (!reg.test(t1)) {
-                layer.msg('经度格式不正确!', { icon: 5 });
-                $('#tbxJD').focus();
-                return false;
-            }
-        }
-        if ($.trim(t2) != "") {
-            reg = /^-?\d+\.\d{1,6}$/;
-            if (!reg.test(t2)) {
-                layer.msg('纬度格式不正确!', { icon: 5 });
-                $('#tbxWD').focus();
-                return false;
-            }
-        }
-        var id = document.getElementsByName('tbxAREACODE');
         if (Method == "Del") {
-            if (confirm('确实要删除该内容吗?') == false)
-                return false;
-        }
-        $.ajax({
-            url: '/SystemConfig/AREAManager',
-            timeout: 10000, //10秒后超时，如果为0则永不超时
-            cache: false,
-            data: {
-                AREACODE: document.getElementById("tbxAREACODE").value,
-                AREANAME: document.getElementById("tbxAREANAME").value,
-                AREAID: document.getElementById("tbxAREAID").value,
-                AREAJC: document.getElementById("tbxAREAJC").value,
-                JD: document.getElementById("tbxJD").value,
-                WD: document.getElementById("tbxWD").value,
-                Method: Method,
-                returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)'
-            },
-            dataType:'json',
-            success: function (data) {
-                if (data.Success) {
-                    if (confirm(data.Msg + ' 请返回?'))
-                        window.location.assign(data.Url);
-                }
-                else {
-                    layer.msg(data.Msg, { icon: 5 });
-                }
-            },
-            error: function (err, ioArgs) {
-                layer.msg('保存异常!', { icon: 5 });
+            var id = $('#tbxAREACODE').val();
+            if (id != "") {
+                layer.confirm('确实要删除吗?', { icon: 3, title: '提示' }, function (index) {
+                    $.ajax({
+                        url: '/SystemConfig/AREAManager',
+                        timeout: 10000, //10秒后超时，如果为0则永不超时
+                        cache: false,
+                        data: {
+                            AREACODE: $("#tbxAREACODE").val(),
+                            Method: Method,
+                            returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)'
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.Success) {
+                                layer.msg(data.Msg, { icon: 6 });
+                                window.location.assign(data.Url);
+                            }
+                            else {
+                                layer.msg(data.Msg, { icon: 5 });
+                            }
+                        },
+                        error: function (err, ioArgs) {
+                            layer.msg('删除异常!', { icon: 5 });
+                        }
+                    });
+                });
             }
-        });
+            else {
+                layer.msg("请选择要删除的行政区域!", { icon: 5 });
+                return;
+            }
+        }
+        else {
+            var t1 = $('#tbxJD').val();
+            var t2 = $('#tbxWD').val();
+            if ($.trim(t1) != "") {
+                reg = /^-?\d+\.\d{1,6}$/;
+                if (!reg.test(t1)) {
+                    layer.msg('经度格式不正确!', { icon: 5 });
+                    $('#tbxJD').focus();
+                    return false;
+                }
+            }
+            if ($.trim(t2) != "") {
+                reg = /^-?\d+\.\d{1,6}$/;
+                if (!reg.test(t2)) {
+                    layer.msg('纬度格式不正确!', { icon: 5 });
+                    $('#tbxWD').focus();
+                    return false;
+                }
+            }
+            $.ajax({
+                url: '/SystemConfig/AREAManager',
+                timeout: 10000, //10秒后超时，如果为0则永不超时
+                cache: false,
+                data: {
+                    AREACODE: document.getElementById("tbxAREACODE").value,
+                    AREANAME: document.getElementById("tbxAREANAME").value,
+                    AREAID: document.getElementById("tbxAREAID").value,
+                    AREAJC: document.getElementById("tbxAREAJC").value,
+                    JD: document.getElementById("tbxJD").value,
+                    WD: document.getElementById("tbxWD").value,
+                    Method: Method,
+                    returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)'
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (data.Success) {
+                        var arrUrl = data.Url.split(',')
+                        $('#tbxAREAID').val(arrUrl[1]);
+                        layer.confirm(data.Msg + ' 请返回?', { icon: 3, title: '提示' }, function (index) {
+                            layer.close(index);                          
+                            window.location.assign(arrUrl[0]);
+                        });
+                    }
+                    else {
+                        layer.msg(data.Msg, { icon: 5 });
+                    }
+                },
+                error: function (err, ioArgs) {
+                    layer.msg('保存异常!', { icon: 5 });
+                }
+            });
+        }
     }
 </script>

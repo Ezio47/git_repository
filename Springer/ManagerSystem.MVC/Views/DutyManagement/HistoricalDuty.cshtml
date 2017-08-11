@@ -6,25 +6,13 @@
     <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
         @Html.Raw(@ViewBag.PageLeftMenu)
     </div>
-    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
 
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
         <div class="easyui-layout" data-options="fit:true" style=" border:0;">
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
                 <div class="divOP">
                     <div class="home ">
-                        单位名称：<select id="tbxBYORGNO" onchange="loadOrg()">
-                            @Html.Raw(@ViewBag.vdOrg)
-                        </select>
-                        @*值班名称：<label id="lbltypeInfo">
-                            <select id="tbxOD_TYPE"></select>
-                        </label>*@
-                        @*标题名称：
-                            <select id="txt_typeName">
-                                @foreach (var item in ViewBag.dataList)
-                                {
-                                    <option value="@item.OD_TYPEID">@item.OD_TYPENAME</option>
-                                }
-                            </select>*@
+                        单位名称：<select id="tbxBYORGNO" onchange="loadOrg()">@Html.Raw(@ViewBag.vdOrg)</select>
                         <input type="button" value="查 询" onclick="query()" class="btnSearchCss">
                     </div>
                 </div>
@@ -43,12 +31,12 @@
     $(function () {
         loadOrg();
     });
+
     function query() {
         $.ajax({
             url: '/DutyManagement/HistoricalQuery',
             data: {
                 BYORGNO: document.getElementById("tbxBYORGNO").value,//组织机构编码
-                //typeID: document.getElementById("tbxOD_TYPE").value
             },
             type: 'post',
             success: function (data, ioArgs) {
@@ -56,7 +44,6 @@
                 if (ar.Success) {
                     $('#msg').html('').removeAttr("style");
                     $('#msg').html(ar.Msg);
-                    //alert(ar.Msg);
                 }
                 else {
                     $('#msg').html('');
@@ -64,18 +51,15 @@
                 }
             },
             error: function (err, ioArgs) {
-                alert("系统错误！");
+                layer.msg('系统异常!', { icon: 5 });
             }
         });
     }
 
     function loadOrg() {
-        //alert(document.getElementById("tbxBYORGNO").value);
         $.ajax({
             url: '/OndutyPb/getDutyTYPEByOrgNo',
-            data: {
-                orgNo: document.getElementById("tbxBYORGNO").value,
-            },
+            data: { orgNo: document.getElementById("tbxBYORGNO").value, },
             type: 'post',
             success: function (data) {
                 var ar = eval('(' + data + ')');
@@ -83,11 +67,11 @@
                     $('#lbltypeInfo').html(ar.Msg);
                 }
                 else {
-                    alert('查询异常，请重试');
+                    layer.msg('系统异常!', { icon: 5 });
                 }
             },
             error: function (err, ioArgs) {
-                alert('登录异常，请重试');
+                layer.msg('系统异常!', { icon: 5 });
             }
         });
     }

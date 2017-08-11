@@ -1,22 +1,17 @@
 ﻿@{
-    //ViewBag.Title =  "首页";
     Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
 }
 @section Header{
     <script src="~/Scripts/SpringerCommonValidate.js"></script>
 }
+
 <div class="easyui-layout" data-options="fit:true" style=" border:0;">
-    @*<div data-options="region:'west'" title="" style=" width:220px; border: none;">
-        @Html.Raw(@ViewBag.PageLeftMenu)
-    </div>*@
     <div data-options="region:'center'" title="" style=" border: none; ">
         <div class="easyui-layout" data-options="fit:true" style=" border:0;">
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
                 <div class="divOP">
-
                     <div class="homeUL">
                         <input type="button" value="保存" onclick="Manager()" id="btnSave" class="btnSaveCss" style="display:none;">
-                        @*<input type="button" value="返回" onclick="javascript: history.go(-1);" class="btnReturnCss">*@
                     </div>
 
                 </div>
@@ -123,7 +118,7 @@
         if ($.trim(t1) != "") {
             reg = /^-?\d+\.\d{1,6}$/;
             if (!reg.test(t1)) {
-                layer.msg('经度格式不正确！', { icon: 5 });
+                layer.msg('经度格式不正确!', { icon: 5 });
                 $('#tbxJD').focus();
                 return;
             }
@@ -131,28 +126,28 @@
         if ($.trim(t2) != "") {
             reg = /^-?\d+\.\d{1,6}$/;
             if (!reg.test(t2)) {
-                layer.msg('纬度格式不正确！', { icon: 5 });
+                layer.msg('纬度格式不正确!', { icon: 5 });
                 $('#tbxWD').focus();
                 return;
             }
         }
         if ($.trim(t3) != "") {
             if (checkTel(t3) == false && checkPhone(t3) == false) {
-                layer.msg('值班电话不正确！', { icon: 5 });
+                layer.msg('值班电话不正确!', { icon: 5 });
                 $('#tbxDUTYTELL').focus();
                 return;
             }
         }
         if ($.trim(t4) != "") {
             if (checkPost(t4) == false) {
-                layer.msg('邮编格式不正确！', { icon: 5 });
+                layer.msg('邮编格式不正确!', { icon: 5 });
                 $('#tbxPOSTCODE').focus();
                 return;
             }
         }
         if ($.trim(t5) != "") {
             if (checkFax(t5) == false) {
-                layer.msg('传真格式不正确！', { icon: 5 });
+                layer.msg('传真格式不正确!', { icon: 5 });
                 $('#tbxFAX').focus();
                 return;
             }
@@ -184,11 +179,12 @@
             success: function (data, ioArgs) {
                 var ar = eval('(' + data + ')');
                 if (ar.Success) {
-                    if (confirm(ar.Msg)) {
+                    layer.confirm(ar.Msg + ' 请返回?', { icon: 3, title: '提示' }, function (index2) {
+                        layer.close(index2);
                         var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
                         parent.layer.close(index);
                         window.location.assign(ar.Url);
-                    }
+                    });
                 }
                 else {
                     layer.msg(ar.Msg, { icon: 5 });

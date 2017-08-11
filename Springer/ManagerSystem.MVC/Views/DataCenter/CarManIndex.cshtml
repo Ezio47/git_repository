@@ -1,0 +1,304 @@
+﻿@using ManagerSystemClassLibrary;
+@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+    var curorgno1 = SystemCls.getCurUserOrgNo();//添加的时候组织机判断
+}
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'center'" title="" style=" border: none; ">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="homeUL">
+                        <input type="button" value="保存" onclick="Manager()" id="btnSave" class="btnSaveCss">
+                    </div>
+                </div>
+            </div>
+
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <div class="divMan">
+                    <table cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td style="width:80px;">
+                                单位：
+                            </td>
+                            <td>
+                                <select id="BYORGNO" class="easyui-combotree" style="width:200px;"></select>
+                            </td>
+                            <td style="width:80px;">
+                                车辆类型：
+                            </td>
+                            <td>
+                                <select id="CARTYPE">
+                                    @Html.Raw(@ViewBag.cartypeadd)
+                                </select>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="width:80px;">
+                                <span style="color:red;">*</span>
+                                名称：
+                            </td>
+                            <td>
+                                <input type="text" id="NAME" class="input-small" value="" />
+                            </td>
+                            <td style="width:80px;">
+                                <span style="color:red;">*</span>
+                                编号：
+                            </td>
+                            <td>
+                                <input id="NUMBER" type="text" class="input-small" value="" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:80px;">
+                                号牌：
+                            </td>
+                            <td>
+                                <input id="PLATENUM" type="text" class="input-small" value="" />
+                            </td>
+                            <td style="width:80px;">
+                                储存地点：
+                            </td>
+                            <td>
+                                <input id="STOREADDR" type="text" class="input-small" value="" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:80px;">
+                                经度：
+                            </td>
+                            <td>
+                                <input id="JD" type="text" class="input-small" value="" />
+                            </td>
+                            <td style="width:80px;">
+                                纬度：
+                            </td>
+                            <td>
+                                <input id="WD" type="text" class="input-small" value="" />
+                                <input type="button" value="地图定位" onclick="setPoint()" class="btnMapLoaclCss" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:80px;">
+                                购买年份：
+                            </td>
+                            <td>
+                                <input class="easyui-datebox" id="BUYYEAR" type="text" style="width:90px;height:28px;" value="" />
+                            </td>
+                            <td style="width:80px;">
+                                购买价格：
+                            </td>
+                            <td>
+                                <input id="BUYPRICE" type="text" class="input-small" value="" />元
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:80px;">
+                                驾驶员：
+                            </td>
+                            <td>
+                                <input id="DRIVER" type="text" class="input-small" value="" />
+                            </td>
+                            <td style="width:80px;">
+                                联系方式：
+                            </td>
+                            <td>
+                                <input id="CONTACTS" type="text" class="input-small" value="" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:100px;">
+                                GPS设备型号：
+                            </td>
+                            <td>
+                                <input id="GPSEQUIP" type="text" class="input-small" value="" />
+                            </td>
+                            <td style="width:80px;">
+                                GPS号码：
+                            </td>
+                            <td>
+                                <input id="GPSTELL" type="text" class="input-small" value="" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:80px;">
+                                备注：
+                            </td>
+                            <td colspan="3">
+                                <input id="MARK" type="text" class="input-small" value="" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $('#BYORGNO').combotree({
+            url: '/DataCenter/OnlyOrgTreeget',
+            editable: false,
+            required: true,
+            panelHeight: 300,
+            onLoadSuccess: function (node, data) {
+                var t = $("#BYORGNO").combotree('tree');//获取tree
+                t.tree("collapseAll");
+                node = t.tree("find", data[0].id);
+                t.tree("expand", node.target);//展开节点 expandTo
+            }
+        });
+        $('#BYORGNO').combotree('setValue', "@curorgno1");
+    });
+    if ('@ViewBag.T_Method' == "Del") {
+        Manager();
+    }
+    if ('@ViewBag.T_Method' == 'Mdy') {
+        $.ajax({
+            url: '/DataCenter/GetCarjson',
+            cache: false,
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: { DC_CAR_ID: '@ViewBag.ID' },
+            success: function (data, ioArgs) {
+                var data = eval('(' + data + ')');
+                if (data.DC_CAR_ID != null) {
+                    $('#BYORGNO').combotree('setValue', data.BYORGNO);
+                    document.getElementById("CARTYPE").value = data.CARTYPE,
+                    document.getElementById("NAME").value = data.NAME,
+                    document.getElementById("NUMBER").value = data.NUMBER,
+                    document.getElementById("PLATENUM").value = data.PLATENUM,
+                    document.getElementById("BUYPRICE").value = data.BUYPRICE,
+                    document.getElementById("DRIVER").value = data.DRIVER,
+                    document.getElementById("CONTACTS").value = data.CONTACTS,
+                    document.getElementById("GPSEQUIP").value = data.GPSEQUIP,
+                    document.getElementById("GPSTELL").value = data.GPSTELL,
+                    document.getElementById("STOREADDR").value = data.STOREADDR,
+                    document.getElementById("MARK").value = data.MARK,
+                    document.getElementById("JD").value = data.JD,
+                    document.getElementById("WD").value = data.WD,
+                    $('#BUYYEAR').datebox('setValue', data.BUYYEAR)
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('登录异常');
+            }
+        });
+    }
+
+    function setPoint() {
+        var name = document.getElementById("NAME").value;
+        var jd = document.getElementById("JD").value;
+        var wd = document.getElementById("WD").value;
+        layer.open({
+            type: 2,
+            title: name + '地图位置设置',
+            btn: ['保存', '关闭'],
+            area: ['100%', '100%'],
+            fix: true, //不固定
+            maxmin: true,
+            content: '/MapCommon/GetMapPontIndex?jd=' + jd + "&wd=" + wd,
+            shade: 0,
+            yes: function (index, layero) { //或者使用btn1
+                //按钮【按钮一】的回调
+                var ptxt = layer.getChildFrame("p", index);
+                var arr = ptxt.html().split(',');
+                if ($.trim(arr) != "") {
+                    var jd = parseFloat(arr[0]).toFixed(6);
+                    var wd = parseFloat(arr[1]).toFixed(6);
+                    $('#JD').val(jd);
+                    $('#WD').val(wd);
+                }
+                layer.close(index);
+            }, cancel: function (index) {
+                layer.close(index);
+            }
+        });
+    }
+    function Manager() {
+        var t1 = $('#JD').val();
+        var t2 = $('#WD').val();
+        var t3 = $('#CONTACTS').val();
+        var t4 = $('#BUYPRICE').val();
+        var t5 = $('#NAME').val();
+        var t6 = $('#NUMBER').val();
+        if ($.trim(t1) != "") {
+            reg = /^-?\d+\.\d{1,6}$/;
+            if (!reg.test(t1)) {
+                layer.msg('经度格式不正确！', { icon: 5 });
+                $('#JD').focus();
+                return;
+            }
+        }
+        if ($.trim(t2) != "") {
+            reg = /^-?\d+\.\d{1,6}$/;
+            if (!reg.test(t2)) {
+                layer.msg('纬度格式不正确！', { icon: 5 });
+                $('#WD').focus();
+                return;
+            }
+        }
+        if ($.trim(t3) != "") {
+            if (checkPhone(t3) == false && checkTel(t3) == false) {
+                layer.msg('联系方式格式不正确！', { icon: 5 });
+                $('#CONTACTS').focus();
+                return;
+            }
+        }
+        if ($.trim(t4) != "") {
+            if (CheckNUM($.trim(t4)) == false) {
+                layer.msg('价格请填写数字！', { icon: 5 });
+                $('#BUYPRICE').focus();
+                return;
+            }
+        }
+        if ($.trim(t5) == "") {
+            layer.msg('请填写名称！', { icon: 5 });
+            $('#NAME').focus();
+        }
+        if ($.trim(t6) == "") {
+            layer.msg('请填写编号！', { icon: 5 });
+            $('#NUMBER').focus();
+            return;
+        }
+
+        $.ajax({
+            type: "Post",
+            url: "/DataCenter/CarManager",
+            data: {
+                DC_CAR_ID: '@ViewBag.ID',
+                Method: '@ViewBag.T_Method',
+                BYORGNO: $('#BYORGNO').combotree('getValue'),
+                CARTYPE: document.getElementById("CARTYPE").value,
+                NAME: document.getElementById("NAME").value,
+                NUMBER: document.getElementById("NUMBER").value,
+                PLATENUM: document.getElementById("PLATENUM").value,
+                BUYPRICE: document.getElementById("BUYPRICE").value,
+                DRIVER: document.getElementById("DRIVER").value,
+                CONTACTS: document.getElementById("CONTACTS").value,
+                GPSEQUIP: document.getElementById("GPSEQUIP").value,
+                GPSTELL: document.getElementById("GPSTELL").value,
+                STOREADDR: document.getElementById("STOREADDR").value,
+                MARK: document.getElementById("MARK").value,
+                JD: document.getElementById("JD").value,
+                WD: document.getElementById("WD").value,
+                BUYYEAR: $('#BUYYEAR').datebox('getValue'),
+            },
+            dataType: "json",
+            success: function (data) {
+                if (data.Success) { 
+                    parent.layer.msg(data.Msg,{ icon: 6 });
+                    var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                    parent.layer.close(index);
+                }
+                else {
+                    layer.msg(data.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('保存异常!');
+            }
+        });
+    }
+</script>

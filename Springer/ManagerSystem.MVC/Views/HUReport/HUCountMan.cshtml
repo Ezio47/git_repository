@@ -3,19 +3,15 @@
 }
 <script src="~/Scripts/Chart/echarts.js"></script>
 <script src="~/Scripts/Chart/HUReportChart/HUChart.js"></script>
+
 <div class="easyui-layout" data-options="fit:true" style=" border:0;">
-
     <div data-options="region:'center'" title="" style=" border: none;">
-
         <div class="easyui-layout" data-options="fit:true" style=" border:0;">
-
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
                 <div class="divOP">
                     <div class="home">
                         <div style="float:left;">
-                            单位:<select id="ORGNO">
-                                @Html.Raw(@ViewBag.vdOrg)
-                            </select>
+                            单位:<select id="ORGNO"> @Html.Raw(@ViewBag.vdOrg)</select>
                             类型:<select id="type" onchange="TypeChange()">
                                 <option value="1">性别</option>
                                 <option value="2">固/兼职</option>

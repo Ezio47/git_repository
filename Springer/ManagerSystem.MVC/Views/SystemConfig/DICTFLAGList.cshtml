@@ -66,7 +66,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div data-options="region:'west'" title="" style="width:220px; border: none; ">
                 <div id="tt" style="overflow: hidden;" class="easyui-tree">
 
@@ -196,38 +196,63 @@
 
     function Manager(Method) {
         if (Method == "Del") {
-            if (confirm('确实要删除该内容吗?') == false)
-                return false;
-        }
-        $.ajax({
-            url: '/SystemConfig/DICTManager',
-            cache: false,
-            timeout: 10000, //10秒后超时，如果为0则永不超时
-            data: {
-                DICTNAME: document.getElementById("tbxDICTNAME").value,
-                DICTVALUE: document.getElementById("tbxDICTVALUE").value,
-                DICTID: document.getElementById("tbxDICTID").value,
-                DICTTYPEID: document.getElementById("tbxDICTTYPEID").value,
-                ORDERBY: document.getElementById("tbxORDERBY").value,
-                STANDBY1: document.getElementById("tbxSTANDBY1").value,
-                STANDBY2: document.getElementById("tbxSTANDBY2").value,
-                STANDBY3: document.getElementById("tbxSTANDBY3").value,
-                STANDBY4: document.getElementById("tbxSTANDBY4").value,
-                Method: Method,
-            },
-            success: function (data, ioArgs) {
-                var ar = eval('(' + data + ')');
-                if (ar.Success) {
-                    layer.msg('保存成功!', { icon: 6 });
-                    queryValue();
-                }
-                else {
-                    layer.msg(ar.Msg, { icon: 5 });
-                }
-            },
-            error: function (err, ioArgs) {
-                layer.msg('保存异常!', { icon: 5 });
+            var ID = document.getElementById("tbxDICTID").value;
+            if (ID == "") {
+                layer.msg('请选择字典值!', { icon: 5 });
+                return;
             }
-        });
+            layer.confirm('确实要删除吗?', { icon: 3, title: '提示' }, function (index) {
+                $.ajax({
+                    type: 'post',
+                    url: '/SystemConfig/DICTManager',
+                    data: { DICTID: ID, Method: Method },
+                    dataType: "json",
+                    success: function (re) {
+                        if (re.Success) {
+                            layer.msg(re.Msg, { icon: 6 });
+                            queryValue();
+                        }
+                        else {
+                            layer.msg(re.Msg, { icon: 5 });
+                        }
+                    },
+                    error: function () {
+                        layer.msg('系统异常!', { icon: 5 });
+                    }
+                });
+            });
+        }
+        else {
+            $.ajax({
+                url: '/SystemConfig/DICTManager',
+                cache: false,
+                timeout: 10000, //10秒后超时，如果为0则永不超时
+                data: {
+                    DICTNAME: document.getElementById("tbxDICTNAME").value,
+                    DICTVALUE: document.getElementById("tbxDICTVALUE").value,
+                    DICTID: document.getElementById("tbxDICTID").value,
+                    DICTTYPEID: document.getElementById("tbxDICTTYPEID").value,
+                    ORDERBY: document.getElementById("tbxORDERBY").value,
+                    STANDBY1: document.getElementById("tbxSTANDBY1").value,
+                    STANDBY2: document.getElementById("tbxSTANDBY2").value,
+                    STANDBY3: document.getElementById("tbxSTANDBY3").value,
+                    STANDBY4: document.getElementById("tbxSTANDBY4").value,
+                    Method: Method,
+                },
+                success: function (data, ioArgs) {
+                    var ar = eval('(' + data + ')');
+                    if (ar.Success) {
+                        layer.msg(ar.Msg, { icon: 6 });
+                        queryValue();
+                    }
+                    else {
+                        layer.msg(ar.Msg, { icon: 5 });
+                    }
+                },
+                error: function (err, ioArgs) {
+                    layer.msg('系统异常!', { icon: 5 });
+                }
+            });
+        }
     }
 </script>

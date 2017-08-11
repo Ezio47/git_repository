@@ -14,6 +14,7 @@
                     </div>
                 </div>
             </div>
+
             <div data-options="region:'center'" title="" style=" border: none; ">
                 <div class="divMan">
                     <table cellpadding="0" cellspacing="0" style="width:600px ">
@@ -27,13 +28,12 @@
                         </tr>
                         <tr>
                             <td style="width:80px;"> 群组人员: </td>
-                            <td>
-                                <input id="tbxEGROUPMEMBERLIST" type="text" style="height:25px;width:400px" readonly />
-                            </td>
+                            <td><input id="tbxEGROUPMEMBERLIST" type="text" style="height:25px;width:400px" readonly /></td>
                         </tr>
                     </table>
                 </div>
             </div>
+
             <div data-options="region:'east'" title="" style=" width:260px; border: none;">
                 <div class="divMan">
                     <div id="tt" style="overflow-y:hidden;padding-left:0px;" class="easyui-tree">
@@ -63,27 +63,26 @@
             success: function (data, ioArgs) {
                 var ar = eval('(' + data + ')');
                 if (ar.Success) {
-                    if (confirm(ar.Msg + ' 请返回！')) {
+                    if (confirm(ar.Msg + ' 请返回?')) {
                         var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
                         parent.layer.close(index);
                     }
-
                 }
                 else {
-                    layer.msg(ar.Msg);
+                    layer.msg(ar.Msg, { icon: 5 });
                 }
             },
             error: function (err, ioArgs) {
-                layer.msg('系统错误，请重试');
+                layer.msg('系统异常', { icon: 5 });
             }
         });
     }
+
     $(function () {
         var s1;
         $('#tt').tree({
             url: '/Email/TreeUSERGet',
             cache: false,
-            //data: { nameForMat: "{ADNAME}[{USERJOB}] [电话：{PHONE}]]" },
             checked: false,
             animate: true,
             lines: true,
@@ -111,6 +110,7 @@
             }
         });
     })
+
     ///群组tree选中的方法
     function getChecked() {
         var nodes = $('#tt').tree('getChecked');
@@ -132,14 +132,13 @@
             return "";
         }
     }
+
     function onloadData() {
         var method = '@ViewBag.T_Method';
         if (method == 'Mdy') {
             $.ajax({
                 url: '/Email/GetGROUPjson',
-                data: {
-                    EGROUPID: '@ViewBag.EGROUPID'
-                },
+                data: { EGROUPID: '@ViewBag.EGROUPID' },
                 type: 'post',
                 success: function (data) {
                     var ar = eval('(' + data + ')');
@@ -161,10 +160,11 @@
                     }
                 },
                 error: function (err, ioArgs) {
-                    alert('登录异常');
+                    layer.msg('系统异常', { icon: 5 });
                 }
             });
-        } else {
+        }
+        else {
 
         }
     }

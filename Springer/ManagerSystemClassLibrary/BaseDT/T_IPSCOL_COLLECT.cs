@@ -196,9 +196,9 @@ namespace ManagerSystemClassLibrary.BaseDT
             else
             {
                 if (string.IsNullOrEmpty(SYSTYPEVALUE))
-                    return dt.Compute("count(HID)", "ORGNO='" + PublicCls.getZhenIncOrgNo(ORGNO) + "'").ToString();
+                    return dt.Compute("count(HID)", "substring(ORGNO,1,9)='" + PublicCls.getZhenIncOrgNo(ORGNO) + "'").ToString();
                 else
-                    return dt.Compute("count(HID)", "ORGNO='" + PublicCls.getZhenIncOrgNo(ORGNO) + "' and SYSTYPEVALUE='" + SYSTYPEVALUE + "'").ToString();
+                    return dt.Compute("count(HID)", "substring(ORGNO,1,9)='" + PublicCls.getZhenIncOrgNo(ORGNO) + "' and SYSTYPEVALUE='" + SYSTYPEVALUE + "'").ToString();
             }
             //return str;
         }

@@ -127,47 +127,98 @@ namespace ManagerSystemClassLibrary.BaseDT
         public static Message Mdy(FIRERECORD_FIREINFO_Model m)
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("Update FIRERECORD_FIREINFO");
-            sb.AppendFormat(" set ");
-            // sb.AppendFormat("JCFID='{0}'", ClsSql.EncodeSql(m.JCFID));
-            sb.AppendFormat("BYORGNO='{0}'", ClsSql.EncodeSql(m.BYORGNO));
-            sb.AppendFormat(",FIRECODE={0}", ClsSql.saveNullField(m.FIRECODE));
-            sb.AppendFormat(",FIREADDRESSCOUNTY={0}", ClsSql.saveNullField(m.FIREADDRESSCOUNTY));
-            sb.AppendFormat(",FIREADDRESSTOWNS={0}", ClsSql.saveNullField(m.FIREADDRESSTOWNS));
-            sb.AppendFormat(",FIREADDRESSVILLAGES={0}", ClsSql.saveNullField(m.FIREADDRESSVILLAGES));
-            sb.AppendFormat(",FIREADDRESS={0}", ClsSql.saveNullField(m.FIREADDRESS));
-            sb.AppendFormat(",FIRETIME={0}", ClsSql.saveNullField(m.FIRETIME));
-            sb.AppendFormat(",FIREENDTIME={0}", ClsSql.saveNullField(m.FIREENDTIME));
-            sb.AppendFormat(",FIRERECINFO000={0}", ClsSql.saveNullField(m.FIRERECINFO000));
-            sb.AppendFormat(",FIRERECINFO001={0}", ClsSql.saveNullField(m.FIRERECINFO001));
-            sb.AppendFormat(",FIRERECINFO020={0}", ClsSql.saveNullField(m.FIRERECINFO020));
-            sb.AppendFormat(",FIRERECINFO021={0}", ClsSql.saveNullField(m.FIRERECINFO021));
-            sb.AppendFormat(",FIRERECINFO030={0}", ClsSql.saveNullField(m.FIRERECINFO030));
-            sb.AppendFormat(",FIRERECINFO031={0}", ClsSql.saveNullField(m.FIRERECINFO031));
-            sb.AppendFormat(",FIRERECINFO032={0}", ClsSql.saveNullField(m.FIRERECINFO032));
-            sb.AppendFormat(",FIRERECINFO040={0}", ClsSql.saveNullField(m.FIRERECINFO040));
-            sb.AppendFormat(",FIRERECINFO041={0}", ClsSql.saveNullField(m.FIRERECINFO041));
-            sb.AppendFormat(",FIRERECINFO050={0}", ClsSql.saveNullField(m.FIRERECINFO050));
-            sb.AppendFormat(",FIRERECINFO051={0}", ClsSql.saveNullField(m.FIRERECINFO051));
-            sb.AppendFormat(",FIRERECINFO060={0}", ClsSql.saveNullField(m.FIRERECINFO060));
-            sb.AppendFormat(",FIRERECINFO061={0}", ClsSql.saveNullField(m.FIRERECINFO061));
-            sb.AppendFormat(",FIRERECINFO070={0}", ClsSql.saveNullField(m.FIRERECINFO070));
-            sb.AppendFormat(",FIRERECINFO071={0}", ClsSql.saveNullField(m.FIRERECINFO071));
-            sb.AppendFormat(",FIRERECINFO072={0}", ClsSql.saveNullField(m.FIRERECINFO072));
-            sb.AppendFormat(",FIRERECINFO080={0}", ClsSql.saveNullField(m.FIRERECINFO080));
-            sb.AppendFormat(",FIRERECINFO081={0}", ClsSql.saveNullField(m.FIRERECINFO081));
-            sb.AppendFormat(",FIRERECINFO082={0}", ClsSql.saveNullField(m.FIRERECINFO082));
-            sb.AppendFormat(",FIRERECINFO090={0}", ClsSql.saveNullField(m.FIRERECINFO090));
-            sb.AppendFormat(",FIRERECINFO100={0}", ClsSql.saveNullField(m.FIRERECINFO100));
-            sb.AppendFormat(",FIRERECINFO110={0}", ClsSql.saveNullField(m.FIRERECINFO110));
-            sb.AppendFormat(",FIRERECINFO111={0}", ClsSql.saveNullField(m.FIRERECINFO111));
-            sb.AppendFormat(",FIRERECINFO120={0}", ClsSql.saveNullField(m.FIRERECINFO120));
-            sb.AppendFormat(",FIRERECINFO130={0}", ClsSql.saveNullField(m.FIRERECINFO130));
-            sb.AppendFormat(",FIRERECINFO140={0}", ClsSql.saveNullField(m.FIRERECINFO140));
-            sb.AppendFormat(",FIRERECINFO150={0}", ClsSql.saveNullField(m.FIRERECINFO150));
-            sb.AppendFormat(",FIRERECINFO160={0}", ClsSql.saveNullField(m.FIRERECINFO160));
-            sb.AppendFormat(",FIRELOSEAREA={0}", ClsSql.saveNullField(m.FIRELOSEAREA));
-            sb.AppendFormat(" where JCFID= '{0}'", ClsSql.EncodeSql(m.JCFID));
+            if (isExists(new FIRERECORD_FIREINFO_SW { JCFID = m.JCFID }))
+            {
+                sb.AppendFormat("Update FIRERECORD_FIREINFO");
+                sb.AppendFormat(" set ");
+                // sb.AppendFormat("JCFID='{0}'", ClsSql.EncodeSql(m.JCFID));
+                sb.AppendFormat("BYORGNO='{0}'", ClsSql.EncodeSql(m.BYORGNO));
+                sb.AppendFormat(",FIRECODE={0}", ClsSql.saveNullField(m.FIRECODE));
+                sb.AppendFormat(",FIREADDRESSCOUNTY={0}", ClsSql.saveNullField(m.FIREADDRESSCOUNTY));
+                sb.AppendFormat(",FIREADDRESSTOWNS={0}", ClsSql.saveNullField(m.FIREADDRESSTOWNS));
+                sb.AppendFormat(",FIREADDRESSVILLAGES={0}", ClsSql.saveNullField(m.FIREADDRESSVILLAGES));
+                sb.AppendFormat(",FIREADDRESS={0}", ClsSql.saveNullField(m.FIREADDRESS));
+                sb.AppendFormat(",FIRETIME={0}", ClsSql.saveNullField(m.FIRETIME));
+                sb.AppendFormat(",FIREENDTIME={0}", ClsSql.saveNullField(m.FIREENDTIME));
+                sb.AppendFormat(",FIRERECINFO000={0}", ClsSql.saveNullField(m.FIRERECINFO000));
+                sb.AppendFormat(",FIRERECINFO001={0}", ClsSql.saveNullField(m.FIRERECINFO001));
+                sb.AppendFormat(",FIRERECINFO020={0}", ClsSql.saveNullField(m.FIRERECINFO020));
+                sb.AppendFormat(",FIRERECINFO021={0}", ClsSql.saveNullField(m.FIRERECINFO021));
+                sb.AppendFormat(",FIRERECINFO030={0}", ClsSql.saveNullField(m.FIRERECINFO030));
+                sb.AppendFormat(",FIRERECINFO031={0}", ClsSql.saveNullField(m.FIRERECINFO031));
+                sb.AppendFormat(",FIRERECINFO032={0}", ClsSql.saveNullField(m.FIRERECINFO032));
+                sb.AppendFormat(",FIRERECINFO040={0}", ClsSql.saveNullField(m.FIRERECINFO040));
+                sb.AppendFormat(",FIRERECINFO041={0}", ClsSql.saveNullField(m.FIRERECINFO041));
+                sb.AppendFormat(",FIRERECINFO050={0}", ClsSql.saveNullField(m.FIRERECINFO050));
+                sb.AppendFormat(",FIRERECINFO051={0}", ClsSql.saveNullField(m.FIRERECINFO051));
+                sb.AppendFormat(",FIRERECINFO060={0}", ClsSql.saveNullField(m.FIRERECINFO060));
+                sb.AppendFormat(",FIRERECINFO061={0}", ClsSql.saveNullField(m.FIRERECINFO061));
+                sb.AppendFormat(",FIRERECINFO070={0}", ClsSql.saveNullField(m.FIRERECINFO070));
+                sb.AppendFormat(",FIRERECINFO071={0}", ClsSql.saveNullField(m.FIRERECINFO071));
+                sb.AppendFormat(",FIRERECINFO072={0}", ClsSql.saveNullField(m.FIRERECINFO072));
+                sb.AppendFormat(",FIRERECINFO080={0}", ClsSql.saveNullField(m.FIRERECINFO080));
+                sb.AppendFormat(",FIRERECINFO081={0}", ClsSql.saveNullField(m.FIRERECINFO081));
+                sb.AppendFormat(",FIRERECINFO082={0}", ClsSql.saveNullField(m.FIRERECINFO082));
+                sb.AppendFormat(",FIRERECINFO090={0}", ClsSql.saveNullField(m.FIRERECINFO090));
+                sb.AppendFormat(",FIRERECINFO100={0}", ClsSql.saveNullField(m.FIRERECINFO100));
+                sb.AppendFormat(",FIRERECINFO110={0}", ClsSql.saveNullField(m.FIRERECINFO110));
+                sb.AppendFormat(",FIRERECINFO111={0}", ClsSql.saveNullField(m.FIRERECINFO111));
+                sb.AppendFormat(",FIRERECINFO120={0}", ClsSql.saveNullField(m.FIRERECINFO120));
+                sb.AppendFormat(",FIRERECINFO130={0}", ClsSql.saveNullField(m.FIRERECINFO130));
+                sb.AppendFormat(",FIRERECINFO140={0}", ClsSql.saveNullField(m.FIRERECINFO140));
+                sb.AppendFormat(",FIRERECINFO150={0}", ClsSql.saveNullField(m.FIRERECINFO150));
+                sb.AppendFormat(",FIRERECINFO160={0}", ClsSql.saveNullField(m.FIRERECINFO160));
+                sb.AppendFormat(",FIRELOSEAREA={0}", ClsSql.saveNullField(m.FIRELOSEAREA));
+                sb.AppendFormat(" where JCFID= '{0}'", ClsSql.EncodeSql(m.JCFID));
+            }
+            else
+            {
+                //StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("INSERT  INTO  FIRERECORD_FIREINFO(JCFID, BYORGNO,FIRECODE, FIREADDRESSCOUNTY, FIREADDRESSTOWNS, FIREADDRESSVILLAGES, FIREADDRESS,FIRETIME,FIREENDTIME,");
+                sb.AppendFormat("FIRERECINFO000,FIRERECINFO001, FIRERECINFO020,FIRERECINFO021,FIRERECINFO030,FIRERECINFO031,FIRERECINFO032,FIRERECINFO040,FIRERECINFO041,");
+                sb.AppendFormat("FIRERECINFO050,FIRERECINFO051,FIRERECINFO060,FIRERECINFO061,FIRERECINFO070,FIRERECINFO071,FIRERECINFO072,FIRERECINFO080,FIRERECINFO081,FIRERECINFO082,");
+                sb.AppendFormat("FIRERECINFO090,FIRERECINFO100,FIRERECINFO110,FIRERECINFO111,FIRERECINFO120,FIRERECINFO130,FIRERECINFO140,FIRERECINFO150,FIRERECINFO160,FIRELOSEAREA)");
+                sb.AppendFormat("VALUES(");
+                sb.AppendFormat("'{0}'", ClsSql.EncodeSql(m.JCFID));
+                sb.AppendFormat(",{0}", ClsSql.saveNullField(m.BYORGNO));
+                sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIRECODE));
+                sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIREADDRESSCOUNTY));
+                sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIREADDRESSTOWNS));
+                sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIREADDRESSVILLAGES));
+                sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIREADDRESS));
+                sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIRETIME));
+                sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIREENDTIME));
+                sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIRERECINFO000));
+                sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIRERECINFO001));
+                sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIRERECINFO020));
+                sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIRERECINFO021));
+                sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIRERECINFO030));
+                sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIRERECINFO031));
+                sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIRERECINFO032));
+                sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIRERECINFO040));
+                sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIRERECINFO041));
+                sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIRERECINFO050));
+                sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIRERECINFO051));
+                sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIRERECINFO060));
+                sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIRERECINFO061));
+                sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIRERECINFO070));
+                sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIRERECINFO071));
+                sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIRERECINFO072));
+                sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIRERECINFO080));
+                sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIRERECINFO081));
+                sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIRERECINFO082));
+                sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIRERECINFO090));
+                sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIRERECINFO100));
+                sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIRERECINFO110));
+                sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIRERECINFO111));
+                sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIRERECINFO120));
+                sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIRERECINFO130));
+                sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIRERECINFO140));
+                sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIRERECINFO150));
+                sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIRERECINFO160));
+                sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIRELOSEAREA));
+                sb.AppendFormat(")");
+            }
             //修改JC_FIRE表中的数据
             sb.AppendFormat(";");
             sb.AppendFormat("Update JC_FIRE");
@@ -179,11 +230,22 @@ namespace ManagerSystemClassLibrary.BaseDT
             sb.AppendFormat(",JD={0}", ClsSql.saveNullField(m.JD));
             sb.AppendFormat(",WD={0}", ClsSql.saveNullField(m.WD));
             sb.AppendFormat(" where JCFID= '{0}'", ClsSql.EncodeSql(m.JCFID));
+
             //修改火灾等级到JC_FIRE_PROP中
-            sb.AppendFormat("Update  JC_FIRE_PROP ");
-            sb.AppendFormat(" set ");
-            sb.AppendFormat("FIRELEVEL={0}", ClsSql.saveNullField(m.FIRERECINFO001));
-            sb.AppendFormat(" where JCFID= '{0}'", ClsSql.EncodeSql(m.JCFID));
+            if (isExistsfirelevel(new JC_FIRE_PROP_SW { JCFID = m.JCFID }))
+            {
+                sb.AppendFormat("Update  JC_FIRE_PROP ");
+                sb.AppendFormat(" set ");
+                sb.AppendFormat("FIRELEVEL={0}", ClsSql.saveNullField(m.FIRERECINFO001));
+                sb.AppendFormat(" where JCFID= '{0}'", ClsSql.EncodeSql(m.JCFID));
+            }
+            else {
+                sb.AppendFormat("INSERT  INTO  JC_FIRE_PROP(JCFID,FIRELEVEL) ");
+                sb.AppendFormat("VALUES(");
+                sb.AppendFormat("'{0}'", ClsSql.EncodeSql(m.JCFID));
+                sb.AppendFormat(",{0}", ClsSql.saveNullField(m.FIRERECINFO001));
+                sb.AppendFormat(")");
+            }
 
             //修改空间库HUOQINGDANGAN的数据
             StringBuilder sc = new StringBuilder();
@@ -272,7 +334,7 @@ namespace ManagerSystemClassLibrary.BaseDT
             if (!string.IsNullOrEmpty(sw.FIRETIME))
                 sb.AppendFormat(" AND FIRETIME>='{0}'", sw.FIRETIME);
             if (!string.IsNullOrEmpty(sw.FIREENDTIME))
-                sb.AppendFormat(" AND FIREENDTIME<='{0}'", sw.FIREENDTIME);
+                sb.AppendFormat(" AND FIRETIME<='{0}'", sw.FIREENDTIME);
             sb.AppendFormat(" ORDER BY FRFIID");
             DataSet ds = DataBaseClass.FullDataSet(sb.ToString());
             return ds.Tables[0];
@@ -342,8 +404,24 @@ namespace ManagerSystemClassLibrary.BaseDT
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("select 1 from FIRERECORD_FIREINFO where 1=1");
-            if (string.IsNullOrEmpty(sw.FRFIID) == false)
-                sb.AppendFormat(" and FRFIID='{0}'", ClsSql.EncodeSql(sw.FRFIID));
+            if (string.IsNullOrEmpty(sw.JCFID) == false)
+                sb.AppendFormat(" and JCFID='{0}'", ClsSql.EncodeSql(sw.JCFID));
+            return DataBaseClass.JudgeRecordExists(sb.ToString());
+        }
+        #endregion
+
+        #region 判断火灾等级记录是否存在
+        /// <summary>
+        /// 判断记录是否存在
+        /// </summary>
+        /// <param name="sw">参见模型</param>
+        /// <returns>true存在 false不存在 </returns>
+        public static bool isExistsfirelevel(JC_FIRE_PROP_SW sw)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("select 1 from JC_FIRE_PROP where 1=1");
+            if (string.IsNullOrEmpty(sw.JCFID) == false)
+                sb.AppendFormat(" and JCFID='{0}'", ClsSql.EncodeSql(sw.JCFID));
             return DataBaseClass.JudgeRecordExists(sb.ToString());
         }
         #endregion

@@ -1,0 +1,327 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'center'" title="" style=" border: none;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <ul>
+                        <li class="homeUL">
+                            图层名称：<input id="tbxLayerName" type="text" class="input-small" style="width:120px" value="" />&nbsp;&nbsp;
+                            <input type="button" value="查询" onclick="query()" class="btnSearchCss" />
+                            <input type="button" value="添加" onclick="Manager('Add','')" id="btnAdd" class="btnAddCss" />&nbsp;&nbsp;&nbsp;
+                            批量操作：<select id="tbxPLCZ" style="width: 150px;">
+                                <option value=""></option>
+                                <option value="1">默认打开</option>
+                                <option value="2">默认关闭</option>
+                                <option value="3">权限控制</option>
+                                <option value="4">权限关闭</option>
+                                <option value="5">打开火情周边查询</option>
+                                <option value="6">关闭火情周边查询</option>
+                                <option value="7">打开护林员周边查询</option>
+                                <option value="8">关闭护林员周边查询</option>
+                            </select>
+                            <input type="button" value="操作" onclick="BatchOperation()" id="btnSave" class="btnSaveCss" />
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; " class="LayoutCenterBG">
+                <div class="divTable" id="tableList">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="divMan" id="tableAdd" style="display:none;margin-left:5px;margin-top:8px">
+    <table cellpadding="0" cellspacing="0" style="text-align:left;">
+        <tr>
+            <td style="width:130px;">图层编号:</td>
+            <td><input type="text" id="tbxLAYERCODE" value="" style="width:98%" /></td>
+            <td style="width:130px;">图层名称:</td>
+            <td><input type="text" id="tbxLAYERNAME" value="" style="width: 98%" /></td>
+        </tr>
+        <tr>
+            <td>图层序号:</td>
+            <td><input type="text" id="tbxLAYERID" value="" style="width: 98%" /></td>
+            <td>默认打开: </td>
+            <td>
+                <select id="tbxISDEFAULTCH" style="width: 98%">
+                    <option value="0">否</option>
+                    <option value="1">是</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>是否权限控制:</td>
+            <td>
+                <select id="tbxISACTION" style="width: 98%">
+                    <option value="0">否</option>
+                    <option value="1">是</option>
+                </select>
+            </td>
+            <td>权限编码:</td>
+            <td><input type="text" id="tbxLAYERRIGHTID" value="" style="width: 98%" /></td>
+        </tr>
+        <tr>
+            <td>火情周边默认查询:</td>
+            <td>
+                <select id="tbxISFIREROUNDDEFAULT" style="width: 98%">
+                    <option value="0">否</option>
+                    <option value="1">是</option>
+                </select>
+            </td>
+            <td>护林员周边默认查询:</td>
+            <td>
+                <select id="tbxISFUROUNDDEFAULT" style="width: 98%">
+                    <option value="0">否</option>
+                    <option value="1">是</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>图层图标名称: </td>
+            <td><input type="text" id="tbxLAYERPICNAME" value="" style="width: 98%" /></td>
+            <td>排序号:</td>
+            <td><input type="text" id="tbxORDERBY" value="" style="width: 98%" /></td>
+        </tr>
+    </table>
+</div>
+
+<script type="text/javascript">
+    query();
+    function query() {
+        $.ajax({
+            url: '/SystemConfig/GetLayerList',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            dataType: 'json',
+            data: { LayerName: $('#tbxLayerName').val() },
+            success: function (data) {
+                if (data.Success) {
+                    $('#tableList').html('');
+                    $('#tableList').html(data.Msg);
+                }
+                else {
+                    $('#tableList').html('');
+                }
+            },
+            error: function (error) {
+                layer.msg('查询异常!', { icon: 5 });
+            }
+        });
+    }
+
+    //选中改变颜色
+    function setColor(obj) {
+        $(obj).css("background-color", "#FFDAB9");
+        $("tr").not($(obj)).css("background-color", "");
+    }
+
+    //勾选
+    function selectAll(v, c) {
+        var _len = $("#tableList tr").length - 1
+        if (_len > 0) {
+            if (v == "ALL") {
+                for (var i = 0; i < _len; i++) {
+                    document.getElementById('tbxLayerCode' + i).checked = c;
+                }
+            }
+        }
+    }
+
+    //数据增、删、改、查看
+    function Manager(Method, LayerCode) {
+        if (Method == 'Del') {
+            layer.confirm('确实要删除吗?', { icon: 3, title: '提示' }, function (index) {
+                $.ajax({
+                    type: "post",
+                    url: "/SystemConfig/LayerManager",
+                    data: { LayerCode: LayerCode, Method: Method },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.Success) {
+                            layer.msg(data.Msg, { icon: 6 });
+                            query();
+                        }
+                        else {
+                            layer.msg(data.Msg, { icon: 5 });
+                        }
+                    },
+                    error: function () {
+                        layer.msg('系统异常!', { icon: 5 });
+                    }
+                });
+            });
+        }
+        else {
+            if (Method == 'Add') {
+                $('#tbxLAYERCODE').attr("disabled", false);
+                $("#tbxLAYERCODE").val('');
+                $("#tbxLAYERNAME").val('');
+                $("#tbxLAYERID").val('');
+                $("#tbxISDEFAULTCH").val('0');
+                $("#tbxISACTION").val('0');
+                $("#tbxLAYERRIGHTID").val('');
+                $("#tbxISFIREROUNDDEFAULT").val('0');
+                $("#tbxISFUROUNDDEFAULT").val('0');
+                $("#tbxLAYERPICNAME").val('');
+                $("#tbxORDERBY").val('');
+            }
+            if (Method == 'Mdy') {
+                $('#tbxLAYERCODE').attr("disabled", true);
+                $.ajax({
+                    type: "post",
+                    url: "/SystemConfig/GetLayerDataJson",
+                    data: { LayerCode: LayerCode },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.LAYERCODE != '') {
+                            $("#tbxLAYERCODE").val(data.LAYERCODE);
+                            $("#tbxLAYERNAME").val(data.LAYERNAME);
+                            $("#tbxLAYERID").val(data.LAYERID);
+                            $("#tbxISDEFAULTCH").val(data.ISDEFAULTCH);
+                            $("#tbxISACTION").val(data.ISACTION);
+                            $("#tbxLAYERRIGHTID").val(data.LAYERRIGHTID);
+                            $("#tbxISFIREROUNDDEFAULT").val(data.ISFIREROUNDDEFAULT);
+                            $("#tbxISFUROUNDDEFAULT").val(data.ISFUROUNDDEFAULT);
+                            $("#tbxLAYERPICNAME").val(data.LAYERPICNAME);
+                            $("#tbxORDERBY").val(data.ORDERBY);
+                        }
+                    },
+                    error: function () {
+                        layer.msg('系统异常!', { icon: 5 });
+                    }
+                });
+            }
+            var btnInfo = ['保存', '取消'];
+            var str = "添加图层";
+            if (Method == "Mdy") {
+                str = "修改图层";
+            }
+            layer.open({
+                type: 1,
+                title: str,
+                area: ['70%', '70%'],
+                btn: btnInfo,
+                shade: 0,
+                maxmin: true,
+                content: $('#tableAdd'),
+                yes: function (index, layero) {
+                    var layerCode = $('#tbxLAYERCODE').val();
+                    if (layerCode == "") {
+                        layer.msg('请输入图层编码!', { icon: 5 });
+                        $('#tbxLAYERCODE').focus();
+                        return;
+                    }
+                    var layerName = $('#tbxLAYERNAME').val();
+                    if (layerName == "") {
+                        layer.msg('请输入图层名称!', { icon: 5 });
+                        $('#tbxLAYERNAME').focus();
+                        return;
+                    }
+                    var layerId = $('#tbxLAYERID').val();
+                    if (layerId == "") {
+                        layer.msg('请输入图层编号!', { icon: 5 });
+                        $('#tbxLAYERID').focus();
+                        return;
+                    }
+                    var isAction = $("#tbxISACTION").val();
+                    var layerRightId = $("#tbxLAYERRIGHTID").val();
+                    if (isAction == "1") {
+                        if (layerRightId == "") {
+                            layer.msg('请输入权限编码!', { icon: 5 });
+                            $('#tbxLAYERRIGHTID').focus();
+                            return;
+                        }
+                    }
+                    var orderby = $("#tbxORDERBY").val();
+                    if (orderby == "") {
+                        layer.msg('请输入排序号!', { icon: 5 });
+                        $('#tbxORDERBY').focus();
+                        return;
+                    }
+                    $.ajax({
+                        type: "post",
+                        url: "/SystemConfig/LayerManager",
+                        data: {
+                            LayerCode: layerCode,
+                            LayerName: layerName,
+                            LayerId: layerId,
+                            IsDefaultCh: $("#tbxISDEFAULTCH").val(),
+                            IsAction: isAction,
+                            LayerRightId: layerRightId,
+                            IsFireRoundDefault: $("#tbxISFIREROUNDDEFAULT").val(),
+                            IsFuRoundDefault: $("#tbxISFUROUNDDEFAULT").val(),
+                            LayerPicName: $("#tbxLAYERPICNAME").val(),
+                            OrderBy: orderby,
+                            Method: Method
+                        },
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.Success) {
+                                layer.confirm(data.Msg + ' 请返回?', { icon: 3, title: '提示' }, function (index2) {
+                                    layer.close(index2);
+                                    layer.close(index);
+                                });
+                                query();
+                            }
+                            else {
+                                layer.msg(data.Msg, { icon: 5 });
+                            }
+                        },
+                        error: function () {
+                            layer.msg('系统异常!', { icon: 5 });
+                        }
+                    });
+                },
+                cancel: function (index) {
+                    layer.close(index);
+                }
+            })
+        }
+    }
+
+    function BatchOperation() {       
+        var strLayerCode = $("input:checkbox[name='tbxLayerCode']:checked").map(function (index, elem) { return $(elem).val(); }).get().join(',');
+        if (strLayerCode.length > 0) {
+            var plcz = $('#tbxPLCZ').val();
+            if (plcz == "") {
+                layer.msg('请选择要进行的操作!', { icon: 5 });
+                $('#tbxPLCZ').focus();
+                return;
+            }
+            else {
+                layer.confirm('确实要操作吗?', { icon: 3, title: '提示' }, function (index) {
+                    $.ajax({
+                        url: '/SystemConfig/PLUpdateLayer',
+                        cache: false,
+                        data: { LayerCode: strLayerCode, PlCZ: plcz },
+                        type: 'post',
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.Success) {
+                                layer.msg(data.Msg, { icon: 6 });
+                                $('#tbxPLCZ').val('');
+                                query();
+                            }
+                            else {
+                                layer.msg(data.Msg, { icon: 5 });
+                            }
+                        },
+                        error: function () {
+                            layer.msg("批量操作异常!", { icon: 5 });
+                        }
+                    });
+                });
+            }
+        }
+        else {
+            layer.msg('请选择要操作的图层!', { icon: 5 });
+            return;
+        }
+    }
+</script>

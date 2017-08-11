@@ -36,6 +36,10 @@ namespace ManagerSystemModel
         /// </summary>
         public string ORDERBY { get; set; }
         /// <summary>
+        /// 默认是否打开
+        /// </summary>
+        public string ISDEFAULTCH { get; set; }
+        /// <summary>
         /// 火点周边查询默认图层
         /// </summary>
         public string ISFIREROUNDDEFAULT { get; set; }
@@ -43,5 +47,17 @@ namespace ManagerSystemModel
         /// 护林员周边查询默认图层
         /// </summary>
         public string ISFUROUNDDEFAULT { get; set; }
+        /// <summary>
+        /// 图层图标名称
+        /// </summary>
+        public string LAYERPICNAME { get; set; }
+        /// <summary>
+        /// 批量操作
+        /// </summary>
+        public string PlCZ { get; set; }
+        /// <summary>
+        /// 操作方法
+        /// </summary>
+        public string opMethod { get; set; }
     }
 }

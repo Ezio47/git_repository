@@ -212,9 +212,9 @@ namespace ManagerSystemClassLibrary.BaseDT
                     else if (sw.BYORGNO.Substring(6, 9) == "000000000")//获取所有县的
                         sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,6) = '{0}' or BYORGNO is null or BYORGNO='')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 6)));
                     else if (sw.BYORGNO.Substring(9, 6) == "000000")//获取说有乡镇的
-                        sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,9) = '{0}' or BYORGNO is null or BYORGNO=''", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 9)));
+                        sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,9) = '{0}' or BYORGNO is null or BYORGNO='')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 9)));
                     else if (sw.BYORGNO.Substring(12, 3) == "000")//获取说有村的
-                        sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,12) = '{0}' or BYORGNO is null or BYORGNO=''", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 12)));
+                        sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,12) = '{0}' or BYORGNO is null or BYORGNO='')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 12)));
                     else
                         sb.AppendFormat(" AND BYORGNO = '{0}'", ClsSql.EncodeSql(sw.BYORGNO));
                 }
@@ -263,11 +263,15 @@ namespace ManagerSystemClassLibrary.BaseDT
             if (!string.IsNullOrEmpty(sw.BYORGNO))
             {
                 if (sw.BYORGNO.Substring(4, 11) == "00000000000")//获取所有市的
-                    sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,4) = '{0}')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 4)));
+                    sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,4) = '{0}' or BYORGNO is null or BYORGNO='')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 4)));
                 else if (sw.BYORGNO.Substring(4, 11) == "xxxxxxxxxxx")//单独市
                     sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,15) = '{0}')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 4) + "00000000000"));
                 else if (sw.BYORGNO.Substring(6, 9) == "xxxxxxxxx")//获取所有县的
-                    sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,6) = '{0}' )", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 6)));
+                    sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,6) = '{0}' or BYORGNO is null or BYORGNO='')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 6)));
+                else if (sw.BYORGNO.Substring(9, 6) == "000000")//获取说有乡镇的
+                    sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,9) = '{0}'or BYORGNO is null or BYORGNO='')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 9)));
+                else if (sw.BYORGNO.Substring(12, 3) == "000")//获取说有村的
+                    sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,12) = '{0}'or BYORGNO is null or BYORGNO='')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 12)));
                 else
                     sb.AppendFormat(" AND BYORGNO = '{0}'", ClsSql.EncodeSql(sw.BYORGNO));
             }
@@ -315,9 +319,9 @@ namespace ManagerSystemClassLibrary.BaseDT
                 else if (PublicCls.OrgIsZhen(orgNo))
                 {
                     if (string.IsNullOrEmpty(DICTVALUE))
-                        return dt.Compute("count(DC_UTILITY_ISOLATIONSTRIP_ID)", "BYORGNO='" + PublicCls.getZhenIncOrgNo(orgNo) + "'").ToString();
+                        return dt.Compute("count(DC_UTILITY_ISOLATIONSTRIP_ID)", "substring(BYORGNO,1,9)='" + PublicCls.getZhenIncOrgNo(orgNo) + "'").ToString();
                     else
-                        return dt.Compute("count(DC_UTILITY_ISOLATIONSTRIP_ID)", "BYORGNO='" + PublicCls.getZhenIncOrgNo(orgNo) + "' and USESTATE='" + DICTVALUE + "'").ToString();
+                        return dt.Compute("count(DC_UTILITY_ISOLATIONSTRIP_ID)", "substring(BYORGNO,1,9)='" + PublicCls.getZhenIncOrgNo(orgNo) + "' and USESTATE='" + DICTVALUE + "'").ToString();
                 }
                 else //机构编码可能不正确
                     return "";
@@ -341,9 +345,9 @@ namespace ManagerSystemClassLibrary.BaseDT
                 else if (PublicCls.OrgIsZhen(orgNo))
                 {
                     if (string.IsNullOrEmpty(DICTVALUE))
-                        return dt.Compute("count(DC_UTILITY_ISOLATIONSTRIP_ID)", "BYORGNO='" + PublicCls.getZhenIncOrgNo(orgNo) + "'").ToString();
+                        return dt.Compute("count(DC_UTILITY_ISOLATIONSTRIP_ID)", "substring(BYORGNO,1,9)='" + PublicCls.getZhenIncOrgNo(orgNo) + "'").ToString();
                     else
-                        return dt.Compute("count(DC_UTILITY_ISOLATIONSTRIP_ID)", "BYORGNO='" + PublicCls.getZhenIncOrgNo(orgNo) + "' and MANAGERSTATE='" + DICTVALUE + "'").ToString();
+                        return dt.Compute("count(DC_UTILITY_ISOLATIONSTRIP_ID)", "substring(BYORGNO,1,9)='" + PublicCls.getZhenIncOrgNo(orgNo) + "' and MANAGERSTATE='" + DICTVALUE + "'").ToString();
                 }
                 else //机构编码可能不正确
                     return "";
@@ -367,9 +371,9 @@ namespace ManagerSystemClassLibrary.BaseDT
                 else if (PublicCls.OrgIsZhen(orgNo))
                 {
                     if (string.IsNullOrEmpty(DICTVALUE))
-                        return dt.Compute("count(DC_UTILITY_ISOLATIONSTRIP_ID)", "BYORGNO='" + PublicCls.getZhenIncOrgNo(orgNo) + "'").ToString();
+                        return dt.Compute("count(DC_UTILITY_ISOLATIONSTRIP_ID)", "substring(BYORGNO,1,9)='" + PublicCls.getZhenIncOrgNo(orgNo) + "'").ToString();
                     else
-                        return dt.Compute("count(DC_UTILITY_ISOLATIONSTRIP_ID)", "BYORGNO='" + PublicCls.getZhenIncOrgNo(orgNo) + "' and ISOLATIONTYPE='" + DICTVALUE + "'").ToString();
+                        return dt.Compute("count(DC_UTILITY_ISOLATIONSTRIP_ID)", "substring(BYORGNO,1,9)='" + PublicCls.getZhenIncOrgNo(orgNo) + "' and ISOLATIONTYPE='" + DICTVALUE + "'").ToString();
                 }
                 else //机构编码可能不正确
                     return "";
@@ -575,9 +579,9 @@ namespace ManagerSystemClassLibrary.BaseDT
                 else if (PublicCls.OrgIsZhen(orgNo))
                 {
                     if (string.IsNullOrEmpty(DICTVALUE))
-                        return dt.Compute("Sum(AREA)", "BYORGNO='" + PublicCls.getZhenIncOrgNo(orgNo) + "'").ToString();
+                        return dt.Compute("Sum(AREA)", "substring(BYORGNO,1,9)='" + PublicCls.getZhenIncOrgNo(orgNo) + "'").ToString();
                     else
-                        return dt.Compute("Sum(AREA)", "BYORGNO='" + PublicCls.getZhenIncOrgNo(orgNo) + "' and USESTATE='" + DICTVALUE + "'").ToString();
+                        return dt.Compute("Sum(AREA)", "substring(BYORGNO,1,9)='" + PublicCls.getZhenIncOrgNo(orgNo) + "' and USESTATE='" + DICTVALUE + "'").ToString();
                 }
                 else //机构编码可能不正确
                     return "";
@@ -601,9 +605,9 @@ namespace ManagerSystemClassLibrary.BaseDT
                 else if (PublicCls.OrgIsZhen(orgNo))
                 {
                     if (string.IsNullOrEmpty(DICTVALUE))
-                        return dt.Compute("Sum(AREA)", "BYORGNO='" + PublicCls.getZhenIncOrgNo(orgNo) + "'").ToString();
+                        return dt.Compute("Sum(AREA)", "substring(BYORGNO,1,9)='" + PublicCls.getZhenIncOrgNo(orgNo) + "'").ToString();
                     else
-                        return dt.Compute("Sum(AREA)", "BYORGNO='" + PublicCls.getZhenIncOrgNo(orgNo) + "' and MANAGERSTATE='" + DICTVALUE + "'").ToString();
+                        return dt.Compute("Sum(AREA)", "substring(BYORGNO,1,9)='" + PublicCls.getZhenIncOrgNo(orgNo) + "' and MANAGERSTATE='" + DICTVALUE + "'").ToString();
                 }
                 else //机构编码可能不正确
                     return "";
@@ -627,9 +631,9 @@ namespace ManagerSystemClassLibrary.BaseDT
                 else if (PublicCls.OrgIsZhen(orgNo))
                 {
                     if (string.IsNullOrEmpty(DICTVALUE))
-                        return dt.Compute("Sum(AREA)", "BYORGNO='" + PublicCls.getZhenIncOrgNo(orgNo) + "'").ToString();
+                        return dt.Compute("Sum(AREA)", "substring(BYORGNO,1,9)='" + PublicCls.getZhenIncOrgNo(orgNo) + "'").ToString();
                     else
-                        return dt.Compute("Sum(AREA)", "BYORGNO='" + PublicCls.getZhenIncOrgNo(orgNo) + "' and ISOLATIONTYPE='" + DICTVALUE + "'").ToString();
+                        return dt.Compute("Sum(AREA)", "substring(BYORGNO,1,9)='" + PublicCls.getZhenIncOrgNo(orgNo) + "' and ISOLATIONTYPE='" + DICTVALUE + "'").ToString();
                 }
                 else //机构编码可能不正确
                     return "";
@@ -672,9 +676,9 @@ namespace ManagerSystemClassLibrary.BaseDT
                 else if (PublicCls.OrgIsZhen(orgNo))
                 {
                     if (string.IsNullOrEmpty(DICTVALUE))
-                        return dt.Compute("Sum(LENGTH)", "BYORGNO='" + PublicCls.getZhenIncOrgNo(orgNo) + "'").ToString();
+                        return dt.Compute("Sum(LENGTH)", "substring(BYORGNO,1,9)='" + PublicCls.getZhenIncOrgNo(orgNo) + "'").ToString();
                     else
-                        return dt.Compute("Sum(LENGTH)", "BYORGNO='" + PublicCls.getZhenIncOrgNo(orgNo) + "' and USESTATE='" + DICTVALUE + "'").ToString();
+                        return dt.Compute("Sum(LENGTH)", "substring(BYORGNO,1,9)='" + PublicCls.getZhenIncOrgNo(orgNo) + "' and USESTATE='" + DICTVALUE + "'").ToString();
                 }
                 else //机构编码可能不正确
                     return "";
@@ -698,9 +702,9 @@ namespace ManagerSystemClassLibrary.BaseDT
                 else if (PublicCls.OrgIsZhen(orgNo))
                 {
                     if (string.IsNullOrEmpty(DICTVALUE))
-                        return dt.Compute("Sum(LENGTH)", "BYORGNO='" + PublicCls.getZhenIncOrgNo(orgNo) + "'").ToString();
+                        return dt.Compute("Sum(LENGTH)", "substring(BYORGNO,1,9)='" + PublicCls.getZhenIncOrgNo(orgNo) + "'").ToString();
                     else
-                        return dt.Compute("Sum(LENGTH)", "BYORGNO='" + PublicCls.getZhenIncOrgNo(orgNo) + "' and MANAGERSTATE='" + DICTVALUE + "'").ToString();
+                        return dt.Compute("Sum(LENGTH)", "substring(BYORGNO,1,9)='" + PublicCls.getZhenIncOrgNo(orgNo) + "' and MANAGERSTATE='" + DICTVALUE + "'").ToString();
                 }
                 else //机构编码可能不正确
                     return "";
@@ -724,9 +728,9 @@ namespace ManagerSystemClassLibrary.BaseDT
                 else if (PublicCls.OrgIsZhen(orgNo))
                 {
                     if (string.IsNullOrEmpty(DICTVALUE))
-                        return dt.Compute("Sum(LENGTH)", "BYORGNO='" + PublicCls.getZhenIncOrgNo(orgNo) + "'").ToString();
+                        return dt.Compute("Sum(LENGTH)", "substring(BYORGNO,1,9)='" + PublicCls.getZhenIncOrgNo(orgNo) + "'").ToString();
                     else
-                        return dt.Compute("Sum(LENGTH)", "BYORGNO='" + PublicCls.getZhenIncOrgNo(orgNo) + "' and ISOLATIONTYPE='" + DICTVALUE + "'").ToString();
+                        return dt.Compute("Sum(LENGTH)", "substring(BYORGNO,1,9)='" + PublicCls.getZhenIncOrgNo(orgNo) + "' and ISOLATIONTYPE='" + DICTVALUE + "'").ToString();
                 }
                 else //机构编码可能不正确
                     return "";

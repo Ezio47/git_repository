@@ -84,6 +84,32 @@ namespace ManagerSystemClassLibrary.BaseDT
         }
 
         /// <summary>
+        /// 批量结束火情
+        /// </summary>
+        /// <param name="m"></param>
+        /// <returns></returns>
+        public static Message PLEnd(JC_FIRE_Model m)
+        {
+            StringBuilder sb = new StringBuilder();
+            var jcfid = m.JCFID.Split(',');
+            sb.AppendFormat("UPDATE JC_FIRE SET ");
+            sb.AppendFormat(" ISOUTFIRE= '{0}'", ClsSql.EncodeSql(m.ISOUTFIRE));
+            if (jcfid.Length == 1)
+            {
+                sb.AppendFormat(" where JCFID= '{0}'", ClsSql.EncodeSql(m.JCFID));
+            }
+            else
+            {
+                sb.AppendFormat(" where JCFID in ({0})", ClsSql.SwitchStrToSqlIn(m.JCFID));
+            }
+            bool bln = DataBaseClass.ExeSql(sb.ToString());
+            if (bln)
+                return new Message(true, "操作成功！", "");
+            else
+                return new Message(true, "操作失败！", "");
+        }
+
+        /// <summary>
         /// 批量添加更新
         /// </summary>
         /// <param name="m"></param>
@@ -398,9 +424,13 @@ namespace ManagerSystemClassLibrary.BaseDT
                 {
                     sb.AppendFormat(" and a.BYORGNO like  '{0}%'", PublicCls.getXianIncOrgNo(sw.BYORGNO));
                 }
-                else
+                else if (PublicCls.OrgIsZhen(sw.BYORGNO.Trim()))
                 {
-                    sb.AppendFormat(" and a.BYORGNO = '{0}'", PublicCls.getZhenIncOrgNo(sw.BYORGNO));
+                    sb.AppendFormat(" and a.BYORGNO like '{0}%'", PublicCls.getZhenIncOrgNo(sw.BYORGNO));
+                }
+                else if (PublicCls.OrgIsCun(sw.BYORGNO.Trim()))
+                {
+                    sb.AppendFormat(" and a.BYORGNO like '{0}%'", PublicCls.getCunIncOrgNo(sw.BYORGNO));
                 }
             }
             if (!string.IsNullOrEmpty(sw.FIRETIME))
@@ -442,7 +472,7 @@ namespace ManagerSystemClassLibrary.BaseDT
             return ds.Tables[0];
         }
         /// <summary>
-        /// 获取监测获取信息——优化后
+        /// 火情监测获取信息——优化后
         /// </summary>
         /// <param name="sw"></param>
         /// <returns></returns>
@@ -451,7 +481,7 @@ namespace ManagerSystemClassLibrary.BaseDT
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("select a.ZQWZ,a.FIRENAME,a.JCFID, a.JD,a.WD,a.BYORGNO ");
             sb.AppendFormat(" ,(select top 1 FIRELEVEL from  JC_FIRE_PROP where jcfid =a.jcfid order by JC_FIRE_PROPID desc)");
-            sb.AppendFormat(" as FIRELEVEL from JC_FIRE a where ISOUTFIRE<>1");
+            sb.AppendFormat(" as FIRELEVEL from JC_FIRE a where ISOUTFIRE = 0");
             if (string.IsNullOrEmpty(sw.BYORGNO) == false)
             {
                 if (PublicCls.OrgIsShi(sw.BYORGNO.Trim()))
@@ -462,19 +492,20 @@ namespace ManagerSystemClassLibrary.BaseDT
                 {
                     sb.AppendFormat(" and BYORGNO like  '{0}%'", PublicCls.getXianIncOrgNo(sw.BYORGNO));
                 }
-                else
+                else if (PublicCls.OrgIsZhen(sw.BYORGNO.Trim()))
                 {
-                    sb.AppendFormat(" and BYORGNO = '{0}'", PublicCls.getZhenIncOrgNo(sw.BYORGNO));
+                    sb.AppendFormat(" and a.BYORGNO like '{0}%'", PublicCls.getZhenIncOrgNo(sw.BYORGNO));
+                }
+                else if (PublicCls.OrgIsCun(sw.BYORGNO.Trim()))
+                {
+                    sb.AppendFormat(" and a.BYORGNO like '{0}%'", PublicCls.getCunIncOrgNo(sw.BYORGNO));
                 }
             }
-            sb.AppendFormat(" and jcfid in ");
-            sb.AppendFormat(" (select jcfid from JC_FIRETICKLING where ISOUTFIRE=0");
-            sb.AppendFormat(" and jcfid =a.JCFID and HOTTYPE in(1,6,10))");
-            sb.AppendFormat(" order by jcfid desc");
+            sb.AppendFormat(" and HOTTYPE in(1,6,10) ");
             DataSet ds = DataBaseClass.FullDataSet(sb.ToString());
             return ds.Tables[0];
         }
-        
+
         #endregion
 
         #region 获取签收反馈个数
@@ -528,9 +559,9 @@ namespace ManagerSystemClassLibrary.BaseDT
             sb.Append(" Where  (b.FKID=(select max(fkid) from JC_FIRETICKLING where jcfid=b.jcfid) or b.fkid is null) ");
             if (!string.IsNullOrEmpty(sw.BYORGNO))
             {
-                if (sw.BYORGNO.Substring(4, 5) == "00000")//获取所有市的
+                if (sw.BYORGNO.Substring(4, 11) == "00000000000")//获取所有市的
                     sb.AppendFormat(" AND (SUBSTRING(a.BYORGNO,1,4) = '{0}' or a.BYORGNO is null or a.BYORGNO='')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 4)));
-                else if (sw.BYORGNO.Substring(6, 3) == "000")//获取所有县的
+                else if (sw.BYORGNO.Substring(6, 9) == "000000000")//获取所有县的
                     sb.AppendFormat(" AND (SUBSTRING(a.BYORGNO,1,6) = '{0}' or a.BYORGNO is null or a.BYORGNO='')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 6)));
                 else
                     sb.AppendFormat(" AND (a.BYORGNO = '{0}' or a.BYORGNO is null or a.BYORGNO='')", ClsSql.EncodeSql(sw.BYORGNO));
@@ -687,6 +718,10 @@ namespace ManagerSystemClassLibrary.BaseDT
             {
                 sb.AppendFormat(",ISOUTFIRE={0}", ClsSql.EncodeSql(jcfirefk.ISOUTFIRE));//是否已灭 0 未灭 1 为已灭
             }
+            if (!string.IsNullOrEmpty(jcfirefk.HOTTYPE))
+            {
+                sb.AppendFormat(",HOTTYPE={0}", ClsSql.EncodeSql(jcfirefk.HOTTYPE));//热点类别
+            }
             sb.AppendFormat(",LASTPROCESSTIME='{0}'", ClsSql.EncodeSql(jcfire.LASTPROCESSTIME));//最后处理时间
             sb.AppendFormat(" where JCFID= '{0}'", ClsSql.EncodeSql(jcfire.JCFID));
             StringBuilder sb1 = new StringBuilder();
@@ -789,9 +824,9 @@ namespace ManagerSystemClassLibrary.BaseDT
                 else if (PublicCls.OrgIsZhen(orgNo))
                 {
                     if (string.IsNullOrEmpty(DICTVALUE))
-                        return dt.Compute("count(JCFID)", "BYORGNO='" + PublicCls.getZhenIncOrgNo(orgNo) + "'and FIREFROM in ('1','2','3','4','5','6')").ToString();
+                        return dt.Compute("count(JCFID)", "substring(BYORGNO,1,9)='" + PublicCls.getZhenIncOrgNo(orgNo) + "'and FIREFROM in ('1','2','3','4','5','6')").ToString();
                     else
-                        return dt.Compute("count(JCFID)", "BYORGNO='" + PublicCls.getZhenIncOrgNo(orgNo) + "' and FIREFROM='" + DICTVALUE + "'").ToString();
+                        return dt.Compute("count(JCFID)", "substring(BYORGNO,1,9)='" + PublicCls.getZhenIncOrgNo(orgNo) + "' and FIREFROM='" + DICTVALUE + "'").ToString();
                 }
                 else //机构编码可能不正确
                     return "";
@@ -815,9 +850,9 @@ namespace ManagerSystemClassLibrary.BaseDT
                 else if (PublicCls.OrgIsZhen(orgNo))
                 {
                     if (string.IsNullOrEmpty(DICTVALUE))
-                        return dt.Compute("count(JCFID)", "BYORGNO='" + PublicCls.getZhenIncOrgNo(orgNo) + "' and HOTTYPE is not null and HOTTYPE <>0").ToString();
+                        return dt.Compute("count(JCFID)", "substring(BYORGNO,1,9)='" + PublicCls.getZhenIncOrgNo(orgNo) + "' and HOTTYPE is not null and HOTTYPE <>0").ToString();
                     else
-                        return dt.Compute("count(JCFID)", "BYORGNO='" + PublicCls.getZhenIncOrgNo(orgNo) + "' and HOTTYPE ='" + DICTVALUE + "'").ToString();
+                        return dt.Compute("count(JCFID)", "substring(BYORGNO,1,9)='" + PublicCls.getZhenIncOrgNo(orgNo) + "' and HOTTYPE ='" + DICTVALUE + "'").ToString();
                 }
                 else //机构编码可能不正确
                     return "";
@@ -841,9 +876,9 @@ namespace ManagerSystemClassLibrary.BaseDT
                 else if (PublicCls.OrgIsZhen(orgNo))
                 {
                     if (string.IsNullOrEmpty(DICTVALUE))
-                        return dt.Compute("count(JCFID)", "BYORGNO='" + PublicCls.getZhenIncOrgNo(orgNo) + "' and FIRELEVEL  is not null  and FIRELEVEL <>0 ").ToString();
+                        return dt.Compute("count(JCFID)", "substring(BYORGNO,1,9)='" + PublicCls.getZhenIncOrgNo(orgNo) + "' and FIRELEVEL  is not null  and FIRELEVEL <>0 ").ToString();
                     else
-                        return dt.Compute("count(JCFID)", "BYORGNO='" + PublicCls.getZhenIncOrgNo(orgNo) + "' and FIRELEVEL  = '" + DICTVALUE + "'").ToString();
+                        return dt.Compute("count(JCFID)", "substring(BYORGNO,1,9)='" + PublicCls.getZhenIncOrgNo(orgNo) + "' and FIRELEVEL  = '" + DICTVALUE + "'").ToString();
                 }
                 else //机构编码可能不正确
                     return "";
@@ -1089,7 +1124,7 @@ namespace ManagerSystemClassLibrary.BaseDT
             string total = "";
             StringBuilder sb = new StringBuilder();
             sb.Append(" Left Join JC_FIRETICKLING b   on a.JCFID=b.JCFID ");
-            sb.Append(" Where  (b.FKID=(select max(fkid) from JC_FIRETICKLING where jcfid=b.jcfid) or b.fkid is null) and a.ISOUTFIRE=1 ");
+            sb.Append(" Where  (b.FKID=(select max(fkid) from JC_FIRETICKLING where jcfid=b.jcfid) or b.fkid is null) and a.ISOUTFIRE=1 and (FIREFROM=50 or a.hottype in(1,6,10))");
             if (sw.BYORGNO.Substring(4, 5) == "00000")//获取所有市的
                 sb.AppendFormat(" AND (SUBSTRING(a.BYORGNO,1,4) = '{0}' )", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 4)));
             else if (sw.BYORGNO.Substring(6, 3) == "000")//获取所有县的
@@ -1102,7 +1137,6 @@ namespace ManagerSystemClassLibrary.BaseDT
         }
         #endregion
 
-
         #region 获取数据中心档案(新)
         /// <summary>
         /// 获取数据中心档案
@@ -1114,15 +1148,19 @@ namespace ManagerSystemClassLibrary.BaseDT
         {
             StringBuilder sb = new StringBuilder();
             sb.Append(" Left Join JC_FIRETICKLING b   on a.JCFID=b.JCFID ");
-            sb.Append(" Where  (b.FKID=(select max(fkid) from JC_FIRETICKLING where jcfid=b.jcfid) or b.fkid is null) ");
+            sb.Append(" Where  (b.FKID=(select max(fkid) from JC_FIRETICKLING where jcfid=b.jcfid) or b.fkid is null) and (FIREFROM=50 or a.hottype in(1,6,10))");
             if (!string.IsNullOrEmpty(sw.BYORGNO))
             {
-                if (sw.BYORGNO.Substring(4, 5) == "00000")//获取所有市的
-                    sb.AppendFormat(" AND (SUBSTRING(a.BYORGNO,1,4) = '{0}')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 4)));
-                else if (sw.BYORGNO.Substring(4, 5) == "xxxxx")//单独市
-                    sb.AppendFormat(" AND (SUBSTRING(a.BYORGNO,1,9) = '{0}')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 4) + "00000"));
-                else if (sw.BYORGNO.Substring(6, 3) == "xxx")//获取所有县的
-                    sb.AppendFormat(" AND (SUBSTRING(a.BYORGNO,1,6) = '{0}' )", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 6)));
+                if (sw.BYORGNO.Substring(4, 11) == "00000000000")//获取所有市的
+                    sb.AppendFormat(" AND (SUBSTRING(a.BYORGNO,1,4) = '{0}' or a.BYORGNO is null or a.BYORGNO='')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 4)));
+                else if (sw.BYORGNO.Substring(4, 11) == "xxxxxxxxxxx")//单独市
+                    sb.AppendFormat(" AND (SUBSTRING(a.BYORGNO,1,15) = '{0}')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 4) + "00000000000"));
+                else if (sw.BYORGNO.Substring(6, 9) == "xxxxxxxxx")//获取所有县的
+                    sb.AppendFormat(" AND (SUBSTRING(a.BYORGNO,1,6) = '{0}' or a.BYORGNO is null or a.BYORGNO='')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 6)));
+                else if (sw.BYORGNO.Substring(9, 6) == "000000")//获取说有乡镇的
+                    sb.AppendFormat(" AND (SUBSTRING(a.BYORGNO,1,9) = '{0}'or a.BYORGNO is null or a.BYORGNO='')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 9)));
+                else if (sw.BYORGNO.Substring(12, 3) == "000")//获取说有村的
+                    sb.AppendFormat(" AND (SUBSTRING(a.BYORGNO,1,12) = '{0}'or a.BYORGNO is null or a.BYORGNO='')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 12)));
                 else
                     sb.AppendFormat(" AND a.BYORGNO = '{0}'", ClsSql.EncodeSql(sw.BYORGNO));
             }

@@ -10,6 +10,7 @@
     {
         curorgno = SystemCls.getCurUserOrgNo();
     }
+    var curorgno1 = SystemCls.getCurUserOrgNo();//添加的时候组织机判断
 }
 <div class="easyui-layout" data-options="fit:true" style=" border:0;">
 
@@ -41,7 +42,7 @@
                                 名称：<input id="tbxNAME" type="text" class="input-small" style="width:65px" />
                                 @*编号：<input id="tbxNUMBER" type="text" class="input-small" style="width:60px" />*@
                                 <input type="button" value="查询" onclick="query('1')" class="btnSearchCss" />
-                                <input type="button" value="添加" id="btnAdd" onclick="Manager('Add','','')" style="display:none;" class="btnAddCss" />
+                                <input type="button" value="添加" id="btnAdd" onclick="Add()" style="display:none;" class="btnAddCss" />
                             </li>
                             <li class="active">
                                 @using (@Html.BeginForm("PROPAGANDASTELEList", "DataCenter", FormMethod.Post, new { enctype = "multipart/form-data" }))
@@ -75,120 +76,7 @@
     </div>
 </div>
 
-<div class="divMan" id="tableadd" style="display:none;margin-left:5px;margin-top:8px">
-    <table cellpadding="0" cellspacing="0">
-        <tr>
-            <td style="width:100px;">
-                单位：
-            </td>
-            <td>
-                <select id="BYORGNO" class="easyui-combotree" style="width:180px;"></select>
-            </td>
-            <td style="width:100px;">
-                宣传碑类型：
-            </td>
-            <td>
-                <select id="PROPAGANDASTELETYPE">
-                    @Html.Raw(@ViewBag.propagandasteletypeadd)
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td style="width:100px;">
-                <span style="color:red;">*</span>
-                名称：
-            </td>
-            <td>
-                <input type="text" id="NAME" class="input-small" value="" />
-            </td>
-            <td style="width:100px;">
-                <span style="color:red;">*</span>
-                编号：
-            </td>
-            <td>
-                <input id="NUMBER" type="text" class="input-small" value="" />
-            </td>
-        </tr>
-        <tr>
-            <td style="width:100px;">
-                使用现状类型：
-            </td>
-            <td>
-                <select id="USESTATE">
-                    @Html.Raw(@ViewBag.usestateadd)
-                </select>
-            </td>
-            <td style="width:100px;">
-                维护管理类型：
-            </td>
-            <td>
-                <select id="MANAGERSTATE">
-                    @Html.Raw(@ViewBag.managerstateadd)
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td style="width:100px;">
-                结构类型：
-            </td>
-            <td>
-                <select id="STRUCTURETYPE">
-                    @Html.Raw(@ViewBag.structureadd)
-                </select>
-            </td>
-            <td style="width:100px;">
-                地址：
-            </td>
-            <td>
-                <input id="ADDRESS" type="text" class="input-small" value="" />
-            </td>
-        </tr>
-        <tr>
-            <td style="width:100px;">
-                经度：
-            </td>
-            <td>
-                <input id="JD" type="text" class="input-small" value="" />
-            </td>
-            <td style="width:100px;">
-                纬度：
-            </td>
-            <td>
-                <input id="WD" type="text" class="input-small" value="" />
-                <input type="button" value="地图定位" onclick="setPoint()" class="btnMapLoaclCss" />
-            </td>
-        </tr>
-        <tr>
-            <td style="width:100px;">
-                规划建设日期：
-            </td>
-            <td>
-                开始时间:<input class="easyui-datebox" id="BUILDDATEBEGIN" type="text" style="width:90px;height:28px;" value="" />&nbsp;&nbsp;&nbsp;
-                结束时间:<input class="easyui-datebox" id="BUILDDATEEND" type="text" style="width:90px;height:28px;" value="" />
-            </td>
-            <td style="width:100px;">
-                建成日期：
-            </td>
-            <td>
-                <input class="easyui-datebox" id="BUILDDATE" type="text" style="width:90px;height:28px;" value="" />
-            </td>
-        </tr>
-        <tr>
-            <td style="width:100px;">
-                总价：
-            </td>
-            <td>
-                <input id="WORTH" type="text" class="input-small" value="" />元
-            </td>
-            <td style="width:100px;">
-                备注：
-            </td>
-            <td >
-                <input id="MARK" type="text" class="input-small" value="" />
-            </td>
-        </tr>
-    </table>
-</div>
+
 
 <script type="text/javascript">
     var bln = '@ViewBag.isAdd';
@@ -210,21 +98,6 @@
         });
         $('#tbxORGNOS').combotree('setValue', "@curorgno");
         query('1');
-    });
-    $(function () {
-        $('#BYORGNO').combotree({
-            url: '/DataCenter/OnlyOrgTreeget',
-            editable: false,
-            required: true,
-            panelHeight: 300,
-            onLoadSuccess: function (node, data) {
-                var t = $("#BYORGNO").combotree('tree');//获取tree
-                t.tree("collapseAll");
-                node = t.tree("find", data[0].id);
-                t.tree("expand", node.target);//展开节点 expandTo
-            }
-        });
-        $('#BYORGNO').combotree('setValue', "@curorgno");
     });
     function query(Page) {
         var pagesize = '0';
@@ -262,213 +135,57 @@
         });
     }
 
-    //地图定位
-    function setPoint() {
-        var name = document.getElementById("NAME").value;
-        var jd = document.getElementById("JD").value;
-        var wd = document.getElementById("WD").value;
+    function Del(Method, ID, page) {
+        layer.confirm('确实要删除吗?', { icon: 3, title: '提示' }, function (index) {
+            $.ajax({
+                url: '/DataCenter/PROPAGANDASTELEManager',
+                cache: false,
+                data: { DC_UTILITY_PROPAGANDASTELE_ID: ID, Method: Method },
+                type: 'post',
+                error: function () {
+                    layer.msg('系统异常!', { icon: 5 });
+                },
+                dataType: 'json',
+                success: function (re) {
+                    if (re.Success) {
+                        layer.msg('删除成功!', { icon: 6 });
+                        query(page);
+                    }
+                    else {
+                        layer.msg(re.Msg, { icon: 5 });
+                    }
+                }
+            });
+        });
+    }
+    function Add() {
         layer.open({
             type: 2,
-            title:name+ '地图位置设置',
-            btn: ['保存', '关闭'],
-            area: ['70%', '80%'],
+            title: '添加',
             fix: false, //不固定
+            area: ['80%', '80%'],
             maxmin: true,
-            content: '/MapCommon/GetMapPontIndex?jd=' + jd + "&wd=" + wd,
-            yes: function (index, layero) { //或者使用btn1
-                //按钮【按钮一】的回调
-                var ptxt = layer.getChildFrame("p", index);
-                var arr = ptxt.html().split(',');
-                if ($.trim(arr) != "") {
-                    var jd = parseFloat(arr[0]).toFixed(6);
-                    var wd = parseFloat(arr[1]).toFixed(6);
-                    $('#JD').val(jd);
-                    $('#WD').val(wd);
-                }
-                layer.close(index);
-            }, cancel: function (index) {
-                layer.close(index);
+            content: '/DataCenter/PROPAGANDASTELEManIndex',
+            end: function () {
+                query(1);
             }
         });
-
     }
-
-    function Manager(Method, ID,page) {
-        if (Method == 'Del') {
-            if (confirm('确实要删除该内容吗?')) {
-                $.ajax({
-                    type: "Post",
-                    url: "/DataCenter/PROPAGANDASTELEManager",
-                    data: {
-                        DC_UTILITY_PROPAGANDASTELE_ID: ID,
-                        Method: Method,
-                    },
-                    dataType: "json",
-                    error: function () {
-                        layer.msg('错误:异常!', 'error');
-                    },
-                    success: function (re) {
-                        if (re.Success) {
-                            layer.msg('删除成功', { icon: 6 });
-                            query(page);
-                        }
-                        else {
-                            layer.msg('删除失败', { icon: 5 });
-                        }
-                    }
-                });
+    function Mdy(Method, ID, page) {
+        layer.open({
+            type: 2,
+            title: "修改",
+            area: ['80%', '80%'],
+            //shade: 0,
+            fix: false,
+            maxmin: true,
+            content: '/DataCenter/PROPAGANDASTELEManIndex?Method=' + Method + "&ID=" + ID,
+            end: function () {
+                query(1);
             }
-        }
-        else  {
-            if (Method == 'Mdy' || Method == 'See') {
-                $.ajax({
-                    type: "Post",
-                    url: "/DataCenter/GetPROPAGANDASTELEjson",
-                    data: {
-                        DC_UTILITY_PROPAGANDASTELE_ID: ID,
-                    },
-                    dataType: "json",
-                    error: function () {
-                        alert('错误:异常!', 'error');
-                    },
-                    success: function (data) {
-                        if (data.DC_UTILITY_PROPAGANDASTELE_ID != '') {
-                            document.getElementById("PROPAGANDASTELETYPE").value = data.PROPAGANDASTELETYPE;
-                            document.getElementById("NUMBER").value = data.NUMBER;
-                            document.getElementById("NAME").value = data.NAME;
-                            document.getElementById("ADDRESS").value = data.ADDRESS;
-                            $('#BYORGNO').combotree('setValue', data.BYORGNO);
-                            document.getElementById("STRUCTURETYPE").value = data.STRUCTURETYPE;
-                            document.getElementById("USESTATE").value = data.USESTATE;
-                            document.getElementById("MANAGERSTATE").value = data.MANAGERSTATE;
-                            document.getElementById("MARK").value = data.MARK;
-                            document.getElementById("JD").value = data.JD;
-                            document.getElementById("WD").value = data.WD;
-                            document.getElementById("WORTH").value = data.WORTH;
-                            $('#BUILDDATE').datebox('setValue', data.BUILDDATE);
-                            $('#BUILDDATEBEGIN').datebox('setValue', data.BUILDDATEBEGIN);
-                            $('#BUILDDATEEND').datebox('setValue', data.BUILDDATEEND);
-                            }
-                    }
-                });
-            }
-            if (Method == 'Add') {
-                document.getElementById("PROPAGANDASTELETYPE").value = "";
-                document.getElementById("NUMBER").value = "";
-                document.getElementById("NAME").value = "";
-                document.getElementById("ADDRESS").value = "";
-                $('#BYORGNO').combotree('setValue', "@curorgno");
-                document.getElementById("STRUCTURETYPE").value = "";
-                document.getElementById("USESTATE").value = "";
-                document.getElementById("MANAGERSTATE").value = "";
-                document.getElementById("MARK").value = "";
-                document.getElementById("JD").value = "";
-                document.getElementById("WD").value = "";
-                document.getElementById("WORTH").value = "";
-                $('#BUILDDATE').datebox('setValue', "");
-                $('#BUILDDATEBEGIN').datebox('setValue', "");
-                $('#BUILDDATEEND').datebox('setValue', "");
-            }
-            var btnInfo=['保存', '取消'];
-            if (Method == "See")
-                btnInfo = [];
-            var str = "宣传碑牌添加";
-            if(Method == "Mdy")
-                str = "宣传碑牌修改";
-            if (Method == "See")
-                str = "宣传碑牌查看";
-            layer.open({
-                type: 1,
-                title: str,
-                area: ['65%', '62%'],
-                btn: btnInfo,
-                shade: 0,
-                maxmin: true,
-                content: $('#tableadd'),
-                yes: function (index, layero) {
-                    var t1 = $('#JD').val();
-                    var t2 = $('#WD').val();
-                    var t3 = $('#WORTH').val();
-                    var t6 = $('#NAME').val();
-                    var t7 = $('#NUMBER').val();
-                    if ($.trim(t1) != "") {
-                        reg = /^-?\d+\.\d{1,6}$/;
-                        if (!reg.test(t1)) {
-                            layer.msg('经度格式不正确！', { icon: 5 });
-                            $('#JD').focus();
-                            return;
-                        }
-                    }
-                    if ($.trim(t2) != "") {
-                        reg = /^-?\d+\.\d{1,6}$/;
-                        if (!reg.test(t2)) {
-                            layer.msg('纬度格式不正确！', { icon: 5 });
-                            $('#WD').focus();
-                            return;
-                        }
-                    }
-                    if ($.trim(t3) != "") {
-                        if (CheckNUM($.trim(t3)) == false) {
-                            layer.msg('总价请填写数字！', { icon: 5 });
-                            $('#WORTH').focus();
-                            return;
-                        }
-                    }
-                    if ($.trim(t6) == "") {
-                        layer.msg('请填写名称！', { icon: 5 });
-                        $('#NAME').focus();
-                        return;
-                    }
-                    if ($.trim(t7) == "") {
-                        layer.msg('请填写编号！', { icon: 5 });
-                        $('#NUMBER').focus();
-                        return;
-                    }
-                    $.ajax({
-                        type: "Post",
-                        url: "/DataCenter/PROPAGANDASTELEManager",
-                        data: {
-                            DC_UTILITY_PROPAGANDASTELE_ID: ID,
-                            Method: Method,
-                            PROPAGANDASTELETYPE: document.getElementById("PROPAGANDASTELETYPE").value,
-                            NUMBER: document.getElementById("NUMBER").value,
-                            NAME: document.getElementById("NAME").value,
-                            ADDRESS: document.getElementById("ADDRESS").value,
-                            //BYORGNO: document.getElementById("BYORGNO").value,
-                            BYORGNO: $('#BYORGNO').combotree('getValue'),
-                            STRUCTURETYPE: document.getElementById("STRUCTURETYPE").value,
-                            USESTATE: document.getElementById("USESTATE").value,
-                            MANAGERSTATE: document.getElementById("MANAGERSTATE").value,
-                            MARK: document.getElementById("MARK").value,
-                            JD: document.getElementById("JD").value,
-                            WD: document.getElementById("WD").value,
-                            WORTH: document.getElementById("WORTH").value,
-                            BUILDDATE: $('#BUILDDATE').datebox('getValue'),
-                            BUILDDATEBEGIN: $('#BUILDDATEBEGIN').datebox('getValue'),
-                            BUILDDATEEND: $('#BUILDDATEEND').datebox('getValue'),
-                        },
-                        dataType: "json",
-                        error: function () {
-                            alert('错误:异常!', 'error');
-                        },
-                        success: function (re) {
-                            if (re.Success) {
-                                layer.close(index);
-                                layer.msg('操作成功', { icon: 6 });
-                                query('1');
-                            }
-                            else {
-                                layer.msg(re.Msg, { icon: 5 });
-                            }
-                        }
-                    });
-
-                }, cancel: function (index) {
-                    layer.close(index);
-                }
-            })
-        }
+        });
     }
+   
     //地图定位展示
     function Position(tablename, id,name) {
         layer.open({

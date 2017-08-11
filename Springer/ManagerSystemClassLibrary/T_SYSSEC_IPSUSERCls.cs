@@ -468,9 +468,9 @@ namespace ManagerSystemClassLibrary
             JArray childobjArray = new JArray();
             //JArray childobjArray = new JArray();
             DataRow[] drOrg = null;// = dtOrg.Select("", "");// dt.Select("RATID = " + RATID + "", "ORDERBY");
-            if (orgNo.Substring(4, 5) == "00000")//获取所有市的
+            if (orgNo.Substring(4, 11) == "00000000000")//获取所有市的
                 drOrg = dtOrg.Select(" SUBSTRING(ORGNO,1,4) = '" + ClsSql.EncodeSql(orgNo.Substring(0, 4)) + "' and substring(orgno,5,5)<>'00000' and substring(orgno,7,3)='000'");
-            else if (orgNo.Substring(6, 3) == "000")//获取所有县的
+            else if (orgNo.Substring(6, 9) == "000000000")//获取所有县的
                 drOrg = dtOrg.Select(" SUBSTRING(ORGNO,1,6) = '" + ClsSql.EncodeSql(orgNo.Substring(0, 6)) + "' and substring(orgno,7,3)<>'000'");
             //else
             //    drOrg = dtOrg.Select(" ORGNO = '" + ClsSql.EncodeSql(orgNo) + "'");
@@ -514,6 +514,7 @@ namespace ManagerSystemClassLibrary
                         {
                         {"id", drUser[i]["USERID"].ToString()}
                         ,{"text",drUser[i]["USERNAME"].ToString()}  //+"["+drUser[i]["PHONE"].ToString()+"]"}
+                        ,{"phone",drUser[i]["PHONE"].ToString()}
                         ,{"flag","user"}
                         };
                 childobjArray.Add(root1);

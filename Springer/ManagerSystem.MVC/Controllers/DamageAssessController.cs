@@ -61,7 +61,7 @@ namespace ManagerSystem.MVC.Controllers
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
             sb.AppendFormat("<thead>");
-            sb.AppendFormat("<tr><th>序号</th><th>单位</th><th>发生地</th><th>起火时间</th><th>损失总计</th><th>森林资源损失率</br>%</th><th>人均损失价值</br>元/人</th><th>森林损失平均价值量</br>元/hm²</th><th>扑火成效比</br>%</th><th>操作</th></tr>");
+            sb.AppendFormat("<tr><th>序号</th><th>单位</th><th>发生地</th><th>起火时间</th><th>损失总计</br>元</th><th>森林资源损失率</br>%</th><th>人均损失价值</br>元/人</th><th>森林损失平均价值量</br>元/hm²</th><th>扑火成效比</br>%</th><th>操作</th></tr>");
             sb.AppendFormat("</thead>");
             sb.AppendFormat("<tbody>");
             foreach (var s in result)
@@ -850,13 +850,13 @@ namespace ManagerSystem.MVC.Controllers
             foreach (var v in list)
             {
                 sb.AppendFormat("<tr class=\"{0}\" onclick=\"setColor(this)\">", (i % 2 == 0) ? "" : "row1");
-                sb.AppendFormat("<td class\"center\">{0}</td>", i.ToString());
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.WOODNAME);
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.LOSEMONEYCOUNT);
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.LOSEVOLUME);
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.MARKETPRICE);
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.RESIDUALVALUE);
-                sb.AppendFormat("<td class\"center\">");
+                sb.AppendFormat("<td class=\"center\">{0}</td>", i.ToString());
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.WOODNAME);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.LOSEMONEYCOUNT);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.LOSEVOLUME);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.MARKETPRICE);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.RESIDUALVALUE);
+                sb.AppendFormat("<td class=\"center\">");
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('See','{0}')\" title='查看' class=\"searchBox_01 LinkSee\">查看</a>", v.FIRELOST_LOSTTYPE_WOODID);
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}')\" title='编辑' class=\"searchBox_01 LinkMdy\">编辑</a>", v.FIRELOST_LOSTTYPE_WOODID);
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Del','{0}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", v.FIRELOST_LOSTTYPE_WOODID);
@@ -974,14 +974,14 @@ namespace ManagerSystem.MVC.Controllers
             foreach (var v in list)
             {
                 sb.AppendFormat("<tr class=\"{0}\" onclick=\"setColor(this)\">", (i % 2 == 0) ? "" : "row1");
-                sb.AppendFormat("<td class\"center\">{0}</td>", i.ToString());
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.FIXEDASSETSNAME);
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.LOSEMONEYCOUNT);
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.RESETVALUE);
-                sb.AppendFormat("<td class\"center\">{0}</td>", string.Format("{0:P}", float.Parse(v.YEARAVGDEPRECIATIONRATE) / 100));
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.HAVEUSEYEAR);
-                sb.AppendFormat("<td class\"center\">{0}</td>", string.Format("{0:P}", float.Parse(v.BURNRATE) / 100));
-                sb.AppendFormat("<td class\"center\">");
+                sb.AppendFormat("<td class=\"center\">{0}</td>", i.ToString());
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.FIXEDASSETSNAME);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.LOSEMONEYCOUNT);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.RESETVALUE);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", string.Format("{0:P}", float.Parse(v.YEARAVGDEPRECIATIONRATE) / 100));
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.HAVEUSEYEAR);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", string.Format("{0:P}", float.Parse(v.BURNRATE) / 100));
+                sb.AppendFormat("<td class=\"center\">");
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('See','{0}')\" title='查看' class=\"searchBox_01 LinkSee\">查看</a>", v.FIRELOST_LOSTTYPE_FIXEDASSETSID);
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}')\" title='编辑' class=\"searchBox_01 LinkMdy\">编辑</a>", v.FIRELOST_LOSTTYPE_FIXEDASSETSID);
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Del','{0}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", v.FIRELOST_LOSTTYPE_FIXEDASSETSID);
@@ -1100,13 +1100,13 @@ namespace ManagerSystem.MVC.Controllers
             foreach (var v in list)
             {
                 sb.AppendFormat("<tr class=\"{0}\" onclick=\"setColor(this)\">", (i % 2 == 0) ? "" : "row1");
-                sb.AppendFormat("<td class\"center\">{0}</td>", i.ToString());
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.CURRENTASSETSNAME);
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.LOSEMONEYCOUNT);
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.CURRENTASSETSCOUNT + v.CURRENTASSETSUNIT);
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.CURRENTASSETSPRICE + "元/" + v.CURRENTASSETSUNIT);
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.RESIDUALVALUE);
-                sb.AppendFormat("<td class\"center\">");
+                sb.AppendFormat("<td class=\"center\">{0}</td>", i.ToString());
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.CURRENTASSETSNAME);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.LOSEMONEYCOUNT);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.CURRENTASSETSCOUNT + v.CURRENTASSETSUNIT);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.CURRENTASSETSPRICE + "元/" + v.CURRENTASSETSUNIT);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.RESIDUALVALUE);
+                sb.AppendFormat("<td class=\"center\">");
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('See','{0}')\" title='查看' class=\"searchBox_01 LinkSee\">查看</a>", v.FIRELOST_LOSTTYPE_CURRENTASSETSID);
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}')\" title='编辑' class=\"searchBox_01 LinkMdy\">编辑</a>", v.FIRELOST_LOSTTYPE_CURRENTASSETSID);
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Del','{0}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", v.FIRELOST_LOSTTYPE_CURRENTASSETSID);
@@ -1225,12 +1225,12 @@ namespace ManagerSystem.MVC.Controllers
             foreach (var v in list)
             {
                 sb.AppendFormat("<tr class=\"{0}\" onclick=\"setColor(this)\">", (i % 2 == 0) ? "" : "row1");
-                sb.AppendFormat("<td class\"center\">{0}</td>", i.ToString());
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.NTFPNAME);
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.LOSEMONEYCOUNT);
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.LOSECOUNT);
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.MARKETAVGPRICE);
-                sb.AppendFormat("<td class\"center\">");
+                sb.AppendFormat("<td class=\"center\">{0}</td>", i.ToString());
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.NTFPNAME);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.LOSEMONEYCOUNT);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.LOSECOUNT);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.MARKETAVGPRICE);
+                sb.AppendFormat("<td class=\"center\">");
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('See','{0}')\" title='查看' class=\"searchBox_01 LinkSee\">查看</a>", v.FIRELOST_LOSTTYPE_NTFPID);
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}')\" title='编辑' class=\"searchBox_01 LinkMdy\">编辑</a>", v.FIRELOST_LOSTTYPE_NTFPID);
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Del','{0}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", v.FIRELOST_LOSTTYPE_NTFPID);
@@ -1340,10 +1340,10 @@ namespace ManagerSystem.MVC.Controllers
             foreach (var v in list)
             {
                 sb.AppendFormat("<tr class=\"{0}\" onclick=\"setColor(this)\">", (i % 2 == 0) ? "" : "row1");
-                sb.AppendFormat("<td class\"center\">{0}</td>", i.ToString());
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.FARMPASTUREPRODUCNAME);
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.PASTUREPRODUCCODENAME);
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.LOSEMONEYCOUNT);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", i.ToString());
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.FARMPASTUREPRODUCNAME);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.PASTUREPRODUCCODENAME);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.LOSEMONEYCOUNT);
                 string loseCount = v.LOSECOUNT, basePrice = v.BASEPRICE;
                 if (v.FARMPASTUREPRODUCCODE == "1")
                 {
@@ -1362,7 +1362,7 @@ namespace ManagerSystem.MVC.Controllers
                 }
                 sb.AppendFormat("<td class=\"center\">{0}</td>", loseCount);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", basePrice);
-                sb.AppendFormat("<td class\"center\">");
+                sb.AppendFormat("<td class=\"center\">");
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('See','{0}')\" title='查看' class=\"searchBox_01 LinkSee\">查看</a>", v.FIRELOST_LOSTTYPE_FARMPASTUREPRODUCTID);
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}')\" title='编辑' class=\"searchBox_01 LinkMdy\">编辑</a>", v.FIRELOST_LOSTTYPE_FARMPASTUREPRODUCTID);
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Del','{0}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", v.FIRELOST_LOSTTYPE_FARMPASTUREPRODUCTID);
@@ -1540,11 +1540,11 @@ namespace ManagerSystem.MVC.Controllers
             foreach (var v in p1List)
             {
                 sb.AppendFormat("<tr class=\"{0}\" onclick=\"setColor(this)\">", (i % 2 == 0) ? "" : "row1");
-                sb.AppendFormat("<td class\"center\">{0}</td>", i.ToString());
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.P1NAME);
-                sb.AppendFormat("<td class\"center\">{0}</td>", _dic1Name);
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.LOSEMONEYCOUNT);
-                sb.AppendFormat("<td class\"center\">");
+                sb.AppendFormat("<td class=\"center\">{0}</td>", i.ToString());
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.P1NAME);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", _dic1Name);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.LOSEMONEYCOUNT);
+                sb.AppendFormat("<td class=\"center\">");
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('See','{0}','{1}','{2}')\" title='查看' class=\"searchBox_01 LinkSee\">查看</a>", v.P1ID, v.P1NAME, "513");
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}','{1}','{2}')\" title='编辑' class=\"searchBox_01 LinkMdy\">编辑</a>", v.P1ID, v.P1NAME, "513");
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Del','{0}','{1}','{2}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", v.P1ID, v.P1NAME, "513");
@@ -1558,11 +1558,11 @@ namespace ManagerSystem.MVC.Controllers
             foreach (var v in p2List)
             {
                 sb.AppendFormat("<tr class=\"{0}\" onclick=\"setColor(this)\">", (i % 2 == 0) ? "" : "row1");
-                sb.AppendFormat("<td class\"center\">{0}</td>", i.ToString());
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.P2NAME);
-                sb.AppendFormat("<td class\"center\">{0}</td>", _dic2Name);
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.LOSEMONEYCOUNT);
-                sb.AppendFormat("<td class\"center\">");
+                sb.AppendFormat("<td class=\"center\">{0}</td>", i.ToString());
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.P2NAME);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", _dic2Name);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.LOSEMONEYCOUNT);
+                sb.AppendFormat("<td class=\"center\">");
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('See','{0}','{1}','{2}')\" title='查看' class=\"searchBox_01 LinkSee\">查看</a>", v.P2ID, v.P2NAME, "514");
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}','{1}','{2}')\" title='编辑' class=\"searchBox_01 LinkMdy\">编辑</a>", v.P2ID, v.P2NAME, "514");
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Del','{0}','{1}','{2}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", v.P2ID, v.P2NAME, "514");
@@ -1576,11 +1576,11 @@ namespace ManagerSystem.MVC.Controllers
             foreach (var v in p3List)
             {
                 sb.AppendFormat("<tr class=\"{0}\" onclick=\"setColor(this)\">", (i % 2 == 0) ? "" : "row1");
-                sb.AppendFormat("<td class\"center\">{0}</td>", i.ToString());
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.P3NAME);
-                sb.AppendFormat("<td class\"center\">{0}</td>", _dic3Name);
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.LOSEMONEYCOUNT);
-                sb.AppendFormat("<td class\"center\">");
+                sb.AppendFormat("<td class=\"center\">{0}</td>", i.ToString());
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.P3NAME);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", _dic3Name);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.LOSEMONEYCOUNT);
+                sb.AppendFormat("<td class=\"center\">");
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('See','{0}','{1}','{2}')\" title='查看' class=\"searchBox_01 LinkSee\">查看</a>", v.P3ID, v.P3NAME, "515");
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}','{1}','{2}')\" title='编辑' class=\"searchBox_01 LinkMdy\">编辑</a>", v.P3ID, v.P3NAME, "515");
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Del','{0}','{1}','{2}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", v.P3ID, v.P3NAME, "515");
@@ -1594,11 +1594,11 @@ namespace ManagerSystem.MVC.Controllers
             foreach (var v in p4List)
             {
                 sb.AppendFormat("<tr class=\"{0}\" onclick=\"setColor(this)\">", (i % 2 == 0) ? "" : "row1");
-                sb.AppendFormat("<td class\"center\">{0}</td>", i.ToString());
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.P4NAME);
-                sb.AppendFormat("<td class\"center\">{0}</td>", _dic4Name);
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.LOSEMONEYCOUNT);
-                sb.AppendFormat("<td class\"center\">");
+                sb.AppendFormat("<td class=\"center\">{0}</td>", i.ToString());
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.P4NAME);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", _dic4Name);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.LOSEMONEYCOUNT);
+                sb.AppendFormat("<td class=\"center\">");
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('See','{0}','{1}','{2}')\" title='查看' class=\"searchBox_01 LinkSee\">查看</a>", v.P4ID, v.P4NAME, "516");
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}','{1}','{2}')\" title='编辑' class=\"searchBox_01 LinkMdy\">编辑</a>", v.P4ID, v.P4NAME, "516");
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Del','{0}','{1}','{2}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", v.P4ID, v.P4NAME, "516");
@@ -1612,11 +1612,11 @@ namespace ManagerSystem.MVC.Controllers
             foreach (var v in p5List)
             {
                 sb.AppendFormat("<tr class=\"{0}\" onclick=\"setColor(this)\">", (i % 2 == 0) ? "" : "row1");
-                sb.AppendFormat("<td class\"center\">{0}</td>", i.ToString());
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.P5NAME);
-                sb.AppendFormat("<td class\"center\">{0}</td>", _dic5Name);
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.LOSEMONEYCOUNT);
-                sb.AppendFormat("<td class\"center\">");
+                sb.AppendFormat("<td class=\"center\">{0}</td>", i.ToString());
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.P5NAME);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", _dic5Name);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.LOSEMONEYCOUNT);
+                sb.AppendFormat("<td class=\"center\">");
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('See','{0}','{1}','{2}')\" title='查看' class=\"searchBox_01 LinkSee\">查看</a>", v.P5ID, v.P5NAME, "517");
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}','{1}','{2}')\" title='编辑' class=\"searchBox_01 LinkMdy\">编辑</a>", v.P5ID, v.P5NAME, "517");
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Del','{0}','{1}','{2}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", v.P5ID, v.P5NAME, "517");
@@ -1630,11 +1630,11 @@ namespace ManagerSystem.MVC.Controllers
             foreach (var v in p6List)
             {
                 sb.AppendFormat("<tr class=\"{0}\" onclick=\"setColor(this)\">", (i % 2 == 0) ? "" : "row1");
-                sb.AppendFormat("<td class\"center\">{0}</td>", i.ToString());
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.P6NAME);
-                sb.AppendFormat("<td class\"center\">{0}</td>", _dic6Name);
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.LOSEMONEYCOUNT);
-                sb.AppendFormat("<td class\"center\">");
+                sb.AppendFormat("<td class=\"center\">{0}</td>", i.ToString());
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.P6NAME);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", _dic6Name);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.LOSEMONEYCOUNT);
+                sb.AppendFormat("<td class=\"center\">");
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('See','{0}','{1}','{2}')\" title='查看' class=\"searchBox_01 LinkSee\">查看</a>", v.P6ID, v.P6NAME, "518");
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}','{1}','{2}')\" title='编辑' class=\"searchBox_01 LinkMdy\">编辑</a>", v.P6ID, v.P6NAME, "518");
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Del','{0}','{1}','{2}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", v.P6ID, v.P6NAME, "518");
@@ -2291,12 +2291,12 @@ namespace ManagerSystem.MVC.Controllers
             foreach (var v in list)
             {
                 sb.AppendFormat("<tr class=\"{0}\" onclick=\"setColor(this)\">", (i % 2 == 0) ? "" : "row1");
-                sb.AppendFormat("<td class\"center\">{0}</td>", i.ToString());
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.CASUALTYNAME);
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.CASUALTYCODENAME);
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.CASUALTYNUMBERS);
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.LOSEMONEYCOUNT);
-                sb.AppendFormat("<td class\"center\">");
+                sb.AppendFormat("<td class=\"center\">{0}</td>", i.ToString());
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.CASUALTYNAME);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.CASUALTYCODENAME);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.CASUALTYNUMBERS);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.LOSEMONEYCOUNT);
+                sb.AppendFormat("<td class=\"center\">");
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('See','{0}')\" title='查看' class=\"searchBox_01 LinkSee\">查看</a>", v.FIRELOST_LOSTTYPE_CASUALTYID);
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}')\" title='编辑' class=\"searchBox_01 LinkMdy\">编辑</a>", v.FIRELOST_LOSTTYPE_CASUALTYID);
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Del','{0}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", v.FIRELOST_LOSTTYPE_CASUALTYID);
@@ -2502,14 +2502,14 @@ namespace ManagerSystem.MVC.Controllers
             foreach (var v in list)
             {
                 sb.AppendFormat("<tr class=\"{0}\" onclick=\"setColor(this)\">", (i % 2 == 0) ? "" : "row1");
-                sb.AppendFormat("<td class\"center\">{0}</td>", i.ToString());
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.RESIDENTPROPERTYNAME);
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.LOSEMONEYCOUNT);
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.RESIDENTPROPERTYCOUNT + v.RESIDENTPROPERTYUNIT);
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.RESIDENTPROPERTYPRICE + "元/" + v.RESIDENTPROPERTYUNIT);
-                sb.AppendFormat("<td class\"center\">{0}</td>", string.Format("{0:P}", float.Parse(v.YEARAVGDEPRECIATIONRATE) / 100));
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.HAVEUSEYEAR);
-                sb.AppendFormat("<td class\"center\">");
+                sb.AppendFormat("<td class=\"center\">{0}</td>", i.ToString());
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.RESIDENTPROPERTYNAME);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.LOSEMONEYCOUNT);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.RESIDENTPROPERTYCOUNT + v.RESIDENTPROPERTYUNIT);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.RESIDENTPROPERTYPRICE + "元/" + v.RESIDENTPROPERTYUNIT);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", string.Format("{0:P}", float.Parse(v.YEARAVGDEPRECIATIONRATE) / 100));
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.HAVEUSEYEAR);
+                sb.AppendFormat("<td class=\"center\">");
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('See','{0}')\" title='查看' class=\"searchBox_01 LinkSee\">查看</a>", v.RESIDENTPROPERTYID);
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}')\" title='编辑' class=\"searchBox_01 LinkMdy\">编辑</a>", v.RESIDENTPROPERTYID);
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Del','{0}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", v.RESIDENTPROPERTYID);
@@ -2630,12 +2630,12 @@ namespace ManagerSystem.MVC.Controllers
             foreach (var v in list)
             {
                 sb.AppendFormat("<tr class=\"{0}\" onclick=\"setColor(this)\">", (i % 2 == 0) ? "" : "row1");
-                sb.AppendFormat("<td class\"center\">{0}</td>", i.ToString());
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.WILDANIMALNAME);
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.LOSEMONEYCOUNT);
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.WILDANIMALCOUNT);
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.WILDANIMALPRICE);
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.RESIDUALVALUE);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", i.ToString());
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.WILDANIMALNAME);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.LOSEMONEYCOUNT);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.WILDANIMALCOUNT);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.WILDANIMALPRICE);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.RESIDUALVALUE);
                 sb.AppendFormat("<td class\"center\">");
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('See','{0}')\" title='查看' class=\"searchBox_01 LinkSee\">查看</a>", v.WILDANIMALID);
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}')\" title='编辑' class=\"searchBox_01 LinkMdy\">编辑</a>", v.WILDANIMALID);
@@ -2757,10 +2757,10 @@ namespace ManagerSystem.MVC.Controllers
             foreach (var v in list)
             {
                 sb.AppendFormat("<tr class=\"{0}\" onclick=\"setColor(this)\">", (i % 2 == 0) ? "" : "row1");
-                sb.AppendFormat("<td class\"center\">{0}</td>", i.ToString());
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.STOPREDUCTIONNAME);
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.STOPREDUCTIONCODENAME);
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.LOSEMONEYCOUNT);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", i.ToString());
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.STOPREDUCTIONNAME);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.STOPREDUCTIONCODENAME);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.LOSEMONEYCOUNT);
                 string stopCount = v.STOPREDUCTIONCOUNT, stopTime = v.STOPREDUCTIONTIME, stopPrice = v.STOPREDUCTIONPRICE;
                 if (v.STOPREDUCTIONCODE == "1")
                 {
@@ -2936,11 +2936,11 @@ namespace ManagerSystem.MVC.Controllers
             foreach (var v in list)
             {
                 sb.AppendFormat("<tr class=\"{0}\" onclick=\"setColor(this)\">", (i % 2 == 0) ? "" : "row1");
-                sb.AppendFormat("<td class\"center\">{0}</td>", i.ToString());
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.LOSTPROCESSNAME);
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.LOSTPROCESSCODENAME);
-                sb.AppendFormat("<td class\"center\">{0}</td>", v.LOSEMONEYCOUNT);
-                sb.AppendFormat("<td class\"center\">");
+                sb.AppendFormat("<td class=\"center\">{0}</td>", i.ToString());
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.LOSTPROCESSNAME);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.LOSTPROCESSCODENAME);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.LOSEMONEYCOUNT);
+                sb.AppendFormat("<td class=\"center\">");
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('See','{0}')\" title='查看' class=\"searchBox_01 LinkSee\">查看</a>", v.LOSTPROCESSID);
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}')\" title='编辑' class=\"searchBox_01 LinkMdy\">编辑</a>", v.LOSTPROCESSID);
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Del','{0}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", v.LOSTPROCESSID);

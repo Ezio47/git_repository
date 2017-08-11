@@ -14,6 +14,7 @@
                     </div>
                 </div>
             </div>
+
             <div data-options="region:'center'" title="" style=" border: none; ">
                 <div class="divMan">
                     <table cellpadding="0" cellspacing="0" style="width:750px ">
@@ -45,27 +46,25 @@
             success: function (data, ioArgs) {
                 var ar = eval('(' + data + ')');
                 if (ar.Success) {
-                    if (confirm(ar.Msg + ' 请返回！')) {
+                    if (confirm(ar.Msg + ' 请返回?')) {
                         var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
                         parent.layer.close(index);
                     }
-
                 }
                 else {
-                    layer.msg(ar.Msg);
+                    layer.msg(ar.Msg, { icon: 5 });
                 }
             },
             error: function (err, ioArgs) {
-                layer.msg('系统错误，请重试');
+                layer.msg('系统异常!', { icon: 5 });
             }
         });
     }
+
     function onloadData() {
         $.ajax({
             url: '/Email/GetSMStemplatejson',
-            data: {
-                EM_MESSAGEID: '@ViewBag.EM_MESSAGEID'
-            },
+            data: { EM_MESSAGEID: '@ViewBag.EM_MESSAGEID'},
             type: 'post',
             success: function (data) {
                 var ar = eval('(' + data + ')');
@@ -76,10 +75,8 @@
                 }
             },
             error: function (err, ioArgs) {
-                alert('登录异常');
+                layer.msg('系统异常!', { icon: 5 });
             }
         });
     }
 </script>
-
-

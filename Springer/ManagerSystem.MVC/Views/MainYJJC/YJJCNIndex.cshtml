@@ -48,24 +48,24 @@
 
     <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
         @*<div style="height:auto;">
-            <ul id="LeftMenu" class="LeftMenu">
-                <li>
-                    <span><h1><span>火情监测</span></h1></span>
-                    <ul>
-                        <li class="title" id="li-2" onclick="FireAjax('2')"><label class="wxjc"></label>卫星监控(@ViewBag.wxJcCount)</li>
-                        <li class="title" id="li-5" onclick="FireAjax('5')"><label class="fkqk"></label>瞭望护林员(@ViewBag.hlyJcCount)</li>
-                        <li class="title " id="li-4" onclick="FireAjax('4')"><label class="spjc"></label>电子监控(@ViewBag.dzJcCount)</li>
-                        <li class="title " id="li-6" onclick="FireAjax('6')"><label class="fjjc"></label>无人机巡护(@ViewBag.planeJcCount)</li>
-                        <li class="title " id="li-3" onclick="FireAjax('3')"><label class="dhjc"></label>电话报警(@ViewBag.phoneJcCount)</li>
-                       
-                    </ul>
-                </li>
+                <ul id="LeftMenu" class="LeftMenu">
+                    <li>
+                        <span><h1><span>火情监测</span></h1></span>
+                        <ul>
+                            <li class="title" id="li-2" onclick="FireAjax('2')"><label class="wxjc"></label>卫星监控(@ViewBag.wxJcCount)</li>
+                            <li class="title" id="li-5" onclick="FireAjax('5')"><label class="fkqk"></label>瞭望护林员(@ViewBag.hlyJcCount)</li>
+                            <li class="title " id="li-4" onclick="FireAjax('4')"><label class="spjc"></label>电子监控(@ViewBag.dzJcCount)</li>
+                            <li class="title " id="li-6" onclick="FireAjax('6')"><label class="fjjc"></label>无人机巡护(@ViewBag.planeJcCount)</li>
+                            <li class="title " id="li-3" onclick="FireAjax('3')"><label class="dhjc"></label>电话报警(@ViewBag.phoneJcCount)</li>
+
+                        </ul>
+                    </li>
 
 
-            </ul>
-        </div>*@
+                </ul>
+            </div>*@
 
-            @*<ul class="page-menu">
+        @*<ul class="page-menu">
                 <li>
                     <span><h1><span>预警监测</span></h1></span>
                     <ul style="display: block;">
@@ -79,7 +79,7 @@
                         <li class="title dt_08" onclick="window.location.href='/YJJC/PERALARMList';"><label class=" dt_08"></label>电话报警</li>
                     </ul>
                 </li>
-               
+
             </ul>*@
 
 
@@ -92,20 +92,35 @@
 
     </div>
     <div data-options="region:'center'" title="" style=" width:720px; border: none;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <ul>
+                        <li class="homeUL">
+                            <input type="button" value="二维定位" onclick="ShowMapLoc('2d')" class="btnCss" />
+                            <input type="button" value="三维定位" onclick="Show3DMapLoc('3d')" class="btnCss" />
+                            <input type="button" value="批量结束" onclick="End()" class="btnCss" />
+                        </li>
+                    </ul>
+                </div>
+            </div>
 
-        <div class="divTable" id="divwxmsg">
-        </div>
-        @*<div id="persontree" style="display:none">
-                <div id="tt" style="width:240px" class="easyui-tree" data-options="checkbox:true"></div>
-            </div>*@<div id="persontree" style="display:none">
-            <div id="tt" style="width:240px" class="easyui-tree" data-options="checkbox:true"></div>
-        </div>
-        @*人工派发核查*@
-        <div id="pfhc" style="display:none;margin-left:5px;margin-top:8px">
-            派发单位： <input id="dept" name="dept" style="width:200px;height:50px;" />
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <div class="divTable" id="divwxmsg">
+                </div>
+
+                @*<div id="persontree" style="display:none">
+                    <div id="tt" style="width:240px" class="easyui-tree" data-options="checkbox:true"></div>
+                </div>*@<div id="persontree" style="display:none">
+                    <div id="tt" style="width:240px" class="easyui-tree" data-options="checkbox:true"></div>
+                </div>
+                @*人工派发核查*@
+                <div id="pfhc" style="display:none;margin-left:5px;margin-top:8px">
+                    派发单位： <input id="dept" name="dept" style="width:200px;height:50px;" />
+                </div>
+            </div>
         </div>
     </div>
-
 </div>
 
 
@@ -158,6 +173,35 @@
             textField: 'text'
         });
     });
+
+    function End() {
+        var chk_value = [];
+        $('input[name="chk_list"]:checked').each(function () {
+            chk_value.push($(this).val());
+        });
+        if (chk_value.length == 0) {
+            layer.alert("请选择需要结束的火点", { icon: 5 });
+            return false;
+        } else {
+            strjcfid = chk_value.join(",");
+        }
+        $.ajax({
+            type: "Post",
+            url: "/JCFireInfo/End",
+            data: { jcfid: strjcfid },
+            dataType: "json",
+            success: function (obj) {
+                if (obj != null && obj.Success) {
+                    layer.alert(obj.Msg, function (index) {
+                        window.location.reload();
+                    });
+                }
+                else {
+                    layer.msg(obj.Msg, { icon: 5 });
+                }
+            }
+        });
+    }
 
     //全选 反选
     function checkfun() {
@@ -221,12 +265,15 @@
             chk_value.push($(this).val());
         });
         var strjcfid = '';
-        if (chk_value.length == 0) {
+        if (id == "2d" && chk_value.length == 0) {//二维护林员按钮
+            layer.alert("请选择火点", { icon: 5 });
+            return false;
+        } else if (chk_value.length == 0) {
             //layer.alert("请选择火点", { icon: 5 });
             //return false;
             strjcfid = id;
         } else {
-             strjcfid = chk_value.join(",");
+            strjcfid = chk_value.join(",");
         }
 
         //iframe层-父子操作
@@ -242,19 +289,31 @@
     };
     //地图查看定位三维
     function Show3DMapLoc(id) {
-        var bb = $('#CHK_' + id).is(':checked');
-        if (bb == false) {
-            layer.alert("该火点未选择", { icon: 5 });
-            return false;
-        }
         var chk_value = [];
-        $('input[name="chk_list"]:checked').each(function () {
-            chk_value.push($(this).val());
-        });
-        if (chk_value.length == 0) {
-            layer.alert("请选择火点", { icon: 5 });
-            return false;
+        if (id == "3d") {//三维护林员按钮
+            $('input[name="chk_list"]:checked').each(function () {
+                chk_value.push($(this).val());
+            });
+            if (chk_value.length == 0) {
+                layer.alert("请选择火点", { icon: 5 });
+                return false;
+            }
+        } else {
+            var bb = $('#CHK_' + id).is(':checked');
+            if (bb == false) {
+                layer.alert("该火点未选择", { icon: 5 });
+                return false;
+            }
+
+            $('input[name="chk_list"]:checked').each(function () {
+                chk_value.push($(this).val());
+            });
+            if (chk_value.length == 0) {
+                layer.alert("请选择火点", { icon: 5 });
+                return false;
+            }
         }
+
         var strjcfid = chk_value.join(",");
         //iframe层-父子操作
         var index = layer.open({

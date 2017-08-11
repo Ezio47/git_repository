@@ -2,48 +2,40 @@
     Layout = "~/Views/Shared/_LayOutIndex.cshtml";
 }
 @section Header{
-    
+
 }
 
 <div class="easyui-layout" data-options="fit:true" style=" border:0;">
-
-
-    <div data-options="region:'west'" title="" style=" width:220px;">        
+    <div data-options="region:'west'" title="" style=" width:220px;">
         @Html.Raw(@ViewBag.PageLeftMenu)
     </div>
+
     <div data-options="region:'center'" title="">
-
         <div class="easyui-layout" data-options="fit:true" style=" border:0;">
-
-
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
                 <div class="divOP">
                     <div class="home">
                         主题:<input id="tbxEMAILTITLE" type="text" style="width:200px" value="@ViewBag.EMAILTITLE" />
-
                         <input type="button" value="搜索" onclick="query()" class="btnSearchCss" />
-
-
                         <input type="button" value="删除" onclick="Manager('SendMdy')" class="btnDelCss" />
                     </div>
                 </div>
             </div>
+
             <div data-options="region:'center'" title="" class="LayoutCenterBG">
                 <div class="divTable">
                     @Html.Raw(@ViewBag.EmailsendList)
                 </div>
             </div>
+
             <div data-options="region:'south'" title="" style=" height:40px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
                 @Html.Raw(@ViewBag.PagerInfo)
             </div>
-
         </div>
     </div>
-
 </div>
 
-<script type="text/javascript"> 
-    
+<script type="text/javascript">
     function query() {
         $.ajax({
             url: '/Email/EmailsendListQuery',
@@ -60,55 +52,38 @@
 
                 }
                 else {
-                    layer.msg(ar.Msg);
+                    layer.msg(ar.Msg, { icon: 5 });
                 }
             },
             error: function (err, ioArgs) {
-                layer.msg('登录异常');
+                layer.msg('系统异常!', { icon: 5 });
             }
         });
     }
-    function Manager(Method) {
-        //var check_val = [];
-        //$("input[name='chk1']:checkbox").each(function () {
-        //    if ($(this).is(':checked')) {
-        //        check_val.push($(this).val());
-        //    }
-        //});
-        //var eID = document.getElementsByName('chk1');
-        //var EMID = new Array();
-        //for (var i = 0; i < eID.length; i++) {
-        //    if (eID[i].checked)
-        //        EMID.push(eID[i].value);
-        //}
 
-        //check_val = '1,2';
-       var EIDLIST = $("input:checkbox[name='chk1']:checked").map(function (index, elem) {
+    function Manager(Method) {      
+        var EIDLIST = $("input:checkbox[name='chk1']:checked").map(function (index, elem) {
             return $(elem).val();
-       }).get().join(',');
-       //alert(text);
+        }).get().join(',');    
         $.ajax({
             url: '/Email/EmailDEL',
-            data: {
-                EMAILID: EIDLIST,
-                Method: Method,
-            },
+            data: { EMAILID: EIDLIST,Method: Method, },
             type: 'post',
             success: function (data) {
-                    var ar = eval('(' + data + ')');
-                    if (ar.Success) {
-                        if (confirm(ar.Msg + ' 请返回！')) {
-                            window.location.reload();
-                        }
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    if (confirm(ar.Msg + ' 请返回?')) {
+                        window.location.reload();
                     }
-                    else {
-                        layer.msg(ar.Msg);
-                    }
-                },
-                error: function (err) {
-                    layer.msg('保存异常');
                 }
-            });
+                else {
+                    layer.msg(ar.Msg, { icon: 5 });
+                }
+            },
+            error: function (err) {
+                layer.msg('保存异常!', { icon: 5 });
+            }
+        });
     }
 </script>
 

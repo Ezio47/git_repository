@@ -10,6 +10,7 @@
     {
         curorgno = SystemCls.getCurUserOrgNo();
     }
+    var curorgno1 = SystemCls.getCurUserOrgNo();//添加的时候组织机判断
 }
 
 <div class="easyui-layout" data-options="fit:true" style=" border:0;">
@@ -26,7 +27,7 @@
                                 单位：<div id="tbxBYORGNO" class="easyui-tree"></div>
                                 名称：<input id="tbxNAME" type="text" class="input-small" style="width:120px" value="" />
                                 <input type="button" value="查询" onclick="query('1')" class="btnSearchCss" />
-                                <input type="button" value="添加" id="btnAdd" onclick="Manager('Add','','')" class="btnAddCss" />
+                                <input type="button" value="添加" id="btnAdd" onclick="Add()" class="btnAddCss" />
                             </div>
                         </div>
                     </div>
@@ -57,35 +58,6 @@
 
 <div class="divMan" id="supliespropadd" style="display:none;margin-left:5px;margin-top:8px">
 
-</div>
-<div class="divMan" id="tableadd" style="display:none;margin-left:5px;margin-top:8px">
-    <table cellpadding="0" cellspacing="0">
-        <tr>
-            <td style="width:80px;">单位名称：</td>
-            <td><select id="BYORGNO" class="easyui-combotree" style="width:200px;"></select></td>
-            <td style="width:80px;"> <span style="color:red;">*</span>名称：</td>
-            <td><input type="text" id="NAME" class="input-small" value="" /></td>
-        </tr>
-        <tr>
-            <td style="width:80px;"> <span style="color:red;">*</span> 责任人：</td>
-            <td><input type="text" id="RESPONSIBLEMAN" class="input-small" value="" /></td>
-            <td style="width:80px;"> <span style="color:red;">*</span> 联系方式：</td>
-            <td><input id="LINKWAY" type="text" class="input-small" value="" /></td>
-        </tr>
-        <tr>
-            <td style="width:80px;"><span style="color:red;">*</span>经度：</td>
-            <td><input id="JD" type="text" class="input-small" value="" /> </td>
-            <td style="width:80px;"><span style="color:red;">*</span>纬度：</td>
-            <td>
-                <input id="WD" type="text" class="input-small" value="" />
-                <input type="button" value="地图定位" onclick="setPoint()" class="btnMapLoaclCss" />
-            </td>
-        </tr>
-        <tr>
-            <td style="width:80px;">地址：</td>
-            <td colspan="3"><input id="ADDRESS" type="text" class="input-small" value="" /></td>
-        </tr>
-    </table>
 </div>
 
 <div class="divMan" id="supinport" style="display:none;margin-left:5px;margin-top:8px">
@@ -151,7 +123,7 @@
                 t.tree("expand", node.target);//展开节点 expandTo
             }
         });
-        $('#BYORGNO').combotree('setValue', "@curorgno");
+        $('#BYORGNO').combotree('setValue', "@curorgno1");
     });
 
     function query(Page) {
@@ -255,167 +227,57 @@
             content: '/DataCenter/DetailIndex?REPID=' + ID + "&NAME=" + newmame
         })
     }
-
-    function Manager(Method, ID, page) {
-        if (Method == 'Del') {
-            if (confirm('确实要删除该内容吗?')) {
-                $.ajax({
-                    type: "Post",
-                    url: "/DataCenter/DEPTManager",
-                    data: { DCREPOSITORYID: ID, Method: Method, },
-                    dataType: "json",
-                    error: function () {
-                        alert('错误:异常!', 'error');
-                    },
-                    success: function (re) {
-                        if (re.Success) {
-                            layer.msg('删除成功', { icon: 6 });
-                            query(page);
-                        }
-                        else {
-                            layer.msg('删除失败', { icon: 5 });
-                        }
+    function Del(Method, ID, page) {
+        layer.confirm('确实要删除吗?', { icon: 3, title: '提示' }, function (index) {
+            $.ajax({
+                url: '/DataCenter/DEPTManager',
+                cache: false,
+                data: { DCREPOSITORYID: ID, Method: Method },
+                type: 'post',
+                error: function () {
+                    layer.msg('系统异常!', { icon: 5 });
+                },
+                dataType: 'json',
+                success: function (re) {
+                    if (re.Success) {
+                        layer.msg('删除成功!', { icon: 6 });
+                        query(page);
                     }
-                });
-            }
-        }
-        else {
-            if (Method == 'Mdy' || Method == 'See') {
-                $.ajax({
-                    type: "Post",
-                    url: "/DataCenter/GetREPOSITORYjson",
-                    data: { DCREPOSITORYID: ID, },
-                    dataType: "json",
-                    error: function () {
-                        layer.msg('错误:异常!', 'error');
-                    },
-                    success: function (data) {
-                        if (data.DCREPOSITORYID != '') {
-                            //document.getElementById("BYORGNO").value = data.BYORGNO,
-                            $('#BYORGNO').combotree('setValue', data.BYORGNO),
-                            document.getElementById("ADDRESS").value = data.ADDRESS,
-                            document.getElementById("NAME").value = data.NAME,
-                            document.getElementById("RESPONSIBLEMAN").value = data.RESPONSIBLEMAN,
-                            document.getElementById("LINKWAY").value = data.LINKWAY,
-                            document.getElementById("JD").value = data.JD,
-                            document.getElementById("WD").value = data.WD
-                        }
+                    else {
+                        layer.msg(re.Msg, { icon: 5 });
                     }
-                });
-            }
-            if (Method == 'Add') {
-                document.getElementById("NAME").value = "",
-                document.getElementById("ADDRESS").value = "",
-                //document.getElementById("BYORGNO").value="",
-                $('#BYORGNO').combotree('setValue', "@curorgno"),
-                document.getElementById("RESPONSIBLEMAN").value = "",
-                document.getElementById("LINKWAY").value = "",
-                document.getElementById("JD").value = "",
-                document.getElementById("WD").value = ""
-            }
-            var btnInfo = ['保存', '取消'];
-            if (Method == "See")
-                btnInfo = [];
-            var str = "仓库添加";
-            if (Method == "Mdy")
-                str = "仓库修改";
-            if (Method == "See")
-                str = "仓库查看";
-            layer.open({
-                type: 1,
-                title: str,
-                area: ['50%', '48%'],
-                btn: btnInfo,
-                shade: 0,
-                maxmin: true,
-                content: $('#tableadd'),
-                yes: function (index, layero) {
-                    var t1 = $('#JD').val();
-                    var t2 = $('#WD').val();
-                    var t3 = $('#LINKWAY').val();
-                    var t4 = $('#NAME').val();
-                    var t5 = $('#RESPONSIBLEMAN').val();
-                    if ($.trim(t1) != "") {
-                        reg = /^-?\d+\.\d{1,6}$/;
-                        if (!reg.test(t1)) {
-                            layer.msg('经度格式不正确！', { icon: 5 });
-                            $('#JD').focus();
-                            return;
-                        }
-                    }
-                    if ($.trim(t2) != "") {
-                        reg = /^-?\d+\.\d{1,6}$/;
-                        if (!reg.test(t2)) {
-                            layer.msg('纬度格式不正确！', { icon: 5 });
-                            $('#WD').focus();
-                            return;
-                        }
-                    }
-                    if ($.trim(t3) != "") {
-                        if (checkPhone(t3) == false && checkTel(t3) == false) {
-                            layer.msg('联系方式格式不正确！', { icon: 5 });
-                            $('#CONTACTS').focus();
-                            return;
-                        }
-                    }
-                    if ($.trim(t4) == "") {
-                        layer.msg('请填写名称！', { icon: 5 });
-                        $('#NAME').focus();
-                        return;
-                    }
-                    if ($.trim(t5) == "") {
-                        layer.msg('请填写责任人！', { icon: 5 });
-                        $('#RESPONSIBLEMAN').focus();
-                        return;
-                    }
-                    if ($.trim(t3) == "") {
-                        layer.msg('请填写联系方式！', { icon: 5 });
-                        $('#LINKWAY').focus();
-                        return;
-                    }
-                    if ($.trim(t1) == "" || $.trim(t2) == "") {
-                        layer.msg('请在地图标注仓库的位置！', { icon: 5 });
-                        $('#JD').focus();
-                        return;
-                    }
-                    $.ajax({
-                        type: "Post",
-                        url: "/DataCenter/DEPTManager",
-                        data: {
-                            DCREPOSITORYID: ID,
-                            Method: Method,
-                            NAME: document.getElementById("NAME").value,
-                            ADDRESS: document.getElementById("ADDRESS").value,
-                            //BYORGNO: document.getElementById("BYORGNO").value,
-                            BYORGNO: $('#BYORGNO').combotree('getValue'),
-                            RESPONSIBLEMAN: document.getElementById("RESPONSIBLEMAN").value,
-                            LINKWAY: document.getElementById("LINKWAY").value,
-                            JD: document.getElementById("JD").value,
-                            WD: document.getElementById("WD").value,
-
-                        },
-                        dataType: "json",
-                        error: function () {
-                            alert('错误:异常!', 'error');
-                        },
-                        success: function (re) {
-                            if (re.Success) {
-                                layer.close(index);
-                                layer.msg('操作成功', { icon: 6 });
-                                query('1');
-                            }
-                            else {
-                                layer.msg(re.Msg, { icon: 5 });
-                            }
-                        }
-                    });
-
-                }, cancel: function (index) {
-                    layer.close(index);
                 }
-            })
-        }
+            });
+        });
     }
+    function Add() {
+        layer.open({
+            type: 2,
+            title: '添加',
+            fix: false, //不固定
+            area: ['50%', '60%'],
+            maxmin: true,
+            content: '/DataCenter/DEPTlistMan',
+            end: function () {
+                query(1);
+            }
+        });
+    }
+    function Mdy(Method, ID, page) {
+        layer.open({
+            type: 2,
+            title: "修改",
+            area: ['50%', '60%'],
+            //shade: 0,
+            fix: false,
+            maxmin: true,
+            content: '/DataCenter/DEPTlistMan?Method=' + Method + "&ID=" + ID,
+            end: function () {
+                query(1);
+            }
+        });
+    }
+   
 
     //function getsupliesprop() {
     //    $.ajax({

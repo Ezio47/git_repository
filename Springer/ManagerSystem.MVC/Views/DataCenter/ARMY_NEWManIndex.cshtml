@@ -1,0 +1,290 @@
+﻿@using ManagerSystemClassLibrary;
+@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+    var curorgno1 = SystemCls.getCurUserOrgNo();//添加的时候组织机判断
+}
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'center'" title="" style=" border: none; ">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="homeUL">
+                        <input type="button" value="保存" onclick="Manager()" id="btnSave" class="btnSaveCss">
+                    </div>
+                </div>
+            </div>
+
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <div class="divMan">
+                    <table cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td style="width:80px;">
+                                单位名称：
+                            </td>
+                            <td>
+                                <select id="BYORGNO" class="easyui-combotree" style="width:180px;"></select>
+                                @*<select id="BYORGNO">
+                                    @Html.Raw(@ViewBag.vdOrg)
+                                </select>*@
+                            </td>
+                            <td style="width:80px;">
+                                队伍类型：
+                            </td>
+                            <td>
+                                <select id="ARMYTYPE">
+                                    @Html.Raw(@ViewBag.armytypeadd)
+                                </select>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="width:80px;">
+                                <span style="color:red;">*</span>
+                                名称：
+                            </td>
+                            <td>
+                                <input type="text" id="NAME" class="input-small" value="" />
+
+                            </td>
+                            <td style="width:80px;">
+                                <span style="color:red;">*</span>
+                                编号：
+                            </td>
+                            <td>
+                                <input id="NUMBER" type="text" class="input-small" value="" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:80px;">
+                                人数：
+                            </td>
+                            <td>
+                                <input id="ARMYMEMBERCOUNT" type="text" class="input-small" value="" />
+                            </td>
+                            <td style="width:80px;">
+                                <span style="color:red;">*</span>
+                                队长：
+                            </td>
+                            <td>
+                                <input id="ARMYLEADER" type="text" class="input-small" value="" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:80px;">
+                                <span style="color:red;">*</span>
+                                联系方式：
+                            </td>
+                            <td>
+                                <input id="CONTACTS" type="text" class="input-small" value="" />
+                            </td>
+                            <td style="width:80px;">
+                                队伍特点：
+                            </td>
+                            <td>
+                                <input id="ARMYCHARACTER" type="text" class="input-small" value="" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:100px;">
+                                经度：
+                            </td>
+                            <td>
+                                <input id="JD" type="text" class="input-small" value="" />
+                            </td>
+                            <td style="width:100px;">
+                                纬度：
+                            </td>
+                            <td>
+                                <input id="WD" type="text" class="input-small" value="" />
+                                <input type="button" value="地图定位" onclick="setPoint()" class="btnMapLoaclCss" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:80px;">
+                                备注：
+                            </td>
+                            <td colspan="3">
+                                <input id="MARK" type="text" class="input-small" value="" />
+                            </td>
+                        </tr>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $('#BYORGNO').combotree({
+            url: '/DataCenter/OnlyOrgTreeget',
+            editable: false,
+            required: true,
+            panelHeight: 300,
+            onLoadSuccess: function (node, data) {
+                var t = $("#BYORGNO").combotree('tree');//获取tree
+                t.tree("collapseAll");
+                node = t.tree("find", data[0].id);
+                t.tree("expand", node.target);//展开节点 expandTo
+            }
+        });
+        $('#BYORGNO').combotree('setValue', "@curorgno1");
+    });
+    if ('@ViewBag.T_Method' == "Del") {
+        Manager();
+    }
+    if ('@ViewBag.T_Method' == 'Mdy') {
+        $.ajax({
+            url: '/DataCenter/GetARMYjson',
+            cache: false,
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: { DC_ARMY_ID: '@ViewBag.ID' },
+            success: function (data, ioArgs) {
+                var data = eval('(' + data + ')');
+                if (data.DC_ARMY_ID != null) {
+                    document.getElementById("ARMYTYPE").value = data.ARMYTYPE;
+                    document.getElementById("NUMBER").value = data.NUMBER;
+                    document.getElementById("NAME").value = data.NAME;
+                    $('#BYORGNO').combotree('setValue', data.BYORGNO);
+                    document.getElementById("ARMYMEMBERCOUNT").value = data.ARMYMEMBERCOUNT;
+                    document.getElementById("ARMYLEADER").value = data.ARMYLEADER;
+                    document.getElementById("CONTACTS").value = data.CONTACTS;
+                    document.getElementById("ARMYCHARACTER").value = data.ARMYCHARACTER;
+                    document.getElementById("MARK").value = data.MARK;
+                    document.getElementById("JD").value = data.JD;
+                    document.getElementById("WD").value = data.WD;
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('登录异常');
+            }
+        });
+    }
+
+    function setPoint() {
+        var name = document.getElementById("NAME").value;
+        var jd = document.getElementById("JD").value;
+        var wd = document.getElementById("WD").value;
+        layer.open({
+            type: 2,
+            title: name + '地图位置设置',
+            btn: ['保存', '关闭'],
+            area: ['100%', '100%'],
+            fix: true, //不固定
+            maxmin: true,
+            content: '/MapCommon/GetMapPontIndex?jd=' + jd + "&wd=" + wd,
+            shade: 0,
+            yes: function (index, layero) { //或者使用btn1
+                //按钮【按钮一】的回调
+                var ptxt = layer.getChildFrame("p", index);
+                var arr = ptxt.html().split(',');
+                if ($.trim(arr) != "") {
+                    var jd = parseFloat(arr[0]).toFixed(6);
+                    var wd = parseFloat(arr[1]).toFixed(6);
+                    $('#JD').val(jd);
+                    $('#WD').val(wd);
+                }
+                layer.close(index);
+            }, cancel: function (index) {
+                layer.close(index);
+            }
+        });
+    }
+    function Manager() {
+        var t1 = $('#JD').val();
+        var t2 = $('#WD').val();
+        var t3 = $('#CONTACTS').val();
+        var t4 = $('#ARMYMEMBERCOUNT').val();
+        var t5 = $('#NUMBER').val();
+        var t6 = $('#ARMYLEADER').val();
+        var t7 = $('#NAME').val();
+        if ($.trim(t1) != "") {
+            reg = /^-?\d+\.\d{1,6}$/;
+            if (!reg.test(t1)) {
+                layer.msg('经度格式不正确！', { icon: 5 });
+                $('#JD').focus();
+                return;
+            }
+        }
+        if ($.trim(t2) != "") {
+            reg = /^-?\d+\.\d{1,6}$/;
+            if (!reg.test(t2)) {
+                layer.msg('纬度格式不正确！', { icon: 5 });
+                $('#WD').focus();
+                return;
+            }
+        }
+        if ($.trim(t3) != "") {
+            if (checkPhone(t3) == false && checkTel(t3) == false) {
+                layer.msg('联系方式格式不正确！', { icon: 5 });
+                $('#CONTACTS').focus();
+                return;
+            }
+        }
+        if ($.trim(t4) != "") {
+            if (CheckINT($.trim(t4)) == false) {
+                layer.msg('人数请填写整数！', { icon: 5 });
+                $('#ARMYMEMBERCOUNT').focus();
+                return;
+            }
+        }
+        if ($.trim(t7) == "") {
+            layer.msg('请填写名称！', { icon: 5 });
+            $('#NAME').focus();
+            return;
+        }
+        if ($.trim(t5) == "") {
+            layer.msg('请填写编号！', { icon: 5 });
+            $('#NUMBER').focus();
+            return;
+        }
+        if ($.trim(t6) == "") {
+            layer.msg('请队伍队长！', { icon: 5 });
+            $('#ARMYLEADER').focus();
+            return;
+        }
+        if ($.trim(t3) == "") {
+            layer.msg('请填写联系方式！', { icon: 5 });
+            $('#CONTACTS').focus();
+            return;
+        }
+
+        $.ajax({
+            type: "Post",
+            url: "/DataCenter/ARMYManager",
+            data: {
+                DC_ARMY_ID: '@ViewBag.ID',
+                Method: '@ViewBag.T_Method',
+                ARMYTYPE: document.getElementById("ARMYTYPE").value,
+                NUMBER: document.getElementById("NUMBER").value,
+                NAME: document.getElementById("NAME").value,
+                //BYORGNO: document.getElementById("BYORGNO").value,
+                BYORGNO: $('#BYORGNO').combotree('getValue'),
+                ARMYMEMBERCOUNT: document.getElementById("ARMYMEMBERCOUNT").value,
+                ARMYLEADER: document.getElementById("ARMYLEADER").value,
+                CONTACTS: document.getElementById("CONTACTS").value,
+                ARMYCHARACTER: document.getElementById("ARMYCHARACTER").value,
+                //ARMYEQUIP: document.getElementById("ARMYEQUIP").value,
+                MARK: document.getElementById("MARK").value,
+                JD: document.getElementById("JD").value,
+                WD: document.getElementById("WD").value,
+            },
+            dataType: "json",
+            success: function (data) {
+                if (data.Success) {
+                    parent.layer.msg(data.Msg,{ icon: 6 });
+                    var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                    parent.layer.close(index);
+                }
+                else {
+                    layer.msg(data.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('保存异常!');
+            }
+        });
+    }
+</script>
+

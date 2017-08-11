@@ -1,0 +1,74 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="" style="  border: none; ">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'west'" title="" style="width:180px; border: none; ">
+                <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                    <div class="divOP">
+                        <ul>
+                            <li class="homeUL"><a href="#">系统更新管理</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div data-options="region:'west'" title="" style="width:180px; border: none; ">
+                    <input id="tbxUpdateId" type="hidden" value="" />
+                    <div id="tt" style="overflow: hidden;" class="easyui-tree">
+
+                    </div>
+                </div>
+            </div>
+
+            <div data-options="region:'center'" title="" style=" border: none;">
+                <iframe id="updateFrame" src="" scrolling="auto" style="height: 100%; width: 100%; overflow-x: hidden; float: left;"></iframe>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $('#tt').tree({
+            url: '/SystemConfig/UpdateTree',
+            checked: false,
+            animate: true,
+            lines: true,
+            cache: false,
+            checkbox: false,
+            onClick: function (node) {
+                $('#tbxUpdateId').val('');
+                if ($.trim(node.id) == "") {
+                    document.getElementById("tbxUpdateId").value = "";
+                }
+                else {
+                    document.getElementById("tbxUpdateId").value = node.id;
+                }
+                queryValue();
+            }
+        });
+    });
+
+    function queryValue() {
+        var updateId = $('#tbxUpdateId').val();
+        if (updateId == '') {
+            layer.msg('请先选择要更新的操作!', { icon: 5 });
+            return false;
+        }
+        if (updateId == "1") {
+            $('#updateFrame').attr('src', '/SystemConfig/UpdateDataBase');
+        }
+        if (updateId == "2") {
+            $('#updateFrame').attr('src', '/SystemConfig/UpdateLayer');
+        }
+        if (updateId == "3") {
+            $('#updateFrame').attr('src', '/SystemConfig/UpdateHlyRoute');
+        }
+    }
+</script>

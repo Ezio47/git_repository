@@ -1,19 +1,15 @@
 ﻿@{
-    //ViewBag.Title =  "首页";
     Layout = "~/Views/Shared/_LayoutIndex.cshtml";
-    // Layout = null;
 }
 @section Header{
 }
 
 <div class="easyui-layout" data-options="fit:true" style=" border:0;">
-
-
     <div data-options="region:'west'" title="" style=" width:220px;">
         @Html.Raw(@ViewBag.PageLeftMenu)
     </div>
-    <div data-options="region:'center'">
 
+    <div data-options="region:'center'">
         <div class="easyui-layout" data-options="fit:true">
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
                 <div class="divOP">
@@ -24,12 +20,12 @@
                     </div>
                 </div>
             </div>
+
             <div data-options="region:'center'" class="LayoutCenterBG">
                 <div class="divMan">
                     @Html.Raw(@ViewBag.EmailRecieveMan)
                 </div>
             </div>
         </div>
-            </div>
-
-</div> 
+    </div>
+</div>

@@ -111,7 +111,6 @@ namespace ManagerSystemClassLibrary.BaseDT
         }
         #endregion
 
-
         #region 修改
         /// <summary>
         /// 修改
@@ -145,7 +144,6 @@ namespace ManagerSystemClassLibrary.BaseDT
         }
 
         #endregion
-
 
         #region 删除
         /// <summary>
@@ -191,10 +189,9 @@ namespace ManagerSystemClassLibrary.BaseDT
 
         #endregion
 
-
-        #region 获取数据
+        #region 获取数据数据
         /// <summary>
-        /// 获取数据
+        /// 获取数据数据
         /// </summary>
         /// <returns>参见模型</returns>
         public static DataTable getDT(T_IPSFR_ROUTERAIL_SW sw)
@@ -221,6 +218,24 @@ namespace ManagerSystemClassLibrary.BaseDT
 
         #endregion
 
+        #region 获取护林员的巡检路线数
+        /// <summary>
+        /// 获取护林员的巡检路线路
+        /// </summary>
+        /// <param name="sw">参见模型</param>
+        /// <returns></returns>
+        public static int GetRouteCount(T_IPSFR_ROUTERAIL_SW sw)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("SELECT Count(1) FROM  T_IPSFR_ROUTERAIL WHERE 1=1 ");
+            if (!string.IsNullOrEmpty(sw.HID))
+                sb.AppendFormat(" AND HID ='{0}'", ClsSql.EncodeSql(sw.HID));
+            if(!string.IsNullOrEmpty(sw.ROADTYPE))
+                sb.AppendFormat(" AND ROADTYPE ='{0}'", ClsSql.EncodeSql(sw.ROADTYPE));
+            return int.Parse(DataBaseClass.ReturnSqlField(sb.ToString()));
+        }
+        #endregion
+
         #region 根据DataTable、HID、ROADTYPE判断记录个数
         /// <summary>
         /// 根据DataTable、HID、ROADTYPE判断记录个数
@@ -234,8 +249,7 @@ namespace ManagerSystemClassLibrary.BaseDT
             if (dt == null) return "";
             if (string.IsNullOrEmpty(HID)) return "";
             if (string.IsNullOrEmpty(ROADTYPE)) return "";
-            return dt.Compute("count(ROADID)", "HID='" + HID + "' and ROADTYPE='"+ROADTYPE+"'").ToString();
-            
+            return dt.Compute("count(ROADID)", "HID='" + HID + "' and ROADTYPE='" + ROADTYPE + "'").ToString();
         }
         #endregion
     }

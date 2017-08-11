@@ -17,7 +17,7 @@ using NPOI.SS.UserModel;
 namespace ManagerSystemClassLibrary
 {
     /// <summary>
-    /// 三维图层
+    /// 系统_图层表
     /// </summary>
     public class T_SYS_LAYERCls
     {
@@ -95,6 +95,7 @@ namespace ManagerSystemClassLibrary
             dtLayer.Dispose();
             return JsonConvert.SerializeObject(jObjects);
         }
+
         /// <summary>
         /// 使用递归法获取三维图层
         /// </summary>
@@ -123,6 +124,7 @@ namespace ManagerSystemClassLibrary
             dtLayer.Dispose();
             return JsonConvert.SerializeObject(jObjects);
         }
+
         /// <summary>
         /// 三维图层递归法children
         /// </summary>
@@ -133,7 +135,7 @@ namespace ManagerSystemClassLibrary
         private static JArray getTckzTreeChild(DataTable dtLayer, string layerCode)
         {
             JArray childArray = new JArray();
-            if (layerCode.Length==2)
+            if (layerCode.Length == 2)
             {
                 DataRow[] drLayer = dtLayer.Select("Len(LAYERCODE) = '4' AND SUBSTRING(LAYERCODE,1,3)='010'");//点，线，面
                 if (drLayer.Length > 0)
@@ -141,7 +143,7 @@ namespace ManagerSystemClassLibrary
                     for (int i = 0; i < drLayer.Length; i++)
                     {
                         string layerCode1 = drLayer[i]["LAYERCODE"].ToString();
-                        JObject root1 = new JObject { { "id", drLayer[i]["LAYERCODE"].ToString() }, { "text", drLayer[i]["LAYERNAME"].ToString() }};
+                        JObject root1 = new JObject { { "id", drLayer[i]["LAYERCODE"].ToString() }, { "text", drLayer[i]["LAYERNAME"].ToString() } };
                         root1.Add("children", getTckzTreeChild(dtLayer, layerCode1));
                         childArray.Add(root1);
                     }
@@ -156,20 +158,20 @@ namespace ManagerSystemClassLibrary
                     for (int i = 0; i < drLayer.Length; i++)
                     {
                         string layerCode1 = drLayer[i]["LAYERCODE"].ToString();
-                        JObject root1 = new JObject { { "id", drLayer[i]["LAYERCODE"].ToString() }, { "text", drLayer[i]["LAYERNAME"].ToString() }};
-                        var NextCount=dtLayer.Select("LAYERCODE LIKE '"+layerCode1+"%'");
+                        JObject root1 = new JObject { { "id", drLayer[i]["LAYERCODE"].ToString() }, { "text", drLayer[i]["LAYERNAME"].ToString() } };
+                        var NextCount = dtLayer.Select("LAYERCODE LIKE '" + layerCode1 + "%'");
                         if (NextCount.Count() > 2)
                         {
                             root1 = new JObject { { "id", drLayer[i]["LAYERCODE"].ToString() }, { "text", drLayer[i]["LAYERNAME"].ToString() }, { "state", "closed" } };
                             if (drLayer[i]["ISDEFAULTCH"].ToString() == "1")
                             {
-                                root1 = new JObject { { "id", drLayer[i]["LAYERCODE"].ToString() }, { "text", drLayer[i]["LAYERNAME"].ToString() },{ "state", "closed" },{ "checked", true } };
+                                root1 = new JObject { { "id", drLayer[i]["LAYERCODE"].ToString() }, { "text", drLayer[i]["LAYERNAME"].ToString() }, { "state", "closed" }, { "checked", true } };
                             }
                         }
                         root1.Add("children", getTckzTreeChild(dtLayer, layerCode1));
                         if (drLayer[i]["ISDEFAULTCH"].ToString() == "1")
                         {
-                            root1 = new JObject { { "id", drLayer[i]["LAYERCODE"].ToString() }, { "text", drLayer[i]["LAYERNAME"].ToString() },{ "checked", true } };
+                            root1 = new JObject { { "id", drLayer[i]["LAYERCODE"].ToString() }, { "text", drLayer[i]["LAYERNAME"].ToString() }, { "checked", true } };
                         }
                         childArray.Add(root1);
                     }
@@ -213,7 +215,7 @@ namespace ManagerSystemClassLibrary
                     {
                         string layerCode1 = drLayer[i]["LAYERCODE"].ToString();
                         JObject root1 = new JObject { { "id", drLayer[i]["LAYERCODE"].ToString() }, { "text", drLayer[i]["LAYERNAME"].ToString() } };
-                        var NextCount=dtLayer.Select("LAYERCODE LIKE '"+layerCode1+"%'");
+                        var NextCount = dtLayer.Select("LAYERCODE LIKE '" + layerCode1 + "%'");
                         if (NextCount.Count() > 2)
                         {
                             root1 = new JObject { { "id", drLayer[i]["LAYERCODE"].ToString() }, { "text", drLayer[i]["LAYERNAME"].ToString() }, { "state", "closed" } };
@@ -234,6 +236,7 @@ namespace ManagerSystemClassLibrary
             }
             return childArray;
         }
+
         /// <summary>
         /// 获取树形三维图层控制菜单(所有节点默认为false)
         /// </summary>
@@ -262,6 +265,7 @@ namespace ManagerSystemClassLibrary
             dtLayer.Dispose();
             return JsonConvert.SerializeObject(jObjects);
         }
+
         /// <summary>
         /// 获取树形三维图层控制菜单Child(所有节点默认为false)
         /// </summary>
@@ -295,7 +299,7 @@ namespace ManagerSystemClassLibrary
                     for (int i = 0; i < drLayer.Length; i++)
                     {
                         string layerCode1 = drLayer[i]["LAYERCODE"].ToString();
-                        JObject root1 = new JObject { { "id", drLayer[i]["LAYERCODE"].ToString() }, { "text", drLayer[i]["LAYERNAME"].ToString() } }; 
+                        JObject root1 = new JObject { { "id", drLayer[i]["LAYERCODE"].ToString() }, { "text", drLayer[i]["LAYERNAME"].ToString() } };
                         var NextCount = dtLayer.Select("LAYERCODE LIKE '" + layerCode1 + "%'");
                         if (NextCount.Count() > 2)
                         {
@@ -349,6 +353,7 @@ namespace ManagerSystemClassLibrary
             }
             return childArray;
         }
+
         /// <summary>
         /// 获取树形图层用于火点周边查询
         /// </summary>
@@ -387,6 +392,7 @@ namespace ManagerSystemClassLibrary
             dtLayer.Dispose();
             return JsonConvert.SerializeObject(jObjects);
         }
+
         /// <summary>
         /// 获取三维图层LAYERID用于火点周边查询
         /// </summary>
@@ -406,6 +412,7 @@ namespace ManagerSystemClassLibrary
             }
             return LAYERID;
         }
+
         /// <summary>
         /// 获取三维图层LAYERID用于护林员周边查询
         /// </summary>
@@ -459,6 +466,7 @@ namespace ManagerSystemClassLibrary
             }
             return ISDEFAULTCH;
         }
+
         /// <summary>
         /// 获取三维图层控制LAYERCODE
         /// </summary>
@@ -475,6 +483,7 @@ namespace ManagerSystemClassLibrary
             }
             return LAYERCODE;
         }
+
         /// <summary>
         /// 获取三维图层所有名称用于初始化隐藏
         /// </summary>
@@ -491,6 +500,7 @@ namespace ManagerSystemClassLibrary
             }
             return LAYERNAME;
         }
+
         /// <summary>
         /// 获取空间库火情档案
         /// </summary>
@@ -507,5 +517,95 @@ namespace ManagerSystemClassLibrary
             }
             return YEAR;
         }
+
+        /// <summary>
+        /// 获取单条记录
+        /// </summary>
+        /// <param name="sw">参见模型</param>
+        /// <returns>参见模型</returns>
+        public static T_SYS_LAYER_Model getModel(T_SYS_LAYER_SW sw)
+        {
+            DataTable dt = BaseDT.T_SYS_LAYER.getDT2(sw);
+            T_SYS_LAYER_Model m = new T_SYS_LAYER_Model();
+            if (dt.Rows.Count > 0)
+            {
+                int i = 0;
+                //数据库表字段
+                m.LAYERCODE = dt.Rows[i]["LAYERCODE"].ToString();
+                m.LAYERNAME = dt.Rows[i]["LAYERNAME"].ToString();
+                m.LAYERID = dt.Rows[i]["LAYERID"].ToString();
+                m.ISACTION = dt.Rows[i]["ISACTION"].ToString();
+                m.LAYERRIGHTID = dt.Rows[i]["LAYERRIGHTID"].ToString();
+                m.ISDEFAULTCH = dt.Rows[i]["ISDEFAULTCH"].ToString();
+                m.ISFIREROUNDDEFAULT = dt.Rows[i]["ISFIREROUNDDEFAULT"].ToString();
+                m.ISFUROUNDDEFAULT = dt.Rows[i]["ISFUROUNDDEFAULT"].ToString();
+                m.LAYERPICNAME = dt.Rows[i]["LAYERPICNAME"].ToString();
+                m.ORDERBY = dt.Rows[i]["ORDERBY"].ToString();
+                //扩充字段
+            }
+            dt.Clear();
+            dt.Dispose();
+            return m;
+        }
+
+        /// <summary>
+        /// 获取数据列表
+        /// </summary>
+        /// <param name="sw">参见模型PEST_REPORT_HAPPEN_SW</param>
+        /// <returns>参见模型PEST_REPORT_HAPPEN_Model</returns>
+        public static IEnumerable<T_SYS_LAYER_Model> getListModel(T_SYS_LAYER_SW sw)
+        {
+            var result = new List<T_SYS_LAYER_Model>();
+            DataTable dt = BaseDT.T_SYS_LAYER.getDT2(sw);
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                T_SYS_LAYER_Model m = new T_SYS_LAYER_Model();
+                m.LAYERCODE = dt.Rows[i]["LAYERCODE"].ToString();
+                m.LAYERNAME = dt.Rows[i]["LAYERNAME"].ToString();
+                m.LAYERID = dt.Rows[i]["LAYERID"].ToString();
+                m.ISACTION = dt.Rows[i]["ISACTION"].ToString();
+                m.LAYERRIGHTID = dt.Rows[i]["LAYERRIGHTID"].ToString();
+                m.ISDEFAULTCH = dt.Rows[i]["ISDEFAULTCH"].ToString();
+                m.ISFIREROUNDDEFAULT = dt.Rows[i]["ISFIREROUNDDEFAULT"].ToString();
+                m.ISFUROUNDDEFAULT = dt.Rows[i]["ISFUROUNDDEFAULT"].ToString();
+                m.LAYERPICNAME = dt.Rows[i]["LAYERPICNAME"].ToString();
+                m.ORDERBY = dt.Rows[i]["ORDERBY"].ToString();
+                result.Add(m);
+            }
+            dt.Clear();
+            dt.Dispose();
+            return result;
+        }
+
+        /// <summary>
+        /// 增、删、改
+        /// </summary>
+        /// <param name="m">参见模型</param>
+        /// <returns>参见模型</returns>
+        public static Message Manager(T_SYS_LAYER_Model m)
+        {
+            if (m.opMethod == "Add")
+            {
+                Message msg = BaseDT.T_SYS_LAYER.Add(m);
+                return new Message(msg.Success, msg.Msg, msg.Url);
+            }
+            if (m.opMethod == "Mdy")
+            {
+                Message msg = BaseDT.T_SYS_LAYER.Mdy(m);
+                return new Message(msg.Success, msg.Msg, msg.Url);
+            }
+            if (m.opMethod == "Del")
+            {
+                Message msg = BaseDT.T_SYS_LAYER.Del(m);
+                return new Message(msg.Success, msg.Msg, msg.Url);
+            }
+            if (m.opMethod == "PLMdy")
+            {
+                Message msg = BaseDT.T_SYS_LAYER.PLMdy(m);
+                return new Message(msg.Success, msg.Msg, msg.Url);
+            }
+            return new Message(false, "无效操作", "");
+        }
+
     }
 }

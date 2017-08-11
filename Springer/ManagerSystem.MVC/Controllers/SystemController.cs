@@ -466,7 +466,7 @@ namespace ManagerSystem.MVC.Controllers
             //ViewBag.RoleChk = T_SYSSEC_ROLECls.getRoleAndUid(new T_SYSSEC_ROLE_SW { USERID = ViewBag.T_USERID });
             ViewBag.vdSex = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTFLAG = "性别" });
             ViewBag.vdONSTATE = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTFLAG = "固兼职状态" });
-            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = SystemCls.getCurUserOrgNo() ,IsEnableCUN="1"});
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = SystemCls.getCurUserOrgNo(), IsEnableCUN = "1" });
             ViewBag.vdISENABLE = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTFLAG = "启用状态", DICTVALUE = "1" });
             return View();
         }
@@ -1456,7 +1456,7 @@ namespace ManagerSystem.MVC.Controllers
             //角色复选框
             ViewBag.RoleChk = getRoleUId(new T_SYSSEC_ROLE_SW { USERID = ViewBag.T_USERID });
             ViewBag.vdSex = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTFLAG = "性别" });
-            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = SystemCls.getCurUserOrgNo()});
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = SystemCls.getCurUserOrgNo() });
             string sysorgFlag = "1";//1 州  2 市县 3 乡镇
             var bxz = PublicCls.OrgIsZhen(SystemCls.getCurUserOrgNo());//乡镇
             var bsx = PublicCls.OrgIsXian(SystemCls.getCurUserOrgNo());//市县
@@ -1649,15 +1649,10 @@ namespace ManagerSystem.MVC.Controllers
         public ActionResult ORGNOChange()
         {
             StringBuilder sb = new StringBuilder();
-            if (ConfigCls.getIsTongBuOA() == "1")
-            {
-                string orgNo = Request.Params["orgNo"];
-                ViewBag.SysOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = SystemCls.getCurUserOrgNo(), CurORGNO = orgNo });
-                sb.AppendFormat(getOADeptStr(orgNo));
-                return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), "")), "text/html;charset=UTF-8");
-            }
-            else
-                return Content(JsonConvert.SerializeObject(new Message(false, sb.ToString(), "")), "text/html;charset=UTF-8");
+            string orgNo = Request.Params["orgNo"];
+            ViewBag.SysOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = SystemCls.getCurUserOrgNo(), CurORGNO = orgNo });
+            sb.AppendFormat(getOADeptStr(orgNo));
+            return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), "")), "text/html;charset=UTF-8");
         }
 
         /// <summary>
@@ -1940,18 +1935,18 @@ namespace ManagerSystem.MVC.Controllers
             string pwd = Request.Params["pwd"];
             string State = Request.Params["State"];
             if (string.IsNullOrEmpty(userName))
-                return Content(JsonConvert.SerializeObject(new Message(false, "请输入用户名！", "")), "text/html;charset=UTF-8");
-            if (userName == "请输入你的用户名")
-                return Content(JsonConvert.SerializeObject(new Message(false, "请输入用户名！", "")), "text/html;charset=UTF-8");
+                return Content(JsonConvert.SerializeObject(new Message(false, "请输入用户名!", "")), "text/html;charset=UTF-8");
+            if (userName == "请输入你的用户名!")
+                return Content(JsonConvert.SerializeObject(new Message(false, "请输入用户名!", "")), "text/html;charset=UTF-8");
             if (string.IsNullOrEmpty(pwd))
-                return Content(JsonConvert.SerializeObject(new Message(false, "请输入密码！", "")), "text/html;charset=UTF-8");
+                return Content(JsonConvert.SerializeObject(new Message(false, "请输入密码!", "")), "text/html;charset=UTF-8");
             T_SYSSEC_IPSUSER_Model tsuM = T_SYSSEC_IPSUSERCls.getModel(new T_SYSSEC_IPSUSER_SW { LOGINUSERNAME = userName });
             if (tsuM == null)
-                return Content(JsonConvert.SerializeObject(new Message(false, "用户名不存在！", "")), "text/html;charset=UTF-8");
+                return Content(JsonConvert.SerializeObject(new Message(false, "用户名不存在!", "")), "text/html;charset=UTF-8");
             if (string.IsNullOrEmpty(tsuM.USERID) == true)
-                return Content(JsonConvert.SerializeObject(new Message(false, "用户名不存在！", "")), "text/html;charset=UTF-8");
+                return Content(JsonConvert.SerializeObject(new Message(false, "用户名不存在!", "")), "text/html;charset=UTF-8");
             if (tsuM.USERPWD != ClsStr.getSystemManMd5(pwd))
-                return Content(JsonConvert.SerializeObject(new Message(false, "密码错误！", "")), "text/html;charset=UTF-8");
+                return Content(JsonConvert.SerializeObject(new Message(false, "密码错误!", "")), "text/html;charset=UTF-8");
             CookieModel cookieM = new CookieModel();
             cookieM.UID = tsuM.USERID;
             cookieM.userName = tsuM.LOGINUSERNAME;
@@ -1981,7 +1976,7 @@ namespace ManagerSystem.MVC.Controllers
             //    return Redirect(returnUrl);
             //return RedirectToAction("Index", "Home");
             #endregion
-            return Content(JsonConvert.SerializeObject(new Message(true, "验证成功", ConfigCls.getLoginRedirectUrl())), "text/html;charset=UTF-8");
+            return Content(JsonConvert.SerializeObject(new Message(true, "验证成功!", ConfigCls.getLoginRedirectUrl())), "text/html;charset=UTF-8");
         }
 
         /// <summary>
@@ -2681,17 +2676,17 @@ namespace ManagerSystem.MVC.Controllers
                     {
                         if (string.IsNullOrEmpty(m.UNITNAME))
                         {
-                            return Content(JsonConvert.SerializeObject(new Message(false, "请输入自然村名称", "")), "text/html;charset=UTF-8");
+                            return Content(JsonConvert.SerializeObject(new Message(false, "请输入自然村名称!", "")), "text/html;charset=UTF-8");
                         }
                     }
                 }
                 if (string.IsNullOrEmpty(m.NAME))
                 {
-                    return Content(JsonConvert.SerializeObject(new Message(false, "请输入姓名", "")), "text/html;charset=UTF-8");
+                    return Content(JsonConvert.SerializeObject(new Message(false, "请输入姓名!", "")), "text/html;charset=UTF-8");
                 }
                 if (string.IsNullOrEmpty(m.PHONE))
                 {
-                    return Content(JsonConvert.SerializeObject(new Message(false, "请输入手机号码", "")), "text/html;charset=UTF-8");
+                    return Content(JsonConvert.SerializeObject(new Message(false, "请输入手机号码!", "")), "text/html;charset=UTF-8");
                 }
             }
             return Content(JsonConvert.SerializeObject(T_SYS_ORG_LINKCls.Manager(m)), "text/html;charset=UTF-8");
@@ -2936,7 +2931,7 @@ namespace ManagerSystem.MVC.Controllers
             {
                 if (string.IsNullOrEmpty(m.CWHNAME))
                 {
-                    return Content(JsonConvert.SerializeObject(new Message(false, "请输入村委会名称", "")), "text/html;charset=UTF-8");
+                    return Content(JsonConvert.SerializeObject(new Message(false, "请输入村委会名称!", "")), "text/html;charset=UTF-8");
                 }
             }
             return Content(JsonConvert.SerializeObject(T_SYS_ORG_CWHCls.Manager(m)), "text/html;charset=UTF-8");
@@ -3237,11 +3232,11 @@ namespace ManagerSystem.MVC.Controllers
             {
                 if (PublicCls.OrgIsZhen(shi.ORGNO))
                 {
-                    sb.AppendFormat("&nbsp;[<a href=\"#\" onclick=\"query('{0}','','')\">返回上级</a>]", PublicCls.getXianIncOrgNo(BYORGNO) + "000");
+                    sb.AppendFormat("&nbsp;[<a href=\"#\" onclick=\"query('{0}','','')\">返回上级</a>]", PublicCls.getXianIncOrgNo(BYORGNO) + "000000000");
                 }
                 else
                 {
-                    sb.AppendFormat("&nbsp;[<a href=\"#\" onclick=\"query('{0}','','')\">返回上级</a>]", PublicCls.getShiIncOrgNo(BYORGNO) + "00000");
+                    sb.AppendFormat("&nbsp;[<a href=\"#\" onclick=\"query('{0}','','')\">返回上级</a>]", PublicCls.getShiIncOrgNo(BYORGNO) + "00000000000");
                 }
             }
             sb.AppendFormat("</th>");
@@ -3464,13 +3459,13 @@ namespace ManagerSystem.MVC.Controllers
                     if (!FileType.Contains(extension))
                     {
                         //ViewBag.error = "文件类型不对，只能导入xls和xlsx格式的文件";
-                        return Content(@"<script>alert('文件类型不对，只能导入xls和xlsx格式的文件');history.go(-1);</script>");
+                        return Content(@"<script>alert('文件类型不对，只能导入xls和xlsx格式的文件!');history.go(-1);</script>");
                     }
                     if (filesize >= Maxsize)
                     {
                         //ViewBag.error = "上传文件超过4M，不能上传";
                         //return View();
-                        return Content(@"<script>alert('上传文件超过4M，不能上传');history.go(-1);</script>");
+                        return Content(@"<script>alert('上传文件超过4M，不能上传!');history.go(-1);</script>");
                     }
                     try
                     {
@@ -3486,15 +3481,15 @@ namespace ManagerSystem.MVC.Controllers
                     }
                     catch (Exception)
                     {
-                        return Content(@"<script>alert('上传文件模板错误，请确认后再上传！');history.go(-1);</script>");
+                        return Content(@"<script>alert('上传文件模板错误，请确认后再上传!');history.go(-1);</script>");
                     }
                 }
                 else
                 {
-                    return Content(@"<script>alert('请选择需要导入的护林员表格');history.go(-1);</script>");
+                    return Content(@"<script>alert('请选择需要导入的护林员表格!');history.go(-1);</script>");
                 }
             }
-            return Content("<script>alert('导入成功');window.location.href='OrgMapList';</script>");
+            return Content("<script>alert('导入成功!');window.location.href='OrgMapList';</script>");
         }
         #endregion
 
@@ -3639,7 +3634,7 @@ namespace ManagerSystem.MVC.Controllers
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<table id=\"MenuTable\" cellpadding=\"0\" cellspacing=\"0\">");
             sb.AppendFormat("<thead><tr>");
-            sb.AppendFormat("<th>序号</th><th>编码</th><th>名称</th><th>显示样式</th><th>排序号</th><th>所属权限标识</th><th>系统标识</th><th>菜单打开方式</th><th>菜单关联子模块</th><th>菜单下拉方式</th><th>是否为顶部菜单</th><th></th></tr></thead>");
+            sb.AppendFormat("<th>序号</th><th>编码</th><th>名称</th><th>显示样式</th><th>权限标识</th><th>系统标识</th><th>打开方式</th><th>关联子模块</th><th>下拉方式</th><th>是否为顶部菜单</th><th>排序号</th><th></th></tr></thead>");
             sb.AppendFormat("<tbody>");
             int i = 0;
             foreach (var v in result)
@@ -3647,20 +3642,17 @@ namespace ManagerSystem.MVC.Controllers
                 sb.AppendFormat("<tr class='{0}'>", i % 2 == 0 ? "" : "row1");
                 sb.AppendFormat("<td class=\"center\">{0}</td>", (i + 1).ToString());
                 sb.AppendFormat("<td class=\"center\">");
-                //if (T_SYS_MENUCls.isExistsChild(new T_SYS_MENU_SW { MENUCODE = v.MENUCODE }))
                 sb.AppendFormat("<a href=\"/System/MenuList?MENUCODE={0}\" >{1}</a>", v.MENUCODE, v.MENUCODE);
-                //else
-                //    sb.AppendFormat("<a>{0}</a>", v.MENUCODE);
                 sb.AppendFormat("</td>");
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.MENUNAME);
-                sb.AppendFormat("<td class=\"center\">{0}</td>", v.LICLASS);
-                sb.AppendFormat("<td class=\"center\">{0}</td>", v.ORDERBY);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.LICLASS);               
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.MENURIGHTFLAG);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.SYSFLAG);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.MENUOPENMETHODName);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.MENULINKMODE);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.MENUDROWMTHODName);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.ISTOPMENUName);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.ORDERBY);
                 sb.AppendFormat("<td class=\"center\">");
                 sb.AppendFormat("<a href='#' onclick=\"Manager('{0}','Mdy')\"  class=\"searchBox_01 LinkMdy\">修改</a>", v.MENUCODE);
                 sb.AppendFormat("&nbsp; <a href='#' onclick=\"Manager('{0}','Del')\"  class=\"searchBox_01 LinkDel\">删除</a>", v.MENUCODE);
@@ -4040,7 +4032,7 @@ namespace ManagerSystem.MVC.Controllers
         #endregion
 
         #region 无人机管理
-        public ActionResult UavManager() 
+        public ActionResult UavManager()
         {
             JC_UAV_Model m = new JC_UAV_Model();
 
@@ -4049,7 +4041,7 @@ namespace ManagerSystem.MVC.Controllers
             m.UAVEQUIPNAME = Request.Params["EQUIPNAME"];
             m.UAVID = Request.Params["UAVID"];
             m.opMethod = Request.Params["METHOD"];
-            
+
             var ms = JC_UAVCls.Manager(m);
             return Content(JsonConvert.SerializeObject(ms), "text/html;charset=UTF-8");
         }
@@ -4065,7 +4057,7 @@ namespace ManagerSystem.MVC.Controllers
 
         }
 
-        public ActionResult UavList() 
+        public ActionResult UavList()
         {
             pubViewBag("006018", "006018", "");
             ViewBag.isAdd = (SystemCls.isRight("006018001")) ? "1" : "0";
@@ -4084,7 +4076,7 @@ namespace ManagerSystem.MVC.Controllers
             string page = Request.Params["page"];
             string NAME = Request.Params["NAME"];
             string BYORGNO = Request.Params["BYORGNO"];
-            
+
 
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");

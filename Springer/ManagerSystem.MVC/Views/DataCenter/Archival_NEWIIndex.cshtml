@@ -282,7 +282,8 @@
             });
         }
         if (Method == 'Del') {
-            if (confirm('确实要删除吗?')) {
+            //if (confirm('确实要删除吗?')) {
+            layer.confirm('确实要删除吗?', { icon: 3, title: '提示' }, function (index) {
                 $.ajax({
                     url: '/FIRERECORD/FIRERECORD_FIREINFOManager',
                     cache: false,
@@ -302,7 +303,7 @@
                         layer.msg("删除异常!");
                     }
                 });
-            }
+            });
         }
     }
 </script>

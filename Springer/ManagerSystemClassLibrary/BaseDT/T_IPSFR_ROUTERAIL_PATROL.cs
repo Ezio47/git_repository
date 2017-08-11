@@ -27,17 +27,17 @@ namespace ManagerSystemClassLibrary.BaseDT
            StringBuilder sb = new StringBuilder();
            if (PublicCls.OrgIsShi(sw.TopORGNO))
            {
-               sb.AppendFormat(" select count(substring(BYORGNO,1,6)+'000') as C,substring(BYORGNO,1,6)+'000' as BYORGNO,ROUTEDATE,ROUTESTATE");
+               sb.AppendFormat(" select count(substring(BYORGNO,1,6)+'000000000') as C,substring(BYORGNO,1,6)+'000000000' as BYORGNO,ROUTEDATE,ROUTESTATE");
                sb.AppendFormat(" FROM T_IPSFR_ROUTERAIL_PATROL a  LEFT OUTER JOIN T_IPSFR_USER b ON a.HID = b.HID");
                sb.AppendFormat(" WHERE   (ROUTEDATE >= '{0}') AND (ROUTEDATE <= '{1}')", sw.DateBegin, sw.DateEnd);
-               sb.AppendFormat(" group by  substring(BYORGNO,1,6)+'000',ROUTEDATE,ROUTESTATE");
+               sb.AppendFormat(" group by  substring(BYORGNO,1,6)+'000000000',ROUTEDATE,ROUTESTATE");
            }
            else if (PublicCls.OrgIsXian(sw.TopORGNO))
            {
                sb.AppendFormat(" select count(BYORGNO) as C, BYORGNO,ROUTEDATE,ROUTESTATE");
                sb.AppendFormat(" FROM T_IPSFR_ROUTERAIL_PATROL a  LEFT OUTER JOIN T_IPSFR_USER b ON a.HID = b.HID");
                sb.AppendFormat(" WHERE   (ROUTEDATE >= '{0}') AND (ROUTEDATE <= '{1}')", sw.DateBegin, sw.DateEnd);
-               sb.AppendFormat(" and   substring(BYORGNO,1,6)+'000'='{0}'", sw.TopORGNO);
+               sb.AppendFormat(" and   substring(BYORGNO,1,6)+'000000000'='{0}'", sw.TopORGNO);
                sb.AppendFormat(" group by  BYORGNO,ROUTEDATE,ROUTESTATE");
            }
            else
@@ -65,17 +65,17 @@ namespace ManagerSystemClassLibrary.BaseDT
            StringBuilder sb = new StringBuilder();
            if (PublicCls.OrgIsShi(sw.TopORGNO))
            {
-               sb.AppendFormat(" select count(substring(BYORGNO,1,6)+'000') as C,a.ROUTESTATE,substring(BYORGNO,1,6)+'000' as BYORGNO");
+               sb.AppendFormat(" select count(substring(BYORGNO,1,6)+'000000000') as C,a.ROUTESTATE,substring(BYORGNO,1,6)+'000000000' as BYORGNO");
                sb.AppendFormat(" FROM T_IPSFR_ROUTERAIL_PATROL a  LEFT OUTER JOIN T_IPSFR_USER b ON a.HID = b.HID");
                sb.AppendFormat(" WHERE   (ROUTEDATE >= '{0}') AND (ROUTEDATE <= '{1}')", sw.DateBegin + " 00:00:00", sw.DateEnd + " 23:59:59");
-               sb.AppendFormat(" group by  ROUTESTATE,substring(BYORGNO,1,6)+'000'");
+               sb.AppendFormat(" group by  ROUTESTATE,substring(BYORGNO,1,6)+'000000000'");
            }
            else if (PublicCls.OrgIsXian(sw.TopORGNO))
            {
                sb.AppendFormat(" select count(BYORGNO) as C,a.ROUTESTATE, BYORGNO");
                sb.AppendFormat(" FROM T_IPSFR_ROUTERAIL_PATROL a  LEFT OUTER JOIN T_IPSFR_USER b ON a.HID = b.HID");
                sb.AppendFormat(" WHERE   (ROUTEDATE >= '{0}') AND (ROUTEDATE <= '{1}')", sw.DateBegin + " 00:00:00", sw.DateEnd + " 23:59:59");
-               sb.AppendFormat(" and   substring(BYORGNO,1,6)+'000'='{0}'", sw.TopORGNO);
+               sb.AppendFormat(" and   substring(BYORGNO,1,6)+'000000000'='{0}'", sw.TopORGNO);
                sb.AppendFormat(" group by  ROUTESTATE,BYORGNO");
            }
            else

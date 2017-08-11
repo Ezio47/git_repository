@@ -59,9 +59,9 @@ namespace ManagerSystem.MVC.Controllers
                 //if (string.IsNullOrEmpty(WD))
                 //    return Content(JsonConvert.SerializeObject(new Message(false, "请输入纬度！", "")), "text/html;charset=UTF-8");
                 if (float.Parse(JD) >= 180 || float.Parse(JD) <= -180)
-                    return Content(JsonConvert.SerializeObject(new Message(false, "经度范围在-180~180之间，请重新输入！", "")), "text/html;charset=UTF-8");
+                    return Content(JsonConvert.SerializeObject(new Message(false, "经度范围在-180~180之间，请重新输入!", "")), "text/html;charset=UTF-8");
                 if (float.Parse(WD) >= 90 || float.Parse(WD) <= -90)
-                    return Content(JsonConvert.SerializeObject(new Message(false, "纬度范围在-90~90之间，请重新输入！", "")), "text/html;charset=UTF-8");
+                    return Content(JsonConvert.SerializeObject(new Message(false, "纬度范围在-90~90之间，请重新输入!", "")), "text/html;charset=UTF-8");
             }
             return Content(JsonConvert.SerializeObject(JC_INFRAREDCAMERACls.Manager(m)), "text/html;charset=UTF-8");
         }
@@ -922,8 +922,8 @@ namespace ManagerSystem.MVC.Controllers
 
             if (JD == "" && WD == "")
             {
-                NEWJD = ClsMapCommon.ConvertDegreesToDigital(JD_DFM).ToString();
-                NEWWD = ClsMapCommon.ConvertDegreesToDigital(WD_DFM).ToString();
+                NEWJD = float.Parse(ClsMapCommon.ConvertDegreesToDigital(JD_DFM).ToString()).ToString("F6");
+                NEWWD = float.Parse(ClsMapCommon.ConvertDegreesToDigital(WD_DFM).ToString()).ToString("F6");
             }
             else
             {

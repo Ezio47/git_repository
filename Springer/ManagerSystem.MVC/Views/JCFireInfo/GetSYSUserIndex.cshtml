@@ -31,6 +31,7 @@
     <div id="tt" style="width:240px" class="easyui-tree" data-options="checkbox:true"></div>
 
     <input type="hidden" id="txtid" name="txtid" />
+    <input type="hidden" id="txtphone" name="txtphone" />
     <input type="hidden" id="txtname" name="txtname" />
     @*<button id="transmit">给父页面传值</button>
         <button id="closeIframe">关闭iframe</button>*@
@@ -73,6 +74,7 @@
 
         function treeload() {
             var arr = [];
+            var arrphone = [];
             var arrname = [];
             $('#tt').tree({
                 url: '/JCFireInfo/GetSYSPerson',
@@ -82,9 +84,11 @@
                 cache: false,
                 onlyLeafCheck: true,
                 onCheck: function (node, checked) {
+                    console.info(node);
                     if (0 < node.id.length < 9) {
                         if (checked == true) {
                             arr.push(node.id);
+                            arrphone.push(node.phone)
                             arrname.push(node.text);
                         }
                         else {
@@ -93,6 +97,7 @@
                         }
                     }
                     $('#txtid').val(arr);
+                    $('#txtphone').val(arrphone);
                     $('#txtname').val(arrname);
                 }
             })

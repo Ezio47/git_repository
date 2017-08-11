@@ -2,12 +2,13 @@
     Layout = "~/Views/Shared/_LayoutIndex.cshtml";
 }
 <script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+
 <div class="easyui-layout" data-options="fit:true" style=" border:0;">
     <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
         @Html.Raw(@ViewBag.PageLeftMenu)
     </div>
-    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
 
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
         <div class="easyui-layout" data-options="fit:true" style=" border:0;">
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
                 <div class="divOP">
@@ -18,47 +19,21 @@
                 </div>
             </div>
             <div data-options="region:'center'" title="" class="LayoutCenterBG">
-
                 <div id="msg" class="divTable">
+
                 </div>
                 <br /><br />
                 <div class="divMan" id="jbDiv">
                     <table cellpadding="0" cellspacing="0">
                         <thead>
-                            <tr>
-                                <th>
-                                    交班人：<span id="ondutyJb"></span>
-                                </th>
-                                <th>
-                                    接班人：<span id="ondutyHb"></span>
-                                </th>
-                                <th>
-                                    交接班时间：<span id="ondutyTm"></span>
-                                </th>
-                            </tr>
+                            <tr><th>交班人：<span id="ondutyJb"></span></th><th>接班人：<span id="ondutyHb"></span></th><th>交接班时间：<span id="ondutyTm"></span></th> </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td class="left" colspan="4">
-                                    交班主要事项：<br />
-                                    <span id="ondutySh">
-                                        暂无<br />
-                                        <br />
-                                        <br />
-                                        <br />
-                                    </span>
-                                </td>
+                                <td class="left" colspan="4">交班主要事项：<br /> <span id="ondutySh"> 暂无<br /><br /><br /><br /></span></td>
                             </tr>
                             <tr>
-                                <td class="left" colspan="4">
-                                    领导意见：<br />
-                                    <span id="ondutyLd">
-                                        暂无<br />
-                                        <br />
-                                        <br />
-                                        <br />
-                                    </span>
-                                </td>
+                                <td class="left" colspan="4">领导意见：<br /> <span id="ondutyLd"> 暂无<br /> <br /><br /><br /></span></td>
                             </tr>
                         </tbody>
                     </table>
@@ -77,7 +52,6 @@
         $.ajax({
             url: '/DutyManagement/dutyHandoverQuery',
             timeout: 10000, //10秒后超时，如果为0则永不超时
-
             data: {
                 TTBH: $('#tbxTIMEBegin').val(),//开始日期
             },
@@ -93,7 +67,7 @@
                 }
             },
             error: function (err, ioArgs) {
-                $('#msg').html("系统异常，请重试或与管理员联系").css("color", "red");
+                $('#msg').html("系统异常，请重试或与管理员联系!").css("color", "red");
             }
         });
         document.getElementById("jbDiv").style.display = "none";
@@ -112,6 +86,4 @@
         }
         return false;
     }
-
-
 </script>

@@ -28,19 +28,6 @@ namespace ManagerSystemClassLibrary.BaseDT
             string[] arrREPORTCODE = m.REPORTCODE.Split(',');
             string[] arrSSXTYPELEVELCODE = m.SSXTYPELEVELCODE.Split(',');
             string[] arrREPORTVALUE = m.REPORTVALUE.Split(',');
-            //if (arrREPORTVALUE.Length - 1 > 0)
-            //{
-            //    #region 先删除
-            //    StringBuilder sbDelete = new StringBuilder();
-            //    sbDelete.AppendFormat("delete from FIRERECORD_REPORT8 WHERE 1=1");
-            //    sbDelete.AppendFormat(" AND BYORGNO='{0}'", m.BYORGNO);
-            //    sbDelete.AppendFormat(" AND REPORTYEAR='{0}'", m.REPORTYEAR);
-            //    //sbDelete.AppendFormat(" AND arrREPORTCODE[i]='{0}'", arrREPORTCODE[i]);
-            //    //sbDelete.AppendFormat(" AND arrSSXTYPELEVELCODE[i]='{0}'", arrSSXTYPELEVELCODE[i]);
-            //    //sbDelete.AppendFormat(" AND arrREPORTVALUE[i]='{0}'", arrREPORTVALUE[i]);
-            //    DataBaseClass.ExeSql(sbDelete.ToString());
-            //    #endregion
-
             #region 更新
 
             for (int i = 0; i < arrREPORTVALUE.Length - 1; i++)

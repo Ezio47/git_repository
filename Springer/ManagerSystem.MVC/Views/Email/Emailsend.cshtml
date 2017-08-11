@@ -12,6 +12,7 @@
     <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
         @Html.Raw(@ViewBag.PageLeftMenu)
     </div>
+
     <div data-options="region:'center'" title="">
         <div class="easyui-layout" data-options="fit:true" style=" border:0;">
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
@@ -22,6 +23,7 @@
                     </div>
                 </div>
             </div>
+
             <div data-options="region:'center'" title="" class="LayoutCenterBG">
                 <div class="divMan">
                     <table cellpadding="0" cellspacing="0">
@@ -48,9 +50,7 @@
                         </tr>
                         <tr>
                             <td>群组: </td>
-                            <td>
-                                <input type="button" value="群组选择" onclick="opengroup()" class="btnMsgCss" />
-                            </td>
+                            <td> <input type="button" value="群组选择" onclick="opengroup()" class="btnMsgCss" /></td>
                         </tr>
                         <tr>
                             <td>主题: </td>
@@ -73,7 +73,10 @@
                         </tr>
                         <tr>
                             <td>正文:</td>
-                            <td><script type="text/plain" id="myEditor" style="width:700px;height:170px;"></script> </td>
+                            <td>
+                                <script type="text/plain" id="myEditor" style="width:700px;height:170px;">
+                                </script>
+                            </td>
                         </tr>
                     </table>
                 </div>
@@ -94,27 +97,26 @@
         </div>
     </div>
 </div>
+
 <div id="gd" class="easyui-dialog" title="群组展示" style="width: 550px; height: 400px; display: none; top: 50px" data-options="closed:true,resizable:true,modal:true">
     <div id="groupgrid"></div>
 </div>
+
 <div class="divMan" id="tablesee" style="display:none;margin-left:5px;margin-top:8px">
     <div class="divMan">
         <table cellpadding="0" cellspacing="0">
             <tr>
                 <td style="width:80px;"> 群组名称: </td>
-                <td>
-                    <input id="EGROUPNAME" type="text" style="height:25px;width:700px" readonly />
-                </td>
+                <td><input id="EGROUPNAME" type="text" style="height:25px;width:700px" readonly /></td>
             </tr>
             <tr>
                 <td style="width:80px;"> 群组人员: </td>
-                <td>
-                    <input id="EGROUPMEMBERLIST" type="text" style="height:25px;width:700px" readonly />
-                </td>
+                <td><input id="EGROUPMEMBERLIST" type="text" style="height:25px;width:700px" readonly /></td>
             </tr>
         </table>
     </div>
 </div>
+
 <script type="text/javascript">
     var um = UM.getEditor('myEditor');
     UM.getEditor('myEditor').setContent("", false);
@@ -216,7 +218,8 @@
                 }
 
             }
-        } else if (document.activeElement.id == "tbxEMAILCOPYUSERLIST") {//抄送人
+        }
+        else if (document.activeElement.id == "tbxEMAILCOPYUSERLIST") {//抄送人
             $('#hidvalue').val(1);
             if ($.trim(s2) == "") {
                 $('#tt').tree();
@@ -239,7 +242,8 @@
                     $('#tt').tree('check', node.target);
                 }
             }
-        } else {
+        }
+        else {
             $('#hidvalue').val(2);
             if ($.trim(s3) == "") {
                 $('#tt').tree();
@@ -279,19 +283,19 @@
                 returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)'
             },
             type: 'post',
-            error: function () {
-                layer.msg('错误:异常!');
-            },
             success: function (re) {
                 var ar = eval('(' + re + ')');
                 if (ar.Success) {
-                    if (confirm(ar.Msg + ' 请返回！')) {
+                    if (confirm(ar.Msg + ' 请返回?')) {
                         window.location.assign(ar.Url);
                     }
                 }
                 else {
-                    layer.msg(ar.Msg, "Error");
+                    layer.msg(ar.Msg, { icon: 5 });
                 }
+            },
+            error: function () {
+                layer.msg('系统异常!', { icon: 5 });
             }
         });
     }
@@ -309,22 +313,21 @@
     function upload() {
         var path = $("#attachment").filebox('getValue');
         if (path == null || path == "" || path == undefined) {
-            layer.msg("请选择附件！");
+            layer.msg('选择附件!', { icon: 5 });
             return;
         }
         var name = path.split('\\')[path.split('\\').length - 1];
         for (var i = 0; i < attr.length; i++) {
             if (attr[i] == name) {
-                layer.msg("请勿重复上传附件！");
+                layer.msg('请勿重复上传附件!', { icon: 5 });
                 return;
             }
         }
         var hz = name.split('.')[1];
         if (hz == "exe") {
-            layer.msg("不允许上传exe文件!");
+            layer.msg('不允许上传exe文件!', { icon: 5 });
             return;
         }
-        //upload method
         var formData = new FormData($("#uploadForm")[0]);
         formData.append("emailid", $('#tbxEMAILID').val())
         $.ajax({
@@ -347,7 +350,7 @@
                 }
             },
             error: function (data) {
-                layer.msg("上传失败");
+                layer.msg('上传失败!', { icon: 5 });
             }
         });
         $("#attachment").filebox('clear');
@@ -376,14 +379,13 @@
                             attr.remove(s.id);
                         }
                         else {
-                            layer.msg('删除失败')
+                            layer.msg('删除失败!', { icon: 5 });
                         }
                     },
                     error: function () {
-                        alert('错误:异常!', 'error');
+                        layer.msg('系统异常!', { icon: 5 });
                     },
                 });
-
             }
         })
     }
@@ -410,7 +412,8 @@
             columns: [[
               { field: 'EGROUPID', title: '自定义群组编码', width: 40, sortable: true, hidden: true },
               { field: 'EGROUPNAME', title: '群组名称', width: 40, sortable: true },
-            { field: 'EGROUPMEMBERLIST', title: '群组组成', width: 250, sortable: true }]],
+              { field: 'EGROUPMEMBERLIST', title: '群组组成', width: 250, sortable: true }
+            ]],
             styler: function (index, row) {
                 return 'background-color:green;color:green';
             },
@@ -464,7 +467,7 @@
                      handler: function () {
                          var arr = groupgrid.datagrid('getSelections');
                          if (arr.length == 0) {
-                             $.messager.alert('提示', '请选择要查看的记录！');
+                             $.messager.alert('提示', '请选择要查看的记录!');
                          }
                          else {
                              $.ajax({
@@ -475,7 +478,7 @@
                                  },
                                  dataType: "json",
                                  error: function () {
-                                     layer.msg('错误:异常!', 'error');
+                                     layer.msg('系统异常!', { icon: 5 });
                                  },
                                  success: function (re) {
                                      $('#EGROUPNAME').val(re.EGROUPNAME);
@@ -502,11 +505,12 @@
                      handler: function () {
                          var arr = groupgrid.datagrid('getSelections');
                          if (arr.length == 0) {
-                             $.messager.alert('提示', '请选择要删除的记录！');
+                             $.messager.alert('提示', '请选择要删除的记录!');
                          }
                          else if (arr.length > 1) {
-                             $.messager.alert('提示', '请选择一条要删除的记录！');
-                         } else {
+                             $.messager.alert('提示', '请选择一条要删除的记录!');
+                         }
+                         else {
                              $.messager.confirm('确认', '是否要删除这条记录?', function (r) {
                                  if (r) {
                                      $.ajax({
@@ -532,7 +536,8 @@
                              });
                          }
                      }
-                 }, '-', {
+                 },
+                 '-', {
                      iconCls: 'icon-cut',
                      text: "关闭",
                      handler: function () {

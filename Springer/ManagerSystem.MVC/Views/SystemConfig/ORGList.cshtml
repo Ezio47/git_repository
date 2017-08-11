@@ -55,17 +55,16 @@
     }
 
     function Manager(id) {
-        if (confirm('确实要删除该内容吗?')) {
+        layer.confirm('确实要删除吗?', { icon: 3, title: '提示' }, function (index) {
             $.ajax({
                 url: '/SystemConfig/ORGManager',
                 timeout: 10000, //10秒后超时，如果为0则永不超时
                 data: { ORGNO: id, Method: 'Del', returnUrl: '' },
-                dataType:'json',
+                dataType: 'json',
                 success: function (data, ioArgs) {
                     if (data.Success) {
-                        if (confirm(data.Msg)) {
-                            query(); 
-                        }
+                        layer.msg(data.Msg, { icon: 6 });
+                        query();
                     }
                     else {
                         layer.msg(data.Msg, { icon: 5 });
@@ -76,7 +75,7 @@
                     layer.msg('保存异常!', { icon: 5 });
                 }
             });
-        }
+        });
     }
 
     function Add() {
@@ -116,5 +115,5 @@
             maxmin: true,
             content: '/SystemConfig/ORGMan?ID=' + ID + '&tNo=' + tno + '&Method=See',
         });
-    }     
+    }
 </script>

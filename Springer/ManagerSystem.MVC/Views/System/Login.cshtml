@@ -9,6 +9,7 @@
     <title>@ViewBag.Title</title>
     <link href="@Url.Content("~/Content/themes/default/Login.css")" rel="stylesheet" />
     <script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.8.2.min.js")"></script>
+    <script src="~/Scripts/layer/layer.js"></script>
     @Html.Raw(@ViewBag.logined)
     <script type="text/javascript">
         //回车键登录
@@ -35,17 +36,17 @@
                     pwd: document.getElementById("pass").value,
                     State: document.getElementById("mycheck").checked,
                 },
+                dataType:'json',
                 success: function (data, ioArgs) {
-                    var ar = eval('(' + data + ')');
-                    if (ar.Success) {
-                        window.location.assign(ar.Url);
+                    if (data.Success) {
+                        window.location.assign(data.Url);
                     }
                     else {
-                        alert(ar.Msg);
+                        layer.msg(data.Msg, { icon: 5 });
                     }
                 },
                 error: function (err, ioArgs) {
-                    alert('登录异常');
+                    layer.msg('登录异常', { icon: 5 });
                 }
             });
         }

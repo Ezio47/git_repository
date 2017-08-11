@@ -25,7 +25,7 @@ namespace ManagerSystemClassLibrary.BaseDT
         public static Message Add(T_SYS_DICTModel m)
         {
             if (isExists(new T_SYS_DICTSW { DICTTYPEID = m.DICTTYPEID, DICTVALUE = m.DICTVALUE }))
-                return new Message(false, "添加失败，该值已存在！", "");
+                return new Message(false, "添加失败，该值已存在!", "");
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("INSERT INTO T_SYS_DICT(DICTTYPEID,DICTNAME, DICTVALUE, ORDERBY,STANDBY1,STANDBY2,STANDBY3,STANDBY4)");
             sb.AppendFormat("VALUES(");
@@ -40,9 +40,9 @@ namespace ManagerSystemClassLibrary.BaseDT
             sb.AppendFormat(")");
             bool bln = DataBaseClass.ExeSql(sb.ToString());
             if (bln == true)
-                return new Message(true, "添加成功！", "");
+                return new Message(true, "添加成功!", "");
             else
-                return new Message(false, "添加失败，请检查输入框是否正确！", "");
+                return new Message(false, "添加失败，请检查输入框是否正确!", "");
         }
 
         #endregion
@@ -71,9 +71,9 @@ namespace ManagerSystemClassLibrary.BaseDT
             sb.AppendFormat(" where DICTID='{0}'", ClsSql.EncodeSql(m.DICTID));
             bool bln = DataBaseClass.ExeSql(sb.ToString());
             if (bln == true)
-                return new Message(true, "修改成功！", "");
+                return new Message(true, "修改成功!", "");
             else
-                return new Message(false, "修改失败，请检查各输入框是否正确！", "");
+                return new Message(false, "修改失败，请检查各输入框是否正确!", "");
         }
 
         #endregion
@@ -91,9 +91,9 @@ namespace ManagerSystemClassLibrary.BaseDT
             sb.AppendFormat(" WHERE DICTID= '{0}' ", ClsSql.EncodeSql(m.DICTID));
             bool bln = DataBaseClass.ExeSql(sb.ToString());
             if (bln == true)
-                return new Message(true, "删除成功！", "");
+                return new Message(true, "删除成功!", "");
             else
-                return new Message(false, "删除失败，请检查各输入框是否正确！", "");
+                return new Message(false, "删除失败!", "");
         }
 
         #endregion

@@ -88,11 +88,11 @@
                     $('#divPager').html(ar.pagerInfo);
                 }
                 else {
-                    alert(ar.Msg);
+                    layer.msg(ar.Msg);
                 }
             },
             error: function (err, ioArgs) {
-                alert('登录异常');
+                layer.msg('登录异常');
             }
         });
     }

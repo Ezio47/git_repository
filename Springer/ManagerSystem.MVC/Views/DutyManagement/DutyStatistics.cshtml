@@ -7,8 +7,8 @@
     <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
         @Html.Raw(@ViewBag.PageLeftMenu)
     </div>
-    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
 
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
         <div class="easyui-layout" data-options="fit:true" style=" border:0;">
             <div data-options="region:'north'" title="" style="height: 35px; border: none; overflow: hidden;">
                 <div class="divOP">
@@ -20,7 +20,6 @@
                 </div>
             </div>
             <div data-options="region:'center'" title="" class="LayoutCenterBG">
-
                 <div id="msg" class="divTable">
                 </div>
             </div>
@@ -32,11 +31,11 @@
     $(function () {
         query();
     });
+
     function query() {
         $.ajax({
             url: '/DutyManagement/dutyQueryUser',
             timeout: 10000, //10秒后超时，如果为0则永不超时
-
             data: {
                 dateB: $('#tbxTIMEBegin').val(),//开始日期
                 dateE: $('#tbxTIMEEnd').val()//结束日期
@@ -49,12 +48,11 @@
                 }
                 else {
                     $('#msg').html(ar.Msg);
-                    //alert(ar.Msg);
                 }
             },
             error: function (err, ioArgs) {
                 $('#msg').html('');
-                $('#msg').html('该日期为非排班日期！').css("color", "red");
+                $('#msg').html('该日期为非排班日期!').css("color", "red");
             }
         });
     }

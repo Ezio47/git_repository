@@ -190,9 +190,9 @@ namespace ManagerSystemClassLibrary.BaseDT
                     else if (sw.ORGNOS.Substring(6, 9) == "000000000")//获取所有县的
                         sb.AppendFormat(" AND (SUBSTRING(ORGNOS,1,6) = '{0}' or ORGNOS is null or ORGNOS='')", ClsSql.EncodeSql(sw.ORGNOS.Substring(0, 6)));
                     else if (sw.ORGNOS.Substring(9, 6) == "000000")//获取说有乡镇的
-                        sb.AppendFormat(" AND (SUBSTRING(ORGNOS,1,9) = '{0}' or ORGNOS is null or ORGNOS=''", ClsSql.EncodeSql(sw.ORGNOS.Substring(0, 9)));
+                        sb.AppendFormat(" AND (SUBSTRING(ORGNOS,1,9) = '{0}' or ORGNOS is null or ORGNOS='')", ClsSql.EncodeSql(sw.ORGNOS.Substring(0, 9)));
                     else if (sw.ORGNOS.Substring(12, 3) == "000")//获取说有村的
-                        sb.AppendFormat(" AND (SUBSTRING(ORGNOS,1,12) = '{0}' or ORGNOS is null or ORGNOS=''", ClsSql.EncodeSql(sw.ORGNOS.Substring(0, 12)));
+                        sb.AppendFormat(" AND (SUBSTRING(ORGNOS,1,12) = '{0}' or ORGNOS is null or ORGNOS='')", ClsSql.EncodeSql(sw.ORGNOS.Substring(0, 12)));
                     else
                         sb.AppendFormat(" AND ORGNOS = '{0}'", ClsSql.EncodeSql(sw.ORGNOS));
                 }
@@ -304,9 +304,9 @@ namespace ManagerSystemClassLibrary.BaseDT
             else if (PublicCls.OrgIsZhen(orgNo))
             {
                 if (string.IsNullOrEmpty(DICTVALUE))
-                    return dt.Compute("count(DC_UTILITY_OVERWATCH_ID)", "ORGNOS='" + PublicCls.getZhenIncOrgNo(orgNo) + "'").ToString();
+                    return dt.Compute("count(DC_UTILITY_OVERWATCH_ID)", "substring(ORGNOS,1,9)='" + PublicCls.getZhenIncOrgNo(orgNo) + "'").ToString();
                 else
-                    return dt.Compute("count(DC_UTILITY_OVERWATCH_ID)", "ORGNOS='" + PublicCls.getZhenIncOrgNo(orgNo) + "' and STRUCTURETYPE='" + DICTVALUE + "'").ToString();
+                    return dt.Compute("count(DC_UTILITY_OVERWATCH_ID)", "substring(ORGNOS,1,9)='" + PublicCls.getZhenIncOrgNo(orgNo) + "' and STRUCTURETYPE='" + DICTVALUE + "'").ToString();
             }
             else //机构编码可能不正确
                 return "";

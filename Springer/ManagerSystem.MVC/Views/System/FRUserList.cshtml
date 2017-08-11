@@ -15,7 +15,7 @@
                 <div class="divOP">
                    <ul>
                         <li class="homeUL">
-                            单位：<select id="tbxBYORGNO">@Html.Raw(@ViewBag.vdOrg)</select>
+                            单位：<select id="tbxBYORGNO" onchange="query('1')">@Html.Raw(@ViewBag.vdOrg)</select>
                             姓名/电话：<input id="tbxHNAME" type="text" value="@ViewBag.HNAME" style="width:80px;" />
                             状态：<select id="tbxISENABLE">@Html.Raw(@ViewBag.vdISENABLE)</select>
                             <input type="button" value="查询" onclick="query(1)" class="btnSearchCss" />
