@@ -9,6 +9,7 @@ using System.Web;
 using System.Configuration;
 namespace DataBaseClassLibrary
 {
+    ///xbh
     /// <summary>
     /// 数据库操作类
     /// 创建人：叶磊
