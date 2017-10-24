@@ -38,85 +38,85 @@ namespace ManagerSystem.MVC.Controllers
             row.GetCell(0).CellStyle = getCellStyleTitle(book);
             if (string.IsNullOrEmpty(BYORGNO))
                 BYORGNO = SystemCls.getCurUserOrgNo();
-                IEnumerable<DC_ARMY_TypeCountModel> typeModel;
-                var list = DataCenterCountCls.getModelCount(
-                    new DC_ARMY_SW
+            IEnumerable<DC_ARMY_TypeCountModel> typeModel;
+            var list = DataCenterCountCls.getModelCount(
+                new DC_ARMY_SW
+                {
+                    TopORGNO = BYORGNO,
+                }
+                , out typeModel);
+            int typeCount = 0;//计算类别有多少列
+            foreach (var v in typeModel)
+            {
+                typeCount++;
+            }
+            //设置宽度
+            sheet1.SetColumnWidth(0, 30 * 256);
+            sheet1.SetColumnWidth(1, 20 * 256);
+            for (int i = 0; i < typeCount; i++)
+            {
+                sheet1.SetColumnWidth(i + 2, 20 * 256);
+            }
+
+            row = sheet1.CreateRow(1);
+            if (PublicCls.OrgIsZhen(BYORGNO) == false)
+                row.CreateCell(0).SetCellValue("单位");
+            else
+                row.CreateCell(0).SetCellValue("名称");
+            row.CreateCell(1).SetCellValue("总数/人数");
+            int indexType = 2;//从第二列开始
+            foreach (var v in typeModel)
+            {
+                row.CreateCell(indexType).SetCellValue(v.DICTNAME + "/人数");
+                indexType++;
+            }
+            for (int i = 0; i < typeCount + 2; i++)
+            {
+                row.GetCell(i).CellStyle = getCellStyleHead(book);
+            }
+
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(0, 0, 0, typeCount + 1));
+
+            int rowI = 0;//数据行
+            foreach (var v in list)//循环获取数据
+            {
+                row = sheet1.CreateRow(rowI + 2);
+                if (string.IsNullOrEmpty(v.ORGName) == false)
+                {
+                    string orgName = v.ORGName;
+                    if (PublicCls.OrgIsZhen(BYORGNO) == false)
                     {
-                        TopORGNO = BYORGNO,
-                    }
-                    , out typeModel);
-                int typeCount = 0;//计算类别有多少列
-                foreach (var v in typeModel)
-                {
-                    typeCount++;
-                }
-                //设置宽度
-                sheet1.SetColumnWidth(0, 30 * 256);
-                sheet1.SetColumnWidth(1, 20 * 256);
-                for (int i = 0; i < typeCount; i++)
-                {
-                    sheet1.SetColumnWidth(i + 2, 20 * 256);
-                }
-
-                row = sheet1.CreateRow(1);
-                if (PublicCls.OrgIsZhen(BYORGNO) == false)
-                    row.CreateCell(0).SetCellValue("单位");
-                else
-                    row.CreateCell(0).SetCellValue("名称");
-                row.CreateCell(1).SetCellValue("总数/人数");
-                int indexType = 2;//从第二列开始
-                foreach (var v in typeModel)
-                {
-                    row.CreateCell(indexType).SetCellValue(v.DICTNAME + "/人数");
-                    indexType++;
-                }
-                for (int i = 0; i < typeCount + 2; i++)
-                {
-                    row.GetCell(i).CellStyle = getCellStyleHead(book);
-                }
-
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(0, 0, 0, typeCount + 1));
-
-                int rowI = 0;//数据行
-                foreach (var v in list)//循环获取数据
-                {
-                    row = sheet1.CreateRow(rowI + 2);
-                    if (string.IsNullOrEmpty(v.ORGName) == false)
-                    {
-                        string orgName = v.ORGName;
-                        if (PublicCls.OrgIsZhen(BYORGNO) == false)
+                        if (PublicCls.OrgIsShi(v.ORGNo))//统计市，即所有县的
                         {
-                            if (PublicCls.OrgIsShi(v.ORGNo))//统计市，即所有县的
-                            {
-                            }
-                            else if (PublicCls.OrgIsXian(v.ORGNo))//县
-                            {
-                                orgName = "　　" + orgName;
-                            }
-                            else
-                            {
-                                orgName = "　　　　" + orgName;
-                            }
                         }
-                        row.CreateCell(0).SetCellValue(orgName);
-                        row.GetCell(0).CellStyle = getCellStyleLeft(book);
+                        else if (PublicCls.OrgIsXian(v.ORGNo))//县
+                        {
+                            orgName = "　　" + orgName;
+                        }
+                        else
+                        {
+                            orgName = "　　　　" + orgName;
+                        }
                     }
-                    else
-                    {
-                        row.CreateCell(0).SetCellValue(v.NAME);
-                        //row.GetCell(0).CellStyle = getCellStyleCenter(book);
-                    }
-                    row.CreateCell(1).SetCellValue(v.ARMYCount + "/" + v.MEMBERCount + "");
-                    //row.GetCell(1).CellStyle = getCellStyleCenter(book);
-                    int TypeI = 2;//类型开始列
-                    foreach (var vv in v.TypeCountModel)
-                    {
-                        row.CreateCell(TypeI).SetCellValue(vv.ARMYTYPECount + "/" + vv.MEMBERTYPECount + "");
-                        //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
-                        TypeI++;
-                    }
-                    rowI++;
+                    row.CreateCell(0).SetCellValue(orgName);
+                    row.GetCell(0).CellStyle = getCellStyleLeft(book);
                 }
+                else
+                {
+                    row.CreateCell(0).SetCellValue(v.NAME);
+                    //row.GetCell(0).CellStyle = getCellStyleCenter(book);
+                }
+                row.CreateCell(1).SetCellValue(v.ARMYCount + "/" + v.MEMBERCount + "");
+                //row.GetCell(1).CellStyle = getCellStyleCenter(book);
+                int TypeI = 2;//类型开始列
+                foreach (var vv in v.TypeCountModel)
+                {
+                    row.CreateCell(TypeI).SetCellValue(vv.ARMYTYPECount + "/" + vv.MEMBERTYPECount + "");
+                    //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
+                    TypeI++;
+                }
+                rowI++;
+            }
             //}
             //else//查询队伍详细信息
             //{
@@ -229,10 +229,10 @@ namespace ManagerSystem.MVC.Controllers
             if (ViewBag.isPageRight == false)
                 return View();
 
-          
-                //组织机构下拉框
-                ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(),  TopORGNO = SystemCls.getCurUserOrgNo() });
-           
+
+            //组织机构下拉框
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = SystemCls.getCurUserOrgNo() });
+
             return View();
         }
         /// <summary>
@@ -312,9 +312,10 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("    </tr>");
             sb.AppendFormat("</thead>");
             sb.AppendFormat("<tbody>");
-
+            int i = 0;
             foreach (var v in list)
             {
+                i++;
                 string orgName = v.ORGName;
                 string orgNo = v.ORGNo;
                 if (string.IsNullOrEmpty(v.ORGNo))
@@ -324,14 +325,29 @@ namespace ManagerSystem.MVC.Controllers
                 }
                 else
                 {
-                    sb.AppendFormat("<tr class='{0}'>", PublicCls.getOrgTrClass(sw.TopORGNO, orgNo));
-                    if ((PublicCls.OrgIsZhen(v.ORGNo) == false && v.ORGNo == sw.TopORGNO && v.ORGName.IndexOf("合计") == -1) || PublicCls.OrgIsZhen(v.ORGNo))
+                    if (i % 2 == 0)
                     {
-                        sb.AppendFormat("<td class=\"left\" style=\"{1}\"><a href=\"#\" onclick=\"Layer('{2}','{3}')\">{0}</a></td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo), v.ORGNo, v.ORGName);
+                        sb.AppendFormat("<tr class='{0}'>", PublicCls.getOrgTrClass(sw.TopORGNO, orgNo));
+                        if ((PublicCls.OrgIsZhen(v.ORGNo) == false && v.ORGNo == sw.TopORGNO && v.ORGName.IndexOf("合计") == -1) || PublicCls.OrgIsZhen(v.ORGNo))
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\"><a href=\"#\" onclick=\"Layer('{2}','{3}')\">{0}</a></td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo), v.ORGNo, v.ORGName);
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\">{0}</td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo));
+                        }
                     }
                     else
                     {
-                        sb.AppendFormat("<td class=\"left\" style=\"{1}\">{0}</td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo));
+                        sb.AppendFormat("<tr class='{0} row1'>", PublicCls.getOrgTrClass(sw.TopORGNO, orgNo));
+                        if ((PublicCls.OrgIsZhen(v.ORGNo) == false && v.ORGNo == sw.TopORGNO && v.ORGName.IndexOf("合计") == -1) || PublicCls.OrgIsZhen(v.ORGNo))
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\"><a href=\"#\" onclick=\"Layer('{2}','{3}')\">{0}</a></td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo), v.ORGNo, v.ORGName);
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\">{0}</td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo));
+                        }
                     }
                 }
                 sb.AppendFormat("<td class=\"center\">{0}/{1}</td>", v.ARMYCount, v.MEMBERCount);//总
@@ -413,187 +429,187 @@ namespace ManagerSystem.MVC.Controllers
             if (string.IsNullOrEmpty(BYORGNO))
                 BYORGNO = SystemCls.getCurUserOrgNo();
 
-                IEnumerable<RESOURCETYPECountModel> RESOURCETYPECountModel;
-                IEnumerable<AGETYPECountModel> AGETYPECountModel;
-                IEnumerable<ORIGINTYPECountModel> ORIGINTYPECountModel;
-                IEnumerable<BURNTYPECountModel> BURNTYPECountModel;
-                IEnumerable<TREETYPECountModel> TREETYPECountModel;
-                var list = DataCenterCountCls.getRESOURCEModelCount(new DC_RESOURCE_NEW_SW
-                    {
-                        TopORGNO = BYORGNO,
-                    }, out RESOURCETYPECountModel, out AGETYPECountModel, out ORIGINTYPECountModel, out BURNTYPECountModel, out TREETYPECountModel);
+            IEnumerable<RESOURCETYPECountModel> RESOURCETYPECountModel;
+            IEnumerable<AGETYPECountModel> AGETYPECountModel;
+            IEnumerable<ORIGINTYPECountModel> ORIGINTYPECountModel;
+            IEnumerable<BURNTYPECountModel> BURNTYPECountModel;
+            IEnumerable<TREETYPECountModel> TREETYPECountModel;
+            var list = DataCenterCountCls.getRESOURCEModelCount(new DC_RESOURCE_NEW_SW
+                {
+                    TopORGNO = BYORGNO,
+                }, out RESOURCETYPECountModel, out AGETYPECountModel, out ORIGINTYPECountModel, out BURNTYPECountModel, out TREETYPECountModel);
 
-                int typeCount1 = 0;//计算类别有多少列
-                int typeCount2 = 0;//计算类别有多少列
-                int typeCount3 = 0;//计算类别有多少列
-                int typeCount4 = 0;//计算类别有多少列
-                int typeCount5 = 0;//计算类别有多少列
-                foreach (var v in RESOURCETYPECountModel)
-                {
-                    typeCount1++;
-                }
-                foreach (var v in AGETYPECountModel)
-                {
-                    typeCount2++;
-                }
-                foreach (var v in ORIGINTYPECountModel)
-                {
-                    typeCount3++;
-                }
-                foreach (var v in BURNTYPECountModel)
-                {
-                    typeCount4++;
-                }
-                foreach (var v in TREETYPECountModel)
-                {
-                    typeCount5++;
-                }
-                //设置宽度
-                sheet1.SetColumnWidth(0, 30 * 256);
-                sheet1.SetColumnWidth(1, 20 * 256);
-                for (int i = 0; i < typeCount1; i++)
-                {
-                    sheet1.SetColumnWidth(i + 2, 20 * 256);
-                }
-                for (int i = 0; i < typeCount2; i++)
-                {
-                    sheet1.SetColumnWidth(i + 2 + typeCount1, 20 * 256);
-                }
-                for (int i = 0; i < typeCount3; i++)
-                {
-                    sheet1.SetColumnWidth(i + 2 + typeCount1 + typeCount2, 20 * 256);
-                }
-                for (int i = 0; i < typeCount4; i++)
-                {
-                    sheet1.SetColumnWidth(i + 2 + typeCount1 + typeCount2 + typeCount3, 20 * 256);
-                }
-                for (int i = 0; i < typeCount5; i++)
-                {
-                    sheet1.SetColumnWidth(i + 2 + typeCount1 + typeCount2 + typeCount3 + typeCount4, 20 * 256);
-                }
-                row = sheet1.CreateRow(1);
-                if (PublicCls.OrgIsZhen(BYORGNO) == false)
-                    row.CreateCell(0).SetCellValue("单位");
-                else
-                    row.CreateCell(0).SetCellValue("名称");
-                row.CreateCell(1).SetCellValue("总数(个)/面积(公顷)");
-                row.CreateCell(2).SetCellValue("资源类型");
-                row.CreateCell(2 + typeCount1).SetCellValue("林龄类别");
-                row.CreateCell(2 + typeCount1 + typeCount2).SetCellValue("起源类型");
-                row.CreateCell(2 + typeCount1 + typeCount2 + typeCount3).SetCellValue("可燃类型");
-                row.CreateCell(2 + typeCount1 + typeCount2 + typeCount3 + typeCount4).SetCellValue("林木类型");
-                row.GetCell(0).CellStyle = getCellStyleTitle(book);
-                row.GetCell(1).CellStyle = getCellStyleTitle(book);
-                row.GetCell(2).CellStyle = getCellStyleTitle(book);
-                row.GetCell(2 + typeCount1).CellStyle = getCellStyleTitle(book);
-                row.GetCell(2 + typeCount1 + typeCount2).CellStyle = getCellStyleTitle(book);
-                row.GetCell(2 + typeCount1 + typeCount2 + typeCount3).CellStyle = getCellStyleTitle(book);
-                row.GetCell(2 + typeCount1 + typeCount2 + typeCount3 + typeCount4).CellStyle = getCellStyleTitle(book);
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(0, 0, 0, typeCount1 + typeCount2 + typeCount3 + typeCount4 + typeCount5 + 1));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 2, 0, 0));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 2, 1, 1));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, 2, typeCount1 + 1));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, 2 + typeCount1, typeCount1 + 1 + typeCount2));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, typeCount1 + 2 + typeCount2, typeCount1 + 1 + typeCount2 + typeCount3));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, typeCount1 + 2 + typeCount2 + typeCount3, typeCount1 + 1 + typeCount2 + typeCount3 + typeCount4));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, typeCount1 + 2 + typeCount2 + typeCount3 + typeCount4, typeCount1 + 1 + typeCount2 + typeCount3 + typeCount4 + typeCount5));
-                row = sheet1.CreateRow(2);
-                int indexType = 2;//从第二列开始
-                foreach (var v in RESOURCETYPECountModel)
-                {
-                    row.CreateCell(indexType).SetCellValue(v.RESOURCETYPENAME);
-                    row.GetCell(indexType).CellStyle = getCellStyleHead(book);
-                    indexType++;
-                }
-                foreach (var v in AGETYPECountModel)
-                {
-                    row.CreateCell(indexType).SetCellValue(v.AGETYPENAME);
-                    row.GetCell(indexType).CellStyle = getCellStyleHead(book);
-                    indexType++;
-                }
-                foreach (var v in ORIGINTYPECountModel)
-                {
-                    row.CreateCell(indexType).SetCellValue(v.ORIGINTYPENAME);
-                    row.GetCell(indexType).CellStyle = getCellStyleHead(book);
-                    indexType++;
-                }
-                foreach (var v in BURNTYPECountModel)
-                {
-                    row.CreateCell(indexType).SetCellValue(v.BURNTYPENAME);
-                    row.GetCell(indexType).CellStyle = getCellStyleHead(book);
-                    indexType++;
-                }
-                foreach (var v in TREETYPECountModel)
-                {
-                    row.CreateCell(indexType).SetCellValue(v.TREETYPENAME);
-                    row.GetCell(indexType).CellStyle = getCellStyleHead(book);
-                    indexType++;
-                }
+            int typeCount1 = 0;//计算类别有多少列
+            int typeCount2 = 0;//计算类别有多少列
+            int typeCount3 = 0;//计算类别有多少列
+            int typeCount4 = 0;//计算类别有多少列
+            int typeCount5 = 0;//计算类别有多少列
+            foreach (var v in RESOURCETYPECountModel)
+            {
+                typeCount1++;
+            }
+            foreach (var v in AGETYPECountModel)
+            {
+                typeCount2++;
+            }
+            foreach (var v in ORIGINTYPECountModel)
+            {
+                typeCount3++;
+            }
+            foreach (var v in BURNTYPECountModel)
+            {
+                typeCount4++;
+            }
+            foreach (var v in TREETYPECountModel)
+            {
+                typeCount5++;
+            }
+            //设置宽度
+            sheet1.SetColumnWidth(0, 30 * 256);
+            sheet1.SetColumnWidth(1, 20 * 256);
+            for (int i = 0; i < typeCount1; i++)
+            {
+                sheet1.SetColumnWidth(i + 2, 20 * 256);
+            }
+            for (int i = 0; i < typeCount2; i++)
+            {
+                sheet1.SetColumnWidth(i + 2 + typeCount1, 20 * 256);
+            }
+            for (int i = 0; i < typeCount3; i++)
+            {
+                sheet1.SetColumnWidth(i + 2 + typeCount1 + typeCount2, 20 * 256);
+            }
+            for (int i = 0; i < typeCount4; i++)
+            {
+                sheet1.SetColumnWidth(i + 2 + typeCount1 + typeCount2 + typeCount3, 20 * 256);
+            }
+            for (int i = 0; i < typeCount5; i++)
+            {
+                sheet1.SetColumnWidth(i + 2 + typeCount1 + typeCount2 + typeCount3 + typeCount4, 20 * 256);
+            }
+            row = sheet1.CreateRow(1);
+            if (PublicCls.OrgIsZhen(BYORGNO) == false)
+                row.CreateCell(0).SetCellValue("单位");
+            else
+                row.CreateCell(0).SetCellValue("名称");
+            row.CreateCell(1).SetCellValue("总数(个)/面积(公顷)");
+            row.CreateCell(2).SetCellValue("资源类型");
+            row.CreateCell(2 + typeCount1).SetCellValue("林龄类别");
+            row.CreateCell(2 + typeCount1 + typeCount2).SetCellValue("起源类型");
+            row.CreateCell(2 + typeCount1 + typeCount2 + typeCount3).SetCellValue("可燃类型");
+            row.CreateCell(2 + typeCount1 + typeCount2 + typeCount3 + typeCount4).SetCellValue("林木类型");
+            row.GetCell(0).CellStyle = getCellStyleTitle(book);
+            row.GetCell(1).CellStyle = getCellStyleTitle(book);
+            row.GetCell(2).CellStyle = getCellStyleTitle(book);
+            row.GetCell(2 + typeCount1).CellStyle = getCellStyleTitle(book);
+            row.GetCell(2 + typeCount1 + typeCount2).CellStyle = getCellStyleTitle(book);
+            row.GetCell(2 + typeCount1 + typeCount2 + typeCount3).CellStyle = getCellStyleTitle(book);
+            row.GetCell(2 + typeCount1 + typeCount2 + typeCount3 + typeCount4).CellStyle = getCellStyleTitle(book);
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(0, 0, 0, typeCount1 + typeCount2 + typeCount3 + typeCount4 + typeCount5 + 1));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 2, 0, 0));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 2, 1, 1));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, 2, typeCount1 + 1));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, 2 + typeCount1, typeCount1 + 1 + typeCount2));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, typeCount1 + 2 + typeCount2, typeCount1 + 1 + typeCount2 + typeCount3));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, typeCount1 + 2 + typeCount2 + typeCount3, typeCount1 + 1 + typeCount2 + typeCount3 + typeCount4));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, typeCount1 + 2 + typeCount2 + typeCount3 + typeCount4, typeCount1 + 1 + typeCount2 + typeCount3 + typeCount4 + typeCount5));
+            row = sheet1.CreateRow(2);
+            int indexType = 2;//从第二列开始
+            foreach (var v in RESOURCETYPECountModel)
+            {
+                row.CreateCell(indexType).SetCellValue(v.RESOURCETYPENAME);
+                row.GetCell(indexType).CellStyle = getCellStyleHead(book);
+                indexType++;
+            }
+            foreach (var v in AGETYPECountModel)
+            {
+                row.CreateCell(indexType).SetCellValue(v.AGETYPENAME);
+                row.GetCell(indexType).CellStyle = getCellStyleHead(book);
+                indexType++;
+            }
+            foreach (var v in ORIGINTYPECountModel)
+            {
+                row.CreateCell(indexType).SetCellValue(v.ORIGINTYPENAME);
+                row.GetCell(indexType).CellStyle = getCellStyleHead(book);
+                indexType++;
+            }
+            foreach (var v in BURNTYPECountModel)
+            {
+                row.CreateCell(indexType).SetCellValue(v.BURNTYPENAME);
+                row.GetCell(indexType).CellStyle = getCellStyleHead(book);
+                indexType++;
+            }
+            foreach (var v in TREETYPECountModel)
+            {
+                row.CreateCell(indexType).SetCellValue(v.TREETYPENAME);
+                row.GetCell(indexType).CellStyle = getCellStyleHead(book);
+                indexType++;
+            }
 
-                int rowI = 1;//数据行
-                foreach (var v in list)//循环获取数据
+            int rowI = 1;//数据行
+            foreach (var v in list)//循环获取数据
+            {
+                row = sheet1.CreateRow(rowI + 2);
+                if (string.IsNullOrEmpty(v.ORGName) == false)
                 {
-                    row = sheet1.CreateRow(rowI + 2);
-                    if (string.IsNullOrEmpty(v.ORGName) == false)
+                    string orgName = v.ORGName;
+                    if (PublicCls.OrgIsZhen(BYORGNO) == false)
                     {
-                        string orgName = v.ORGName;
-                        if (PublicCls.OrgIsZhen(BYORGNO) == false)
+                        if (PublicCls.OrgIsShi(v.ORGNo))//统计市，即所有县的
                         {
-                            if (PublicCls.OrgIsShi(v.ORGNo))//统计市，即所有县的
-                            {
-                            }
-                            else if (PublicCls.OrgIsXian(v.ORGNo))//县
-                            {
-                                orgName = "　　" + orgName;
-                            }
-                            else
-                            {
-                                orgName = "　　　　" + orgName;
-                            }
                         }
-                        row.CreateCell(0).SetCellValue(orgName);
-                        row.GetCell(0).CellStyle = getCellStyleLeft(book);
+                        else if (PublicCls.OrgIsXian(v.ORGNo))//县
+                        {
+                            orgName = "　　" + orgName;
+                        }
+                        else
+                        {
+                            orgName = "　　　　" + orgName;
+                        }
                     }
-                    else
-                    {
-                        row.CreateCell(0).SetCellValue(v.NAME);
-                        //row.GetCell(0).CellStyle = getCellStyleCenter(book);
-                    }
-                    row.CreateCell(1).SetCellValue(v.RESOURCETYPECount + "/" + v.AREACount + "");
-                    //row.GetCell(1).CellStyle = getCellStyleCenter(book);
-                    int TypeI = 2;//类型开始列
-                    foreach (var vv in v.RESOURCETYPECountModel)
-                    {
-                        row.CreateCell(TypeI).SetCellValue(vv.DICTRESOURCETYPECount + "/" + vv.AREATYPE1Count + "");
-                        //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
-                        TypeI++;
-                    }
-                    foreach (var vv in v.AGETYPECountModel)
-                    {
-                        row.CreateCell(TypeI).SetCellValue(vv.DICTAGETYPECount + "/" + vv.AREATYPE2Count + "");
-                        //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
-                        TypeI++;
-                    }
-                    foreach (var vv in v.ORIGINTYPECountModel)
-                    {
-                        row.CreateCell(TypeI).SetCellValue(vv.DICORIGINTYPECount + "/" + vv.AREATYPE3Count + "");
-                        //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
-                        TypeI++;
-                    }
-                    foreach (var vv in v.BURNTYPECountModel)
-                    {
-                        row.CreateCell(TypeI).SetCellValue(vv.DICTBURNTYPETYPECount + "/" + vv.AREATYPE4Count + "");
-                        //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
-                        TypeI++;
-                    }
-                    foreach (var vv in v.TREETYPECountModel)
-                    {
-                        row.CreateCell(TypeI).SetCellValue(vv.DICTTREETYPECount + "/" + vv.AREATYPE5Count + "");
-                        //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
-                        TypeI++;
-                    }
-                    rowI++;
+                    row.CreateCell(0).SetCellValue(orgName);
+                    row.GetCell(0).CellStyle = getCellStyleLeft(book);
                 }
+                else
+                {
+                    row.CreateCell(0).SetCellValue(v.NAME);
+                    //row.GetCell(0).CellStyle = getCellStyleCenter(book);
+                }
+                row.CreateCell(1).SetCellValue(v.RESOURCETYPECount + "/" + v.AREACount + "");
+                //row.GetCell(1).CellStyle = getCellStyleCenter(book);
+                int TypeI = 2;//类型开始列
+                foreach (var vv in v.RESOURCETYPECountModel)
+                {
+                    row.CreateCell(TypeI).SetCellValue(vv.DICTRESOURCETYPECount + "/" + vv.AREATYPE1Count + "");
+                    //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
+                    TypeI++;
+                }
+                foreach (var vv in v.AGETYPECountModel)
+                {
+                    row.CreateCell(TypeI).SetCellValue(vv.DICTAGETYPECount + "/" + vv.AREATYPE2Count + "");
+                    //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
+                    TypeI++;
+                }
+                foreach (var vv in v.ORIGINTYPECountModel)
+                {
+                    row.CreateCell(TypeI).SetCellValue(vv.DICORIGINTYPECount + "/" + vv.AREATYPE3Count + "");
+                    //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
+                    TypeI++;
+                }
+                foreach (var vv in v.BURNTYPECountModel)
+                {
+                    row.CreateCell(TypeI).SetCellValue(vv.DICTBURNTYPETYPECount + "/" + vv.AREATYPE4Count + "");
+                    //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
+                    TypeI++;
+                }
+                foreach (var vv in v.TREETYPECountModel)
+                {
+                    row.CreateCell(TypeI).SetCellValue(vv.DICTTREETYPECount + "/" + vv.AREATYPE5Count + "");
+                    //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
+                    TypeI++;
+                }
+                rowI++;
+            }
             // 写入到客户端 
             System.IO.MemoryStream ms = new System.IO.MemoryStream();
             book.Write(ms);
@@ -628,8 +644,8 @@ namespace ManagerSystem.MVC.Controllers
             pubViewBag("004006", "004006", "");
             if (ViewBag.isPageRight == false)
                 return View();
-                //组织机构下拉框
-                ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(),  TopORGNO = SystemCls.getCurUserOrgNo() });
+            //组织机构下拉框
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = SystemCls.getCurUserOrgNo() });
             return View();
         }
         /// <summary>
@@ -691,9 +707,10 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("    </tr>");
             sb.AppendFormat("</thead>");
             sb.AppendFormat("<tbody>");
-
+            int i = 0;
             foreach (var v in list)
             {
+                i++;
                 string orgName = v.ORGName;
                 string orgNo = v.ORGNo;
                 if (string.IsNullOrEmpty(v.ORGNo))
@@ -703,15 +720,31 @@ namespace ManagerSystem.MVC.Controllers
                 }
                 else
                 {
-                    sb.AppendFormat("<tr class='{0}'>", PublicCls.getOrgTrClass(sw.TopORGNO, orgNo));
-                    if ((PublicCls.OrgIsZhen(v.ORGNo) == false && v.ORGNo == sw.TopORGNO && v.ORGName.IndexOf("合计") == -1) || PublicCls.OrgIsZhen(v.ORGNo))
+                    if (i % 2 == 0)
                     {
-                        sb.AppendFormat("<td class=\"left\" style=\"{1}\"><a href=\"#\" onclick=\"Layer('{2}','{3}')\">{0}</a></td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo), v.ORGNo, v.ORGName);
+                        sb.AppendFormat("<tr class='{0}'>", PublicCls.getOrgTrClass(sw.TopORGNO, orgNo));
+                        if ((PublicCls.OrgIsZhen(v.ORGNo) == false && v.ORGNo == sw.TopORGNO && v.ORGName.IndexOf("合计") == -1) || PublicCls.OrgIsZhen(v.ORGNo))
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\"><a href=\"#\" onclick=\"Layer('{2}','{3}')\">{0}</a></td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo), v.ORGNo, v.ORGName);
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\">{0}</td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo));
+                        }
                     }
                     else
                     {
-                        sb.AppendFormat("<td class=\"left\" style=\"{1}\">{0}</td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo));
+                        sb.AppendFormat("<tr class='{0} row1'>", PublicCls.getOrgTrClass(sw.TopORGNO, orgNo));
+                        if ((PublicCls.OrgIsZhen(v.ORGNo) == false && v.ORGNo == sw.TopORGNO && v.ORGName.IndexOf("合计") == -1) || PublicCls.OrgIsZhen(v.ORGNo))
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\"><a href=\"#\" onclick=\"Layer('{2}','{3}')\">{0}</a></td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo), v.ORGNo, v.ORGName);
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\">{0}</td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo));
+                        }
                     }
+                    
                 }
 
                 string totol = "";
@@ -940,112 +973,112 @@ namespace ManagerSystem.MVC.Controllers
 
             //if (PublicCls.OrgIsZhen(BYORGNO) == false)
             //{
-                IEnumerable<EQUIPTYPECountModel> EQUIPTYPECountModel;
-                IEnumerable<USESTATECountModel> USESTATECountModel;
+            IEnumerable<EQUIPTYPECountModel> EQUIPTYPECountModel;
+            IEnumerable<USESTATECountModel> USESTATECountModel;
 
-                var list = DataCenterCountCls.getEQUIPModelCount(new DC_EQUIP_NEW_SW
-                {
-                    TopORGNO = BYORGNO,
-                }, out EQUIPTYPECountModel, out USESTATECountModel);
+            var list = DataCenterCountCls.getEQUIPModelCount(new DC_EQUIP_NEW_SW
+            {
+                TopORGNO = BYORGNO,
+            }, out EQUIPTYPECountModel, out USESTATECountModel);
 
-                int typeCount1 = 0;//计算类别有多少列
-                int typeCount2 = 0;//计算类别有多少列
-                foreach (var v in EQUIPTYPECountModel)
+            int typeCount1 = 0;//计算类别有多少列
+            int typeCount2 = 0;//计算类别有多少列
+            foreach (var v in EQUIPTYPECountModel)
+            {
+                typeCount1++;
+            }
+            foreach (var v in USESTATECountModel)
+            {
+                typeCount2++;
+            }
+            //设置宽度
+            sheet1.SetColumnWidth(0, 30 * 256);
+            sheet1.SetColumnWidth(1, 20 * 256);
+            for (int i = 0; i < typeCount1; i++)
+            {
+                sheet1.SetColumnWidth(i + 2, 20 * 256);
+            }
+            for (int i = 0; i < typeCount2; i++)
+            {
+                sheet1.SetColumnWidth(i + 2 + typeCount1, 20 * 256);
+            }
+            row = sheet1.CreateRow(1);
+            if (PublicCls.OrgIsZhen(BYORGNO) == false)
+                row.CreateCell(0).SetCellValue("单位");
+            else
+                row.CreateCell(0).SetCellValue("名称");
+            row.CreateCell(1).SetCellValue("总数");
+            row.CreateCell(2).SetCellValue("装备类型");
+            row.CreateCell(2 + typeCount1).SetCellValue("使用现状");
+            row.GetCell(0).CellStyle = getCellStyleTitle(book);
+            row.GetCell(1).CellStyle = getCellStyleTitle(book);
+            row.GetCell(2).CellStyle = getCellStyleTitle(book);
+            row.GetCell(2 + typeCount1).CellStyle = getCellStyleTitle(book);
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(0, 0, 0, typeCount1 + typeCount2 + 1));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 2, 0, 0));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 2, 1, 1));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, 2, typeCount1 + 1));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, 2 + typeCount1, typeCount1 + 1 + typeCount2));
+            row = sheet1.CreateRow(2);
+            int indexType = 2;//从第二列开始
+            foreach (var v in EQUIPTYPECountModel)
+            {
+                row.CreateCell(indexType).SetCellValue(v.EQUIPTYPENAME);
+                row.GetCell(indexType).CellStyle = getCellStyleHead(book);
+                indexType++;
+            }
+            foreach (var v in USESTATECountModel)
+            {
+                row.CreateCell(indexType).SetCellValue(v.USESTATENAME);
+                row.GetCell(indexType).CellStyle = getCellStyleHead(book);
+                indexType++;
+            }
+            int rowI = 1;//数据行
+            foreach (var v in list)//循环获取数据
+            {
+                row = sheet1.CreateRow(rowI + 2);
+                if (string.IsNullOrEmpty(v.ORGName) == false)
                 {
-                    typeCount1++;
-                }
-                foreach (var v in USESTATECountModel)
-                {
-                    typeCount2++;
-                }
-                //设置宽度
-                sheet1.SetColumnWidth(0, 30 * 256);
-                sheet1.SetColumnWidth(1, 20 * 256);
-                for (int i = 0; i < typeCount1; i++)
-                {
-                    sheet1.SetColumnWidth(i + 2, 20 * 256);
-                }
-                for (int i = 0; i < typeCount2; i++)
-                {
-                    sheet1.SetColumnWidth(i + 2 + typeCount1, 20 * 256);
-                }
-                row = sheet1.CreateRow(1);
-                if (PublicCls.OrgIsZhen(BYORGNO) == false)
-                    row.CreateCell(0).SetCellValue("单位");
-                else
-                    row.CreateCell(0).SetCellValue("名称");
-                row.CreateCell(1).SetCellValue("总数");
-                row.CreateCell(2).SetCellValue("装备类型");
-                row.CreateCell(2 + typeCount1).SetCellValue("使用现状");
-                row.GetCell(0).CellStyle = getCellStyleTitle(book);
-                row.GetCell(1).CellStyle = getCellStyleTitle(book);
-                row.GetCell(2).CellStyle = getCellStyleTitle(book);
-                row.GetCell(2 + typeCount1).CellStyle = getCellStyleTitle(book);
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(0, 0, 0, typeCount1 + typeCount2 + 1));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 2, 0, 0));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 2, 1, 1));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, 2, typeCount1 + 1));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, 2 + typeCount1, typeCount1 + 1 + typeCount2));
-                row = sheet1.CreateRow(2);
-                int indexType = 2;//从第二列开始
-                foreach (var v in EQUIPTYPECountModel)
-                {
-                    row.CreateCell(indexType).SetCellValue(v.EQUIPTYPENAME);
-                    row.GetCell(indexType).CellStyle = getCellStyleHead(book);
-                    indexType++;
-                }
-                foreach (var v in USESTATECountModel)
-                {
-                    row.CreateCell(indexType).SetCellValue(v.USESTATENAME);
-                    row.GetCell(indexType).CellStyle = getCellStyleHead(book);
-                    indexType++;
-                }
-                int rowI = 1;//数据行
-                foreach (var v in list)//循环获取数据
-                {
-                    row = sheet1.CreateRow(rowI + 2);
-                    if (string.IsNullOrEmpty(v.ORGName) == false)
+                    string orgName = v.ORGName;
+                    if (PublicCls.OrgIsZhen(BYORGNO) == false)
                     {
-                        string orgName = v.ORGName;
-                        if (PublicCls.OrgIsZhen(BYORGNO) == false)
+                        if (PublicCls.OrgIsShi(v.BYORGNO))//统计市，即所有县的
                         {
-                            if (PublicCls.OrgIsShi(v.BYORGNO))//统计市，即所有县的
-                            {
-                            }
-                            else if (PublicCls.OrgIsXian(v.BYORGNO))//县
-                            {
-                                orgName = "　　" + orgName;
-                            }
-                            else
-                            {
-                                orgName = "　　　　" + orgName;
-                            }
                         }
-                        row.CreateCell(0).SetCellValue(orgName);
-                        row.GetCell(0).CellStyle = getCellStyleLeft(book);
+                        else if (PublicCls.OrgIsXian(v.BYORGNO))//县
+                        {
+                            orgName = "　　" + orgName;
+                        }
+                        else
+                        {
+                            orgName = "　　　　" + orgName;
+                        }
                     }
-                    else
-                    {
-                        row.CreateCell(0).SetCellValue(v.NAME);
-                        //row.GetCell(0).CellStyle = getCellStyleCenter(book);
-                    }
-                    row.CreateCell(1).SetCellValue(v.EQUIPTYPECount);
-                    //row.GetCell(1).CellStyle = getCellStyleCenter(book);
-                    int TypeI = 2;//类型开始列
-                    foreach (var vv in v.EQUIPTYPECountModel)
-                    {
-                        row.CreateCell(TypeI).SetCellValue(vv.DICTEQUIPTYPECount);
-                        //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
-                        TypeI++;
-                    }
-                    foreach (var vv in v.USESTATECountModel)
-                    {
-                        row.CreateCell(TypeI).SetCellValue(vv.USESTATECount);
-                        //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
-                        TypeI++;
-                    }
-                    rowI++;
+                    row.CreateCell(0).SetCellValue(orgName);
+                    row.GetCell(0).CellStyle = getCellStyleLeft(book);
                 }
+                else
+                {
+                    row.CreateCell(0).SetCellValue(v.NAME);
+                    //row.GetCell(0).CellStyle = getCellStyleCenter(book);
+                }
+                row.CreateCell(1).SetCellValue(v.EQUIPTYPECount);
+                //row.GetCell(1).CellStyle = getCellStyleCenter(book);
+                int TypeI = 2;//类型开始列
+                foreach (var vv in v.EQUIPTYPECountModel)
+                {
+                    row.CreateCell(TypeI).SetCellValue(vv.DICTEQUIPTYPECount);
+                    //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
+                    TypeI++;
+                }
+                foreach (var vv in v.USESTATECountModel)
+                {
+                    row.CreateCell(TypeI).SetCellValue(vv.USESTATECount);
+                    //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
+                    TypeI++;
+                }
+                rowI++;
+            }
             //}
             //else//查询装备详细信息
             //{
@@ -1145,10 +1178,10 @@ namespace ManagerSystem.MVC.Controllers
             if (ViewBag.isPageRight == false)
                 return View();
 
-            
-                //组织机构下拉框
-                ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = SystemCls.getCurUserOrgNo() });
-            
+
+            //组织机构下拉框
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = SystemCls.getCurUserOrgNo() });
+
             return View();
         }
         /// <summary>
@@ -1189,9 +1222,10 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("    </tr>");
             sb.AppendFormat("</thead>");
             sb.AppendFormat("<tbody>");
-
+            int i = 0;
             foreach (var v in list)
             {
+                i++;
                 string orgName = v.ORGName;
                 string orgNo = v.BYORGNO;
                 if (string.IsNullOrEmpty(v.BYORGNO))
@@ -1201,15 +1235,31 @@ namespace ManagerSystem.MVC.Controllers
                 }
                 else
                 {
-                    sb.AppendFormat("<tr class='{0}'>", PublicCls.getOrgTrClass(sw.TopORGNO, orgNo));
-                    if ((PublicCls.OrgIsZhen(v.BYORGNO) == false && v.BYORGNO == sw.TopORGNO && v.ORGName.IndexOf("合计") == -1) || PublicCls.OrgIsZhen(v.BYORGNO))
+                    if (i % 2 == 0)
                     {
-                        sb.AppendFormat("<td class=\"left\" style=\"{1}\"><a href=\"#\" onclick=\"Layer('{2}','{3}')\">{0}</a></td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo), v.BYORGNO, v.ORGName);
+                        sb.AppendFormat("<tr class='{0}'>", PublicCls.getOrgTrClass(sw.TopORGNO, orgNo));
+                        if ((PublicCls.OrgIsZhen(v.BYORGNO) == false && v.BYORGNO == sw.TopORGNO && v.ORGName.IndexOf("合计") == -1) || PublicCls.OrgIsZhen(v.BYORGNO))
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\"><a href=\"#\" onclick=\"Layer('{2}','{3}')\">{0}</a></td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo), v.BYORGNO, v.ORGName);
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\">{0}</td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo));
+                        }
                     }
                     else
                     {
-                        sb.AppendFormat("<td class=\"left\" style=\"{1}\">{0}</td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo));
+                        sb.AppendFormat("<tr class='{0} row1'>", PublicCls.getOrgTrClass(sw.TopORGNO, orgNo));
+                        if ((PublicCls.OrgIsZhen(v.BYORGNO) == false && v.BYORGNO == sw.TopORGNO && v.ORGName.IndexOf("合计") == -1) || PublicCls.OrgIsZhen(v.BYORGNO))
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\"><a href=\"#\" onclick=\"Layer('{2}','{3}')\">{0}</a></td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo), v.BYORGNO, v.ORGName);
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\">{0}</td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo));
+                        }
                     }
+                    
                 }
 
                 string totol = "";
@@ -1358,86 +1408,86 @@ namespace ManagerSystem.MVC.Controllers
                 BYORGNO = SystemCls.getCurUserOrgNo();
             //if (PublicCls.OrgIsZhen(BYORGNO) == false)
             //{
-                IEnumerable<CARTYPECountModel> typeModel;
-                var list = DataCenterCountCls.getCARModelCount(
-                    new DC_CAR_SW
+            IEnumerable<CARTYPECountModel> typeModel;
+            var list = DataCenterCountCls.getCARModelCount(
+                new DC_CAR_SW
+                {
+                    TopORGNO = BYORGNO,
+                }
+                , out typeModel);
+
+            int typeCount = 0;//计算类别有多少列
+            foreach (var v in typeModel)
+            {
+                typeCount++;
+            }
+            //设置宽度
+            sheet1.SetColumnWidth(0, 30 * 256);
+            sheet1.SetColumnWidth(1, 20 * 256);
+            for (int i = 0; i < typeCount; i++)
+            {
+                sheet1.SetColumnWidth(i + 2, 20 * 256);
+            }
+
+            row = sheet1.CreateRow(1);
+            if (PublicCls.OrgIsZhen(BYORGNO) == false)
+                row.CreateCell(0).SetCellValue("单位");
+            else
+                row.CreateCell(0).SetCellValue("姓名");
+            row.CreateCell(1).SetCellValue("总数");
+            int indexType = 2;//从第二列开始
+            foreach (var v in typeModel)
+            {
+                row.CreateCell(indexType).SetCellValue(v.CARTYPENAME);
+                indexType++;
+            }
+            for (int i = 0; i < typeCount + 2; i++)
+            {
+                row.GetCell(i).CellStyle = getCellStyleHead(book);
+            }
+
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(0, 0, 0, typeCount + 1));
+
+            int rowI = 0;//数据行
+            foreach (var v in list)//循环获取数据
+            {
+                row = sheet1.CreateRow(rowI + 2);
+                if (string.IsNullOrEmpty(v.ORGName) == false)
+                {
+                    string orgName = v.ORGName;
+                    if (PublicCls.OrgIsZhen(BYORGNO) == false)
                     {
-                        TopORGNO = BYORGNO,
-                    }
-                    , out typeModel);
-
-                int typeCount = 0;//计算类别有多少列
-                foreach (var v in typeModel)
-                {
-                    typeCount++;
-                }
-                //设置宽度
-                sheet1.SetColumnWidth(0, 30 * 256);
-                sheet1.SetColumnWidth(1, 20 * 256);
-                for (int i = 0; i < typeCount; i++)
-                {
-                    sheet1.SetColumnWidth(i + 2, 20 * 256);
-                }
-
-                row = sheet1.CreateRow(1);
-                if (PublicCls.OrgIsZhen(BYORGNO) == false)
-                    row.CreateCell(0).SetCellValue("单位");
-                else
-                    row.CreateCell(0).SetCellValue("姓名");
-                row.CreateCell(1).SetCellValue("总数");
-                int indexType = 2;//从第二列开始
-                foreach (var v in typeModel)
-                {
-                    row.CreateCell(indexType).SetCellValue(v.CARTYPENAME);
-                    indexType++;
-                }
-                for (int i = 0; i < typeCount + 2; i++)
-                {
-                    row.GetCell(i).CellStyle = getCellStyleHead(book);
-                }
-
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(0, 0, 0, typeCount + 1));
-
-                int rowI = 0;//数据行
-                foreach (var v in list)//循环获取数据
-                {
-                    row = sheet1.CreateRow(rowI + 2);
-                    if (string.IsNullOrEmpty(v.ORGName) == false)
-                    {
-                        string orgName = v.ORGName;
-                        if (PublicCls.OrgIsZhen(BYORGNO) == false)
+                        if (PublicCls.OrgIsShi(v.BYORGNO))//统计市，即所有县的
                         {
-                            if (PublicCls.OrgIsShi(v.BYORGNO))//统计市，即所有县的
-                            {
-                            }
-                            else if (PublicCls.OrgIsXian(v.BYORGNO))//县
-                            {
-                                orgName = "　　" + orgName;
-                            }
-                            else
-                            {
-                                orgName = "　　　　" + orgName;
-                            }
                         }
-                        row.CreateCell(0).SetCellValue(orgName);
-                        row.GetCell(0).CellStyle = getCellStyleLeft(book);
+                        else if (PublicCls.OrgIsXian(v.BYORGNO))//县
+                        {
+                            orgName = "　　" + orgName;
+                        }
+                        else
+                        {
+                            orgName = "　　　　" + orgName;
+                        }
                     }
-                    else
-                    {
-                        row.CreateCell(0).SetCellValue(v.NAME);
-                        //row.GetCell(0).CellStyle = getCellStyleCenter(book);
-                    }
-                    row.CreateCell(1).SetCellValue(v.CARTYPECount);
-                    //row.GetCell(1).CellStyle = getCellStyleCenter(book);
-                    int TypeI = 2;//类型开始列
-                    foreach (var vv in v.CARTYPECountModel)
-                    {
-                        row.CreateCell(TypeI).SetCellValue(vv.CARTYPECount);
-                        //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
-                        TypeI++;
-                    }
-                    rowI++;
+                    row.CreateCell(0).SetCellValue(orgName);
+                    row.GetCell(0).CellStyle = getCellStyleLeft(book);
                 }
+                else
+                {
+                    row.CreateCell(0).SetCellValue(v.NAME);
+                    //row.GetCell(0).CellStyle = getCellStyleCenter(book);
+                }
+                row.CreateCell(1).SetCellValue(v.CARTYPECount);
+                //row.GetCell(1).CellStyle = getCellStyleCenter(book);
+                int TypeI = 2;//类型开始列
+                foreach (var vv in v.CARTYPECountModel)
+                {
+                    row.CreateCell(TypeI).SetCellValue(vv.CARTYPECount);
+                    //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
+                    TypeI++;
+                }
+                rowI++;
+            }
             //}
             //else//查询车辆详细信息
             //{
@@ -1550,10 +1600,10 @@ namespace ManagerSystem.MVC.Controllers
             if (ViewBag.isPageRight == false)
                 return View();
 
-          
-                //组织机构下拉框
-                ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(),  TopORGNO = SystemCls.getCurUserOrgNo() });
-          
+
+            //组织机构下拉框
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = SystemCls.getCurUserOrgNo() });
+
             return View();
         }
         /// <summary>
@@ -1581,9 +1631,10 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("    </tr>");
             sb.AppendFormat("</thead>");
             sb.AppendFormat("<tbody>");
-
+            int i = 0;
             foreach (var v in list)
             {
+                i++;
                 string orgName = v.ORGName;
                 string orgNo = v.BYORGNO;
                 if (string.IsNullOrEmpty(v.BYORGNO))
@@ -1593,15 +1644,31 @@ namespace ManagerSystem.MVC.Controllers
                 }
                 else
                 {
-                    sb.AppendFormat("<tr class='{0}'>", PublicCls.getOrgTrClass(sw.TopORGNO, orgNo));
-                    if ((PublicCls.OrgIsZhen(v.BYORGNO) == false && v.BYORGNO == sw.TopORGNO && v.ORGName.IndexOf("合计") == -1) || PublicCls.OrgIsZhen(v.BYORGNO))
+                    if (i % 2 == 0)
                     {
-                        sb.AppendFormat("<td class=\"left\" style=\"{1}\"><a href=\"#\" onclick=\"Layer('{2}','{3}')\">{0}</a></td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo), v.BYORGNO, v.ORGName);
+                        sb.AppendFormat("<tr class='{0}'>", PublicCls.getOrgTrClass(sw.TopORGNO, orgNo));
+                        if ((PublicCls.OrgIsZhen(v.BYORGNO) == false && v.BYORGNO == sw.TopORGNO && v.ORGName.IndexOf("合计") == -1) || PublicCls.OrgIsZhen(v.BYORGNO))
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\"><a href=\"#\" onclick=\"Layer('{2}','{3}')\">{0}</a></td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo), v.BYORGNO, v.ORGName);
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\">{0}</td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo));
+                        }
                     }
                     else
                     {
-                        sb.AppendFormat("<td class=\"left\" style=\"{1}\">{0}</td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo));
+                        sb.AppendFormat("<tr class='{0} row1'>", PublicCls.getOrgTrClass(sw.TopORGNO, orgNo));
+                        if ((PublicCls.OrgIsZhen(v.BYORGNO) == false && v.BYORGNO == sw.TopORGNO && v.ORGName.IndexOf("合计") == -1) || PublicCls.OrgIsZhen(v.BYORGNO))
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\"><a href=\"#\" onclick=\"Layer('{2}','{3}')\">{0}</a></td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo), v.BYORGNO, v.ORGName);
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\">{0}</td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo));
+                        }
                     }
+                    
                 }
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.CARTYPECount);//总
                 var vvList = v.CARTYPECountModel;
@@ -1690,86 +1757,86 @@ namespace ManagerSystem.MVC.Controllers
                 BYORGNO = SystemCls.getCurUserOrgNo();
             //if (PublicCls.OrgIsZhen(BYORGNO) == false)
             //{
-                IEnumerable<STRUCTURETYPECountModel> typeModel;
-                var list = DataCenterCountCls.getCAMPModelCount(
-                    new DC_UTILITY_CAMP_SW
+            IEnumerable<STRUCTURETYPECountModel> typeModel;
+            var list = DataCenterCountCls.getCAMPModelCount(
+                new DC_UTILITY_CAMP_SW
+                {
+                    TopORGNO = BYORGNO,
+                }
+                , out typeModel);
+
+            int typeCount = 0;//计算类别有多少列
+            foreach (var v in typeModel)
+            {
+                typeCount++;
+            }
+            //设置宽度
+            sheet1.SetColumnWidth(0, 30 * 256);
+            sheet1.SetColumnWidth(1, 20 * 256);
+            for (int i = 0; i < typeCount; i++)
+            {
+                sheet1.SetColumnWidth(i + 2, 20 * 256);
+            }
+
+            row = sheet1.CreateRow(1);
+            if (PublicCls.OrgIsZhen(BYORGNO) == false)
+                row.CreateCell(0).SetCellValue("单位");
+            else
+                row.CreateCell(0).SetCellValue("姓名");
+            row.CreateCell(1).SetCellValue("总数");
+            int indexType = 2;//从第二列开始
+            foreach (var v in typeModel)
+            {
+                row.CreateCell(indexType).SetCellValue(v.STRUCTURETYPENAME);
+                indexType++;
+            }
+            for (int i = 0; i < typeCount + 2; i++)
+            {
+                row.GetCell(i).CellStyle = getCellStyleHead(book);
+            }
+
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(0, 0, 0, typeCount + 1));
+
+            int rowI = 0;//数据行
+            foreach (var v in list)//循环获取数据
+            {
+                row = sheet1.CreateRow(rowI + 2);
+                if (string.IsNullOrEmpty(v.ORGName) == false)
+                {
+                    string orgName = v.ORGName;
+                    if (PublicCls.OrgIsZhen(BYORGNO) == false)
                     {
-                        TopORGNO = BYORGNO,
-                    }
-                    , out typeModel);
-
-                int typeCount = 0;//计算类别有多少列
-                foreach (var v in typeModel)
-                {
-                    typeCount++;
-                }
-                //设置宽度
-                sheet1.SetColumnWidth(0, 30 * 256);
-                sheet1.SetColumnWidth(1, 20 * 256);
-                for (int i = 0; i < typeCount; i++)
-                {
-                    sheet1.SetColumnWidth(i + 2, 20 * 256);
-                }
-
-                row = sheet1.CreateRow(1);
-                if (PublicCls.OrgIsZhen(BYORGNO) == false)
-                    row.CreateCell(0).SetCellValue("单位");
-                else
-                    row.CreateCell(0).SetCellValue("姓名");
-                row.CreateCell(1).SetCellValue("总数");
-                int indexType = 2;//从第二列开始
-                foreach (var v in typeModel)
-                {
-                    row.CreateCell(indexType).SetCellValue(v.STRUCTURETYPENAME);
-                    indexType++;
-                }
-                for (int i = 0; i < typeCount + 2; i++)
-                {
-                    row.GetCell(i).CellStyle = getCellStyleHead(book);
-                }
-
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(0, 0, 0, typeCount + 1));
-
-                int rowI = 0;//数据行
-                foreach (var v in list)//循环获取数据
-                {
-                    row = sheet1.CreateRow(rowI + 2);
-                    if (string.IsNullOrEmpty(v.ORGName) == false)
-                    {
-                        string orgName = v.ORGName;
-                        if (PublicCls.OrgIsZhen(BYORGNO) == false)
+                        if (PublicCls.OrgIsShi(v.BYORGNO))//统计市，即所有县的
                         {
-                            if (PublicCls.OrgIsShi(v.BYORGNO))//统计市，即所有县的
-                            {
-                            }
-                            else if (PublicCls.OrgIsXian(v.BYORGNO))//县
-                            {
-                                orgName = "　　" + orgName;
-                            }
-                            else
-                            {
-                                orgName = "　　　　" + orgName;
-                            }
                         }
-                        row.CreateCell(0).SetCellValue(orgName);
-                        row.GetCell(0).CellStyle = getCellStyleLeft(book);
+                        else if (PublicCls.OrgIsXian(v.BYORGNO))//县
+                        {
+                            orgName = "　　" + orgName;
+                        }
+                        else
+                        {
+                            orgName = "　　　　" + orgName;
+                        }
                     }
-                    else
-                    {
-                        row.CreateCell(0).SetCellValue(v.NAME);
-                        //row.GetCell(0).CellStyle = getCellStyleCenter(book);
-                    }
-                    row.CreateCell(1).SetCellValue(v.STRUCTURETYPECount);
-                    //row.GetCell(1).CellStyle = getCellStyleCenter(book);
-                    int TypeI = 2;//类型开始列
-                    foreach (var vv in v.STRUCTURETYPECountModel)
-                    {
-                        row.CreateCell(TypeI).SetCellValue(vv.STRUCTURETYPECount);
-                        //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
-                        TypeI++;
-                    }
-                    rowI++;
+                    row.CreateCell(0).SetCellValue(orgName);
+                    row.GetCell(0).CellStyle = getCellStyleLeft(book);
                 }
+                else
+                {
+                    row.CreateCell(0).SetCellValue(v.NAME);
+                    //row.GetCell(0).CellStyle = getCellStyleCenter(book);
+                }
+                row.CreateCell(1).SetCellValue(v.STRUCTURETYPECount);
+                //row.GetCell(1).CellStyle = getCellStyleCenter(book);
+                int TypeI = 2;//类型开始列
+                foreach (var vv in v.STRUCTURETYPECountModel)
+                {
+                    row.CreateCell(TypeI).SetCellValue(vv.STRUCTURETYPECount);
+                    //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
+                    TypeI++;
+                }
+                rowI++;
+            }
             //}
             //else//查询营房详细信息
             //{
@@ -1877,10 +1944,10 @@ namespace ManagerSystem.MVC.Controllers
             if (ViewBag.isPageRight == false)
                 return View();
 
-        
-                //组织机构下拉框
-                ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(),  TopORGNO = SystemCls.getCurUserOrgNo() });
-           
+
+            //组织机构下拉框
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = SystemCls.getCurUserOrgNo() });
+
             return View();
         }
         /// <summary>
@@ -1908,9 +1975,10 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("    </tr>");
             sb.AppendFormat("</thead>");
             sb.AppendFormat("<tbody>");
-
+            int i = 0;
             foreach (var v in list)
             {
+                i++;
                 string orgName = v.ORGName;
                 string orgNo = v.BYORGNO;
                 if (string.IsNullOrEmpty(v.BYORGNO))
@@ -1920,15 +1988,31 @@ namespace ManagerSystem.MVC.Controllers
                 }
                 else
                 {
-                    sb.AppendFormat("<tr class='{0}'>", PublicCls.getOrgTrClass(sw.TopORGNO, orgNo));
-                    if ((PublicCls.OrgIsZhen(v.BYORGNO) == false && v.BYORGNO == sw.TopORGNO && v.ORGName.IndexOf("合计") == -1) || PublicCls.OrgIsZhen(v.BYORGNO))
+                    if (i % 2 == 0)
                     {
-                        sb.AppendFormat("<td class=\"left\" style=\"{1}\"><a href=\"#\" onclick=\"Layer('{2}','{3}')\">{0}</a></td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo), v.BYORGNO, v.ORGName);
+                        sb.AppendFormat("<tr class='{0}'>", PublicCls.getOrgTrClass(sw.TopORGNO, orgNo));
+                        if ((PublicCls.OrgIsZhen(v.BYORGNO) == false && v.BYORGNO == sw.TopORGNO && v.ORGName.IndexOf("合计") == -1) || PublicCls.OrgIsZhen(v.BYORGNO))
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\"><a href=\"#\" onclick=\"Layer('{2}','{3}')\">{0}</a></td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo), v.BYORGNO, v.ORGName);
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\">{0}</td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo));
+                        }
                     }
                     else
                     {
-                        sb.AppendFormat("<td class=\"left\" style=\"{1}\">{0}</td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo));
+                        sb.AppendFormat("<tr class='{0} row1'>", PublicCls.getOrgTrClass(sw.TopORGNO, orgNo));
+                        if ((PublicCls.OrgIsZhen(v.BYORGNO) == false && v.BYORGNO == sw.TopORGNO && v.ORGName.IndexOf("合计") == -1) || PublicCls.OrgIsZhen(v.BYORGNO))
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\"><a href=\"#\" onclick=\"Layer('{2}','{3}')\">{0}</a></td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo), v.BYORGNO, v.ORGName);
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\">{0}</td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo));
+                        }
                     }
+                   
                 }
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.STRUCTURETYPECount);//总
                 var vvList = v.STRUCTURETYPECountModel;
@@ -1942,7 +2026,7 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("</table>");
             return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), "")), "text/html;charset=UTF-8");
         }
-       public ActionResult getCAMPidStr(DC_UTILITY_CAMP_SW sw)
+        public ActionResult getCAMPidStr(DC_UTILITY_CAMP_SW sw)
         {
 
             string BYORGNO = Request.Params["BYORGNO"];
@@ -2032,86 +2116,86 @@ namespace ManagerSystem.MVC.Controllers
 
             //if (PublicCls.OrgIsZhen(BYORGNO) == false)
             //{
-                IEnumerable<TYPECountModel> typeModel;
-                var list = DataCenterCountCls.getOVERWATCHModelCount(
-                    new DC_UTILITY_OVERWATCH_SW
+            IEnumerable<TYPECountModel> typeModel;
+            var list = DataCenterCountCls.getOVERWATCHModelCount(
+                new DC_UTILITY_OVERWATCH_SW
+                {
+                    TopORGNO = BYORGNO,
+                }
+                , out typeModel);
+
+            int typeCount = 0;//计算类别有多少列
+            foreach (var v in typeModel)
+            {
+                typeCount++;
+            }
+            //设置宽度
+            sheet1.SetColumnWidth(0, 30 * 256);
+            sheet1.SetColumnWidth(1, 20 * 256);
+            for (int i = 0; i < typeCount; i++)
+            {
+                sheet1.SetColumnWidth(i + 2, 20 * 256);
+            }
+
+            row = sheet1.CreateRow(1);
+            if (PublicCls.OrgIsZhen(BYORGNO) == false)
+                row.CreateCell(0).SetCellValue("单位");
+            else
+                row.CreateCell(0).SetCellValue("姓名");
+            row.CreateCell(1).SetCellValue("总数");
+            int indexType = 2;//从第二列开始
+            foreach (var v in typeModel)
+            {
+                row.CreateCell(indexType).SetCellValue(v.STRUCTURETYPENAME);
+                indexType++;
+            }
+            for (int i = 0; i < typeCount + 2; i++)
+            {
+                row.GetCell(i).CellStyle = getCellStyleHead(book);
+            }
+
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(0, 0, 0, typeCount + 1));
+
+            int rowI = 0;//数据行
+            foreach (var v in list)//循环获取数据
+            {
+                row = sheet1.CreateRow(rowI + 2);
+                if (string.IsNullOrEmpty(v.ORGName) == false)
+                {
+                    string orgName = v.ORGName;
+                    if (PublicCls.OrgIsZhen(BYORGNO) == false)
                     {
-                        TopORGNO = BYORGNO,
-                    }
-                    , out typeModel);
-
-                int typeCount = 0;//计算类别有多少列
-                foreach (var v in typeModel)
-                {
-                    typeCount++;
-                }
-                //设置宽度
-                sheet1.SetColumnWidth(0, 30 * 256);
-                sheet1.SetColumnWidth(1, 20 * 256);
-                for (int i = 0; i < typeCount; i++)
-                {
-                    sheet1.SetColumnWidth(i + 2, 20 * 256);
-                }
-
-                row = sheet1.CreateRow(1);
-                if (PublicCls.OrgIsZhen(BYORGNO) == false)
-                    row.CreateCell(0).SetCellValue("单位");
-                else
-                    row.CreateCell(0).SetCellValue("姓名");
-                row.CreateCell(1).SetCellValue("总数");
-                int indexType = 2;//从第二列开始
-                foreach (var v in typeModel)
-                {
-                    row.CreateCell(indexType).SetCellValue(v.STRUCTURETYPENAME);
-                    indexType++;
-                }
-                for (int i = 0; i < typeCount + 2; i++)
-                {
-                    row.GetCell(i).CellStyle = getCellStyleHead(book);
-                }
-
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(0, 0, 0, typeCount + 1));
-
-                int rowI = 0;//数据行
-                foreach (var v in list)//循环获取数据
-                {
-                    row = sheet1.CreateRow(rowI + 2);
-                    if (string.IsNullOrEmpty(v.ORGName) == false)
-                    {
-                        string orgName = v.ORGName;
-                        if (PublicCls.OrgIsZhen(BYORGNO) == false)
+                        if (PublicCls.OrgIsShi(v.BYORGNO))//统计市，即所有县的
                         {
-                            if (PublicCls.OrgIsShi(v.BYORGNO))//统计市，即所有县的
-                            {
-                            }
-                            else if (PublicCls.OrgIsXian(v.BYORGNO))//县
-                            {
-                                orgName = "　　" + orgName;
-                            }
-                            else
-                            {
-                                orgName = "　　　　" + orgName;
-                            }
                         }
-                        row.CreateCell(0).SetCellValue(orgName);
-                        row.GetCell(0).CellStyle = getCellStyleLeft(book);
+                        else if (PublicCls.OrgIsXian(v.BYORGNO))//县
+                        {
+                            orgName = "　　" + orgName;
+                        }
+                        else
+                        {
+                            orgName = "　　　　" + orgName;
+                        }
                     }
-                    else
-                    {
-                        row.CreateCell(0).SetCellValue(v.NAME);
-                        //row.GetCell(0).CellStyle = getCellStyleCenter(book);
-                    }
-                    row.CreateCell(1).SetCellValue(v.STRUCTURETYPECount);
-                    //row.GetCell(1).CellStyle = getCellStyleCenter(book);
-                    int TypeI = 2;//类型开始列
-                    foreach (var vv in v.TYPECountModel)
-                    {
-                        row.CreateCell(TypeI).SetCellValue(vv.STRUCTURETYPECount);
-                        //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
-                        TypeI++;
-                    }
-                    rowI++;
+                    row.CreateCell(0).SetCellValue(orgName);
+                    row.GetCell(0).CellStyle = getCellStyleLeft(book);
                 }
+                else
+                {
+                    row.CreateCell(0).SetCellValue(v.NAME);
+                    //row.GetCell(0).CellStyle = getCellStyleCenter(book);
+                }
+                row.CreateCell(1).SetCellValue(v.STRUCTURETYPECount);
+                //row.GetCell(1).CellStyle = getCellStyleCenter(book);
+                int TypeI = 2;//类型开始列
+                foreach (var vv in v.TYPECountModel)
+                {
+                    row.CreateCell(TypeI).SetCellValue(vv.STRUCTURETYPECount);
+                    //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
+                    TypeI++;
+                }
+                rowI++;
+            }
             //}
             //else//查询瞭望台详细信息
             //{
@@ -2216,9 +2300,9 @@ namespace ManagerSystem.MVC.Controllers
             if (ViewBag.isPageRight == false)
                 return View();
 
-                //组织机构下拉框
-                ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = SystemCls.getCurUserOrgNo() });
-           
+            //组织机构下拉框
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = SystemCls.getCurUserOrgNo() });
+
             return View();
         }
         /// <summary>
@@ -2246,9 +2330,10 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("    </tr>");
             sb.AppendFormat("</thead>");
             sb.AppendFormat("<tbody>");
-
+            int i = 0;
             foreach (var v in list)
             {
+                i++;
                 string orgName = v.ORGName;
                 string orgNo = v.BYORGNO;
                 if (string.IsNullOrEmpty(v.BYORGNO))
@@ -2258,14 +2343,29 @@ namespace ManagerSystem.MVC.Controllers
                 }
                 else
                 {
-                    sb.AppendFormat("<tr class='{0}'>", PublicCls.getOrgTrClass(sw.TopORGNO, orgNo));
-                    if ((PublicCls.OrgIsZhen(v.BYORGNO) == false && v.BYORGNO == sw.TopORGNO && v.ORGName.IndexOf("合计") == -1) || PublicCls.OrgIsZhen(v.BYORGNO))
+                    if (i % 2 == 0)
                     {
-                        sb.AppendFormat("<td class=\"left\" style=\"{1}\"><a href=\"#\" onclick=\"Layer('{2}','{3}')\">{0}</a></td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo), v.BYORGNO, v.ORGName);
+                        sb.AppendFormat("<tr class='{0}'>", PublicCls.getOrgTrClass(sw.TopORGNO, orgNo));
+                        if ((PublicCls.OrgIsZhen(v.BYORGNO) == false && v.BYORGNO == sw.TopORGNO && v.ORGName.IndexOf("合计") == -1) || PublicCls.OrgIsZhen(v.BYORGNO))
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\"><a href=\"#\" onclick=\"Layer('{2}','{3}')\">{0}</a></td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo), v.BYORGNO, v.ORGName);
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\">{0}</td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo));
+                        }
                     }
                     else
                     {
-                        sb.AppendFormat("<td class=\"left\" style=\"{1}\">{0}</td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo));
+                        sb.AppendFormat("<tr class='{0} row1'>", PublicCls.getOrgTrClass(sw.TopORGNO, orgNo));
+                        if ((PublicCls.OrgIsZhen(v.BYORGNO) == false && v.BYORGNO == sw.TopORGNO && v.ORGName.IndexOf("合计") == -1) || PublicCls.OrgIsZhen(v.BYORGNO))
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\"><a href=\"#\" onclick=\"Layer('{2}','{3}')\">{0}</a></td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo), v.BYORGNO, v.ORGName);
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\">{0}</td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo));
+                        }
                     }
                 }
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.STRUCTURETYPECount);//总
@@ -2372,138 +2472,138 @@ namespace ManagerSystem.MVC.Controllers
                 BYORGNO = SystemCls.getCurUserOrgNo();
             //if (PublicCls.OrgIsZhen(BYORGNO) == false)
             //{
-                IEnumerable<USESTATECountModel> USESTATECountModel;
-                IEnumerable<MANAGERSTATECountModel> MANAGERSTATECountModel;
-                IEnumerable<ISOLATIONTYPECountModel> ISOLATIONTYPECountModel;
-                var list = DataCenterCountCls.getISOLATIONSTRIPModelCount(new DC_UTILITY_ISOLATIONSTRIP_SW
-                {
-                    TopORGNO = BYORGNO,
-                }, out USESTATECountModel, out MANAGERSTATECountModel, out ISOLATIONTYPECountModel);
+            IEnumerable<USESTATECountModel> USESTATECountModel;
+            IEnumerable<MANAGERSTATECountModel> MANAGERSTATECountModel;
+            IEnumerable<ISOLATIONTYPECountModel> ISOLATIONTYPECountModel;
+            var list = DataCenterCountCls.getISOLATIONSTRIPModelCount(new DC_UTILITY_ISOLATIONSTRIP_SW
+            {
+                TopORGNO = BYORGNO,
+            }, out USESTATECountModel, out MANAGERSTATECountModel, out ISOLATIONTYPECountModel);
 
-                int typeCount1 = 0;//计算类别有多少列
-                int typeCount2 = 0;//计算类别有多少列
-                int typeCount3 = 0;//计算类别有多少列
-                foreach (var v in ISOLATIONTYPECountModel)
-                {
-                    typeCount1++;
-                }
-                foreach (var v in USESTATECountModel)
-                {
-                    typeCount2++;
-                }
-                foreach (var v in MANAGERSTATECountModel)
-                {
-                    typeCount3++;
-                }
-                //设置宽度
-                sheet1.SetColumnWidth(0, 30 * 256);
-                sheet1.SetColumnWidth(1, 20 * 256);
-                for (int i = 0; i < typeCount1; i++)
-                {
-                    sheet1.SetColumnWidth(i + 2, 20 * 256);
-                }
-                for (int i = 0; i < typeCount2; i++)
-                {
-                    sheet1.SetColumnWidth(i + 2 + typeCount1, 20 * 256);
-                }
-                for (int i = 0; i < typeCount3; i++)
-                {
-                    sheet1.SetColumnWidth(i + 2 + typeCount1 + typeCount2, 20 * 256);
-                }
-                row = sheet1.CreateRow(1);
-                if (PublicCls.OrgIsZhen(BYORGNO) == false)
-                    row.CreateCell(0).SetCellValue("单位");
-                else
-                    row.CreateCell(0).SetCellValue("名称");
-                row.CreateCell(1).SetCellValue("总数(个)/长度(米)");
-                row.CreateCell(2).SetCellValue("隔离带类型");
-                row.CreateCell(2 + typeCount1).SetCellValue("使用现状");
-                row.CreateCell(2 + typeCount1 + typeCount2).SetCellValue("维护类型");
-                row.GetCell(0).CellStyle = getCellStyleTitle(book);
-                row.GetCell(1).CellStyle = getCellStyleTitle(book);
-                row.GetCell(2).CellStyle = getCellStyleTitle(book);
-                row.GetCell(2 + typeCount1).CellStyle = getCellStyleTitle(book);
-                row.GetCell(2 + typeCount1 + typeCount2).CellStyle = getCellStyleTitle(book);
-                //row.GetCell(2 + typeCount1 + typeCount2 + typeCount3).CellStyle = getCellStyleTitle(book);
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(0, 0, 0, typeCount1 + typeCount2 + typeCount3 + 1));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 2, 0, 0));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 2, 1, 1));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, 2, typeCount1 + 1));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, 2 + typeCount1, typeCount1 + 1 + typeCount2));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, typeCount1 + 2 + typeCount2, typeCount1 + 1 + typeCount2 + typeCount3));
-                row = sheet1.CreateRow(2);
-                int indexType = 2;//从第二列开始
-                foreach (var v in ISOLATIONTYPECountModel)
-                {
-                    row.CreateCell(indexType).SetCellValue(v.ISOLATIONTYPENAME);
-                    row.GetCell(indexType).CellStyle = getCellStyleHead(book);
-                    indexType++;
-                }
-                foreach (var v in USESTATECountModel)
-                {
-                    row.CreateCell(indexType).SetCellValue(v.USESTATENAME);
-                    row.GetCell(indexType).CellStyle = getCellStyleHead(book);
-                    indexType++;
-                }
-                foreach (var v in MANAGERSTATECountModel)
-                {
-                    row.CreateCell(indexType).SetCellValue(v.MANAGERSTATNAME);
-                    row.GetCell(indexType).CellStyle = getCellStyleHead(book);
-                    indexType++;
-                }
+            int typeCount1 = 0;//计算类别有多少列
+            int typeCount2 = 0;//计算类别有多少列
+            int typeCount3 = 0;//计算类别有多少列
+            foreach (var v in ISOLATIONTYPECountModel)
+            {
+                typeCount1++;
+            }
+            foreach (var v in USESTATECountModel)
+            {
+                typeCount2++;
+            }
+            foreach (var v in MANAGERSTATECountModel)
+            {
+                typeCount3++;
+            }
+            //设置宽度
+            sheet1.SetColumnWidth(0, 30 * 256);
+            sheet1.SetColumnWidth(1, 20 * 256);
+            for (int i = 0; i < typeCount1; i++)
+            {
+                sheet1.SetColumnWidth(i + 2, 20 * 256);
+            }
+            for (int i = 0; i < typeCount2; i++)
+            {
+                sheet1.SetColumnWidth(i + 2 + typeCount1, 20 * 256);
+            }
+            for (int i = 0; i < typeCount3; i++)
+            {
+                sheet1.SetColumnWidth(i + 2 + typeCount1 + typeCount2, 20 * 256);
+            }
+            row = sheet1.CreateRow(1);
+            if (PublicCls.OrgIsZhen(BYORGNO) == false)
+                row.CreateCell(0).SetCellValue("单位");
+            else
+                row.CreateCell(0).SetCellValue("名称");
+            row.CreateCell(1).SetCellValue("总数(个)/长度(米)");
+            row.CreateCell(2).SetCellValue("隔离带类型");
+            row.CreateCell(2 + typeCount1).SetCellValue("使用现状");
+            row.CreateCell(2 + typeCount1 + typeCount2).SetCellValue("维护类型");
+            row.GetCell(0).CellStyle = getCellStyleTitle(book);
+            row.GetCell(1).CellStyle = getCellStyleTitle(book);
+            row.GetCell(2).CellStyle = getCellStyleTitle(book);
+            row.GetCell(2 + typeCount1).CellStyle = getCellStyleTitle(book);
+            row.GetCell(2 + typeCount1 + typeCount2).CellStyle = getCellStyleTitle(book);
+            //row.GetCell(2 + typeCount1 + typeCount2 + typeCount3).CellStyle = getCellStyleTitle(book);
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(0, 0, 0, typeCount1 + typeCount2 + typeCount3 + 1));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 2, 0, 0));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 2, 1, 1));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, 2, typeCount1 + 1));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, 2 + typeCount1, typeCount1 + 1 + typeCount2));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, typeCount1 + 2 + typeCount2, typeCount1 + 1 + typeCount2 + typeCount3));
+            row = sheet1.CreateRow(2);
+            int indexType = 2;//从第二列开始
+            foreach (var v in ISOLATIONTYPECountModel)
+            {
+                row.CreateCell(indexType).SetCellValue(v.ISOLATIONTYPENAME);
+                row.GetCell(indexType).CellStyle = getCellStyleHead(book);
+                indexType++;
+            }
+            foreach (var v in USESTATECountModel)
+            {
+                row.CreateCell(indexType).SetCellValue(v.USESTATENAME);
+                row.GetCell(indexType).CellStyle = getCellStyleHead(book);
+                indexType++;
+            }
+            foreach (var v in MANAGERSTATECountModel)
+            {
+                row.CreateCell(indexType).SetCellValue(v.MANAGERSTATNAME);
+                row.GetCell(indexType).CellStyle = getCellStyleHead(book);
+                indexType++;
+            }
 
-                int rowI = 1;//数据行
-                foreach (var v in list)//循环获取数据
+            int rowI = 1;//数据行
+            foreach (var v in list)//循环获取数据
+            {
+                row = sheet1.CreateRow(rowI + 2);
+                if (string.IsNullOrEmpty(v.ORGName) == false)
                 {
-                    row = sheet1.CreateRow(rowI + 2);
-                    if (string.IsNullOrEmpty(v.ORGName) == false)
+                    string orgName = v.ORGName;
+                    if (PublicCls.OrgIsZhen(BYORGNO) == false)
                     {
-                        string orgName = v.ORGName;
-                        if (PublicCls.OrgIsZhen(BYORGNO) == false)
+                        if (PublicCls.OrgIsShi(v.BYORGNO))//统计市，即所有县的
                         {
-                            if (PublicCls.OrgIsShi(v.BYORGNO))//统计市，即所有县的
-                            {
-                            }
-                            else if (PublicCls.OrgIsXian(v.BYORGNO))//县
-                            {
-                                orgName = "　　" + orgName;
-                            }
-                            else
-                            {
-                                orgName = "　　　　" + orgName;
-                            }
                         }
-                        row.CreateCell(0).SetCellValue(orgName);
-                        row.GetCell(0).CellStyle = getCellStyleLeft(book);
+                        else if (PublicCls.OrgIsXian(v.BYORGNO))//县
+                        {
+                            orgName = "　　" + orgName;
+                        }
+                        else
+                        {
+                            orgName = "　　　　" + orgName;
+                        }
                     }
-                    else
-                    {
-                        row.CreateCell(0).SetCellValue(v.NAME);
-                        //row.GetCell(0).CellStyle = getCellStyleCenter(book);
-                    }
-                    row.CreateCell(1).SetCellValue(v.USESTATECount + "/" + v.LENGTHCount + "");
-                    //row.GetCell(1).CellStyle = getCellStyleCenter(book);
-                    int TypeI = 2;//类型开始列
-                    foreach (var vv in v.ISOLATIONTYPECountModel)
-                    {
-                        row.CreateCell(TypeI).SetCellValue(vv.DICTISOLATIONTYPECount + "/" + vv.DICTISOLATIONTYPELENGTHCount + "");
-                        //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
-                        TypeI++;
-                    }
-                    foreach (var vv in v.USESTATECountModel)
-                    {
-                        row.CreateCell(TypeI).SetCellValue(vv.USESTATECount + "/" + vv.USESTATELENGTHCount + "");
-                        //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
-                        TypeI++;
-                    }
-                    foreach (var vv in v.MANAGERSTATECountModel)
-                    {
-                        row.CreateCell(TypeI).SetCellValue(vv.MANAGERSTATCount + "/" + vv.MANAGERSTATLENGTHCount + "");
-                        //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
-                        TypeI++;
-                    }
-                    rowI++;
+                    row.CreateCell(0).SetCellValue(orgName);
+                    row.GetCell(0).CellStyle = getCellStyleLeft(book);
                 }
+                else
+                {
+                    row.CreateCell(0).SetCellValue(v.NAME);
+                    //row.GetCell(0).CellStyle = getCellStyleCenter(book);
+                }
+                row.CreateCell(1).SetCellValue(v.USESTATECount + "/" + v.LENGTHCount + "");
+                //row.GetCell(1).CellStyle = getCellStyleCenter(book);
+                int TypeI = 2;//类型开始列
+                foreach (var vv in v.ISOLATIONTYPECountModel)
+                {
+                    row.CreateCell(TypeI).SetCellValue(vv.DICTISOLATIONTYPECount + "/" + vv.DICTISOLATIONTYPELENGTHCount + "");
+                    //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
+                    TypeI++;
+                }
+                foreach (var vv in v.USESTATECountModel)
+                {
+                    row.CreateCell(TypeI).SetCellValue(vv.USESTATECount + "/" + vv.USESTATELENGTHCount + "");
+                    //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
+                    TypeI++;
+                }
+                foreach (var vv in v.MANAGERSTATECountModel)
+                {
+                    row.CreateCell(TypeI).SetCellValue(vv.MANAGERSTATCount + "/" + vv.MANAGERSTATLENGTHCount + "");
+                    //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
+                    TypeI++;
+                }
+                rowI++;
+            }
             //}
             //else//查询隔离带详细信息
             //{
@@ -2587,9 +2687,9 @@ namespace ManagerSystem.MVC.Controllers
             if (ViewBag.isPageRight == false)
                 return View();
 
-                //组织机构下拉框
-                ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = SystemCls.getCurUserOrgNo() });
-          
+            //组织机构下拉框
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = SystemCls.getCurUserOrgNo() });
+
             return View();
         }
         /// <summary>
@@ -2637,9 +2737,10 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("    </tr>");
             sb.AppendFormat("</thead>");
             sb.AppendFormat("<tbody>");
-
+            int i = 0;
             foreach (var v in list)
             {
+                i++;
                 string orgName = v.ORGName;
                 string orgNo = v.BYORGNO;
                 if (string.IsNullOrEmpty(v.BYORGNO))
@@ -2649,14 +2750,29 @@ namespace ManagerSystem.MVC.Controllers
                 }
                 else
                 {
-                    sb.AppendFormat("<tr class='{0}'>", PublicCls.getOrgTrClass(sw.TopORGNO, orgNo));
-                    if ((PublicCls.OrgIsZhen(v.BYORGNO) == false && v.BYORGNO == sw.TopORGNO && v.ORGName.IndexOf("合计") == -1) || PublicCls.OrgIsZhen(v.BYORGNO))
+                    if (i % 2 == 0)
                     {
-                        sb.AppendFormat("<td class=\"left\" style=\"{1}\"><a href=\"#\" onclick=\"Layer('{2}','{3}')\">{0}</a></td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo), v.BYORGNO, v.ORGName);
+                        sb.AppendFormat("<tr class='{0}'>", PublicCls.getOrgTrClass(sw.TopORGNO, orgNo));
+                        if ((PublicCls.OrgIsZhen(v.BYORGNO) == false && v.BYORGNO == sw.TopORGNO && v.ORGName.IndexOf("合计") == -1) || PublicCls.OrgIsZhen(v.BYORGNO))
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\"><a href=\"#\" onclick=\"Layer('{2}','{3}')\">{0}</a></td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo), v.BYORGNO, v.ORGName);
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\">{0}</td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo));
+                        }
                     }
                     else
                     {
-                        sb.AppendFormat("<td class=\"left\" style=\"{1}\">{0}</td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo));
+                        sb.AppendFormat("<tr class='{0} row1'>", PublicCls.getOrgTrClass(sw.TopORGNO, orgNo));
+                        if ((PublicCls.OrgIsZhen(v.BYORGNO) == false && v.BYORGNO == sw.TopORGNO && v.ORGName.IndexOf("合计") == -1) || PublicCls.OrgIsZhen(v.BYORGNO))
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\"><a href=\"#\" onclick=\"Layer('{2}','{3}')\">{0}</a></td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo), v.BYORGNO, v.ORGName);
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\">{0}</td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo));
+                        }
                     }
                 }
                 string totol = "";
@@ -2791,162 +2907,162 @@ namespace ManagerSystem.MVC.Controllers
                 BYORGNO = SystemCls.getCurUserOrgNo();
             //if (PublicCls.OrgIsZhen(BYORGNO) == false)
             //{
-                IEnumerable<USESTATECountModel> USESTATECountModel;
-                IEnumerable<MANAGERSTATECountModel> MANAGERSTATECountModel;
-                IEnumerable<FIRECHANNELLEVELTYPECountModel> FIRECHANNELLEVELTYPECountModel;
-                IEnumerable<FIRECHANNELUSERTYPECountModel> FIRECHANNELUSERTYPECountModel;
-                var list = DataCenterCountCls.getFIRECHANNELModelCount(new DC_UTILITY_FIRECHANNEL_SW
-                {
-                    TopORGNO = BYORGNO,
-                }, out USESTATECountModel, out MANAGERSTATECountModel, out FIRECHANNELLEVELTYPECountModel, out FIRECHANNELUSERTYPECountModel);
+            IEnumerable<USESTATECountModel> USESTATECountModel;
+            IEnumerable<MANAGERSTATECountModel> MANAGERSTATECountModel;
+            IEnumerable<FIRECHANNELLEVELTYPECountModel> FIRECHANNELLEVELTYPECountModel;
+            IEnumerable<FIRECHANNELUSERTYPECountModel> FIRECHANNELUSERTYPECountModel;
+            var list = DataCenterCountCls.getFIRECHANNELModelCount(new DC_UTILITY_FIRECHANNEL_SW
+            {
+                TopORGNO = BYORGNO,
+            }, out USESTATECountModel, out MANAGERSTATECountModel, out FIRECHANNELLEVELTYPECountModel, out FIRECHANNELUSERTYPECountModel);
 
-                int typeCount1 = 0;//计算类别有多少列
-                int typeCount2 = 0;//计算类别有多少列
-                int typeCount3 = 0;//计算类别有多少列
-                int typeCount4 = 0;//计算类别有多少列
-                foreach (var v in USESTATECountModel)
-                {
-                    typeCount1++;
-                }
-                foreach (var v in MANAGERSTATECountModel)
-                {
-                    typeCount2++;
-                }
-                foreach (var v in FIRECHANNELLEVELTYPECountModel)
-                {
-                    typeCount3++;
-                }
-                foreach (var v in FIRECHANNELUSERTYPECountModel)
-                {
-                    typeCount4++;
-                }
-                //设置宽度
-                sheet1.SetColumnWidth(0, 30 * 256);
-                sheet1.SetColumnWidth(1, 20 * 256);
-                for (int i = 0; i < typeCount1; i++)
-                {
-                    sheet1.SetColumnWidth(i + 2, 20 * 256);
-                }
-                for (int i = 0; i < typeCount2; i++)
-                {
-                    sheet1.SetColumnWidth(i + 2 + typeCount1, 20 * 256);
-                }
-                for (int i = 0; i < typeCount3; i++)
-                {
-                    sheet1.SetColumnWidth(i + 2 + typeCount1 + typeCount2, 20 * 256);
-                }
-                for (int i = 0; i < typeCount4; i++)
-                {
-                    sheet1.SetColumnWidth(i + 2 + typeCount1 + typeCount2 + typeCount3, 20 * 256);
-                }
-                row = sheet1.CreateRow(1);
-                if (PublicCls.OrgIsZhen(BYORGNO) == false)
-                    row.CreateCell(0).SetCellValue("单位");
-                else
-                    row.CreateCell(0).SetCellValue("名称");
-                row.CreateCell(1).SetCellValue("总数");
-                row.CreateCell(2).SetCellValue("使用现状");
-                row.CreateCell(2 + typeCount1).SetCellValue("维护类型");
-                row.CreateCell(2 + typeCount1 + typeCount2).SetCellValue("防火通道等级");
-                row.CreateCell(2 + typeCount1 + typeCount2 + typeCount3).SetCellValue("防火通道使用性质");
-                row.GetCell(0).CellStyle = getCellStyleTitle(book);
-                row.GetCell(1).CellStyle = getCellStyleTitle(book);
-                row.GetCell(2).CellStyle = getCellStyleTitle(book);
-                row.GetCell(2 + typeCount1).CellStyle = getCellStyleTitle(book);
-                row.GetCell(2 + typeCount1 + typeCount2).CellStyle = getCellStyleTitle(book);
-                row.GetCell(2 + typeCount1 + typeCount2 + typeCount3).CellStyle = getCellStyleTitle(book);
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(0, 0, 0, typeCount1 + typeCount2 + typeCount3 + typeCount4 + 1));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 2, 0, 0));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 2, 1, 1));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, 2, typeCount1 + 1));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, 2 + typeCount1, typeCount1 + 1 + typeCount2));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, typeCount1 + 2 + typeCount2, typeCount1 + 1 + typeCount2 + typeCount3));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, typeCount1 + 2 + typeCount2 + typeCount3, typeCount1 + 1 + typeCount2 + typeCount3 + typeCount4));
-                row = sheet1.CreateRow(2);
-                int indexType = 2;//从第二列开始
-                foreach (var v in USESTATECountModel)
-                {
-                    row.CreateCell(indexType).SetCellValue(v.USESTATENAME);
-                    row.GetCell(indexType).CellStyle = getCellStyleHead(book);
-                    indexType++;
-                }
-                foreach (var v in MANAGERSTATECountModel)
-                {
-                    row.CreateCell(indexType).SetCellValue(v.MANAGERSTATNAME);
-                    row.GetCell(indexType).CellStyle = getCellStyleHead(book);
-                    indexType++;
-                }
-                foreach (var v in FIRECHANNELLEVELTYPECountModel)
-                {
-                    row.CreateCell(indexType).SetCellValue(v.FIRECHANNELLEVELTYPENAME);
-                    row.GetCell(indexType).CellStyle = getCellStyleHead(book);
-                    indexType++;
-                }
-                foreach (var v in FIRECHANNELUSERTYPECountModel)
-                {
-                    row.CreateCell(indexType).SetCellValue(v.FIRECHANNELUSERTYPENAME);
-                    row.GetCell(indexType).CellStyle = getCellStyleHead(book);
-                    indexType++;
-                }
+            int typeCount1 = 0;//计算类别有多少列
+            int typeCount2 = 0;//计算类别有多少列
+            int typeCount3 = 0;//计算类别有多少列
+            int typeCount4 = 0;//计算类别有多少列
+            foreach (var v in USESTATECountModel)
+            {
+                typeCount1++;
+            }
+            foreach (var v in MANAGERSTATECountModel)
+            {
+                typeCount2++;
+            }
+            foreach (var v in FIRECHANNELLEVELTYPECountModel)
+            {
+                typeCount3++;
+            }
+            foreach (var v in FIRECHANNELUSERTYPECountModel)
+            {
+                typeCount4++;
+            }
+            //设置宽度
+            sheet1.SetColumnWidth(0, 30 * 256);
+            sheet1.SetColumnWidth(1, 20 * 256);
+            for (int i = 0; i < typeCount1; i++)
+            {
+                sheet1.SetColumnWidth(i + 2, 20 * 256);
+            }
+            for (int i = 0; i < typeCount2; i++)
+            {
+                sheet1.SetColumnWidth(i + 2 + typeCount1, 20 * 256);
+            }
+            for (int i = 0; i < typeCount3; i++)
+            {
+                sheet1.SetColumnWidth(i + 2 + typeCount1 + typeCount2, 20 * 256);
+            }
+            for (int i = 0; i < typeCount4; i++)
+            {
+                sheet1.SetColumnWidth(i + 2 + typeCount1 + typeCount2 + typeCount3, 20 * 256);
+            }
+            row = sheet1.CreateRow(1);
+            if (PublicCls.OrgIsZhen(BYORGNO) == false)
+                row.CreateCell(0).SetCellValue("单位");
+            else
+                row.CreateCell(0).SetCellValue("名称");
+            row.CreateCell(1).SetCellValue("总数");
+            row.CreateCell(2).SetCellValue("使用现状");
+            row.CreateCell(2 + typeCount1).SetCellValue("维护类型");
+            row.CreateCell(2 + typeCount1 + typeCount2).SetCellValue("防火通道等级");
+            row.CreateCell(2 + typeCount1 + typeCount2 + typeCount3).SetCellValue("防火通道使用性质");
+            row.GetCell(0).CellStyle = getCellStyleTitle(book);
+            row.GetCell(1).CellStyle = getCellStyleTitle(book);
+            row.GetCell(2).CellStyle = getCellStyleTitle(book);
+            row.GetCell(2 + typeCount1).CellStyle = getCellStyleTitle(book);
+            row.GetCell(2 + typeCount1 + typeCount2).CellStyle = getCellStyleTitle(book);
+            row.GetCell(2 + typeCount1 + typeCount2 + typeCount3).CellStyle = getCellStyleTitle(book);
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(0, 0, 0, typeCount1 + typeCount2 + typeCount3 + typeCount4 + 1));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 2, 0, 0));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 2, 1, 1));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, 2, typeCount1 + 1));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, 2 + typeCount1, typeCount1 + 1 + typeCount2));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, typeCount1 + 2 + typeCount2, typeCount1 + 1 + typeCount2 + typeCount3));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, typeCount1 + 2 + typeCount2 + typeCount3, typeCount1 + 1 + typeCount2 + typeCount3 + typeCount4));
+            row = sheet1.CreateRow(2);
+            int indexType = 2;//从第二列开始
+            foreach (var v in USESTATECountModel)
+            {
+                row.CreateCell(indexType).SetCellValue(v.USESTATENAME);
+                row.GetCell(indexType).CellStyle = getCellStyleHead(book);
+                indexType++;
+            }
+            foreach (var v in MANAGERSTATECountModel)
+            {
+                row.CreateCell(indexType).SetCellValue(v.MANAGERSTATNAME);
+                row.GetCell(indexType).CellStyle = getCellStyleHead(book);
+                indexType++;
+            }
+            foreach (var v in FIRECHANNELLEVELTYPECountModel)
+            {
+                row.CreateCell(indexType).SetCellValue(v.FIRECHANNELLEVELTYPENAME);
+                row.GetCell(indexType).CellStyle = getCellStyleHead(book);
+                indexType++;
+            }
+            foreach (var v in FIRECHANNELUSERTYPECountModel)
+            {
+                row.CreateCell(indexType).SetCellValue(v.FIRECHANNELUSERTYPENAME);
+                row.GetCell(indexType).CellStyle = getCellStyleHead(book);
+                indexType++;
+            }
 
-                int rowI = 1;//数据行
-                foreach (var v in list)//循环获取数据
+            int rowI = 1;//数据行
+            foreach (var v in list)//循环获取数据
+            {
+                row = sheet1.CreateRow(rowI + 2);
+                if (string.IsNullOrEmpty(v.ORGName) == false)
                 {
-                    row = sheet1.CreateRow(rowI + 2);
-                    if (string.IsNullOrEmpty(v.ORGName) == false)
+                    string orgName = v.ORGName;
+                    if (PublicCls.OrgIsZhen(BYORGNO) == false)
                     {
-                        string orgName = v.ORGName;
-                        if (PublicCls.OrgIsZhen(BYORGNO) == false)
+                        if (PublicCls.OrgIsShi(v.BYORGNO))//统计市，即所有县的
                         {
-                            if (PublicCls.OrgIsShi(v.BYORGNO))//统计市，即所有县的
-                            {
-                            }
-                            else if (PublicCls.OrgIsXian(v.BYORGNO))//县
-                            {
-                                orgName = "　　" + orgName;
-                            }
-                            else
-                            {
-                                orgName = "　　　　" + orgName;
-                            }
                         }
-                        row.CreateCell(0).SetCellValue(orgName);
-                        row.GetCell(0).CellStyle = getCellStyleLeft(book);
+                        else if (PublicCls.OrgIsXian(v.BYORGNO))//县
+                        {
+                            orgName = "　　" + orgName;
+                        }
+                        else
+                        {
+                            orgName = "　　　　" + orgName;
+                        }
                     }
-                    else
-                    {
-                        row.CreateCell(0).SetCellValue(v.NAME);
-                        //row.GetCell(0).CellStyle = getCellStyleCenter(book);
-                    }
-                    row.CreateCell(1).SetCellValue(v.USESTATECount);
-                    row.GetCell(1).CellStyle = getCellStyleCenter(book);
-                    int TypeI = 2;//类型开始列
-                    foreach (var vv in v.USESTATECountModel)
-                    {
-                        row.CreateCell(TypeI).SetCellValue(vv.USESTATECount);
-                        //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
-                        TypeI++;
-                    }
-                    foreach (var vv in v.MANAGERSTATECountModel)
-                    {
-                        row.CreateCell(TypeI).SetCellValue(vv.MANAGERSTATCount);
-                        //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
-                        TypeI++;
-                    }
-                    foreach (var vv in v.FIRECHANNELLEVELTYPECountModel)
-                    {
-                        row.CreateCell(TypeI).SetCellValue(vv.FIRECHANNELLEVELTYPECount);
-                        //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
-                        TypeI++;
-                    }
-                    foreach (var vv in v.FIRECHANNELUSERTYPECountModel)
-                    {
-                        row.CreateCell(TypeI).SetCellValue(vv.FIRECHANNELUSERTYPECount);
-                        //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
-                        TypeI++;
-                    }
-                    rowI++;
+                    row.CreateCell(0).SetCellValue(orgName);
+                    row.GetCell(0).CellStyle = getCellStyleLeft(book);
                 }
+                else
+                {
+                    row.CreateCell(0).SetCellValue(v.NAME);
+                    //row.GetCell(0).CellStyle = getCellStyleCenter(book);
+                }
+                row.CreateCell(1).SetCellValue(v.USESTATECount);
+                row.GetCell(1).CellStyle = getCellStyleCenter(book);
+                int TypeI = 2;//类型开始列
+                foreach (var vv in v.USESTATECountModel)
+                {
+                    row.CreateCell(TypeI).SetCellValue(vv.USESTATECount);
+                    //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
+                    TypeI++;
+                }
+                foreach (var vv in v.MANAGERSTATECountModel)
+                {
+                    row.CreateCell(TypeI).SetCellValue(vv.MANAGERSTATCount);
+                    //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
+                    TypeI++;
+                }
+                foreach (var vv in v.FIRECHANNELLEVELTYPECountModel)
+                {
+                    row.CreateCell(TypeI).SetCellValue(vv.FIRECHANNELLEVELTYPECount);
+                    //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
+                    TypeI++;
+                }
+                foreach (var vv in v.FIRECHANNELUSERTYPECountModel)
+                {
+                    row.CreateCell(TypeI).SetCellValue(vv.FIRECHANNELUSERTYPECount);
+                    //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
+                    TypeI++;
+                }
+                rowI++;
+            }
             //}
             //else//查询防火通道详细信息
             //{
@@ -3050,8 +3166,8 @@ namespace ManagerSystem.MVC.Controllers
             pubViewBag("004012", "004012", "");
             if (ViewBag.isPageRight == false)
                 return View();
-                //组织机构下拉框
-                ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = SystemCls.getCurUserOrgNo() });
+            //组织机构下拉框
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = SystemCls.getCurUserOrgNo() });
             return View();
         }
         /// <summary>
@@ -3106,9 +3222,10 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("    </tr>");
             sb.AppendFormat("</thead>");
             sb.AppendFormat("<tbody>");
-
+            int i = 0;
             foreach (var v in list)
             {
+                i++;
                 string orgName = v.ORGName;
                 string orgNo = v.BYORGNO;
                 if (string.IsNullOrEmpty(v.BYORGNO))
@@ -3118,15 +3235,31 @@ namespace ManagerSystem.MVC.Controllers
                 }
                 else
                 {
-                    sb.AppendFormat("<tr class='{0}'>", PublicCls.getOrgTrClass(sw.TopORGNO, orgNo));
-                    if ((PublicCls.OrgIsZhen(v.BYORGNO) == false && v.BYORGNO == sw.TopORGNO && v.ORGName.IndexOf("合计") == -1) || PublicCls.OrgIsZhen(v.BYORGNO))
+                    if (i % 2 == 0)
                     {
-                        sb.AppendFormat("<td class=\"left\" style=\"{1}\"><a href=\"#\" onclick=\"Layer('{2}','{3}')\">{0}</a></td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo), v.BYORGNO, v.ORGName);
+                        sb.AppendFormat("<tr class='{0}'>", PublicCls.getOrgTrClass(sw.TopORGNO, orgNo));
+                        if ((PublicCls.OrgIsZhen(v.BYORGNO) == false && v.BYORGNO == sw.TopORGNO && v.ORGName.IndexOf("合计") == -1) || PublicCls.OrgIsZhen(v.BYORGNO))
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\"><a href=\"#\" onclick=\"Layer('{2}','{3}')\">{0}</a></td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo), v.BYORGNO, v.ORGName);
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\">{0}</td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo));
+                        }
                     }
                     else
                     {
-                        sb.AppendFormat("<td class=\"left\" style=\"{1}\">{0}</td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo));
+                        sb.AppendFormat("<tr class='{0} row1'>", PublicCls.getOrgTrClass(sw.TopORGNO, orgNo));
+                        if ((PublicCls.OrgIsZhen(v.BYORGNO) == false && v.BYORGNO == sw.TopORGNO && v.ORGName.IndexOf("合计") == -1) || PublicCls.OrgIsZhen(v.BYORGNO))
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\"><a href=\"#\" onclick=\"Layer('{2}','{3}')\">{0}</a></td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo), v.BYORGNO, v.ORGName);
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\">{0}</td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo));
+                        }
                     }
+
                 }
 
                 string totol = "";
@@ -3301,161 +3434,161 @@ namespace ManagerSystem.MVC.Controllers
                 BYORGNO = SystemCls.getCurUserOrgNo();
             //if (PublicCls.OrgIsZhen(BYORGNO) == false)
             //{
-                IEnumerable<USESTATECountModel> USESTATECountModel;
-                IEnumerable<MANAGERSTATECountModel> MANAGERSTATECountModel;
-                IEnumerable<PROPAGANDASTELETYPECountModel> PROPAGANDASTELETYPECountModel;
-                IEnumerable<STRUCTURETYPECountModel> STRUCTURETYPECountModel;
-                var list = DataCenterCountCls.getPROPAGANDASTELEModelCount(new DC_UTILITY_PROPAGANDASTELE_SW
-                {
-                    TopORGNO = BYORGNO,
-                }, out USESTATECountModel, out MANAGERSTATECountModel, out PROPAGANDASTELETYPECountModel, out STRUCTURETYPECountModel);
+            IEnumerable<USESTATECountModel> USESTATECountModel;
+            IEnumerable<MANAGERSTATECountModel> MANAGERSTATECountModel;
+            IEnumerable<PROPAGANDASTELETYPECountModel> PROPAGANDASTELETYPECountModel;
+            IEnumerable<STRUCTURETYPECountModel> STRUCTURETYPECountModel;
+            var list = DataCenterCountCls.getPROPAGANDASTELEModelCount(new DC_UTILITY_PROPAGANDASTELE_SW
+            {
+                TopORGNO = BYORGNO,
+            }, out USESTATECountModel, out MANAGERSTATECountModel, out PROPAGANDASTELETYPECountModel, out STRUCTURETYPECountModel);
 
-                int typeCount1 = 0;//计算类别有多少列
-                int typeCount2 = 0;//计算类别有多少列
-                int typeCount3 = 0;//计算类别有多少列
-                int typeCount4 = 0;//计算类别有多少列
-                foreach (var v in PROPAGANDASTELETYPECountModel)
+            int typeCount1 = 0;//计算类别有多少列
+            int typeCount2 = 0;//计算类别有多少列
+            int typeCount3 = 0;//计算类别有多少列
+            int typeCount4 = 0;//计算类别有多少列
+            foreach (var v in PROPAGANDASTELETYPECountModel)
+            {
+                typeCount1++;
+            }
+            foreach (var v in USESTATECountModel)
+            {
+                typeCount2++;
+            }
+            foreach (var v in MANAGERSTATECountModel)
+            {
+                typeCount3++;
+            }
+            foreach (var v in STRUCTURETYPECountModel)
+            {
+                typeCount4++;
+            }
+            //设置宽度
+            sheet1.SetColumnWidth(0, 30 * 256);
+            sheet1.SetColumnWidth(1, 20 * 256);
+            for (int i = 0; i < typeCount1; i++)
+            {
+                sheet1.SetColumnWidth(i + 2, 20 * 256);
+            }
+            for (int i = 0; i < typeCount2; i++)
+            {
+                sheet1.SetColumnWidth(i + 2 + typeCount1, 20 * 256);
+            }
+            for (int i = 0; i < typeCount3; i++)
+            {
+                sheet1.SetColumnWidth(i + 2 + typeCount1 + typeCount2, 20 * 256);
+            }
+            for (int i = 0; i < typeCount4; i++)
+            {
+                sheet1.SetColumnWidth(i + 2 + typeCount1 + typeCount2 + typeCount3, 20 * 256);
+            }
+            row = sheet1.CreateRow(1);
+            if (PublicCls.OrgIsZhen(BYORGNO) == false)
+                row.CreateCell(0).SetCellValue("单位");
+            else
+                row.CreateCell(0).SetCellValue("名称");
+            row.CreateCell(1).SetCellValue("总数");
+            row.CreateCell(2).SetCellValue("宣传碑类型");
+            row.CreateCell(2 + typeCount1).SetCellValue("使用现状");
+            row.CreateCell(2 + typeCount1 + typeCount2).SetCellValue("维护类型");
+            row.CreateCell(2 + typeCount1 + typeCount2 + typeCount3).SetCellValue("结构类型");
+            row.GetCell(0).CellStyle = getCellStyleTitle(book);
+            row.GetCell(1).CellStyle = getCellStyleTitle(book);
+            row.GetCell(2).CellStyle = getCellStyleTitle(book);
+            row.GetCell(2 + typeCount1).CellStyle = getCellStyleTitle(book);
+            row.GetCell(2 + typeCount1 + typeCount2).CellStyle = getCellStyleTitle(book);
+            row.GetCell(2 + typeCount1 + typeCount2 + typeCount3).CellStyle = getCellStyleTitle(book);
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(0, 0, 0, typeCount1 + typeCount2 + typeCount3 + 1));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 2, 0, 0));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 2, 1, 1));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, 2, typeCount1 + 1));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, 2 + typeCount1, typeCount1 + 1 + typeCount2));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, typeCount1 + 2 + typeCount2, typeCount1 + 1 + typeCount2 + typeCount3));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, typeCount1 + 2 + typeCount2 + typeCount3, typeCount1 + 1 + typeCount2 + typeCount3 + typeCount4));
+            row = sheet1.CreateRow(2);
+            int indexType = 2;//从第二列开始
+            foreach (var v in PROPAGANDASTELETYPECountModel)
+            {
+                row.CreateCell(indexType).SetCellValue(v.PROPAGANDASTELETYPENAME);
+                row.GetCell(indexType).CellStyle = getCellStyleHead(book);
+                indexType++;
+            }
+            foreach (var v in USESTATECountModel)
+            {
+                row.CreateCell(indexType).SetCellValue(v.USESTATENAME);
+                row.GetCell(indexType).CellStyle = getCellStyleHead(book);
+                indexType++;
+            }
+            foreach (var v in MANAGERSTATECountModel)
+            {
+                row.CreateCell(indexType).SetCellValue(v.MANAGERSTATNAME);
+                row.GetCell(indexType).CellStyle = getCellStyleHead(book);
+                indexType++;
+            }
+            foreach (var v in STRUCTURETYPECountModel)
+            {
+                row.CreateCell(indexType).SetCellValue(v.STRUCTURETYPENAME);
+                row.GetCell(indexType).CellStyle = getCellStyleHead(book);
+                indexType++;
+            }
+            int rowI = 1;//数据行
+            foreach (var v in list)//循环获取数据
+            {
+                row = sheet1.CreateRow(rowI + 2);
+                if (string.IsNullOrEmpty(v.ORGName) == false)
                 {
-                    typeCount1++;
-                }
-                foreach (var v in USESTATECountModel)
-                {
-                    typeCount2++;
-                }
-                foreach (var v in MANAGERSTATECountModel)
-                {
-                    typeCount3++;
-                }
-                foreach (var v in STRUCTURETYPECountModel)
-                {
-                    typeCount4++;
-                }
-                //设置宽度
-                sheet1.SetColumnWidth(0, 30 * 256);
-                sheet1.SetColumnWidth(1, 20 * 256);
-                for (int i = 0; i < typeCount1; i++)
-                {
-                    sheet1.SetColumnWidth(i + 2, 20 * 256);
-                }
-                for (int i = 0; i < typeCount2; i++)
-                {
-                    sheet1.SetColumnWidth(i + 2 + typeCount1, 20 * 256);
-                }
-                for (int i = 0; i < typeCount3; i++)
-                {
-                    sheet1.SetColumnWidth(i + 2 + typeCount1 + typeCount2, 20 * 256);
-                }
-                for (int i = 0; i < typeCount4; i++)
-                {
-                    sheet1.SetColumnWidth(i + 2 + typeCount1 + typeCount2 + typeCount3, 20 * 256);
-                }
-                row = sheet1.CreateRow(1);
-                if (PublicCls.OrgIsZhen(BYORGNO) == false)
-                    row.CreateCell(0).SetCellValue("单位");
-                else
-                    row.CreateCell(0).SetCellValue("名称");
-                row.CreateCell(1).SetCellValue("总数");
-                row.CreateCell(2).SetCellValue("宣传碑类型");
-                row.CreateCell(2 + typeCount1).SetCellValue("使用现状");
-                row.CreateCell(2 + typeCount1 + typeCount2).SetCellValue("维护类型");
-                row.CreateCell(2 + typeCount1 + typeCount2 + typeCount3).SetCellValue("结构类型");
-                row.GetCell(0).CellStyle = getCellStyleTitle(book);
-                row.GetCell(1).CellStyle = getCellStyleTitle(book);
-                row.GetCell(2).CellStyle = getCellStyleTitle(book);
-                row.GetCell(2 + typeCount1).CellStyle = getCellStyleTitle(book);
-                row.GetCell(2 + typeCount1 + typeCount2).CellStyle = getCellStyleTitle(book);
-                row.GetCell(2 + typeCount1 + typeCount2 + typeCount3).CellStyle = getCellStyleTitle(book);
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(0, 0, 0, typeCount1 + typeCount2 + typeCount3 + 1));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 2, 0, 0));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 2, 1, 1));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, 2, typeCount1 + 1));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, 2 + typeCount1, typeCount1 + 1 + typeCount2));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, typeCount1 + 2 + typeCount2, typeCount1 + 1 + typeCount2 + typeCount3));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, typeCount1 + 2 + typeCount2 + typeCount3, typeCount1 + 1 + typeCount2 + typeCount3 + typeCount4));
-                row = sheet1.CreateRow(2);
-                int indexType = 2;//从第二列开始
-                foreach (var v in PROPAGANDASTELETYPECountModel)
-                {
-                    row.CreateCell(indexType).SetCellValue(v.PROPAGANDASTELETYPENAME);
-                    row.GetCell(indexType).CellStyle = getCellStyleHead(book);
-                    indexType++;
-                }
-                foreach (var v in USESTATECountModel)
-                {
-                    row.CreateCell(indexType).SetCellValue(v.USESTATENAME);
-                    row.GetCell(indexType).CellStyle = getCellStyleHead(book);
-                    indexType++;
-                }
-                foreach (var v in MANAGERSTATECountModel)
-                {
-                    row.CreateCell(indexType).SetCellValue(v.MANAGERSTATNAME);
-                    row.GetCell(indexType).CellStyle = getCellStyleHead(book);
-                    indexType++;
-                }
-                foreach (var v in STRUCTURETYPECountModel)
-                {
-                    row.CreateCell(indexType).SetCellValue(v.STRUCTURETYPENAME);
-                    row.GetCell(indexType).CellStyle = getCellStyleHead(book);
-                    indexType++;
-                }
-                int rowI = 1;//数据行
-                foreach (var v in list)//循环获取数据
-                {
-                    row = sheet1.CreateRow(rowI + 2);
-                    if (string.IsNullOrEmpty(v.ORGName) == false)
+                    string orgName = v.ORGName;
+                    if (PublicCls.OrgIsZhen(BYORGNO) == false)
                     {
-                        string orgName = v.ORGName;
-                        if (PublicCls.OrgIsZhen(BYORGNO) == false)
+                        if (PublicCls.OrgIsShi(v.BYORGNO))//统计市，即所有县的
                         {
-                            if (PublicCls.OrgIsShi(v.BYORGNO))//统计市，即所有县的
-                            {
-                            }
-                            else if (PublicCls.OrgIsXian(v.BYORGNO))//县
-                            {
-                                orgName = "　　" + orgName;
-                            }
-                            else
-                            {
-                                orgName = "　　　　" + orgName;
-                            }
                         }
-                        row.CreateCell(0).SetCellValue(orgName);
-                        row.GetCell(0).CellStyle = getCellStyleLeft(book);
+                        else if (PublicCls.OrgIsXian(v.BYORGNO))//县
+                        {
+                            orgName = "　　" + orgName;
+                        }
+                        else
+                        {
+                            orgName = "　　　　" + orgName;
+                        }
                     }
-                    else
-                    {
-                        row.CreateCell(0).SetCellValue(v.NAME);
-                        //row.GetCell(0).CellStyle = getCellStyleCenter(book);
-                    }
-                    row.CreateCell(1).SetCellValue(v.USESTATECount);
-                    //row.GetCell(1).CellStyle = getCellStyleCenter(book);
-                    int TypeI = 2;//类型开始列
-                    foreach (var vv in v.PROPAGANDASTELETYPECountModel)
-                    {
-                        row.CreateCell(TypeI).SetCellValue(vv.DICTPROPAGANDASTELETYPECount);
-                        //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
-                        TypeI++;
-                    }
-                    foreach (var vv in v.USESTATECountModel)
-                    {
-                        row.CreateCell(TypeI).SetCellValue(vv.USESTATECount);
-                        //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
-                        TypeI++;
-                    }
-                    foreach (var vv in v.MANAGERSTATECountModel)
-                    {
-                        row.CreateCell(TypeI).SetCellValue(vv.MANAGERSTATCount);
-                        //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
-                        TypeI++;
-                    }
-                    foreach (var vv in v.STRUCTURETYPECountModel)
-                    {
-                        row.CreateCell(TypeI).SetCellValue(vv.STRUCTURETYPECount);
-                        //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
-                        TypeI++;
-                    }
-                    rowI++;
+                    row.CreateCell(0).SetCellValue(orgName);
+                    row.GetCell(0).CellStyle = getCellStyleLeft(book);
                 }
+                else
+                {
+                    row.CreateCell(0).SetCellValue(v.NAME);
+                    //row.GetCell(0).CellStyle = getCellStyleCenter(book);
+                }
+                row.CreateCell(1).SetCellValue(v.USESTATECount);
+                //row.GetCell(1).CellStyle = getCellStyleCenter(book);
+                int TypeI = 2;//类型开始列
+                foreach (var vv in v.PROPAGANDASTELETYPECountModel)
+                {
+                    row.CreateCell(TypeI).SetCellValue(vv.DICTPROPAGANDASTELETYPECount);
+                    //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
+                    TypeI++;
+                }
+                foreach (var vv in v.USESTATECountModel)
+                {
+                    row.CreateCell(TypeI).SetCellValue(vv.USESTATECount);
+                    //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
+                    TypeI++;
+                }
+                foreach (var vv in v.MANAGERSTATECountModel)
+                {
+                    row.CreateCell(TypeI).SetCellValue(vv.MANAGERSTATCount);
+                    //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
+                    TypeI++;
+                }
+                foreach (var vv in v.STRUCTURETYPECountModel)
+                {
+                    row.CreateCell(TypeI).SetCellValue(vv.STRUCTURETYPECount);
+                    //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
+                    TypeI++;
+                }
+                rowI++;
+            }
             //}
             //else//查询宣传碑牌详细信息
             //{
@@ -3558,8 +3691,8 @@ namespace ManagerSystem.MVC.Controllers
             pubViewBag("004013", "004013", "");
             if (ViewBag.isPageRight == false)
                 return View();
-           //组织机构下拉框
-                ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(),TopORGNO = SystemCls.getCurUserOrgNo() });
+            //组织机构下拉框
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = SystemCls.getCurUserOrgNo() });
             return View();
         }
         /// <summary>
@@ -3615,9 +3748,10 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("    </tr>");
             sb.AppendFormat("</thead>");
             sb.AppendFormat("<tbody>");
-
+            int i = 0;
             foreach (var v in list)
             {
+                i++;
                 string orgName = v.ORGName;
                 string orgNo = v.BYORGNO;
                 if (string.IsNullOrEmpty(v.BYORGNO))
@@ -3627,14 +3761,29 @@ namespace ManagerSystem.MVC.Controllers
                 }
                 else
                 {
-                    sb.AppendFormat("<tr class='{0}'>", PublicCls.getOrgTrClass(sw.TopORGNO, orgNo));
-                    if ((PublicCls.OrgIsZhen(v.BYORGNO) == false && v.BYORGNO == sw.TopORGNO && v.ORGName.IndexOf("合计") == -1) || PublicCls.OrgIsZhen(v.BYORGNO))
+                    if (i % 2 == 0)
                     {
-                        sb.AppendFormat("<td class=\"left\" style=\"{1}\"><a href=\"#\" onclick=\"Layer('{2}','{3}')\">{0}</a></td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo), v.BYORGNO, v.ORGName);
+                        sb.AppendFormat("<tr class='{0}'>", PublicCls.getOrgTrClass(sw.TopORGNO, orgNo));
+                        if ((PublicCls.OrgIsZhen(v.BYORGNO) == false && v.BYORGNO == sw.TopORGNO && v.ORGName.IndexOf("合计") == -1) || PublicCls.OrgIsZhen(v.BYORGNO))
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\"><a href=\"#\" onclick=\"Layer('{2}','{3}')\">{0}</a></td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo), v.BYORGNO, v.ORGName);
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\">{0}</td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo));
+                        }
                     }
                     else
                     {
-                        sb.AppendFormat("<td class=\"left\" style=\"{1}\">{0}</td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo));
+                        sb.AppendFormat("<tr class='{0} row1'>", PublicCls.getOrgTrClass(sw.TopORGNO, orgNo));
+                        if ((PublicCls.OrgIsZhen(v.BYORGNO) == false && v.BYORGNO == sw.TopORGNO && v.ORGName.IndexOf("合计") == -1) || PublicCls.OrgIsZhen(v.BYORGNO))
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\"><a href=\"#\" onclick=\"Layer('{2}','{3}')\">{0}</a></td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo), v.BYORGNO, v.ORGName);
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\">{0}</td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo));
+                        }
                     }
                 }
                 string totol = "";
@@ -3671,9 +3820,11 @@ namespace ManagerSystem.MVC.Controllers
         /// </summary>
         /// <param name="sw"></param>
         /// <returns></returns>
-        public ActionResult  getPROPAGANDASTELEidDetailStr(DC_UTILITY_PROPAGANDASTELE_SW sw)
+        public ActionResult getPROPAGANDASTELEidDetailStr(DC_UTILITY_PROPAGANDASTELE_SW sw)
         {
-
+            string BYORGNO = Request.Params["BYORGNO"];
+            sw.BYORGNO = BYORGNO;
+            sw.ORGNOSXZ = "1";
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<table id=\"tb\" cellpadding=\"0\" cellspacing=\"0\">");
             sb.AppendFormat("<thead>");
@@ -3790,138 +3941,138 @@ namespace ManagerSystem.MVC.Controllers
                 BYORGNO = SystemCls.getCurUserOrgNo();
             //if (PublicCls.OrgIsZhen(BYORGNO) == false)
             //{
-                IEnumerable<USESTATECountModel> USESTATECountModel;
-                IEnumerable<MANAGERSTATECountModel> MANAGERSTATECountModel;
-                IEnumerable<COMMUNICATIONWAYCountModel> COMMUNICATIONWAYCountModel;
-                var list = DataCenterCountCls.getRELAYModelCount(new DC_UTILITY_RELAY_SW
-                {
-                    TopORGNO = BYORGNO,
-                }, out USESTATECountModel, out MANAGERSTATECountModel, out COMMUNICATIONWAYCountModel);
+            IEnumerable<USESTATECountModel> USESTATECountModel;
+            IEnumerable<MANAGERSTATECountModel> MANAGERSTATECountModel;
+            IEnumerable<COMMUNICATIONWAYCountModel> COMMUNICATIONWAYCountModel;
+            var list = DataCenterCountCls.getRELAYModelCount(new DC_UTILITY_RELAY_SW
+            {
+                TopORGNO = BYORGNO,
+            }, out USESTATECountModel, out MANAGERSTATECountModel, out COMMUNICATIONWAYCountModel);
 
-                int typeCount1 = 0;//计算类别有多少列
-                int typeCount2 = 0;//计算类别有多少列
-                int typeCount3 = 0;//计算类别有多少列
-                foreach (var v in COMMUNICATIONWAYCountModel)
-                {
-                    typeCount1++;
-                }
-                foreach (var v in USESTATECountModel)
-                {
-                    typeCount2++;
-                }
-                foreach (var v in MANAGERSTATECountModel)
-                {
-                    typeCount3++;
-                }
-                //设置宽度
-                sheet1.SetColumnWidth(0, 30 * 256);
-                sheet1.SetColumnWidth(1, 20 * 256);
-                for (int i = 0; i < typeCount1; i++)
-                {
-                    sheet1.SetColumnWidth(i + 2, 20 * 256);
-                }
-                for (int i = 0; i < typeCount2; i++)
-                {
-                    sheet1.SetColumnWidth(i + 2 + typeCount1, 20 * 256);
-                }
-                for (int i = 0; i < typeCount3; i++)
-                {
-                    sheet1.SetColumnWidth(i + 2 + typeCount1 + typeCount2, 20 * 256);
-                }
-                row = sheet1.CreateRow(1);
-                if (PublicCls.OrgIsZhen(BYORGNO) == false)
-                    row.CreateCell(0).SetCellValue("单位");
-                else
-                    row.CreateCell(0).SetCellValue("名称");
-                row.CreateCell(1).SetCellValue("总数");
-                row.CreateCell(2).SetCellValue("通讯方式");
-                row.CreateCell(2 + typeCount1).SetCellValue("使用现状");
-                row.CreateCell(2 + typeCount1 + typeCount2).SetCellValue("维护类型");
-                row.GetCell(0).CellStyle = getCellStyleTitle(book);
-                row.GetCell(1).CellStyle = getCellStyleTitle(book);
-                row.GetCell(2).CellStyle = getCellStyleTitle(book);
-                row.GetCell(2 + typeCount1).CellStyle = getCellStyleTitle(book);
-                row.GetCell(2 + typeCount1 + typeCount2).CellStyle = getCellStyleTitle(book);
-                //row.GetCell(2 + typeCount1 + typeCount2 + typeCount3).CellStyle = getCellStyleTitle(book);
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(0, 0, 0, typeCount1 + typeCount2 + typeCount3 + 1));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 2, 0, 0));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 2, 1, 1));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, 2, typeCount1 + 1));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, 2 + typeCount1, typeCount1 + 1 + typeCount2));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, typeCount1 + 2 + typeCount2, typeCount1 + 1 + typeCount2 + typeCount3));
-                row = sheet1.CreateRow(2);
-                int indexType = 2;//从第二列开始
-                foreach (var v in COMMUNICATIONWAYCountModel)
-                {
-                    row.CreateCell(indexType).SetCellValue(v.COMMUNICATIONWAYNAME);
-                    row.GetCell(indexType).CellStyle = getCellStyleHead(book);
-                    indexType++;
-                }
-                foreach (var v in USESTATECountModel)
-                {
-                    row.CreateCell(indexType).SetCellValue(v.USESTATENAME);
-                    row.GetCell(indexType).CellStyle = getCellStyleHead(book);
-                    indexType++;
-                }
-                foreach (var v in MANAGERSTATECountModel)
-                {
-                    row.CreateCell(indexType).SetCellValue(v.MANAGERSTATNAME);
-                    row.GetCell(indexType).CellStyle = getCellStyleHead(book);
-                    indexType++;
-                }
+            int typeCount1 = 0;//计算类别有多少列
+            int typeCount2 = 0;//计算类别有多少列
+            int typeCount3 = 0;//计算类别有多少列
+            foreach (var v in COMMUNICATIONWAYCountModel)
+            {
+                typeCount1++;
+            }
+            foreach (var v in USESTATECountModel)
+            {
+                typeCount2++;
+            }
+            foreach (var v in MANAGERSTATECountModel)
+            {
+                typeCount3++;
+            }
+            //设置宽度
+            sheet1.SetColumnWidth(0, 30 * 256);
+            sheet1.SetColumnWidth(1, 20 * 256);
+            for (int i = 0; i < typeCount1; i++)
+            {
+                sheet1.SetColumnWidth(i + 2, 20 * 256);
+            }
+            for (int i = 0; i < typeCount2; i++)
+            {
+                sheet1.SetColumnWidth(i + 2 + typeCount1, 20 * 256);
+            }
+            for (int i = 0; i < typeCount3; i++)
+            {
+                sheet1.SetColumnWidth(i + 2 + typeCount1 + typeCount2, 20 * 256);
+            }
+            row = sheet1.CreateRow(1);
+            if (PublicCls.OrgIsZhen(BYORGNO) == false)
+                row.CreateCell(0).SetCellValue("单位");
+            else
+                row.CreateCell(0).SetCellValue("名称");
+            row.CreateCell(1).SetCellValue("总数");
+            row.CreateCell(2).SetCellValue("通讯方式");
+            row.CreateCell(2 + typeCount1).SetCellValue("使用现状");
+            row.CreateCell(2 + typeCount1 + typeCount2).SetCellValue("维护类型");
+            row.GetCell(0).CellStyle = getCellStyleTitle(book);
+            row.GetCell(1).CellStyle = getCellStyleTitle(book);
+            row.GetCell(2).CellStyle = getCellStyleTitle(book);
+            row.GetCell(2 + typeCount1).CellStyle = getCellStyleTitle(book);
+            row.GetCell(2 + typeCount1 + typeCount2).CellStyle = getCellStyleTitle(book);
+            //row.GetCell(2 + typeCount1 + typeCount2 + typeCount3).CellStyle = getCellStyleTitle(book);
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(0, 0, 0, typeCount1 + typeCount2 + typeCount3 + 1));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 2, 0, 0));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 2, 1, 1));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, 2, typeCount1 + 1));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, 2 + typeCount1, typeCount1 + 1 + typeCount2));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, typeCount1 + 2 + typeCount2, typeCount1 + 1 + typeCount2 + typeCount3));
+            row = sheet1.CreateRow(2);
+            int indexType = 2;//从第二列开始
+            foreach (var v in COMMUNICATIONWAYCountModel)
+            {
+                row.CreateCell(indexType).SetCellValue(v.COMMUNICATIONWAYNAME);
+                row.GetCell(indexType).CellStyle = getCellStyleHead(book);
+                indexType++;
+            }
+            foreach (var v in USESTATECountModel)
+            {
+                row.CreateCell(indexType).SetCellValue(v.USESTATENAME);
+                row.GetCell(indexType).CellStyle = getCellStyleHead(book);
+                indexType++;
+            }
+            foreach (var v in MANAGERSTATECountModel)
+            {
+                row.CreateCell(indexType).SetCellValue(v.MANAGERSTATNAME);
+                row.GetCell(indexType).CellStyle = getCellStyleHead(book);
+                indexType++;
+            }
 
-                int rowI = 1;//数据行
-                foreach (var v in list)//循环获取数据
+            int rowI = 1;//数据行
+            foreach (var v in list)//循环获取数据
+            {
+                row = sheet1.CreateRow(rowI + 2);
+                if (string.IsNullOrEmpty(v.ORGName) == false)
                 {
-                    row = sheet1.CreateRow(rowI + 2);
-                    if (string.IsNullOrEmpty(v.ORGName) == false)
+                    string orgName = v.ORGName;
+                    if (PublicCls.OrgIsZhen(BYORGNO) == false)
                     {
-                        string orgName = v.ORGName;
-                        if (PublicCls.OrgIsZhen(BYORGNO) == false)
+                        if (PublicCls.OrgIsShi(v.BYORGNO))//统计市，即所有县的
                         {
-                            if (PublicCls.OrgIsShi(v.BYORGNO))//统计市，即所有县的
-                            {
-                            }
-                            else if (PublicCls.OrgIsXian(v.BYORGNO))//县
-                            {
-                                orgName = "　　" + orgName;
-                            }
-                            else
-                            {
-                                orgName = "　　　　" + orgName;
-                            }
                         }
-                        row.CreateCell(0).SetCellValue(orgName);
-                        row.GetCell(0).CellStyle = getCellStyleLeft(book);
+                        else if (PublicCls.OrgIsXian(v.BYORGNO))//县
+                        {
+                            orgName = "　　" + orgName;
+                        }
+                        else
+                        {
+                            orgName = "　　　　" + orgName;
+                        }
                     }
-                    else
-                    {
-                        row.CreateCell(0).SetCellValue(v.NAME);
-                        //row.GetCell(0).CellStyle = getCellStyleCenter(book);
-                    }
-                    row.CreateCell(1).SetCellValue(v.USESTATECount);
-                    //row.GetCell(1).CellStyle = getCellStyleCenter(book);
-                    int TypeI = 2;//类型开始列
-                    foreach (var vv in v.COMMUNICATIONWAYCountModel)
-                    {
-                        row.CreateCell(TypeI).SetCellValue(vv.DICTCOMMUNICATIONWAYCount);
-                        //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
-                        TypeI++;
-                    }
-                    foreach (var vv in v.USESTATECountModel)
-                    {
-                        row.CreateCell(TypeI).SetCellValue(vv.USESTATECount);
-                        //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
-                        TypeI++;
-                    }
-                    foreach (var vv in v.MANAGERSTATECountModel)
-                    {
-                        row.CreateCell(TypeI).SetCellValue(vv.MANAGERSTATCount);
-                        //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
-                        TypeI++;
-                    }
-                    rowI++;
+                    row.CreateCell(0).SetCellValue(orgName);
+                    row.GetCell(0).CellStyle = getCellStyleLeft(book);
                 }
+                else
+                {
+                    row.CreateCell(0).SetCellValue(v.NAME);
+                    //row.GetCell(0).CellStyle = getCellStyleCenter(book);
+                }
+                row.CreateCell(1).SetCellValue(v.USESTATECount);
+                //row.GetCell(1).CellStyle = getCellStyleCenter(book);
+                int TypeI = 2;//类型开始列
+                foreach (var vv in v.COMMUNICATIONWAYCountModel)
+                {
+                    row.CreateCell(TypeI).SetCellValue(vv.DICTCOMMUNICATIONWAYCount);
+                    //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
+                    TypeI++;
+                }
+                foreach (var vv in v.USESTATECountModel)
+                {
+                    row.CreateCell(TypeI).SetCellValue(vv.USESTATECount);
+                    //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
+                    TypeI++;
+                }
+                foreach (var vv in v.MANAGERSTATECountModel)
+                {
+                    row.CreateCell(TypeI).SetCellValue(vv.MANAGERSTATCount);
+                    //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
+                    TypeI++;
+                }
+                rowI++;
+            }
             //}
             //else//查询中继站详细信息
             //{
@@ -4024,8 +4175,8 @@ namespace ManagerSystem.MVC.Controllers
             pubViewBag("004014", "004014", "");
             if (ViewBag.isPageRight == false)
                 return View();
-                //组织机构下拉框
-                ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(),TopORGNO = SystemCls.getCurUserOrgNo() });
+            //组织机构下拉框
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = SystemCls.getCurUserOrgNo() });
             return View();
         }
         /// <summary>
@@ -4033,7 +4184,7 @@ namespace ManagerSystem.MVC.Controllers
         /// </summary>
         /// <param name="sw"></param>
         /// <returns></returns>
-       public ActionResult getRELAYCountStr(DC_UTILITY_RELAY_SW sw)
+        public ActionResult getRELAYCountStr(DC_UTILITY_RELAY_SW sw)
         {
             string BYORGNO = Request.Params["BYORGNO"];
             sw.TopORGNO = BYORGNO;
@@ -4073,9 +4224,10 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("    </tr>");
             sb.AppendFormat("</thead>");
             sb.AppendFormat("<tbody>");
-
+            int i = 0;
             foreach (var v in list)
             {
+                i++;
                 string orgName = v.ORGName;
                 string orgNo = v.BYORGNO;
                 if (string.IsNullOrEmpty(v.BYORGNO))
@@ -4085,14 +4237,29 @@ namespace ManagerSystem.MVC.Controllers
                 }
                 else
                 {
-                    sb.AppendFormat("<tr class='{0}'>", PublicCls.getOrgTrClass(sw.TopORGNO, orgNo));
-                    if ((PublicCls.OrgIsZhen(v.BYORGNO) == false && v.BYORGNO == sw.TopORGNO && v.ORGName.IndexOf("合计") == -1) || PublicCls.OrgIsZhen(v.BYORGNO))
+                    if (i % 2 == 0)
                     {
-                        sb.AppendFormat("<td class=\"left\" style=\"{1}\"><a href=\"#\" onclick=\"Layer('{2}','{3}')\">{0}</a></td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo), v.BYORGNO, v.ORGName);
+                        sb.AppendFormat("<tr class='{0}'>", PublicCls.getOrgTrClass(sw.TopORGNO, orgNo));
+                        if ((PublicCls.OrgIsZhen(v.BYORGNO) == false && v.BYORGNO == sw.TopORGNO && v.ORGName.IndexOf("合计") == -1) || PublicCls.OrgIsZhen(v.BYORGNO))
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\"><a href=\"#\" onclick=\"Layer('{2}','{3}')\">{0}</a></td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo), v.BYORGNO, v.ORGName);
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\">{0}</td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo));
+                        }
                     }
                     else
                     {
-                        sb.AppendFormat("<td class=\"left\" style=\"{1}\">{0}</td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo));
+                        sb.AppendFormat("<tr class='{0} row1'>", PublicCls.getOrgTrClass(sw.TopORGNO, orgNo));
+                        if ((PublicCls.OrgIsZhen(v.BYORGNO) == false && v.BYORGNO == sw.TopORGNO && v.ORGName.IndexOf("合计") == -1) || PublicCls.OrgIsZhen(v.BYORGNO))
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\"><a href=\"#\" onclick=\"Layer('{2}','{3}')\">{0}</a></td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo), v.BYORGNO, v.ORGName);
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\">{0}</td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo));
+                        }
                     }
                 }
 
@@ -4227,138 +4394,138 @@ namespace ManagerSystem.MVC.Controllers
                 BYORGNO = SystemCls.getCurUserOrgNo();
             //if (PublicCls.OrgIsZhen(BYORGNO) == false)
             //{
-                IEnumerable<USESTATECountModel> USESTATECountModel;
-                IEnumerable<MANAGERSTATECountModel> MANAGERSTATECountModel;
-                IEnumerable<TRANSFERMODETYPECountModel> TRANSFERMODETYPECountModel;
-                var list = DataCenterCountCls.getMONITORINGSTATIONModelCount(new DC_UTILITY_MONITORINGSTATION_SW
-                {
-                    TopORGNO = BYORGNO,
-                }, out USESTATECountModel, out MANAGERSTATECountModel, out TRANSFERMODETYPECountModel);
+            IEnumerable<USESTATECountModel> USESTATECountModel;
+            IEnumerable<MANAGERSTATECountModel> MANAGERSTATECountModel;
+            IEnumerable<TRANSFERMODETYPECountModel> TRANSFERMODETYPECountModel;
+            var list = DataCenterCountCls.getMONITORINGSTATIONModelCount(new DC_UTILITY_MONITORINGSTATION_SW
+            {
+                TopORGNO = BYORGNO,
+            }, out USESTATECountModel, out MANAGERSTATECountModel, out TRANSFERMODETYPECountModel);
 
-                int typeCount1 = 0;//计算类别有多少列
-                int typeCount2 = 0;//计算类别有多少列
-                int typeCount3 = 0;//计算类别有多少列
-                foreach (var v in TRANSFERMODETYPECountModel)
-                {
-                    typeCount1++;
-                }
-                foreach (var v in USESTATECountModel)
-                {
-                    typeCount2++;
-                }
-                foreach (var v in MANAGERSTATECountModel)
-                {
-                    typeCount3++;
-                }
-                //设置宽度
-                sheet1.SetColumnWidth(0, 30 * 256);
-                sheet1.SetColumnWidth(1, 20 * 256);
-                for (int i = 0; i < typeCount1; i++)
-                {
-                    sheet1.SetColumnWidth(i + 2, 20 * 256);
-                }
-                for (int i = 0; i < typeCount2; i++)
-                {
-                    sheet1.SetColumnWidth(i + 2 + typeCount1, 20 * 256);
-                }
-                for (int i = 0; i < typeCount3; i++)
-                {
-                    sheet1.SetColumnWidth(i + 2 + typeCount1 + typeCount2, 20 * 256);
-                }
-                row = sheet1.CreateRow(1);
-                if (PublicCls.OrgIsZhen(BYORGNO) == false)
-                    row.CreateCell(0).SetCellValue("单位");
-                else
-                    row.CreateCell(0).SetCellValue("名称");
-                row.CreateCell(1).SetCellValue("总数");
-                row.CreateCell(2).SetCellValue("无线电传输方式");
-                row.CreateCell(2 + typeCount1).SetCellValue("使用现状");
-                row.CreateCell(2 + typeCount1 + typeCount2).SetCellValue("维护类型");
-                row.GetCell(0).CellStyle = getCellStyleTitle(book);
-                row.GetCell(1).CellStyle = getCellStyleTitle(book);
-                row.GetCell(2).CellStyle = getCellStyleTitle(book);
-                row.GetCell(2 + typeCount1).CellStyle = getCellStyleTitle(book);
-                row.GetCell(2 + typeCount1 + typeCount2).CellStyle = getCellStyleTitle(book);
-                //row.GetCell(2 + typeCount1 + typeCount2 + typeCount3).CellStyle = getCellStyleTitle(book);
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(0, 0, 0, typeCount1 + typeCount2 + typeCount3 + 1));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 2, 0, 0));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 2, 1, 1));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, 2, typeCount1 + 1));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, 2 + typeCount1, typeCount1 + 1 + typeCount2));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, typeCount1 + 2 + typeCount2, typeCount1 + 1 + typeCount2 + typeCount3));
-                row = sheet1.CreateRow(2);
-                int indexType = 2;//从第二列开始
-                foreach (var v in TRANSFERMODETYPECountModel)
-                {
-                    row.CreateCell(indexType).SetCellValue(v.TRANSFERMODETYPENAME);
-                    row.GetCell(indexType).CellStyle = getCellStyleHead(book);
-                    indexType++;
-                }
-                foreach (var v in USESTATECountModel)
-                {
-                    row.CreateCell(indexType).SetCellValue(v.USESTATENAME);
-                    row.GetCell(indexType).CellStyle = getCellStyleHead(book);
-                    indexType++;
-                }
-                foreach (var v in MANAGERSTATECountModel)
-                {
-                    row.CreateCell(indexType).SetCellValue(v.MANAGERSTATNAME);
-                    row.GetCell(indexType).CellStyle = getCellStyleHead(book);
-                    indexType++;
-                }
+            int typeCount1 = 0;//计算类别有多少列
+            int typeCount2 = 0;//计算类别有多少列
+            int typeCount3 = 0;//计算类别有多少列
+            foreach (var v in TRANSFERMODETYPECountModel)
+            {
+                typeCount1++;
+            }
+            foreach (var v in USESTATECountModel)
+            {
+                typeCount2++;
+            }
+            foreach (var v in MANAGERSTATECountModel)
+            {
+                typeCount3++;
+            }
+            //设置宽度
+            sheet1.SetColumnWidth(0, 30 * 256);
+            sheet1.SetColumnWidth(1, 20 * 256);
+            for (int i = 0; i < typeCount1; i++)
+            {
+                sheet1.SetColumnWidth(i + 2, 20 * 256);
+            }
+            for (int i = 0; i < typeCount2; i++)
+            {
+                sheet1.SetColumnWidth(i + 2 + typeCount1, 20 * 256);
+            }
+            for (int i = 0; i < typeCount3; i++)
+            {
+                sheet1.SetColumnWidth(i + 2 + typeCount1 + typeCount2, 20 * 256);
+            }
+            row = sheet1.CreateRow(1);
+            if (PublicCls.OrgIsZhen(BYORGNO) == false)
+                row.CreateCell(0).SetCellValue("单位");
+            else
+                row.CreateCell(0).SetCellValue("名称");
+            row.CreateCell(1).SetCellValue("总数");
+            row.CreateCell(2).SetCellValue("无线电传输方式");
+            row.CreateCell(2 + typeCount1).SetCellValue("使用现状");
+            row.CreateCell(2 + typeCount1 + typeCount2).SetCellValue("维护类型");
+            row.GetCell(0).CellStyle = getCellStyleTitle(book);
+            row.GetCell(1).CellStyle = getCellStyleTitle(book);
+            row.GetCell(2).CellStyle = getCellStyleTitle(book);
+            row.GetCell(2 + typeCount1).CellStyle = getCellStyleTitle(book);
+            row.GetCell(2 + typeCount1 + typeCount2).CellStyle = getCellStyleTitle(book);
+            //row.GetCell(2 + typeCount1 + typeCount2 + typeCount3).CellStyle = getCellStyleTitle(book);
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(0, 0, 0, typeCount1 + typeCount2 + typeCount3 + 1));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 2, 0, 0));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 2, 1, 1));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, 2, typeCount1 + 1));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, 2 + typeCount1, typeCount1 + 1 + typeCount2));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, typeCount1 + 2 + typeCount2, typeCount1 + 1 + typeCount2 + typeCount3));
+            row = sheet1.CreateRow(2);
+            int indexType = 2;//从第二列开始
+            foreach (var v in TRANSFERMODETYPECountModel)
+            {
+                row.CreateCell(indexType).SetCellValue(v.TRANSFERMODETYPENAME);
+                row.GetCell(indexType).CellStyle = getCellStyleHead(book);
+                indexType++;
+            }
+            foreach (var v in USESTATECountModel)
+            {
+                row.CreateCell(indexType).SetCellValue(v.USESTATENAME);
+                row.GetCell(indexType).CellStyle = getCellStyleHead(book);
+                indexType++;
+            }
+            foreach (var v in MANAGERSTATECountModel)
+            {
+                row.CreateCell(indexType).SetCellValue(v.MANAGERSTATNAME);
+                row.GetCell(indexType).CellStyle = getCellStyleHead(book);
+                indexType++;
+            }
 
-                int rowI = 1;//数据行
-                foreach (var v in list)//循环获取数据
+            int rowI = 1;//数据行
+            foreach (var v in list)//循环获取数据
+            {
+                row = sheet1.CreateRow(rowI + 2);
+                if (string.IsNullOrEmpty(v.ORGName) == false)
                 {
-                    row = sheet1.CreateRow(rowI + 2);
-                    if (string.IsNullOrEmpty(v.ORGName) == false)
+                    string orgName = v.ORGName;
+                    if (PublicCls.OrgIsZhen(BYORGNO) == false)
                     {
-                        string orgName = v.ORGName;
-                        if (PublicCls.OrgIsZhen(BYORGNO) == false)
+                        if (PublicCls.OrgIsShi(v.BYORGNO))//统计市，即所有县的
                         {
-                            if (PublicCls.OrgIsShi(v.BYORGNO))//统计市，即所有县的
-                            {
-                            }
-                            else if (PublicCls.OrgIsXian(v.BYORGNO))//县
-                            {
-                                orgName = "　　" + orgName;
-                            }
-                            else
-                            {
-                                orgName = "　　　　" + orgName;
-                            }
                         }
-                        row.CreateCell(0).SetCellValue(orgName);
-                        row.GetCell(0).CellStyle = getCellStyleLeft(book);
+                        else if (PublicCls.OrgIsXian(v.BYORGNO))//县
+                        {
+                            orgName = "　　" + orgName;
+                        }
+                        else
+                        {
+                            orgName = "　　　　" + orgName;
+                        }
                     }
-                    else
-                    {
-                        row.CreateCell(0).SetCellValue(v.NAME);
-                        //row.GetCell(0).CellStyle = getCellStyleCenter(book);
-                    }
-                    row.CreateCell(1).SetCellValue(v.USESTATECount);
-                    //row.GetCell(1).CellStyle = getCellStyleCenter(book);
-                    int TypeI = 2;//类型开始列
-                    foreach (var vv in v.TRANSFERMODETYPECountModel)
-                    {
-                        row.CreateCell(TypeI).SetCellValue(vv.DICTTRANSFERMODETYPECount);
-                        //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
-                        TypeI++;
-                    }
-                    foreach (var vv in v.USESTATECountModel)
-                    {
-                        row.CreateCell(TypeI).SetCellValue(vv.USESTATECount);
-                        //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
-                        TypeI++;
-                    }
-                    foreach (var vv in v.MANAGERSTATECountModel)
-                    {
-                        row.CreateCell(TypeI).SetCellValue(vv.MANAGERSTATCount);
-                        //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
-                        TypeI++;
-                    }
-                    rowI++;
+                    row.CreateCell(0).SetCellValue(orgName);
+                    row.GetCell(0).CellStyle = getCellStyleLeft(book);
                 }
+                else
+                {
+                    row.CreateCell(0).SetCellValue(v.NAME);
+                    //row.GetCell(0).CellStyle = getCellStyleCenter(book);
+                }
+                row.CreateCell(1).SetCellValue(v.USESTATECount);
+                //row.GetCell(1).CellStyle = getCellStyleCenter(book);
+                int TypeI = 2;//类型开始列
+                foreach (var vv in v.TRANSFERMODETYPECountModel)
+                {
+                    row.CreateCell(TypeI).SetCellValue(vv.DICTTRANSFERMODETYPECount);
+                    //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
+                    TypeI++;
+                }
+                foreach (var vv in v.USESTATECountModel)
+                {
+                    row.CreateCell(TypeI).SetCellValue(vv.USESTATECount);
+                    //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
+                    TypeI++;
+                }
+                foreach (var vv in v.MANAGERSTATECountModel)
+                {
+                    row.CreateCell(TypeI).SetCellValue(vv.MANAGERSTATCount);
+                    //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
+                    TypeI++;
+                }
+                rowI++;
+            }
             //}
             //else//查询监测站详细信息
             //{
@@ -4510,9 +4677,10 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("    </tr>");
             sb.AppendFormat("</thead>");
             sb.AppendFormat("<tbody>");
-
+            int i = 0;
             foreach (var v in list)
             {
+                i++;
                 string orgName = v.ORGName;
                 string orgNo = v.BYORGNO;
 
@@ -4523,15 +4691,31 @@ namespace ManagerSystem.MVC.Controllers
                 }
                 else
                 {
-                    sb.AppendFormat("<tr class='{0}'>", PublicCls.getOrgTrClass(sw.TopORGNO, orgNo));
-                    if ((PublicCls.OrgIsZhen(v.BYORGNO) == false && v.BYORGNO == sw.TopORGNO && v.ORGName.IndexOf("合计") == -1) || PublicCls.OrgIsZhen(v.BYORGNO))
+                    if (i % 2 == 0)
                     {
-                        sb.AppendFormat("<td class=\"left\" style=\"{1}\"><a href=\"#\" onclick=\"Layer('{2}','{3}')\">{0}</a></td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo), v.BYORGNO, v.ORGName);
+                        sb.AppendFormat("<tr class='{0}'>", PublicCls.getOrgTrClass(sw.TopORGNO, orgNo));
+                        if ((PublicCls.OrgIsZhen(v.BYORGNO) == false && v.BYORGNO == sw.TopORGNO && v.ORGName.IndexOf("合计") == -1) || PublicCls.OrgIsZhen(v.BYORGNO))
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\"><a href=\"#\" onclick=\"Layer('{2}','{3}')\">{0}</a></td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo), v.BYORGNO, v.ORGName);
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\">{0}</td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo));
+                        }
                     }
                     else
                     {
-                        sb.AppendFormat("<td class=\"left\" style=\"{1}\">{0}</td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo));
+                        sb.AppendFormat("<tr class='{0} row1'>", PublicCls.getOrgTrClass(sw.TopORGNO, orgNo));
+                        if ((PublicCls.OrgIsZhen(v.BYORGNO) == false && v.BYORGNO == sw.TopORGNO && v.ORGName.IndexOf("合计") == -1) || PublicCls.OrgIsZhen(v.BYORGNO))
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\"><a href=\"#\" onclick=\"Layer('{2}','{3}')\">{0}</a></td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo), v.BYORGNO, v.ORGName);
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\">{0}</td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo));
+                        }
                     }
+
                 }
 
                 string totol = "";
@@ -4668,138 +4852,138 @@ namespace ManagerSystem.MVC.Controllers
             row.GetCell(0).CellStyle = getCellStyleTitle(book);
             if (string.IsNullOrEmpty(BYORGNO))
                 BYORGNO = SystemCls.getCurUserOrgNo();
-                IEnumerable<USESTATECountModel> USESTATECountModel;
-                IEnumerable<MANAGERSTATECountModel> MANAGERSTATECountModel;
-                IEnumerable<TRANSFERMODETYPECountModel> TRANSFERMODETYPECountModel;
-                var list = DataCenterCountCls.getFACTORCOLLECTSTATIONModelCount(new DC_UTILITY_FACTORCOLLECTSTATION_SW
-                {
-                    TopORGNO = BYORGNO,
-                }, out USESTATECountModel, out MANAGERSTATECountModel, out TRANSFERMODETYPECountModel);
+            IEnumerable<USESTATECountModel> USESTATECountModel;
+            IEnumerable<MANAGERSTATECountModel> MANAGERSTATECountModel;
+            IEnumerable<TRANSFERMODETYPECountModel> TRANSFERMODETYPECountModel;
+            var list = DataCenterCountCls.getFACTORCOLLECTSTATIONModelCount(new DC_UTILITY_FACTORCOLLECTSTATION_SW
+            {
+                TopORGNO = BYORGNO,
+            }, out USESTATECountModel, out MANAGERSTATECountModel, out TRANSFERMODETYPECountModel);
 
-                int typeCount1 = 0;//计算类别有多少列
-                int typeCount2 = 0;//计算类别有多少列
-                int typeCount3 = 0;//计算类别有多少列
-                foreach (var v in TRANSFERMODETYPECountModel)
-                {
-                    typeCount1++;
-                }
-                foreach (var v in USESTATECountModel)
-                {
-                    typeCount2++;
-                }
-                foreach (var v in MANAGERSTATECountModel)
-                {
-                    typeCount3++;
-                }
-                //设置宽度
-                sheet1.SetColumnWidth(0, 30 * 256);
-                sheet1.SetColumnWidth(1, 20 * 256);
-                for (int i = 0; i < typeCount1; i++)
-                {
-                    sheet1.SetColumnWidth(i + 2, 20 * 256);
-                }
-                for (int i = 0; i < typeCount2; i++)
-                {
-                    sheet1.SetColumnWidth(i + 2 + typeCount1, 20 * 256);
-                }
-                for (int i = 0; i < typeCount3; i++)
-                {
-                    sheet1.SetColumnWidth(i + 2 + typeCount1 + typeCount2, 20 * 256);
-                }
-                row = sheet1.CreateRow(1);
-                if (PublicCls.OrgIsZhen(BYORGNO) == false)
-                    row.CreateCell(0).SetCellValue("单位");
-                else
-                    row.CreateCell(0).SetCellValue("名称");
-                row.CreateCell(1).SetCellValue("总数");
-                row.CreateCell(2).SetCellValue("无线电传输方式");
-                row.CreateCell(2 + typeCount1).SetCellValue("使用现状");
-                row.CreateCell(2 + typeCount1 + typeCount2).SetCellValue("维护类型");
-                row.GetCell(0).CellStyle = getCellStyleTitle(book);
-                row.GetCell(1).CellStyle = getCellStyleTitle(book);
-                row.GetCell(2).CellStyle = getCellStyleTitle(book);
-                row.GetCell(2 + typeCount1).CellStyle = getCellStyleTitle(book);
-                row.GetCell(2 + typeCount1 + typeCount2).CellStyle = getCellStyleTitle(book);
-                //row.GetCell(2 + typeCount1 + typeCount2 + typeCount3).CellStyle = getCellStyleTitle(book);
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(0, 0, 0, typeCount1 + typeCount2 + typeCount3 + 1));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 2, 0, 0));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 2, 1, 1));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, 2, typeCount1 + 1));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, 2 + typeCount1, typeCount1 + 1 + typeCount2));
-                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, typeCount1 + 2 + typeCount2, typeCount1 + 1 + typeCount2 + typeCount3));
-                row = sheet1.CreateRow(2);
-                int indexType = 2;//从第二列开始
-                foreach (var v in TRANSFERMODETYPECountModel)
-                {
-                    row.CreateCell(indexType).SetCellValue(v.TRANSFERMODETYPENAME);
-                    row.GetCell(indexType).CellStyle = getCellStyleHead(book);
-                    indexType++;
-                }
-                foreach (var v in USESTATECountModel)
-                {
-                    row.CreateCell(indexType).SetCellValue(v.USESTATENAME);
-                    row.GetCell(indexType).CellStyle = getCellStyleHead(book);
-                    indexType++;
-                }
-                foreach (var v in MANAGERSTATECountModel)
-                {
-                    row.CreateCell(indexType).SetCellValue(v.MANAGERSTATNAME);
-                    row.GetCell(indexType).CellStyle = getCellStyleHead(book);
-                    indexType++;
-                }
+            int typeCount1 = 0;//计算类别有多少列
+            int typeCount2 = 0;//计算类别有多少列
+            int typeCount3 = 0;//计算类别有多少列
+            foreach (var v in TRANSFERMODETYPECountModel)
+            {
+                typeCount1++;
+            }
+            foreach (var v in USESTATECountModel)
+            {
+                typeCount2++;
+            }
+            foreach (var v in MANAGERSTATECountModel)
+            {
+                typeCount3++;
+            }
+            //设置宽度
+            sheet1.SetColumnWidth(0, 30 * 256);
+            sheet1.SetColumnWidth(1, 20 * 256);
+            for (int i = 0; i < typeCount1; i++)
+            {
+                sheet1.SetColumnWidth(i + 2, 20 * 256);
+            }
+            for (int i = 0; i < typeCount2; i++)
+            {
+                sheet1.SetColumnWidth(i + 2 + typeCount1, 20 * 256);
+            }
+            for (int i = 0; i < typeCount3; i++)
+            {
+                sheet1.SetColumnWidth(i + 2 + typeCount1 + typeCount2, 20 * 256);
+            }
+            row = sheet1.CreateRow(1);
+            if (PublicCls.OrgIsZhen(BYORGNO) == false)
+                row.CreateCell(0).SetCellValue("单位");
+            else
+                row.CreateCell(0).SetCellValue("名称");
+            row.CreateCell(1).SetCellValue("总数");
+            row.CreateCell(2).SetCellValue("无线电传输方式");
+            row.CreateCell(2 + typeCount1).SetCellValue("使用现状");
+            row.CreateCell(2 + typeCount1 + typeCount2).SetCellValue("维护类型");
+            row.GetCell(0).CellStyle = getCellStyleTitle(book);
+            row.GetCell(1).CellStyle = getCellStyleTitle(book);
+            row.GetCell(2).CellStyle = getCellStyleTitle(book);
+            row.GetCell(2 + typeCount1).CellStyle = getCellStyleTitle(book);
+            row.GetCell(2 + typeCount1 + typeCount2).CellStyle = getCellStyleTitle(book);
+            //row.GetCell(2 + typeCount1 + typeCount2 + typeCount3).CellStyle = getCellStyleTitle(book);
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(0, 0, 0, typeCount1 + typeCount2 + typeCount3 + 1));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 2, 0, 0));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 2, 1, 1));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, 2, typeCount1 + 1));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, 2 + typeCount1, typeCount1 + 1 + typeCount2));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, typeCount1 + 2 + typeCount2, typeCount1 + 1 + typeCount2 + typeCount3));
+            row = sheet1.CreateRow(2);
+            int indexType = 2;//从第二列开始
+            foreach (var v in TRANSFERMODETYPECountModel)
+            {
+                row.CreateCell(indexType).SetCellValue(v.TRANSFERMODETYPENAME);
+                row.GetCell(indexType).CellStyle = getCellStyleHead(book);
+                indexType++;
+            }
+            foreach (var v in USESTATECountModel)
+            {
+                row.CreateCell(indexType).SetCellValue(v.USESTATENAME);
+                row.GetCell(indexType).CellStyle = getCellStyleHead(book);
+                indexType++;
+            }
+            foreach (var v in MANAGERSTATECountModel)
+            {
+                row.CreateCell(indexType).SetCellValue(v.MANAGERSTATNAME);
+                row.GetCell(indexType).CellStyle = getCellStyleHead(book);
+                indexType++;
+            }
 
-                int rowI = 1;//数据行
-                foreach (var v in list)//循环获取数据
+            int rowI = 1;//数据行
+            foreach (var v in list)//循环获取数据
+            {
+                row = sheet1.CreateRow(rowI + 2);
+                if (string.IsNullOrEmpty(v.ORGName) == false)
                 {
-                    row = sheet1.CreateRow(rowI + 2);
-                    if (string.IsNullOrEmpty(v.ORGName) == false)
+                    string orgName = v.ORGName;
+                    if (PublicCls.OrgIsZhen(BYORGNO) == false)
                     {
-                        string orgName = v.ORGName;
-                        if (PublicCls.OrgIsZhen(BYORGNO) == false)
+                        if (PublicCls.OrgIsShi(v.BYORGNO))//统计市，即所有县的
                         {
-                            if (PublicCls.OrgIsShi(v.BYORGNO))//统计市，即所有县的
-                            {
-                            }
-                            else if (PublicCls.OrgIsXian(v.BYORGNO))//县
-                            {
-                                orgName = "　　" + orgName;
-                            }
-                            else
-                            {
-                                orgName = "　　　　" + orgName;
-                            }
                         }
-                        row.CreateCell(0).SetCellValue(orgName);
-                        row.GetCell(0).CellStyle = getCellStyleLeft(book);
+                        else if (PublicCls.OrgIsXian(v.BYORGNO))//县
+                        {
+                            orgName = "　　" + orgName;
+                        }
+                        else
+                        {
+                            orgName = "　　　　" + orgName;
+                        }
                     }
-                    else
-                    {
-                        row.CreateCell(0).SetCellValue(v.NAME);
-                        //row.GetCell(0).CellStyle = getCellStyleCenter(book);
-                    }
-                    row.CreateCell(1).SetCellValue(v.USESTATECount);
-                    //row.GetCell(1).CellStyle = getCellStyleCenter(book);
-                    int TypeI = 2;//类型开始列
-                    foreach (var vv in v.TRANSFERMODETYPECountModel)
-                    {
-                        row.CreateCell(TypeI).SetCellValue(vv.DICTTRANSFERMODETYPECount);
-                        //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
-                        TypeI++;
-                    }
-                    foreach (var vv in v.USESTATECountModel)
-                    {
-                        row.CreateCell(TypeI).SetCellValue(vv.USESTATECount);
-                        //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
-                        TypeI++;
-                    }
-                    foreach (var vv in v.MANAGERSTATECountModel)
-                    {
-                        row.CreateCell(TypeI).SetCellValue(vv.MANAGERSTATCount);
-                        //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
-                        TypeI++;
-                    }
-                    rowI++;
+                    row.CreateCell(0).SetCellValue(orgName);
+                    row.GetCell(0).CellStyle = getCellStyleLeft(book);
                 }
+                else
+                {
+                    row.CreateCell(0).SetCellValue(v.NAME);
+                    //row.GetCell(0).CellStyle = getCellStyleCenter(book);
+                }
+                row.CreateCell(1).SetCellValue(v.USESTATECount);
+                //row.GetCell(1).CellStyle = getCellStyleCenter(book);
+                int TypeI = 2;//类型开始列
+                foreach (var vv in v.TRANSFERMODETYPECountModel)
+                {
+                    row.CreateCell(TypeI).SetCellValue(vv.DICTTRANSFERMODETYPECount);
+                    //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
+                    TypeI++;
+                }
+                foreach (var vv in v.USESTATECountModel)
+                {
+                    row.CreateCell(TypeI).SetCellValue(vv.USESTATECount);
+                    //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
+                    TypeI++;
+                }
+                foreach (var vv in v.MANAGERSTATECountModel)
+                {
+                    row.CreateCell(TypeI).SetCellValue(vv.MANAGERSTATCount);
+                    //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
+                    TypeI++;
+                }
+                rowI++;
+            }
             // 写入到客户端 
             System.IO.MemoryStream ms = new System.IO.MemoryStream();
             book.Write(ms);
@@ -4867,7 +5051,7 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("    </tr>");
             sb.AppendFormat("</thead>");
             sb.AppendFormat("<tbody>");
-
+            int i = 0;
             foreach (var v in list)
             {
                 string orgName = v.ORGName;
@@ -4879,15 +5063,31 @@ namespace ManagerSystem.MVC.Controllers
                 }
                 else
                 {
-                    sb.AppendFormat("<tr class='{0}'>", PublicCls.getOrgTrClass(sw.TopORGNO, orgNo));
-                    if ((PublicCls.OrgIsZhen(v.BYORGNO) == false && v.BYORGNO == sw.TopORGNO && v.ORGName.IndexOf("合计") == -1) || PublicCls.OrgIsZhen(v.BYORGNO))
+                    if (i % 2 == 0)
                     {
-                        sb.AppendFormat("<td class=\"left\" style=\"{1}\"><a href=\"#\" onclick=\"Layer('{2}','{3}')\">{0}</a></td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo), v.BYORGNO, v.ORGName);
+                        sb.AppendFormat("<tr class='{0}'>", PublicCls.getOrgTrClass(sw.TopORGNO, orgNo));
+                        if ((PublicCls.OrgIsZhen(v.BYORGNO) == false && v.BYORGNO == sw.TopORGNO && v.ORGName.IndexOf("合计") == -1) || PublicCls.OrgIsZhen(v.BYORGNO))
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\"><a href=\"#\" onclick=\"Layer('{2}','{3}')\">{0}</a></td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo), v.BYORGNO, v.ORGName);
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\">{0}</td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo));
+                        }
                     }
                     else
                     {
-                        sb.AppendFormat("<td class=\"left\" style=\"{1}\">{0}</td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo));
+                        sb.AppendFormat("<tr class='{0} row1'>", PublicCls.getOrgTrClass(sw.TopORGNO, orgNo));
+                        if ((PublicCls.OrgIsZhen(v.BYORGNO) == false && v.BYORGNO == sw.TopORGNO && v.ORGName.IndexOf("合计") == -1) || PublicCls.OrgIsZhen(v.BYORGNO))
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\"><a href=\"#\" onclick=\"Layer('{2}','{3}')\">{0}</a></td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo), v.BYORGNO, v.ORGName);
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<td class=\"left\" style=\"{1}\">{0}</td>", orgName, PublicCls.getOrgTDNameClass(sw.TopORGNO, orgNo));
+                        }
                     }
+                   
                 }
                 string totol = "";
                 totol = v.TRANSFERMODETYPECount;
@@ -5021,219 +5221,219 @@ namespace ManagerSystem.MVC.Controllers
             if (string.IsNullOrEmpty(BYORGNO))
                 BYORGNO = SystemCls.getCurUserOrgNo();
 
-                    IEnumerable<HOTTYPECountModel> HOTTYPECountModel;
-                    IEnumerable<FIRELEVELCountModel> FIRELEVELCountModel;
+            IEnumerable<HOTTYPECountModel> HOTTYPECountModel;
+            IEnumerable<FIRELEVELCountModel> FIRELEVELCountModel;
 
-                    var list = DataCenterCountCls.getArchivalModelCount(new JC_FIRE_SW
-                    {
-                        TopORGNO = BYORGNO,
-                        BeginTime = TIMEBegin,
-                        EndTime = TIMEEnd,
-                    }, out HOTTYPECountModel, out FIRELEVELCountModel);
+            var list = DataCenterCountCls.getArchivalModelCount(new JC_FIRE_SW
+            {
+                TopORGNO = BYORGNO,
+                BeginTime = TIMEBegin,
+                EndTime = TIMEEnd,
+            }, out HOTTYPECountModel, out FIRELEVELCountModel);
 
-                    int typeCount1 = 0;//计算类别有多少列
-                    int typeCount2 = 0;//计算类别有多少列
-                    int typeCount3 = 0;//计算类别有多少列
-                    if (TYPE == "1")
-                    {
-                        foreach (var v in HOTTYPECountModel)
-                        {
-                            typeCount1++;
-                        }
-                        typeCount1 = typeCount1 + 1;
-                    }
-                    if (TYPE == "2")
-                    {
-                        foreach (var v in FIRELEVELCountModel)
-                        {
-                            typeCount2++;
-                        }
-                        typeCount2 = typeCount2 + 1;
-                    }
-                    if (TYPE == "3")
-                    {
-                        typeCount3 = 8;
-                    }
-                    //设置宽度
-                    sheet1.SetColumnWidth(0, 30 * 256);
-                    sheet1.SetColumnWidth(1, 20 * 256);
-                    if (TYPE == "1")
-                    {
-                        for (int i = 0; i < typeCount1; i++)
-                        {
-                            sheet1.SetColumnWidth(i + 1, 20 * 256);
-                        }
-                    }
-                    if (TYPE == "2")
-                    {
-                        for (int i = 0; i < typeCount2; i++)
-                        {
-                            sheet1.SetColumnWidth(i + 1 + typeCount1, 20 * 256);
-                        }
-                    }
-                    if (TYPE == "3")
-                    {
-                        for (int i = 0; i < typeCount2; i++)
-                        {
-                            sheet1.SetColumnWidth(i + 1 + typeCount1 + typeCount2, 20 * 256);
-                        }
-                    }
-                    row = sheet1.CreateRow(1);
+            int typeCount1 = 0;//计算类别有多少列
+            int typeCount2 = 0;//计算类别有多少列
+            int typeCount3 = 0;//计算类别有多少列
+            if (TYPE == "1")
+            {
+                foreach (var v in HOTTYPECountModel)
+                {
+                    typeCount1++;
+                }
+                typeCount1 = typeCount1 + 1;
+            }
+            if (TYPE == "2")
+            {
+                foreach (var v in FIRELEVELCountModel)
+                {
+                    typeCount2++;
+                }
+                typeCount2 = typeCount2 + 1;
+            }
+            if (TYPE == "3")
+            {
+                typeCount3 = 8;
+            }
+            //设置宽度
+            sheet1.SetColumnWidth(0, 30 * 256);
+            sheet1.SetColumnWidth(1, 20 * 256);
+            if (TYPE == "1")
+            {
+                for (int i = 0; i < typeCount1; i++)
+                {
+                    sheet1.SetColumnWidth(i + 1, 20 * 256);
+                }
+            }
+            if (TYPE == "2")
+            {
+                for (int i = 0; i < typeCount2; i++)
+                {
+                    sheet1.SetColumnWidth(i + 1 + typeCount1, 20 * 256);
+                }
+            }
+            if (TYPE == "3")
+            {
+                for (int i = 0; i < typeCount2; i++)
+                {
+                    sheet1.SetColumnWidth(i + 1 + typeCount1 + typeCount2, 20 * 256);
+                }
+            }
+            row = sheet1.CreateRow(1);
+            if (PublicCls.OrgIsZhen(BYORGNO) == false)
+                row.CreateCell(0).SetCellValue("单位");
+            else
+                row.CreateCell(0).SetCellValue("名称");
+            row.GetCell(0).CellStyle = getCellStyleTitle(book);
+            if (TYPE == "1")
+            {
+                row.CreateCell(1).SetCellValue("热点类别");
+                row.GetCell(1).CellStyle = getCellStyleTitle(book);
+            }
+            if (TYPE == "2")
+            {
+                row.CreateCell(typeCount1 + 1).SetCellValue("火灾等级");
+                row.GetCell(typeCount1 + 1).CellStyle = getCellStyleTitle(book);
+            }
+            if (TYPE == "3")
+            {
+                row.CreateCell(typeCount1 + 1 + typeCount2).SetCellValue("火情来源");
+                row.GetCell(typeCount1 + 1 + typeCount2).CellStyle = getCellStyleTitle(book);
+            }
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(0, 0, 0, typeCount1 + typeCount2 + 1 + typeCount3));
+            sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 2, 0, 0));
+            if (TYPE == "1")
+            {
+                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, 1, typeCount1));
+            }
+            if (TYPE == "2")
+            {
+                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, 1 + typeCount1, typeCount1 + typeCount2));
+            }
+            if (TYPE == "3")
+            {
+                sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, 1 + typeCount1 + typeCount2, typeCount1 + typeCount2 + typeCount3));
+            }
+            row = sheet1.CreateRow(2);
+            int indexType = 1;//从第二列开始
+            if (TYPE == "1")
+            {
+                row.CreateCell(indexType).SetCellValue("总数");
+                row.GetCell(indexType).CellStyle = getCellStyleHead(book);
+                foreach (var v in HOTTYPECountModel)
+                {
+                    row.CreateCell(indexType + 1).SetCellValue(v.HOTTYPEname);
+                    row.GetCell(indexType + 1).CellStyle = getCellStyleHead(book);
+                    indexType++;
+                }
+                indexType = indexType + 1;
+            }
+            if (TYPE == "2")
+            {
+                row.CreateCell(indexType).SetCellValue("总数");
+                row.GetCell(indexType).CellStyle = getCellStyleHead(book);
+                foreach (var v in FIRELEVELCountModel)
+                {
+                    row.CreateCell(indexType + 1).SetCellValue(v.FIRELEVELname);
+                    row.GetCell(indexType + 1).CellStyle = getCellStyleHead(book);
+                    indexType++;
+                }
+                indexType = indexType + 1;
+            }
+            if (TYPE == "3")
+            {
+                row.CreateCell(indexType).SetCellValue("总数");
+                row.CreateCell(indexType + 1).SetCellValue("红外相机");
+                row.CreateCell(indexType + 2).SetCellValue("电话报警");
+                row.CreateCell(indexType + 3).SetCellValue("卫星热点");
+                row.CreateCell(indexType + 4).SetCellValue("电子监控");
+                row.CreateCell(indexType + 5).SetCellValue("护林员火情");
+                row.CreateCell(indexType + 6).SetCellValue("无人机巡护");
+                row.CreateCell(indexType + 7).SetCellValue("历史补录");
+                row.GetCell(indexType).CellStyle = getCellStyleHead(book);
+                row.GetCell(indexType + 1).CellStyle = getCellStyleHead(book);
+                row.GetCell(indexType + 2).CellStyle = getCellStyleHead(book);
+                row.GetCell(indexType + 3).CellStyle = getCellStyleHead(book);
+                row.GetCell(indexType + 4).CellStyle = getCellStyleHead(book);
+                row.GetCell(indexType + 5).CellStyle = getCellStyleHead(book);
+                row.GetCell(indexType + 6).CellStyle = getCellStyleHead(book);
+                row.GetCell(indexType + 7).CellStyle = getCellStyleHead(book);
+            }
+            int rowI = 1;//数据行
+            foreach (var v in list)//循环获取数据
+            {
+                row = sheet1.CreateRow(rowI + 2);
+                if (string.IsNullOrEmpty(v.ORGName) == false)
+                {
+                    string orgName = v.ORGName;
                     if (PublicCls.OrgIsZhen(BYORGNO) == false)
-                        row.CreateCell(0).SetCellValue("单位");
-                    else
-                        row.CreateCell(0).SetCellValue("名称");
-                    row.GetCell(0).CellStyle = getCellStyleTitle(book);
-                    if (TYPE == "1")
                     {
-                        row.CreateCell(1).SetCellValue("热点类别");
-                        row.GetCell(1).CellStyle = getCellStyleTitle(book);
-                    }
-                    if (TYPE == "2")
-                    {
-                        row.CreateCell(typeCount1 + 1).SetCellValue("火灾等级");
-                        row.GetCell(typeCount1 + 1).CellStyle = getCellStyleTitle(book);
-                    }
-                    if (TYPE == "3")
-                    {
-                        row.CreateCell(typeCount1 + 1 + typeCount2).SetCellValue("火情来源");
-                        row.GetCell(typeCount1 + 1 + typeCount2).CellStyle = getCellStyleTitle(book);
-                    }
-                    sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(0, 0, 0, typeCount1 + typeCount2 + 1 + typeCount3));
-                    sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 2, 0, 0));
-                    if (TYPE == "1")
-                    {
-                        sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, 1, typeCount1));
-                    }
-                    if (TYPE == "2")
-                    {
-                        sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, 1 + typeCount1, typeCount1 + typeCount2));
-                    }
-                    if (TYPE == "3")
-                    {
-                        sheet1.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(1, 1, 1 + typeCount1 + typeCount2, typeCount1 + typeCount2 + typeCount3));
-                    }
-                    row = sheet1.CreateRow(2);
-                    int indexType = 1;//从第二列开始
-                    if (TYPE == "1")
-                    {
-                        row.CreateCell(indexType).SetCellValue("总数");
-                        row.GetCell(indexType).CellStyle = getCellStyleHead(book);
-                        foreach (var v in HOTTYPECountModel)
+                        if (PublicCls.OrgIsShi(v.BYORGNO))//统计市，即所有县的
                         {
-                            row.CreateCell(indexType + 1).SetCellValue(v.HOTTYPEname);
-                            row.GetCell(indexType + 1).CellStyle = getCellStyleHead(book);
-                            indexType++;
                         }
-                        indexType = indexType + 1;
-                    }
-                    if (TYPE == "2")
-                    {
-                        row.CreateCell(indexType).SetCellValue("总数");
-                        row.GetCell(indexType).CellStyle = getCellStyleHead(book);
-                        foreach (var v in FIRELEVELCountModel)
+                        else if (PublicCls.OrgIsXian(v.BYORGNO))//县
                         {
-                            row.CreateCell(indexType + 1).SetCellValue(v.FIRELEVELname);
-                            row.GetCell(indexType + 1).CellStyle = getCellStyleHead(book);
-                            indexType++;
-                        }
-                        indexType = indexType + 1;
-                    }
-                    if (TYPE == "3")
-                    {
-                        row.CreateCell(indexType).SetCellValue("总数");
-                        row.CreateCell(indexType + 1).SetCellValue("红外相机");
-                        row.CreateCell(indexType + 2).SetCellValue("电话报警");
-                        row.CreateCell(indexType + 3).SetCellValue("卫星热点");
-                        row.CreateCell(indexType + 4).SetCellValue("电子监控");
-                        row.CreateCell(indexType + 5).SetCellValue("护林员火情");
-                        row.CreateCell(indexType + 6).SetCellValue("无人机巡护");
-                        row.CreateCell(indexType + 7).SetCellValue("历史补录");
-                        row.GetCell(indexType).CellStyle = getCellStyleHead(book);
-                        row.GetCell(indexType + 1).CellStyle = getCellStyleHead(book);
-                        row.GetCell(indexType + 2).CellStyle = getCellStyleHead(book);
-                        row.GetCell(indexType + 3).CellStyle = getCellStyleHead(book);
-                        row.GetCell(indexType + 4).CellStyle = getCellStyleHead(book);
-                        row.GetCell(indexType + 5).CellStyle = getCellStyleHead(book);
-                        row.GetCell(indexType + 6).CellStyle = getCellStyleHead(book);
-                        row.GetCell(indexType + 7).CellStyle = getCellStyleHead(book);
-                    }
-                    int rowI = 1;//数据行
-                    foreach (var v in list)//循环获取数据
-                    {
-                        row = sheet1.CreateRow(rowI + 2);
-                        if (string.IsNullOrEmpty(v.ORGName) == false)
-                        {
-                            string orgName = v.ORGName;
-                            if (PublicCls.OrgIsZhen(BYORGNO) == false)
-                            {
-                                if (PublicCls.OrgIsShi(v.BYORGNO))//统计市，即所有县的
-                                {
-                                }
-                                else if (PublicCls.OrgIsXian(v.BYORGNO))//县
-                                {
-                                    orgName = "　　" + orgName;
-                                }
-                                else
-                                {
-                                    orgName = "　　　　" + orgName;
-                                }
-                            }
-                            row.CreateCell(0).SetCellValue(orgName);
-                            row.GetCell(0).CellStyle = getCellStyleLeft(book);
+                            orgName = "　　" + orgName;
                         }
                         else
                         {
-                            row.CreateCell(0).SetCellValue(v.NAME);
-                            //row.GetCell(0).CellStyle = getCellStyleCenter(book);
+                            orgName = "　　　　" + orgName;
                         }
-                        //row.CreateCell(1).SetCellValue(v.);
-                        //row.GetCell(1).CellStyle = getCellStyleCenter(book);
-                        int TypeI = 1;//类型开始列
-                        if (TYPE == "1")
-                        {
-                            row.CreateCell(TypeI).SetCellValue(v.HOTTYPECount);
-                            //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
-                            foreach (var vv in v.HOTTYPECountModel)
-                            {
-                                row.CreateCell(TypeI + 1).SetCellValue(vv.DictHOTTYPECount);
-                                //row.GetCell(TypeI + 1).CellStyle = getCellStyleCenter(book);
-                                TypeI++;
-                            }
-                            TypeI = TypeI + 1;
-                        }
-                        if (TYPE == "2")
-                        {
-                            row.CreateCell(TypeI).SetCellValue(v.FIRELEVELCount);
-                            //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
-                            foreach (var vv in v.FIRELEVELCountModel)
-                            {
-                                row.CreateCell(TypeI + 1).SetCellValue(vv.DictFIRELEVELCount);
-                                //row.GetCell(TypeI + 1).CellStyle = getCellStyleCenter(book);
-                                TypeI++;
-                            }
-                            TypeI = TypeI + 1;
-                        }
-                        if (TYPE == "3")
-                        {
-                            row.CreateCell(TypeI).SetCellValue(v.FIREFROMCount);
-                            row.CreateCell(TypeI + 1).SetCellValue(v.FIREFROMCount1);
-                            row.CreateCell(TypeI + 2).SetCellValue(v.FIREFROMCount2);
-                            row.CreateCell(TypeI + 3).SetCellValue(v.FIREFROMCount3);
-                            row.CreateCell(TypeI + 4).SetCellValue(v.FIREFROMCount4);
-                            row.CreateCell(TypeI + 5).SetCellValue(v.FIREFROMCount5);
-                            row.CreateCell(TypeI + 6).SetCellValue(v.FIREFROMCount6);
-                            row.CreateCell(TypeI + 7).SetCellValue(v.FIREFROMCount7);
-                            //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
-                            //row.GetCell(TypeI + 1).CellStyle = getCellStyleCenter(book);
-                            //row.GetCell(TypeI + 2).CellStyle = getCellStyleCenter(book);
-                            //row.GetCell(TypeI + 3).CellStyle = getCellStyleCenter(book);
-                            //row.GetCell(TypeI + 4).CellStyle = getCellStyleCenter(book);
-                            //row.GetCell(TypeI + 5).CellStyle = getCellStyleCenter(book);
-                            //row.GetCell(TypeI + 6).CellStyle = getCellStyleCenter(book);
-                        }
-                        rowI++;
                     }
+                    row.CreateCell(0).SetCellValue(orgName);
+                    row.GetCell(0).CellStyle = getCellStyleLeft(book);
+                }
+                else
+                {
+                    row.CreateCell(0).SetCellValue(v.NAME);
+                    //row.GetCell(0).CellStyle = getCellStyleCenter(book);
+                }
+                //row.CreateCell(1).SetCellValue(v.);
+                //row.GetCell(1).CellStyle = getCellStyleCenter(book);
+                int TypeI = 1;//类型开始列
+                if (TYPE == "1")
+                {
+                    row.CreateCell(TypeI).SetCellValue(v.HOTTYPECount);
+                    //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
+                    foreach (var vv in v.HOTTYPECountModel)
+                    {
+                        row.CreateCell(TypeI + 1).SetCellValue(vv.DictHOTTYPECount);
+                        //row.GetCell(TypeI + 1).CellStyle = getCellStyleCenter(book);
+                        TypeI++;
+                    }
+                    TypeI = TypeI + 1;
+                }
+                if (TYPE == "2")
+                {
+                    row.CreateCell(TypeI).SetCellValue(v.FIRELEVELCount);
+                    //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
+                    foreach (var vv in v.FIRELEVELCountModel)
+                    {
+                        row.CreateCell(TypeI + 1).SetCellValue(vv.DictFIRELEVELCount);
+                        //row.GetCell(TypeI + 1).CellStyle = getCellStyleCenter(book);
+                        TypeI++;
+                    }
+                    TypeI = TypeI + 1;
+                }
+                if (TYPE == "3")
+                {
+                    row.CreateCell(TypeI).SetCellValue(v.FIREFROMCount);
+                    row.CreateCell(TypeI + 1).SetCellValue(v.FIREFROMCount1);
+                    row.CreateCell(TypeI + 2).SetCellValue(v.FIREFROMCount2);
+                    row.CreateCell(TypeI + 3).SetCellValue(v.FIREFROMCount3);
+                    row.CreateCell(TypeI + 4).SetCellValue(v.FIREFROMCount4);
+                    row.CreateCell(TypeI + 5).SetCellValue(v.FIREFROMCount5);
+                    row.CreateCell(TypeI + 6).SetCellValue(v.FIREFROMCount6);
+                    row.CreateCell(TypeI + 7).SetCellValue(v.FIREFROMCount7);
+                    //row.GetCell(TypeI).CellStyle = getCellStyleCenter(book);
+                    //row.GetCell(TypeI + 1).CellStyle = getCellStyleCenter(book);
+                    //row.GetCell(TypeI + 2).CellStyle = getCellStyleCenter(book);
+                    //row.GetCell(TypeI + 3).CellStyle = getCellStyleCenter(book);
+                    //row.GetCell(TypeI + 4).CellStyle = getCellStyleCenter(book);
+                    //row.GetCell(TypeI + 5).CellStyle = getCellStyleCenter(book);
+                    //row.GetCell(TypeI + 6).CellStyle = getCellStyleCenter(book);
+                }
+                rowI++;
+            }
             // 写入到客户端 
             System.IO.MemoryStream ms = new System.IO.MemoryStream();
             book.Write(ms);
@@ -5283,11 +5483,11 @@ namespace ManagerSystem.MVC.Controllers
             pubViewBag("004017", "004017", "");
             if (ViewBag.isPageRight == false)
                 return View();
-                ViewBag.TIMEBegin = DateTime.Now.ToString("yyyy-MM-01");
-                ViewBag.TIMEEnd = DateTime.Now.ToString("yyyy-MM-dd");
-            
+            ViewBag.TIMEBegin = DateTime.Now.ToString("yyyy-MM-01");
+            ViewBag.TIMEEnd = DateTime.Now.ToString("yyyy-MM-dd");
+
             //组织机构下拉框
-            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(),TopORGNO = SystemCls.getCurUserOrgNo() });
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = SystemCls.getCurUserOrgNo() });
             return View();
         }
         public ActionResult getArchivalCountStr(JC_FIRE_SW sw)
@@ -5451,7 +5651,7 @@ namespace ManagerSystem.MVC.Controllers
             }
             sb.AppendFormat("</tbody>");
             sb.AppendFormat("</table>");
-              return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), "")), "text/html;charset=UTF-8");
+            return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), "")), "text/html;charset=UTF-8");
         }
 
         #region 档案统计Echarts

@@ -151,8 +151,19 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("    </tr>");
             sb.AppendFormat("</thead>");
             sb.AppendFormat("<tbody>");
+            int i = 0;
             foreach (var item in list)
             {
+                i++;
+                if (i % 2 == 0)
+                {
+                    sb.AppendFormat("    <tr>");
+                }
+                else
+                {
+                    sb.AppendFormat("    <tr class='row1'>");
+                }
+               
                 sb.AppendFormat("<td class=\"left\">{0}</td>", item.ORGName);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", item.HUCount);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", item.Sex1Count);
@@ -334,11 +345,20 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("</thead>");
             sb.AppendFormat("<tbody>");
             var list = HUReportCls.getPatrolRouteStatModel(sw);
+            int i = 0;
             foreach (var v in list)
             {
+                i++;
                 string orgName = v.ORGName;
                 string orgNo = v.ORGNo;
-                sb.AppendFormat("<tr>");
+                if (i % 2 == 0)
+                {
+                    sb.AppendFormat("<tr >");
+                }
+                else
+                {
+                    sb.AppendFormat("<tr class='row1'>");
+                }
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.ORGName + "");//
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.LineCount + "");//总
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.LineCount0 + "");//完成
@@ -549,9 +569,18 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("    </tr>");
             sb.AppendFormat("</thead>");
             sb.AppendFormat("<tbody>");
+            int i = 0;
             foreach (var v in list)
             {
-                sb.AppendFormat("<tr>");
+                i++;
+                if (i % 2 == 0)
+                {
+                    sb.AppendFormat("<tr>");
+                }
+                else
+                {
+                    sb.AppendFormat("<tr class='row1'>");
+                }
                 if (string.IsNullOrEmpty(v.ORGNo))
                 {
                     sb.AppendFormat("<td class=\"center\" style=\"{1}\">{0}</td>", v.HName, "");
@@ -770,9 +799,19 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("    </tr>");
             sb.AppendFormat("</thead>");
             sb.AppendFormat("<tbody>");
+            int i = 0;
             foreach (var v in list)
             {
-                sb.AppendFormat("<tr>");
+                i++;
+                if (i % 2 == 0)
+                {
+                    sb.AppendFormat("<tr>");
+                }
+                else
+                {
+                    sb.AppendFormat("<tr class='row1'>");
+                }
+                
                 if (string.IsNullOrEmpty(v.ORGNo))
                 {
                     sb.AppendFormat("<td class=\"center\" style=\"{1}\">{0}</td>", v.HName, "");

@@ -89,22 +89,25 @@ namespace ManagerSystem.MVC.Controllers
         private static void GetOAInfoStr(StringBuilder sb, string kqhref, string dbhref, string dxhref, string target, int[] nums)
         {
             sb.AppendFormat("<div class=\"officeTools floatRight\">");
-            sb.AppendFormat("<dl class=\"floatLeft\">");
-            sb.AppendFormat("<dt><img src=\"../../images/tools/tool_kq.png\"></dt>");
-            sb.AppendFormat("<dd><a href=\"" + kqhref + "\" target=\"" + target + "\">考勤</a></dd>");
-            //sb.AppendFormat("<dd><a href=\"#\" onclick='ShowMessageDialog(\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\")' >考勤</a></dd>", kqhref, "考勤签到签退", "1150px", "400px", true);
-            //sb.AppendFormat("<dd><a href=\"#\" onclick='OpenMessageDialog(\"{0}\",\"{1}\")' >考勤</a></dd>", kqhref, "考勤签到签退");
-            sb.AppendFormat("</dl>");
-            sb.AppendFormat("<dl class=\"floatLeft\">");
-            sb.AppendFormat("<dt><img src=\"../../images/tools/tool_db.png\"><span id=\"dbNum\">" + nums[0] + "</span></dt>");
-            sb.AppendFormat("<dd><a href=\"" + dbhref + "\" target=\"" + target + "\">待办</a></dd>");
-            sb.AppendFormat("</dl>");
-            sb.AppendFormat("<dl class=\"floatLeft\">");
-            sb.AppendFormat("<dt><img src=\"../../images/tools/tool_dx.png\"><span id=\"dxNum\">" + nums[1] + "</span></dt>");
-            sb.AppendFormat("<dd><a href=\"" + dxhref + "\" target=\"" + target + "\">短信</a></dd>");
-            //sb.AppendFormat("<dd><a href=\"#\" onclick='ShowMessageDialog(\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\")' >短信</a></dd>", dxhref, "信息专递", "1200px", "600px", true);
-            //sb.AppendFormat("<dd><a href=\"#\" onclick='OpenMessageDialog(\"{0}\",\"{1}\")' >短信</a></dd>", dxhref, "信息专递");
-            sb.AppendFormat("</dl>");
+            if (ConfigCls.getOAShowMethod() == "1")
+            {
+                sb.AppendFormat("<dl class=\"floatLeft\">");
+                sb.AppendFormat("<dt><img src=\"../../images/tools/tool_kq.png\"></dt>");
+                sb.AppendFormat("<dd><a href=\"" + kqhref + "\" target=\"" + target + "\">考勤</a></dd>");
+                //sb.AppendFormat("<dd><a href=\"#\" onclick='ShowMessageDialog(\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\")' >考勤</a></dd>", kqhref, "考勤签到签退", "1150px", "400px", true);
+                //sb.AppendFormat("<dd><a href=\"#\" onclick='OpenMessageDialog(\"{0}\",\"{1}\")' >考勤</a></dd>", kqhref, "考勤签到签退");
+                sb.AppendFormat("</dl>");
+                sb.AppendFormat("<dl class=\"floatLeft\">");
+                sb.AppendFormat("<dt><img src=\"../../images/tools/tool_db.png\"><span id=\"dbNum\">" + nums[0] + "</span></dt>");
+                sb.AppendFormat("<dd><a href=\"" + dbhref + "\" target=\"" + target + "\">待办</a></dd>");
+                sb.AppendFormat("</dl>");
+                sb.AppendFormat("<dl class=\"floatLeft\">");
+                sb.AppendFormat("<dt><img src=\"../../images/tools/tool_dx.png\"><span id=\"dxNum\">" + nums[1] + "</span></dt>");
+                sb.AppendFormat("<dd><a href=\"" + dxhref + "\" target=\"" + target + "\">短信</a></dd>");
+                //sb.AppendFormat("<dd><a href=\"#\" onclick='ShowMessageDialog(\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\")' >短信</a></dd>", dxhref, "信息专递", "1200px", "600px", true);
+                //sb.AppendFormat("<dd><a href=\"#\" onclick='OpenMessageDialog(\"{0}\",\"{1}\")' >短信</a></dd>", dxhref, "信息专递");
+                sb.AppendFormat("</dl>");
+            }
             sb.AppendFormat("</div>");
         }
         #endregion

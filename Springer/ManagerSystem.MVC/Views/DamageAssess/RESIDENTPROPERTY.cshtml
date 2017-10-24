@@ -28,29 +28,29 @@
     <input id="HidID" name="HidID" type="hidden" value="" />
     <table cellpadding="0" cellspacing="0">
         <tr>
-            <td style="width:100px;">财产名称: </td>
-            <td><input id="tbxPROPERTYNAME" type="text" value="" style="width:99%;" /></td>
-            <td style="width:100px;">财产单位: </td>
-            <td><input id="tbxPROPERTYUNIT" type="text" value="" style="width:99%;" /> </td>
+            <td class="tdField" style="width:100px;">财产名称: </td>
+            <td><input id="tbxPROPERTYNAME" type="text" value="" style="width:95%;" /></td>
+            <td class="tdField" style="width:100px;">财产单位: </td>
+            <td><input id="tbxPROPERTYUNIT" type="text" value="" style="width:95%;" /> </td>
         </tr>
         <tr>
-            <td>财产数量:</td>
-            <td><input id="tbxPROPERTYCOUNT" type="text" value="" style="width:99%;" /></td>
-            <td>购入价:</td>
-            <td><input id="tbxPROPERTYPRICE" type="text" value="" style="width:99%;" /></td>
+            <td class="tdField">财产数量:</td>
+            <td><input id="tbxPROPERTYCOUNT" type="text" value="" style="width:95%;" /></td>
+            <td class="tdField">购入价:</td>
+            <td><input id="tbxPROPERTYPRICE" type="text" value="" style="width:95%;" /></td>
         </tr>
         <tr>
-            <td>年平均折旧率:</td>
+            <td class="tdField">年平均折旧率:</td>
             <td>
                 <input id="tbxPRECIATIONRATE" type="text" value="" style="width:85%;" />
-                <span style="color: gray;">%</span>
+                <span class="spanMark">%</span>
             </td>
-            <td>已使用年限:</td>
+            <td class="tdField">已使用年限:</td>
             <td><input id="tbxHAVEUSEYEAR" type="text" value="" style="width:85%;" /></td>
         </tr>
         <tr>
-            <td>备注:</td>
-            <td colspan="3"><input id="tbxMARK" type="text" value="" style="width:99%;" /></td>
+            <td class="tdField">备注:</td>
+            <td colspan="3"><input id="tbxMARK" type="text" value="" style="width:96%;" /></td>
         </tr>
     </table>
 </div>
@@ -116,7 +116,7 @@
             layer.open({
                 type: 2,
                 title: '查看居民财产损失',
-                area: ['70%', '70%'],
+                area: ['600px', '260px'],
                 fix: true,
                 maxmin: true,
                 content: '/DamageAssess/RESIDENTPROPERTYDataSee?ROPERTYID=' + ID,
@@ -164,7 +164,7 @@
             layer.open({
                 type: 1,
                 title: str,
-                area: ['70%', '72%'],
+                area: ['600px', '280px'],
                 btn: btnInfo,
                 shade: 0,
                 maxmin: true,

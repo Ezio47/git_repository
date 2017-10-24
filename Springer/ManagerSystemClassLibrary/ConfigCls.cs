@@ -23,9 +23,44 @@ namespace ManagerSystemClassLibrary
         /// <returns>系统名称</returns>
         public static string getSystemName()
         {
+            string tmp = T_SYSSEC_USER_DEFINPROPCls.getPROPVALUEByUIDDICTVALUE(new T_SYSSEC_USER_DEFINPROP_SW { UID = SystemCls.getUserID(), DICTVALUE="3" });//用户自定义系统名称
+            if (string.IsNullOrEmpty(tmp) == false)
+                return tmp;
             return ConfigurationManager.AppSettings["getSystemName"].ToString(); //"智能巡护系统";
         }
-
+        /// <summary>
+        /// 获取系统Logo图片
+        /// </summary>
+        /// <returns></returns>
+        public static string getSystemLogo()
+        {
+            string tmp = T_SYSSEC_USER_DEFINPROPCls.getPROPVALUEByUIDDICTVALUE(new T_SYSSEC_USER_DEFINPROP_SW { UID = SystemCls.getUserID(), DICTVALUE = "2" });//用户自定义系统Logo名称
+            if (string.IsNullOrEmpty(tmp) == false)
+                return tmp;
+            return "yjjc_logo.png"; //"智能巡护系统";
+        }
+        /// <summary>
+        /// 获取顶部火险报警
+        /// </summary>
+        /// <returns></returns>
+        public static string getTopFireAlarm()
+        {
+            string tmp = T_SYSSEC_USER_DEFINPROPCls.getPROPVALUEByUIDDICTVALUE(new T_SYSSEC_USER_DEFINPROP_SW { UID = SystemCls.getUserID(), DICTVALUE = "4" });//用户自定义系统Logo名称
+            if (string.IsNullOrEmpty(tmp) == false)
+                return tmp;
+            return "1"; //"默认显示";
+        }
+        /// <summary>
+        /// 获取顶部火险等级
+        /// </summary>
+        /// <returns></returns>
+        public static string getTopFireLevel()
+        {
+            string tmp = T_SYSSEC_USER_DEFINPROPCls.getPROPVALUEByUIDDICTVALUE(new T_SYSSEC_USER_DEFINPROP_SW { UID = SystemCls.getUserID(), DICTVALUE = "5" });//用户自定义系统Logo名称
+            if (string.IsNullOrEmpty(tmp) == false)
+                return tmp;
+            return "1"; //"默认显示";
+        }
         /// <summary>
         /// 系统标识符
         /// </summary>
@@ -144,6 +179,12 @@ namespace ManagerSystemClassLibrary
             string url = vv.MENUURL;
             return url;
         }
+
+        /// <summary>
+        /// 获取登录后跳转链接
+        /// </summary>
+        /// <param name="uid"></param>
+        /// <returns></returns>
         public static string getLoginRedirectUrl(string uid)
         {
             //从config里读取首页
@@ -246,6 +287,10 @@ namespace ManagerSystemClassLibrary
         /// <returns></returns>
         public static string getOAShowMethod()
         {
+            string tmp = T_SYSSEC_USER_DEFINPROPCls.getPROPVALUEByUIDDICTVALUE(new T_SYSSEC_USER_DEFINPROP_SW { UID = SystemCls.getUserID(), DICTVALUE = "1" });//用户自定义系统名称
+            if (string.IsNullOrEmpty(tmp) == false)
+                return tmp;
+
             string str = ConfigurationManager.AppSettings["getOAShowMethod"].ToString();
             if (string.IsNullOrEmpty(str))
                 str = "0";
@@ -290,6 +335,7 @@ namespace ManagerSystemClassLibrary
         {
             return ConfigurationManager.AppSettings["OAWebServise"].ToString();
         }
+
         /// <summary>
         /// 获取州府所在地
         /// </summary>

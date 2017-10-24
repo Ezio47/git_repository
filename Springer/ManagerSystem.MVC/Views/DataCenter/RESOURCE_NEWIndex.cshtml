@@ -13,11 +13,10 @@
     var curorgno1 = SystemCls.getCurUserOrgNo();//添加的时候组织机判断
 }
 <div class="easyui-layout" data-options="fit:true" style=" border:0;">
-
-
     <div data-options="region:'west'" title="" style=" width:220px; border: none;">
         @Html.Raw(@ViewBag.PageLeftMenu)
     </div>
+
     <div data-options="region:'center'" title="" style=" border: none;">
         <div class="easyui-layout" data-options="fit:true" style=" border:0;">
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
@@ -46,8 +45,9 @@
                                     @*编号：<input id="tbxNUMBER" type="text" class="input-small" style="width:100px" value="" />*@
                                 <input type="button" value="查询" onclick="query('1')" class="btnSearchCss" />
                                 <input type="button" value="添加" id="btnAdd" onclick="Add()" style="display:none;" class="btnAddCss" />
+                                <input type="button" value="导入" onclick="Upload()" class="btnUnEnableCss" />
                             </li>
-                            <li class="active">
+                            @*<li class="active">
                                 @using (@Html.BeginForm("RESOURCEList", "DataCenter", FormMethod.Post, new { enctype = "multipart/form-data" }))
                                 {
                                     <input name="file" style="width:80px;" type="file" id="file" class="btn btn-info btn-sm" />
@@ -59,7 +59,7 @@
                             </li>
                             <li class="active">
                                 <a href="~/UploadFile/DataCenterExcel/资源模板.xls" target="_blank" title="右键，另存为">下载模板</a>
-                            </li>
+                            </li>*@
                         </ul>
                     </div>
                 
@@ -163,7 +163,7 @@
             type: 2,
             title: '添加',
             fix: false, //不固定
-            area: ['80%', '80%'],
+            area: ['700px', '520px'],
             maxmin: true,
             content: '/DataCenter/RESOURCE_NEWManIndex',
             end: function () {
@@ -171,11 +171,11 @@
             }
         });
     }
-    function Mdy(Method, ID, page) {
+    function Mdy(Method, ID, page,Name) {
         layer.open({
             type: 2,
-            title: "修改",
-            area: ['80%', '80%'],
+            title:Name+ "修改",
+            area: ['700px', '520px'],
             //shade: 0,
             fix: false,
             maxmin: true,
@@ -190,29 +190,43 @@
         layer.open({
             type: 2,
             title: name+'地图定位',
-            area: ['70%', '80%'],
+            area: ['1000px', '500px'],
             //shade: 0,
             fix: true,
             maxmin: true,
             content: '/MapCommon/MapPostionCommonIndex?tablename=' + tablename + "&id=" + id + "&type=" + type
         })
     }
-    ///查看
-    function See(ID, tablename) {
+    ///上传弹出上传界面
+    function Upload() {
         layer.open({
             type: 2,
-            title: '资源查看',
-            area: ['50%', '80%'],
+            title: '资源上传',
+            area: ['1200px', '500px'],
+            //shade: 0,
             fix: true,
             maxmin: true,
-            content: '/DataCenter/SeeIndex?tablename=' + tablename + "&ID=" + ID
+            content: '/DataCenter/RESOURCEList',
+            end: function () {
+                query(1);
+            }
+        })
+    }
+    function SwichIframeUrl(ID, tablename) {
+        layer.open({
+            type: 2,
+            title: '基本信息',
+            area: ['650px', '450px'],
+            fix: true,
+            maxmin: true,
+            content: '/DataCenter/RESOURCE_NEWTotalIndex?tablename=' + tablename + "&ID=" + ID
         })
     }
     function Photo(PRID, PHOTOTYPE) {
         layer.open({
             type: 2,
             title: '图片管理',
-            area: ['70%', '60%'],
+            area: ['900px', '450px'],
             fix: true,
             maxmin: true,
             content: '/DataCenter/PhotoIndex?PHOTOTYPE=' + PHOTOTYPE + "&PRID=" + PRID

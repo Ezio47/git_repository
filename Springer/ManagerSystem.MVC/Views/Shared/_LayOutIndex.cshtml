@@ -32,29 +32,34 @@
     </script>
 
     <script language="javascript">
-        loadClassAlarm();
-        window.setInterval(loadClassAlarm, 1000 * 5 * 60);
-        function loadClassAlarm() {
-            $.ajax({
-                url: '/MainDefault/GetHotInfoJson',
-                data: { type: 'Alarm' },
-                type: 'post',
-                success: function (data, ioArgs) {
-                    var ar = eval('(' + data + ')');
-                    if (ar.Success) {
-                        $('#divAlarm').html(ar.Msg);
+        if ('@ViewBag.TopFireAlarm' == '1') {
+            loadClassAlarm();
+            window.setInterval(loadClassAlarm, 1000 * 5 * 60);
+            function loadClassAlarm() {
+                $.ajax({
+                    url: '/MainDefault/GetHotInfoJson',
+                    data: { type: 'Alarm' },
+                    type: 'post',
+                    success: function (data, ioArgs) {
+                        var ar = eval('(' + data + ')');
+                        if (ar.Success) {
+                            $('#divAlarm').html(ar.Msg);
+                        }
+                        else {
+                            window.location = "/System/LoginOut";
+                        }
+                    },
+                    error: function (err, ioArgs) {
                     }
-                    else {
-                        window.location = "/System/LoginOut";
-                    }
-                },
-                error: function (err, ioArgs) {
-                }
-            });
+                });
+            }
         }
     </script>
 
     @RenderSection("Header", required: false) @*View页面自定义特定js/css使用*@
+    <style type="text/css">
+        .LayOutHeader .td1{margin: 0 0 0 15px;width: 445px;background: url(/Content/themes/default/Images/@ViewBag.SystemLogo);background-repeat:no-repeat; }
+    </style>
 </head>
 <body>
     <div id="cc" class="easyui-layout" data-options="fit:true" style=" border:0;">
@@ -87,7 +92,7 @@
                                         <td class="officeTools">
                                             <dl class="floatLeft">
                                                 <dt style="margin-top:-20px">
-                                                    @if (@ViewBag.fireLevel != "" && ViewBag.fireLevel != null)
+                                                    @if (@ViewBag.fireLevel != "" && ViewBag.fireLevel != null && ViewBag.TopFireLevel=="1")
                                                     {
                                                         <img src="/images/FireLevel/@{@ViewBag.fireLevel}.png" style="width:20px;height:23px;cursor:pointer;" onclick="msgShow1()">
                                                     }

@@ -18,29 +18,29 @@
                 <div class="divMan">
                     <table cellpadding="0" cellspacing="0">
                         <tr>
-                            <td style="width:80px;">单位名称：</td>
+                            <td class="tdField" style="width:80px;">单位名称：</td>
                             <td><select id="BYORGNO" class="easyui-combotree" style="width:200px;"></select></td>
-                            <td style="width:80px;"> <span style="color:red;">*</span>名称：</td>
-                            <td><input type="text" id="NAME" class="input-small" value="" /></td>
+                            <td class="tdField" style="width:80px;">名称：</td>
+                            <td><input type="text" id="NAME" class="input-small" value="" /><span class="spanRequiredField">*</span></td>
                         </tr>
                         <tr>
-                            <td style="width:80px;"> <span style="color:red;">*</span> 责任人：</td>
-                            <td><input type="text" id="RESPONSIBLEMAN" class="input-small" value="" /></td>
-                            <td style="width:80px;"> <span style="color:red;">*</span> 联系方式：</td>
-                            <td><input id="LINKWAY" type="text" class="input-small" value="" /></td>
+                            <td class="tdField" style="width:80px;"> 责任人：</td>
+                            <td><input type="text" id="RESPONSIBLEMAN" class="input-small" value="" /><span class="spanRequiredField">*</span></td>
+                            <td class="tdField" style="width:80px;">  联系方式：</td>
+                            <td><input id="LINKWAY" type="text" class="input-small" value="" /><span class="spanRequiredField">*</span></td>
                         </tr>
                         <tr>
-                            <td style="width:80px;"><span style="color:red;">*</span>经度：</td>
-                            <td><input id="JD" type="text" class="input-small" value="" /> </td>
-                            <td style="width:80px;"><span style="color:red;">*</span>纬度：</td>
+                            <td class="tdField" style="width:80px;">经度：</td>
+                            <td><input id="JD" type="text" class="input-small" value="" /> <span class="spanRequiredField">*</span></td>
+                            <td class="tdField" style="width:80px;">纬度：</td>
                             <td>
-                                <input id="WD" type="text" class="input-small" value="" />
+                                <input id="WD" type="text" class="input-small" value="" /><span class="spanRequiredField">*</span>
                                 <input type="button" value="地图定位" onclick="setPoint()" class="btnMapLoaclCss" />
                             </td>
                         </tr>
                         <tr>
-                            <td style="width:80px;">地址：</td>
-                            <td colspan="3"><input id="ADDRESS" type="text" class="input-small" value="" /></td>
+                            <td class="tdField" style="width:80px;">地址：</td>
+                            <td colspan="3"><input id="ADDRESS" style="width:97%" type="text" class="input-small" value="" /></td>
                         </tr>
                     </table>
                 </div>
@@ -96,18 +96,18 @@
         var name = document.getElementById("NAME").value;
         var jd = document.getElementById("JD").value;
         var wd = document.getElementById("WD").value;
-        layer.open({
+        parent.layer.open({
             type: 2,
             title: name + '地图位置设置',
             btn: ['保存', '关闭'],
-            area: ['100%', '100%'],
+            area: ['1000px', '600px'],
             fix: true, //不固定
             maxmin: true,
             content: '/MapCommon/GetMapPontIndex?jd=' + jd + "&wd=" + wd,
             shade: 0,
             yes: function (index, layero) { //或者使用btn1
                 //按钮【按钮一】的回调
-                var ptxt = layer.getChildFrame("p", index);
+                var ptxt = parent.layer.getChildFrame("p", index);
                 var arr = ptxt.html().split(',');
                 if ($.trim(arr) != "") {
                     var jd = parseFloat(arr[0]).toFixed(6);
@@ -115,9 +115,9 @@
                     $('#JD').val(jd);
                     $('#WD').val(wd);
                 }
-                layer.close(index);
+                parent.layer.close(index);
             }, cancel: function (index) {
-                layer.close(index);
+                parent.layer.close(index);
             }
         });
     }

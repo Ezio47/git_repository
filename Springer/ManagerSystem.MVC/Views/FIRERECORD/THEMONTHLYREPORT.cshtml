@@ -18,11 +18,10 @@
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
                 <div class="divOP">
                     <div class="home ">
-                        @*填报单位：<select id="tbxBYORGNO" onchange="Query()">@Html.Raw(@ViewBag.vdOrg)</select>&nbsp;&nbsp;&nbsp;*@
                         日期：<input id="tbxYEAR" type="text" class="Wdate" style="width:100px" value="@ViewBag.YEAR" onclick="WdatePicker({ dateFmt: 'yyyy'})" />
                         <input type="hidden" value="" id="tbxFRFIID" class="btnSearchCss" />
-                        <input type="button" value="查询" onclick="Query()" class="btnSearchCss" />
-                        <input type="button" value="导出" onclick="Export()" id="btnExport" class="btnOutputCss">
+                        <input type="button" value="查 询" onclick="Query()" class="btnSearchCss" />
+                        <input type="button" value="导 出" onclick="Export()" class="btnOutputCss">
                     </div>
                 </div>
             </div>
@@ -36,11 +35,16 @@
 <script type="text/javascript">
     Query();
     function Query() {
+        var year = $('#tbxYEAR').val();
+        if (year == "") {
+            layer.msg("请选择查询日期!", { icon: 5 });
+            return;
+        }
         $.ajax({
             type: 'get',
             url: '/FIRERECORD/THEMONTHLYREPORTQuery',
             dataType: 'json',
-            data: { YEAR: $('#tbxYEAR').val() },
+            data: { YEAR: year },
             success: function (data, ioArgs) {
                 if (data.Success) {
                     $('#divTable').html("");

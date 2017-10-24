@@ -28,7 +28,8 @@
                     热点类别：<select id="tbxhotType">
                         @Html.Raw(@ViewBag.hotType)
                     </select>
-                    接收时间：<input class="easyui-datebox" id="startTime" type="text" style="width:90px;height:28px;" value="@ViewBag.starttime" /> 至<input class="easyui-datebox" id="endTime" type="text" value="@ViewBag.endtime" style="width:90px;height:28px;" />
+                    火情发生时间：<input class="easyui-datebox" id="startTime" type="text" style="width:90px;height:28px;" value="@ViewBag.starttime" /> 至<input class="easyui-datebox" id="endTime" type="text" value="@ViewBag.endtime" style="width:90px;height:28px;" />
+                    已灭火情：<input id="outfire" type="checkbox" />
                     <input type="button" id="mapshow" class="btnSearchCss" value="查  询" onclick="query()" />
                     <input type="button" id="export" value="导  出" class="btnOutputCss" onclick="Export()" />
                     @*<input type="button" id="mapshow" value="查看地图" onclick="ShowMap()" />*@
@@ -57,6 +58,11 @@
 <script type="text/javascript">
     function query() {
         var bo = queryCheck();
+        var outfire;
+        if ($("#outfire").attr("checked"))
+            outfire = 1;
+        else
+            outfire = 0;
         if (bo) {
             $.ajax({
                 url: '/MainYJJC/YJResponseQuery',
@@ -69,7 +75,8 @@
                     Source: $('#tbxHotSource').val(),
                     Starttime: $('#startTime').datebox('getValue'),//document.getElementById("startTime").text, //$('#startTime').val(),
                     Endtime: $('#endTime').datebox('getValue'),// document.getElementById("endTime").text,//$('#endTime').val()
-                    HotType: $('#tbxhotType').val() //热点类别
+                    HotType: $('#tbxhotType').val(), //热点类别
+                    OutFire:outfire
                 },
                 success: function (data) {
                     var ar = eval('(' + data + ')');
@@ -88,6 +95,15 @@
 
     }
 
+    //查看详情
+    function See(ID) {
+        layer.open({
+            type: 2,
+            title: '查看',
+            area: ['51.5%', '80%'],
+            content: '/MainYJJC/See?ID=' + ID,
+        });
+    }
 
     //导出excel
     function Export() {

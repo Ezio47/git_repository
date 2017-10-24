@@ -8,14 +8,14 @@
         <div class="divTable" id="divTable">
             <input id="HidTable" name="HidTable" type="hidden" value="@ViewBag.HidTable" />
             <input id="HidID" name="HidID" type="hidden" value="@Model.PEST_CONSULTATIONID" />
-            <table id="TationTable" cellpadding="0" cellspacing="0" style="height:280px">
+            <table id="TationTable" cellpadding="0" cellspacing="0" style="height:300px">
                 <thead>
                     <tr><th colspan="4">会诊信息</th></tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td style="width:20%;">标题: </td>
-                        <td class="left" style="width:40%;">@Model.CONSULTITLE</td>
+                        <td class="tdField left" style="width:100px;">标题: </td>
+                        <td class="left">@Model.CONSULTITLE</td>
                         <td colspan="2" rowspan="4">
                             <div class="easyui-layout" data-options="fit:true" style=" border:0;">
                                 <div id="divImg" data-options="region:'center'" title="" class="LayoutCenterBG">
@@ -23,25 +23,25 @@
                                 </div>
                                 <div data-options="region:'south'" title="" style=" height:35px; border: none; overflow:hidden; text-align:center;">
                                     <div class="divOP">
-                                        <input type="button" value="上一张" onclick="ManagerPhoto('Up')" id="btnUp" style="display:none;" class="btnLastsealCss" />
+                                        <input type="button" value="上一张" onclick="ManagerPhoto('Up')" id="btnUp" class="btnLastsealCss" />
                                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                        <input type="button" value="下一张" onclick="ManagerPhoto('Down')" id="btnDown" style="display:none;" class="btnNextsealCss" />
+                                        <input type="button" value="下一张" onclick="ManagerPhoto('Down')" id="btnDown" class="btnNextsealCss" />
                                     </div>
                                 </div>
                             </div>
                         </td>
                     </tr>
                     <tr>
-                        <td>内容:</td>
-                        <td class="left">@Model.CONSULCONTENT</td>
+                        <td class="tdField left">内容:</td>
+                        <td class="left" style="height:120px;width:350px;"><textarea style="width:99%; height: 100%" readonly>@Model.CONSULCONTENT</textarea></td>
                     </tr>
                     <tr>
-                        <td>提问人手机号码:</td>
-                        <td>@Model.CONSULPHONE</td>
+                        <td class="tdField left">提问人手机号码:</td>
+                        <td class="left">@Model.CONSULPHONE</td>
                     </tr>
                     <tr>
-                        <td>提问时间:</td>
-                        <td>@Model.CONSULTIME</td>
+                        <td class="tdField left">提问时间:</td>
+                        <td class="left">@Model.CONSULTIME</td>
                     </tr>
                 </tbody>
             </table>
@@ -68,6 +68,8 @@
 <script type="text/javascript">
     loadImg();
     query();
+    window.setInterval(query, 1000 * 2 * 60);
+
     function loadImg() {
         $.ajax({
             url: '/PEST/GetConsulPhoto',
@@ -78,9 +80,9 @@
                 if (data.Success) {
                     $('#divImg').html('');
                     $('#divImg').html(data.Msg);
-                    if (data.Url > 1) {
-                        $('#btnUp').css('display', '');
-                        $('#btnDown').css('display', '');
+                    if (data.Url < 1) {
+                        $("#btnUp").attr("disabled", true);
+                        $("#btnDown").attr("disabled", true);
                     }
                 }
                 else {
@@ -143,11 +145,7 @@
     function ManagerREPLY(Method) {
         $.ajax({
             url: '/PEST/ConsulRepalyManager',
-            data: {
-                PEST_CONSULTATIONID: $('#HidID').val(),
-                REPLYCONTENT: $('#tbxREPLYCONTENT').val(),
-                Method: Method
-            },
+            data: { PEST_CONSULTATIONID: $('#HidID').val(), REPLYCONTENT: $('#tbxREPLYCONTENT').val(), Method: Method },
             type: 'post',
             dataType: 'json',
             success: function (data) {

@@ -2,13 +2,16 @@
 @{
     Layout = "~/Views/Shared/_LayoutIndex.cshtml";
     var curorgno = SystemCls.getCurUserOrgNo();
-    if (curorgno.Substring(6, 9) == "000000000" && curorgno.Substring(4, 2) != "00")
+    if (string.IsNullOrEmpty(curorgno) == false)
     {
-        curorgno = curorgno.Substring(0, 6) + "xxxxxxxxx";
-    }
-    else
-    {
-        curorgno = SystemCls.getCurUserOrgNo();
+        if (curorgno.Substring(6, 9) == "000000000" && curorgno.Substring(4, 2) != "00")
+        {
+            curorgno = curorgno.Substring(0, 6) + "xxxxxxxxx";
+        }
+        else
+        {
+            curorgno = SystemCls.getCurUserOrgNo();
+        }
     }
     var curorgno1 = SystemCls.getCurUserOrgNo();//添加的时候组织机判断
 }
@@ -22,19 +25,20 @@
         <div class="easyui-layout" data-options="fit:true" style=" border:0;">
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
                 <div class="divOP">
-                   
-                        <ul>
-                            <li class="homeUL">
-                                单位：<div id="tbxORGNOS" class="easyui-tree"></div>
-                                结构类型：<select id="tbxSTRUCTURETYPE">
-                                    @Html.Raw(@ViewBag.structure)
-                                </select>
-                                名称：<input id="tbxNAME" type="text" class="input-small" style="width:80px" value="" />
-                                编号：<input id="tbxNUMBER" type="text" class="input-small" style="width:100px" value="" />
-                                <input type="button" value="查询" onclick="query('1')" class="btnSearchCss" />
-                                <input type="button" value="添加" id="btnAdd" onclick="Add()" style="display:none;" class="btnAddCss" />
-                            </li>
-                            <li class="active">
+
+                    <ul>
+                        <li class="homeUL">
+                            单位：<div id="tbxORGNOS" class="easyui-tree"></div>
+                            结构类型：<select id="tbxSTRUCTURETYPE">
+                                @Html.Raw(@ViewBag.structure)
+                            </select>
+                            名称：<input id="tbxNAME" type="text" class="input-small" style="width:80px" value="" />
+                            编号：<input id="tbxNUMBER" type="text" class="input-small" style="width:100px" value="" />
+                            <input type="button" value="查询" onclick="query('1')" class="btnSearchCss" />
+                            <input type="button" value="添加" id="btnAdd" onclick="Add()" style="display:none;" class="btnAddCss" />
+                            <input type="button" value="导入" onclick="Upload()" class="btnUnEnableCss" />
+                        </li>
+                        @*<li class="active">
                                 @using (@Html.BeginForm("OVERWATCHList", "DataCenter", FormMethod.Post, new { enctype = "multipart/form-data" }))
                                 {
                                     <input name="file" style="width:90px;" type="file" id="file" class="btn btn-info btn-sm" />
@@ -45,9 +49,9 @@
                                 }
                             <li class="active">
                                 <a href="~/UploadFile/DataCenterExcel/瞭望台模板.xls" target="_blank" title="右键，另存为">下载模板</a>
-                            </li>
-                        </ul>
-                   
+                            </li>*@
+                    </ul>
+
                 </div>
             </div>
             <div data-options="region:'center'" title="" class="LayoutCenterBG">
@@ -149,7 +153,7 @@
             type: 2,
             title: '添加',
             fix: false, //不固定
-            area: ['80%', '80%'],
+            area: ['650px', '420px'],
             maxmin: true,
             content: '/DataCenter/OVERWATCHManIndex',
             end: function () {
@@ -161,7 +165,7 @@
         layer.open({
             type: 2,
             title: "修改",
-            area: ['80%', '80%'],
+            area: ['650px', '420px'],
             //shade: 0,
             fix: false,
             maxmin: true,
@@ -172,33 +176,58 @@
         });
     }
 
-    //地图定位展示
-    function Position(tablename, id,name) {
+    ///上传弹出上传界面
+    function Upload() {
         layer.open({
             type: 2,
-            title:name+ '地图定位',
-            area: ['70%', '80%'],
+            title: '瞭望台上传',
+            area: ['1200px', '500px'],
+            //shade: 0,
+            fix: true,
+            maxmin: true,
+            content: '/DataCenter/OVERWATCHList',
+            end: function () {
+                query(1);
+            }
+        })
+    }
+    //地图定位展示
+    function Position(tablename, id, name) {
+        layer.open({
+            type: 2,
+            title: name + '地图定位',
+            area: ['1000px', '600px'],
             //shade: 0,
             fix: true,
             maxmin: true,
             content: '/MapCommon/MapPostionCommonIndex?tablename=' + tablename + "&id=" + id
         })
     }
-    function See(ID, tablename) {
+    //function See(ID, tablename) {
+    //    layer.open({
+    //        type: 2,
+    //        title: '瞭望台查看',
+    //        area: ['60%', '58%'],
+    //        fix: true,
+    //        maxmin: true,
+    //        content: '/DataCenter/SeeIndex?tablename=' + tablename + "&ID=" + ID
+    //    })
+    //}
+    function SwichIframeUrl(ID, tablename) {
         layer.open({
             type: 2,
-            title: '瞭望台查看',
-            area: ['60%', '58%'],
+            title: '基本信息',
+            area: ['550px', '380px'],
             fix: true,
             maxmin: true,
-            content: '/DataCenter/SeeIndex?tablename=' + tablename + "&ID=" + ID
+            content: '/DataCenter/OVERWATCHTotalIndex?tablename=' + tablename + "&ID=" + ID
         })
     }
     function Photo(PRID, PHOTOTYPE) {
         layer.open({
             type: 2,
             title: '照片管理',
-            area: ['60%', '60%'],
+            area: ['900px', '450px'],
             fix: true,
             maxmin: true,
             content: '/DataCenter/PhotoIndex?PHOTOTYPE=' + PHOTOTYPE + "&PRID=" + PRID

@@ -15,13 +15,6 @@ namespace ManagerSystem.MVC.Controllers
 {
     public class YJJCController : BaseController
     {
-        #region 主页
-        public ActionResult Index()
-        {
-            return View();
-        }
-        #endregion
-
         #region 红外相机基本信息管理
         public ActionResult INFRAREDCAMERA_BASICINFOManger()
         {
@@ -52,26 +45,21 @@ namespace ManagerSystem.MVC.Controllers
             m.returnUrl = returnUrl;
             if (m.opMethod != "Del")
             {
-                //if (string.IsNullOrEmpty(INFRAREDCAMERANAME))
-                //    return Content(JsonConvert.SerializeObject(new Message(false, "请输入相机名称", "")), "text/html;charset=UTF-8");
-                //if (string.IsNullOrEmpty(JD))
-                //    return Content(JsonConvert.SerializeObject(new Message(false, "请输入经度！", "")), "text/html;charset=UTF-8");
-                //if (string.IsNullOrEmpty(WD))
-                //    return Content(JsonConvert.SerializeObject(new Message(false, "请输入纬度！", "")), "text/html;charset=UTF-8");
                 if (float.Parse(JD) >= 180 || float.Parse(JD) <= -180)
-                    return Content(JsonConvert.SerializeObject(new Message(false, "经度范围在-180~180之间，请重新输入!", "")), "text/html;charset=UTF-8");
+                    return Content(JsonConvert.SerializeObject(new Message(false, "经度范围在-180~180之间,请重新输入!", "")), "text/html;charset=UTF-8");
                 if (float.Parse(WD) >= 90 || float.Parse(WD) <= -90)
-                    return Content(JsonConvert.SerializeObject(new Message(false, "纬度范围在-90~90之间，请重新输入!", "")), "text/html;charset=UTF-8");
+                    return Content(JsonConvert.SerializeObject(new Message(false, "纬度范围在-90~90之间,请重新输入!", "")), "text/html;charset=UTF-8");
             }
             return Content(JsonConvert.SerializeObject(JC_INFRAREDCAMERACls.Manager(m)), "text/html;charset=UTF-8");
         }
+
         public ActionResult INFRAREDCAMERAMan()
         {
             pubViewBag("006007", "006007", "");
             if (ViewBag.isPageRight == false)
                 return View();
             ViewBag.T_Method = Request.Params["Method"];
-            //如果未传参数，默认为添加
+            //如果未传参数,默认为添加
             ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag() });// ipsuM.ORGNAME });
             string ID = Request.Params["ID"];
             ViewBag.T_ID = ID;
@@ -82,9 +70,9 @@ namespace ManagerSystem.MVC.Controllers
             }
             if (string.IsNullOrEmpty(ViewBag.T_Method))
                 ViewBag.T_Method = "Add";
-
             return View();
         }
+
         public ActionResult GetINFRAREDCAMERA_BASICINFOJson()
         {
             string ID = Request.Params["ID"];
@@ -92,6 +80,7 @@ namespace ManagerSystem.MVC.Controllers
                 ID = "0";
             return Content(JsonConvert.SerializeObject(JC_INFRAREDCAMERACls.getModel(new JC_INFRAREDCAMERA_BASICINFO_SW { INFRAREDCAMERAID = ID })), "text/html;charset=UTF-8");
         }
+
         public ActionResult getINFRAREDCAMERA_BASICINFOList()
         {
             string PHONE = Request.Params["PHONE"];
@@ -104,24 +93,23 @@ namespace ManagerSystem.MVC.Controllers
             //string str = ClsStr.EncryptA01(INFRAREDCAMERANAME + "|" + PHONE + "|" + BYORGNO, "kkkkkkkk");
             int total = 0;
             JC_INFRAREDCAMERA_BASICINFO_SW sw = new JC_INFRAREDCAMERA_BASICINFO_SW { curPage = int.Parse(Page), pageSize = int.Parse(PageSize), BYORGNO = BYORGNO, PHONE = PHONE };
-            ///return Content(JsonConvert.SerializeObject(new Message(true, "", "/YJJC/INFRAREDCAMERA_BASICINFOList?trans=" + str + "&BYORGNO=" + BYORGNO)), "text/html;charset=UTF-8");
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<table id=\"sample-table-2\" class=\"table table-striped table-bordered table-hover dataTable\" aria-describedby=\"sample-table-2_info\">");
             sb.AppendFormat("<thead>");
-            sb.AppendFormat("    <tr role=\"row\">");
-            sb.AppendFormat("        <th class=\"center sorting_disabled\">序号</th>");
-            sb.AppendFormat("        <th class=\"center sorting_disabled\">单位名称</th>");
-            sb.AppendFormat("        <th class=\"center sorting_disabled\">相机名称</th>");
-            sb.AppendFormat("        <th class=\"center sorting_disabled\">手机号码</th>");
-            sb.AppendFormat("        <th class=\"center sorting_disabled\">经度</th>");
-            sb.AppendFormat("        <th class=\"center sorting_disabled\">纬度</th>");
-            sb.AppendFormat("        <th class=\"center sorting_disabled\">高程</th>");
-            sb.AppendFormat("        <th class=\"center sorting_disabled\">详细地址</th>");
+            sb.AppendFormat("<tr role=\"row\">");
+            sb.AppendFormat("<th class=\"center sorting_disabled\">序号</th>");
+            sb.AppendFormat("<th class=\"center sorting_disabled\">单位名称</th>");
+            sb.AppendFormat("<th class=\"center sorting_disabled\">相机名称</th>");
+            sb.AppendFormat("<th class=\"center sorting_disabled\">手机号码</th>");
+            sb.AppendFormat("<th class=\"center sorting_disabled\">经度</th>");
+            sb.AppendFormat("<th class=\"center sorting_disabled\">纬度</th>");
+            sb.AppendFormat("<th class=\"center sorting_disabled\">高程</th>");
+            sb.AppendFormat("<th class=\"center sorting_disabled\">详细地址</th>");
             sb.AppendFormat("<th class=\"center sorting_disabled\"></th>");
-            sb.AppendFormat("    </tr>");
+            sb.AppendFormat("</tr>");
             sb.AppendFormat("</thead>");
             sb.AppendFormat("<tbody role=\"alert\" aria-live=\"polite\" aria-relevant=\"all\">");
-            var result = JC_INFRAREDCAMERACls.getListModel(sw,out total);
+            var result = JC_INFRAREDCAMERACls.getListModel(sw, out total);
             int i = 0;
             foreach (var v in result)
             {
@@ -139,45 +127,33 @@ namespace ManagerSystem.MVC.Controllers
                 sb.AppendFormat("<td class=\"center  sorting_1\">{0}</td>", v.ADDRESS);
                 sb.AppendFormat("<td class=\"center\">");
                 if (string.IsNullOrEmpty(v.JD) || string.IsNullOrEmpty(v.WD))
-                {
                     sb.AppendFormat("<a  href=\"javascript:void(0);\"title='定位' style=\"background-color:gray;\" class=\"searchBox_01 LinkLocation\">定位</a>");
-                }
                 else
-                {
                     sb.AppendFormat("<a href=\"#\" onclick=\" Position('JC_INFRAREDCAMERA_BASICINFO','{0}','{1}')\" title='定位' class=\"searchBox_01 LinkLocation\">定位</a>", v.INFRAREDCAMERAID, v.INFRAREDCAMERANAME);
-                }
                 if (SystemCls.isRight("006007002") == true)
                     sb.AppendFormat("<a href=\"#\" onclick=\" See('{0}')\" title='查看' class=\"searchBox_01 LinkPhoto\">查看</a>", v.INFRAREDCAMERAID);
                 if (SystemCls.isRight("006007003") == true)
-                    sb.AppendFormat("<a  href='#' onclick=\"Mdy('{0}','Mdy')\" title='编辑' class=\"searchBox_01 LinkMdy\">修改</a>", v.INFRAREDCAMERAID);
+                    sb.AppendFormat("<a  href='#' onclick=\"Mdy('{0}','Mdy')\" title='修改' class=\"searchBox_01 LinkMdy\">修改</a>", v.INFRAREDCAMERAID);
                 if (SystemCls.isRight("006007005") == true)
-                    sb.AppendFormat("<a href=\"#\" onclick=\" Photo('{0}')\" title='照片管理' class=\"searchBox_01 LinkPhoto\">照片</a>", v.INFRAREDCAMERAID);
+                    sb.AppendFormat("<a href=\"#\" onclick=\" Photo('{0}')\" title='照片' class=\"searchBox_01 LinkPhoto\">照片</a>", v.INFRAREDCAMERAID);
                 if (SystemCls.isRight("006007004") == true)
-                    sb.AppendFormat("&nbsp;<a href='#' onclick=\"Manager('{0}','Del')\" class=\"searchBox_01 LinkDel\">删除</a>", v.INFRAREDCAMERAID);
+                    sb.AppendFormat("&nbsp;<a href='#' onclick=\"Manager('{0}','Del')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", v.INFRAREDCAMERAID);
                 sb.AppendFormat("    </td>");
                 sb.AppendFormat("</tr>");
                 i++;
-
             }
             sb.AppendFormat("</tbody>");
             sb.AppendFormat("</table>");
             string pageInfo = PagerCls.getPagerInfoAjax(new PagerSW { curPage = sw.curPage, pageSize = sw.pageSize, rowCount = total });
             return Content(JsonConvert.SerializeObject(new MessagePagerAjax(true, sb.ToString(), pageInfo)), "text/html;charset=UTF-8"); ;
         }
+
         public ActionResult INFRAREDCAMERA_BASICINFOList()
         {
             pubViewBag("006007", "006007", "");
             if (ViewBag.isPageRight == false)
                 return View();
-            //string trans = Request.Params["trans"];//传递网页参数   
-            ////查询条件
-            //string[] arr = new string[3];//存放查询条件的数组 根据实际存放的数据
-            //if (string.IsNullOrEmpty(trans) == false)
-            //    arr = ClsStr.DecryptA01(trans, "kkkkkkkk").Split('|');
-
-            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = SystemCls.getCurUserOrgNo() });// ipsuM.ORGNAME });
-            //ViewBag.PHONE = arr[1];//显示查询值 相机名称
-            //ViewBag.INFRAREDCAMERA_BASICINFOList = getINFRAREDCAMERA_BASICINFOStr(new JC_INFRAREDCAMERA_BASICINFO_SW { BYORGNO = arr[2], PHONE = arr[1] });
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = SystemCls.getCurUserOrgNo() });
             ViewBag.isAdd = (SystemCls.isRight("006007001")) ? "1" : "0";
             return View();
         }
@@ -187,54 +163,51 @@ namespace ManagerSystem.MVC.Controllers
             var id = Request.Params["ID"];
             StringBuilder sb = new StringBuilder();
             var model = JC_INFRAREDCAMERACls.getModel(new JC_INFRAREDCAMERA_BASICINFO_SW { INFRAREDCAMERAID = id });
-
             sb.AppendFormat("<div class=\"divMan\" style=\"margin-left:5px;margin-top:8px\">");
             sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td style=\"width:15%\">单位名称:</td>");
-            sb.AppendFormat("<td style=\"width:35%\">{0}</td>", model.ORGNAME);
-            sb.AppendFormat("<td style=\"width:15%\">相机名:</td>");
-            sb.AppendFormat("<td style=\"width:35%\">{0}</td>", model.INFRAREDCAMERANAME);
+            sb.AppendFormat("<td  class=\"left tdField\" style=\"width:15%\">单位名称:</td>");
+            sb.AppendFormat("<td  class=\"left\" style=\"width:35%\">{0}</td>", model.ORGNAME);
+            sb.AppendFormat("<td  class=\"left tdField\" style=\"width:15%\">相机名:</td>");
+            sb.AppendFormat("<td  class=\"left\" style=\"width:35%\">{0}</td>", model.INFRAREDCAMERANAME);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>手机号码:</td>");
-            sb.AppendFormat("<td>{0}</td>", model.PHONE);
-            sb.AppendFormat("<td>高程:</td>");
-            sb.AppendFormat("<td>{0}</td>", model.GC);
+            sb.AppendFormat("<td  class=\"left tdField\">手机号码:</td>");
+            sb.AppendFormat("<td  class=\"left\">{0}</td>", model.PHONE);
+            sb.AppendFormat("<td  class=\"left tdField\">高程:</td>");
+            sb.AppendFormat("<td  class=\"left\">{0}</td>", model.GC);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>经度:</td>");
-            sb.AppendFormat("<td>{0}</td>", model.JD);
-            sb.AppendFormat("<td>纬度:</td>");
-            sb.AppendFormat("<td>{0}</td>", model.WD);
+            sb.AppendFormat("<td  class=\"left tdField\">经度:</td>");
+            sb.AppendFormat("<td  class=\"left\">{0}</td>", model.JD);
+            sb.AppendFormat("<td  class=\"left tdField\">纬度:</td>");
+            sb.AppendFormat("<td  class=\"left\">{0}</td>", model.WD);
             sb.AppendFormat("</tr>");
-            sb.AppendFormat("<td>地址:</td>");
-            sb.AppendFormat("<td colspan=\"3\">{0}</td>", model.ADDRESS);
+            sb.AppendFormat("<td  class=\"left tdField\">地址:</td>");
+            sb.AppendFormat("<td  class=\"left\" colspan=\"3\">{0}</td>", model.ADDRESS);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("</table>");
             sb.AppendFormat("</div>");
-
             ViewBag.detail = sb.ToString();
-
             return View();
         }
+
         private string getINFRAREDCAMERA_BASICINFOStr(JC_INFRAREDCAMERA_BASICINFO_SW sw)
         {
-
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<table id=\"sample-table-2\" class=\"table table-striped table-bordered table-hover dataTable\" aria-describedby=\"sample-table-2_info\">");
             sb.AppendFormat("<thead>");
-            sb.AppendFormat("    <tr role=\"row\">");
-            sb.AppendFormat("        <th class=\"center sorting_disabled\">序号</th>");
-            sb.AppendFormat("        <th class=\"center sorting_disabled\">单位名称</th>");
-            sb.AppendFormat("        <th class=\"center sorting_disabled\">相机名称</th>");
-            sb.AppendFormat("        <th class=\"center sorting_disabled\">手机号码</th>");
-            sb.AppendFormat("        <th class=\"center sorting_disabled\">经度</th>");
-            sb.AppendFormat("        <th class=\"center sorting_disabled\">纬度</th>");
-            sb.AppendFormat("        <th class=\"center sorting_disabled\">高程</th>");
-            sb.AppendFormat("        <th class=\"center sorting_disabled\">详细地址</th>");
+            sb.AppendFormat("<tr role=\"row\">");
+            sb.AppendFormat("<th class=\"center sorting_disabled\">序号</th>");
+            sb.AppendFormat("<th class=\"center sorting_disabled\">单位名称</th>");
+            sb.AppendFormat("<th class=\"center sorting_disabled\">相机名称</th>");
+            sb.AppendFormat("<th class=\"center sorting_disabled\">手机号码</th>");
+            sb.AppendFormat("<th class=\"center sorting_disabled\">经度</th>");
+            sb.AppendFormat("<th class=\"center sorting_disabled\">纬度</th>");
+            sb.AppendFormat("<th class=\"center sorting_disabled\">高程</th>");
+            sb.AppendFormat("<th class=\"center sorting_disabled\">详细地址</th>");
             sb.AppendFormat("<th class=\"center sorting_disabled\"></th>");
-            sb.AppendFormat("    </tr>");
+            sb.AppendFormat("</tr>");
             sb.AppendFormat("</thead>");
             sb.AppendFormat("<tbody role=\"alert\" aria-live=\"polite\" aria-relevant=\"all\">");
             var result = JC_INFRAREDCAMERACls.getListModel(sw);
@@ -251,20 +224,15 @@ namespace ManagerSystem.MVC.Controllers
                 sb.AppendFormat("<td class=\"center  sorting_1\">{0}</td>", v.ADDRESS);
                 sb.AppendFormat("<td class=\"center\">");
                 if (string.IsNullOrEmpty(v.JD) || string.IsNullOrEmpty(v.WD))
-                {
                     sb.AppendFormat("<a  href=\"javascript:void(0);\"title='定位' style=\"background-color:gray;\" class=\"searchBox_01 LinkLocation\">定位</a>");
-                }
                 else
-                {
                     sb.AppendFormat("<a href=\"#\" onclick=\" Position('JC_INFRAREDCAMERA_BASICINFO','{0}','{1}')\" title='定位' class=\"searchBox_01 LinkLocation\">定位</a>", v.INFRAREDCAMERAID, v.INFRAREDCAMERANAME);
-                }
                 sb.AppendFormat("<a href=\"#\" onclick=\" Photo('{0}')\" title='照片管理' class=\"searchBox_01 LinkPhoto\">照片</a>", v.INFRAREDCAMERAID);
-                sb.AppendFormat("<a  href='#' onclick=\"Mdy('{0}','Mdy')\" title='编辑' class=\"searchBox_01 LinkMdy\">修改</a>", v.INFRAREDCAMERAID);
-                sb.AppendFormat("&nbsp;<a href='#' onclick=\"Manager('{0}','Del')\" class=\"searchBox_01 LinkDel\">删除</a>", v.INFRAREDCAMERAID);
-                sb.AppendFormat("    </td>");
+                sb.AppendFormat("<a href='#' onclick=\"Mdy('{0}','Mdy')\" title='修改' class=\"searchBox_01 LinkMdy\">修改</a>", v.INFRAREDCAMERAID);
+                sb.AppendFormat("&nbsp;<a href='#' onclick=\"Manager('{0}','Del')\"  title='删除' class=\"searchBox_01 LinkDel\">删除</a>", v.INFRAREDCAMERAID);
+                sb.AppendFormat("</td>");
                 sb.AppendFormat("</tr>");
                 i++;
-
             }
             sb.AppendFormat("</tbody>");
             sb.AppendFormat("</table>");
@@ -273,28 +241,44 @@ namespace ManagerSystem.MVC.Controllers
         #endregion
 
         #region 红外相机图片管理
-
         public ActionResult INFRAREDCAMERPhoto()
         {
             var id = Request.Params["ID"];
             var result = JC_INFRAREDCAMERACls.getListNewModelPhoto(new JC_INFRAREDCAMERA_PHOTO_SW { INFRAREDCAMERAID = id });
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
-            sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td  class=\"center\">照片</td>");
-            sb.AppendFormat("</tr>");
-            sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td  class=\"center\">");
-            foreach (var item in result)
+            sb.AppendFormat("<div>");
+            //sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
+            //sb.AppendFormat("<tr>");
+            //sb.AppendFormat("<td  class=\"center\">照片</td>");
+            //sb.AppendFormat("</tr>");
+            //sb.AppendFormat("<tr>");
+            //sb.AppendFormat("<td  class=\"center\">");
+            //foreach (var item in result)
+            //{
+            //    sb.AppendFormat("<img src=\"/UploadFile/INFRAREDCAMERA/{0}\" alt=\"alttext\"  style=\"padding:2px\" height =\"100px\" width=\"100px\"/></a>", item.PHOTOTITLE);
+            //}
+            //sb.AppendFormat("</td>");
+            //sb.AppendFormat("</tr>");
+            //sb.AppendFormat("</table>");
+            if (result.Any())
             {
-                sb.AppendFormat("<img src=\"/UploadFile/INFRAREDCAMERA/{0}\" alt=\"alttext\"  style=\"padding:2px\" height =\"100px\" width=\"100px\"/></a>", item.PHOTOTITLE);
+                foreach (var s in result)
+                {
+                    sb.AppendFormat("<div style=\"float:left;margin:5px\">");
+                    sb.AppendFormat("<a href=\"/UploadFile/INFRAREDCAMERA/{0}\" target=\"_blank\"><img src=\"/UploadFile/INFRAREDCAMERA/{0}\" alt=\"alttext\" height =\"160px\" width=\"165px\"/></a>", s.PHOTOTITLE);
+                    sb.AppendFormat("<p align=\"center\">{0}</p>", s.PHOTOTITLE);
+                    sb.AppendFormat("</div>");
+                }
             }
-            sb.AppendFormat("</td>");
-            sb.AppendFormat("</tr>");
-            sb.AppendFormat("</table>");
+            else
+            {
+                sb.AppendFormat("<p align=\"center\">暂无图片</p>");
+            }
+            sb.AppendFormat("</div>");
             ViewBag.photo = sb.ToString();
             return View();
         }
+
         public ActionResult CAMERA_PHOTOManger()
         {
             JC_INFRAREDCAMERA_PHOTO_Model m = new JC_INFRAREDCAMERA_PHOTO_Model();
@@ -328,6 +312,7 @@ namespace ManagerSystem.MVC.Controllers
             m.returnUrl = returnUrl;
             return Content(JsonConvert.SerializeObject(JC_INFRAREDCAMERACls.ManagerPhoto(m)), "text/html;charset=UTF-8");
         }
+
         public ActionResult CAMERA_PHOTOListQuery()
         {
             string PageSize = Request.Params["PageSize"];
@@ -338,13 +323,7 @@ namespace ManagerSystem.MVC.Controllers
             string str = ClsStr.EncryptA01(PageSize + "|" + tpa + "|" + DateBegin + "|" + DateEnd, "kkkkkkkk");
             return Content(JsonConvert.SerializeObject(new Message(true, "", "/YJJC/CAMERA_PHOTOList?trans=" + str + "&page=" + Page)), "text/html;charset=UTF-8");
         }
-        //public ActionResult INFRAREDCAMERA_PHOTOJson() 
-        //{
-        //string ID = Request.Params["ID"];
-        // if (string.IsNullOrEmpty(ID))
-        //   ID = "0";
-        // return Content(JsonConvert.SerializeObject(JC_INFRAREDCAMERACls.getModelPhoto(new JC_INFRAREDCAMERA_PHOTO_SW { smid = ID })), "text/html;charset=UTF-8");
-        //  }
+
         public ActionResult CAMERA_PHOTOList()
         {
             pubViewBag("008006", "008006", "");
@@ -377,9 +356,7 @@ namespace ManagerSystem.MVC.Controllers
         private string getCAMERA_PHOTOStr(JC_INFRAREDCAMERA_PHOTO_SW sw, out int total)
         {
             StringBuilder sb = new StringBuilder();
-
             var result = JC_INFRAREDCAMERACls.getListModelPhotoPager(sw, out  total);
-
             if (result.Count() > 0)
             {
                 sb.AppendFormat("<table id=\"sample-table-2\" class=\"table table-striped table-bordered table-hover dataTable\" aria-describedby=\"sample-table-2_info\">");
@@ -389,57 +366,48 @@ namespace ManagerSystem.MVC.Controllers
                 var imgurl = System.Configuration.ConfigurationManager.AppSettings["ImageUrl"].ToString();
                 foreach (var v in result)
                 {
-
-                    // var filename = v.filename;
-
                     v.filename = v.filename.Replace(imgurl, "");
-
                     if (fieldI == 1)
-                    {
-                        sb.AppendFormat("    <tr role=\"row\">");
-                    }
-                    sb.AppendFormat("        <td class=\"class=\"left  sorting_1\">");
-                    sb.AppendFormat("            <table width=312 height=170 border=1>");
-                    sb.AppendFormat("            <tr>");
-                    sb.AppendFormat("            <td rowspan='6'><a href='" + v.filename + "'target='_blank'><img src='" + v.filename + "' width=150 height=170>");//内部table一行2列
-                    sb.AppendFormat("            </td>");
-                    sb.AppendFormat("            <td>相机名称：{0}", v.BasicInfoModel.INFRAREDCAMERANAME);
-                    sb.AppendFormat("            </td>");
-                    sb.AppendFormat("            </tr>"); //内部table一行2列
-                    sb.AppendFormat("            <tr>");
-                    sb.AppendFormat("            <td>单位名称:{0}", v.BasicInfoModel.ORGNAME);
-                    sb.AppendFormat("            </td>");
-                    sb.AppendFormat("            </tr>");
-                    sb.AppendFormat("            <tr>");
-                    sb.AppendFormat("            <td>接收号码:{0}", v.tpa);
-                    sb.AppendFormat("            </td>");
-                    sb.AppendFormat("            </tr>");
-                    sb.AppendFormat("            <tr>");
-                    sb.AppendFormat("            <td>接收日期:{0}", v.recvdatetime);
-                    sb.AppendFormat("            </td>");
-                    sb.AppendFormat("            </tr>");
-                    sb.AppendFormat("            <tr>");
-                    sb.AppendFormat("            <td>地址:{0}", v.BasicInfoModel.ADDRESS);
-                    sb.AppendFormat("            </td>");
-                    sb.AppendFormat("            </tr>");
-                    sb.AppendFormat("            <tr>");
-                    sb.AppendFormat("            <td><input type='checkbox' name='chk1' value='" + v.smid + "'/>是否删除");
-                    sb.AppendFormat("            </td>");
-                    sb.AppendFormat("            </tr>");
-                    sb.AppendFormat("            </table>");
-                    sb.AppendFormat("        </td>");
+                        sb.AppendFormat("<tr role=\"row\">");
+                    sb.AppendFormat("<td class=\"class=\"left  sorting_1\">");
+                    sb.AppendFormat("<table width=312 height=170 border=1>");
+                    sb.AppendFormat("<tr>");
+                    sb.AppendFormat("<td rowspan='6'><a href='" + v.filename + "'target='_blank'><img src='" + v.filename + "' width=150 height=170>");//内部table一行2列
+                    sb.AppendFormat("</td>");
+                    sb.AppendFormat("<td>相机名称：{0}", v.BasicInfoModel.INFRAREDCAMERANAME);
+                    sb.AppendFormat("</td>");
+                    sb.AppendFormat("</tr>"); //内部table一行2列
+                    sb.AppendFormat("<tr>");
+                    sb.AppendFormat("<td>单位名称:{0}", v.BasicInfoModel.ORGNAME);
+                    sb.AppendFormat("</td>");
+                    sb.AppendFormat("</tr>");
+                    sb.AppendFormat("<tr>");
+                    sb.AppendFormat("<td>接收号码:{0}", v.tpa);
+                    sb.AppendFormat("</td>");
+                    sb.AppendFormat("</tr>");
+                    sb.AppendFormat("<tr>");
+                    sb.AppendFormat("<td>接收日期:{0}", v.recvdatetime);
+                    sb.AppendFormat("</td>");
+                    sb.AppendFormat("</tr>");
+                    sb.AppendFormat("<tr>");
+                    sb.AppendFormat("<td>地址:{0}", v.BasicInfoModel.ADDRESS);
+                    sb.AppendFormat("</td>");
+                    sb.AppendFormat("</tr>");
+                    sb.AppendFormat("<tr>");
+                    sb.AppendFormat("<td><input type='checkbox' name='chk1' value='" + v.smid + "'/>是否删除");
+                    sb.AppendFormat("</td>");
+                    sb.AppendFormat("</tr>");
+                    sb.AppendFormat("</table>");
+                    sb.AppendFormat("</td>");
                     if (fieldI == fieldCount)
-                    {
                         sb.AppendFormat("    </tr>");
-                    }
                     if (fieldI == fieldCount)
                         fieldI = 1;
                     else
                         fieldI++;
                 }
                 if (sb.ToString().Substring(sb.ToString().Length - 5, 5) != "</tr>")
-                    sb.AppendFormat("    </tr>");
-                //sb.AppendFormat("</thead>");
+                    sb.AppendFormat("</tr>");
                 sb.AppendFormat("</table>");
             }
             return sb.ToString();
@@ -477,30 +445,27 @@ namespace ManagerSystem.MVC.Controllers
                 m.returnUrl = "/YJJC/MONITOR_INFOList";
             if (m.opMethod != "Del")
             {
-                //if (string.IsNullOrEmpty(m.EMNAME))
-                //{
-                //    return Content(JsonConvert.SerializeObject(new Message(false, "监控名称不可为空，请重新输入！", "")), "text/html;charset=UTF-8");
-                //}
                 if (string.IsNullOrEmpty(m.JD) == false)
                 {
                     if (float.Parse(m.JD) >= 180 || float.Parse(m.JD) <= -180)
-                        return Content(JsonConvert.SerializeObject(new Message(false, "经度范围在-180~180之间，请重新输入！", "")), "text/html;charset=UTF-8");
+                        return Content(JsonConvert.SerializeObject(new Message(false, "经度范围在-180~180之间,请重新输入!", "")), "text/html;charset=UTF-8");
                 }
                 if (string.IsNullOrEmpty(m.WD) == false)
                 {
                     if (float.Parse(m.WD) >= 90 || float.Parse(m.WD) <= -90)
-                        return Content(JsonConvert.SerializeObject(new Message(false, "纬度范围在-90~90之间，请重新输入！", "")), "text/html;charset=UTF-8");
+                        return Content(JsonConvert.SerializeObject(new Message(false, "纬度范围在-90~90之间,请重新输入!", "")), "text/html;charset=UTF-8");
                 }
             }
             return Content(JsonConvert.SerializeObject(JC_MONITORCls.Manager(m)));
         }
+
         public ActionResult MONITOR_INFOMan()
         {
             pubViewBag("006008", "006008", "");
             if (ViewBag.isPageRight == false)
                 return View();
             ViewBag.T_Method = Request.Params["Method"];
-            //如果未传参数，默认为添加
+            //如果未传参数,默认为添加
             ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag() });// ipsuM.ORGNAME });
             string ID = Request.Params["ID"];
             ViewBag.T_ID = ID;
@@ -508,18 +473,12 @@ namespace ManagerSystem.MVC.Controllers
             {
                 if (string.IsNullOrEmpty(ViewBag.T_ID))
                     return Redirect("/System/Error?ID=2");//参数错误  
-                //string otid = Request.Params["tNo"];
-                //if (string.IsNullOrEmpty(otid))
-                //    return Redirect("/System/Error?ID=3");//参数错误 
-                //if (ClsStr.EncryptA01(ViewBag.T_ID, "kdiekdfd") != otid)
-                //    return Redirect("/System/Error?ID=4");//参数错误 
             }
             if (string.IsNullOrEmpty(ViewBag.T_Method))
                 ViewBag.T_Method = "Add";
-
             return View();
-
         }
+      
         public ActionResult GetMONITOR_INFOJson()
         {
             string ID = Request.Params["ID"];
@@ -527,53 +486,30 @@ namespace ManagerSystem.MVC.Controllers
                 ID = "0";
             return Content(JsonConvert.SerializeObject(JC_MONITORCls.getModel(new JC_MONITOR_BASICINFO_SW { EMID = ID })), "text/html;charset=UTF-8");
         }
-        //public ActionResult MONITOR_INFOListQuery()
-        //{
-        //    string TTBH = Request.Params["TTBH"];
-        //    string BYORGNO = Request.Params["BYORGNO"];
-        //    string str = ClsStr.EncryptA01(TTBH + "|" + BYORGNO, "kkkkkkkk");
-        //    return Content(JsonConvert.SerializeObject(new Message(true, "", "/YJJC/MONITOR_INFOList?trans=" + str)), "text/html;charset=UTF-8");
-        //}
+
         public ActionResult MONITOR_INFOList()
         {
             pubViewBag("006008", "006008", "");
             if (ViewBag.isPageRight == false)
                 return View();
-            //string trans = Request.Params["trans"];
-            //string[] arr = new string[2];
-            //if (string.IsNullOrEmpty(trans) == false)
-            //    arr = ClsStr.DecryptA01(trans, "kkkkkkkk").Split('|');
             ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = SystemCls.getCurUserOrgNo() });
-            //ViewBag.TTBH = arr[0];
-            //ViewBag.MONITOR_INFOList = getMONITOR_INFOListStr(new JC_MONITOR_BASICINFO_SW { BYORGNO = arr[1], TTBH = arr[0] });
             ViewBag.isAdd = (SystemCls.isRight("006008001")) ? "1" : "0";
             return View();
         }
 
         public ActionResult getMONITOR_INFOListAjax()
         {
-
-            //string PageSize = Request.Params["PageSize"];
-            //if (PageSize == "0")
-            //    PageSize = ConfigCls.getTableDefaultPageSize();
-            //string Page = Request.Params["Page"];
             string TTBH = Request.Params["TTBH"];
             string BYORGNO = Request.Params["BYORGNO"];
-
-
-            //int total = 0;
-            //T_SYS_LOG_SW sw = new T_SYS_LOG_SW { curPage = int.Parse(Page), pageSize = int.Parse(PageSize), OPERATION = OPERATION, LOGTYPE = LogType, TIMEEnd = TIMEEnd, TIMEBegin = TIMEBegin };
             JC_MONITOR_BASICINFO_SW sw = new JC_MONITOR_BASICINFO_SW { BYORGNO = BYORGNO, TTBH = TTBH };
-
-
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
             sb.AppendFormat("<thead>");
             sb.AppendFormat("<tr role=\"row1\">");
             sb.AppendFormat("<th>序号</th>");
             sb.AppendFormat("<th>单位名称</th>");
-            sb.AppendFormat("<th>设备编号 </th>");
-            sb.AppendFormat("<th>监控名称 </th>");
+            sb.AppendFormat("<th>设备编号</th>");
+            sb.AppendFormat("<th>监控名称</th>");
             sb.AppendFormat("<th>型号</th>");
             sb.AppendFormat("<th>品牌</th>");
             sb.AppendFormat("<th>经度</th>");
@@ -596,7 +532,6 @@ namespace ManagerSystem.MVC.Controllers
                     sb.AppendFormat("<tr class='row1'>");
                 sb.AppendFormat("<td class=\"center\">{0}</td>", (i + 1).ToString());
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.ORGNAME);
-                //sb.AppendFormat("<td class=\"center\"><a class=\"green\" href=\"/YJJC/MONITOR_INFOMan?Method=See&ID={1}\" title='编辑'>{0}</td>", v.TTBH, v.EMID);
                 sb.AppendFormat("<td class=\"center\"><a class=\"green\"  href='#' onclick=\"See('{1}','See')\"title='编辑'>{0}</td>", v.TTBH, v.EMID);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.EMNAME);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.XH);
@@ -607,35 +542,25 @@ namespace ManagerSystem.MVC.Controllers
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.GD);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.JCJL);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.ADDRESS);
-                sb.AppendFormat("    <td class=\"center\">");
-                //sb.AppendFormat("            <a href=\"/YJJC/MONITOR_INFOMan?Method=Mdy&ID={0}\" title='编辑' class=\"searchBox_01 LinkMdy\">修改</a>", v.EMID);
+                sb.AppendFormat("<td class=\"center\">");
                 if (string.IsNullOrEmpty(v.JD) || string.IsNullOrEmpty(v.WD))
-                {
-                    sb.AppendFormat("<a  href=\"javascript:void(0);\"title='定位' style=\"background-color:gray;\" class=\"searchBox_01 LinkLocation\">定位</a>");
-                }
+                    sb.AppendFormat("<a  href=\"javascript:void(0);\" title='定位' style=\"background-color:gray;\" class=\"searchBox_01 LinkLocation\">定位</a>");
                 else
-                {
                     sb.AppendFormat("<a href=\"#\" onclick=\" Position('JC_MONITOR_BASICINFO','{0}','{1}')\" title='定位' class=\"searchBox_01 LinkLocation\">定位</a>", v.EMID, v.EMNAME);
-                }
                 if (SystemCls.isRight("006008003") == true)
-                    sb.AppendFormat("            <a  href='#' onclick=\"Mdy('{0}','Mdy')\" title='编辑' class=\"searchBox_01 LinkMdy\">修改</a>", v.EMID);
+                    sb.AppendFormat(" <a  href='#' onclick=\"Mdy('{0}','Mdy')\" title='修改' class=\"searchBox_01 LinkMdy\">修改</a>", v.EMID);
                 if (SystemCls.isRight("006008004") == true)
-                    sb.AppendFormat("&nbsp;<a href='#' onclick='Manager(\"{0}\")' class=\"searchBox_01 LinkDel\">删除</a>", v.EMID);
+                    sb.AppendFormat("&nbsp;<a href='#' onclick='Manager(\"{0}\")' title='删除' class=\"searchBox_01 LinkDel\">删除</a>", v.EMID);
                 if (SystemCls.isRight("006008002") == true)
-                    sb.AppendFormat("&nbsp;<a href='#' onclick='VidewView(\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\")' class=\"searchBox_01 LinkDel\">视频查看</a>", v.BYORGNO, v.EMID, v.EMNAME, v.ORGNAME,v.TYPE);
+                    sb.AppendFormat("&nbsp;<a href='#' onclick='VidewView(\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\")' class=\"searchBox_01 LinkDel\">视频查看</a>", v.BYORGNO, v.EMID, v.EMNAME, v.ORGNAME, v.TYPE);
                 sb.AppendFormat("    </td>");
                 sb.AppendFormat("</tr>");
                 i++;
-
             }
             sb.AppendFormat("</tbody>");
             sb.AppendFormat("</table>");
-
-            //string pageInfo = PagerCls.getPagerInfoAjax(new PagerSW { curPage = sw.curPage, pageSize = sw.pageSize, rowCount = total });
             return Content(JsonConvert.SerializeObject(new MessagePagerAjax(true, sb.ToString(), "")), "text/html;charset=UTF-8");
         }
-
-
         #endregion
 
         #region 群众报警管理
@@ -663,7 +588,6 @@ namespace ManagerSystem.MVC.Controllers
             string returnUrl = Request.Params["returnUrl"];
             if (string.IsNullOrEmpty(returnUrl))
                 returnUrl = "/YJJC/PERALARMList";
-
             m.PERALARMID = PERALARMID;
             m.PERALARMPHONE = PERALARMPHONE;
             m.FIRENAME = FIRENAME;
@@ -694,16 +618,16 @@ namespace ManagerSystem.MVC.Controllers
             if (m.opMethod != "Del")
             {
                 if (string.IsNullOrEmpty(m.BYORGNOLIST))
-                    return Content(JsonConvert.SerializeObject(new Message(false, "区域不可为空，请选择区域", "")), "text/html;charset=UTF-8");
+                    return Content(JsonConvert.SerializeObject(new Message(false, "区域不可为空,请选择区域", "")), "text/html;charset=UTF-8");
                 if (string.IsNullOrEmpty(m.JD) == false)
                 {
                     if (float.Parse(m.JD) >= 180 || float.Parse(m.JD) <= -180)
-                        return Content(JsonConvert.SerializeObject(new Message(false, "经度范围在-180~180之间，请重新输入！", "")), "text/html;charset=UTF-8");
+                        return Content(JsonConvert.SerializeObject(new Message(false, "经度范围在-180~180之间,请重新输入!", "")), "text/html;charset=UTF-8");
                 }
                 if (string.IsNullOrEmpty(m.WD) == false)
                 {
                     if (float.Parse(m.WD) >= 90 || float.Parse(m.WD) <= -90)
-                        return Content(JsonConvert.SerializeObject(new Message(false, "纬度范围在-90~90之间，请重新输入！", "")), "text/html;charset=UTF-8");
+                        return Content(JsonConvert.SerializeObject(new Message(false, "纬度范围在-90~90之间,请重新输入!", "")), "text/html;charset=UTF-8");
                 }
             }
             string dttime = "";
@@ -732,6 +656,7 @@ namespace ManagerSystem.MVC.Controllers
             }
             return Content(JsonConvert.SerializeObject(msg));
         }
+
         public ActionResult getPERALARMJson()
         {
             string ID = Request.Params["ID"];
@@ -746,6 +671,7 @@ namespace ManagerSystem.MVC.Controllers
                 m.MANTIME = PublicClassLibrary.ClsSwitch.SwitTM(DateTime.Now.ToString());
             return Content(JsonConvert.SerializeObject(m));
         }
+
         public ActionResult PERALARMListQuery()
         {
             string PageSize = Request.Params["PageSize"];
@@ -805,9 +731,7 @@ namespace ManagerSystem.MVC.Controllers
             if (string.IsNullOrEmpty(trans) == false)
                 arr = ClsStr.DecryptA01(trans, "kkkkkkkk").Split('|');
             else
-            {
                 arr[5] = SystemCls.getCurUserOrgNo();
-            }
             ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = arr[5], TopORGNO = SystemCls.getCurUserOrgNo() });
             if (string.IsNullOrEmpty(arr[0]) == true)
                 arr[0] = PagerCls.getDefaultPageSize().ToString();
@@ -824,6 +748,7 @@ namespace ManagerSystem.MVC.Controllers
             ViewBag.PagerInfo = PagerCls.getPagerInfo_New(new PagerSW { curPage = int.Parse(page), pageSize = int.Parse(arr[0]), rowCount = total, url = "/YJJC/PERALARMList?trans=" + trans });
             return View();
         }
+
         private string getPERALARMListStr(JC_PERALARM_SW sw, out int total)
         {
             StringBuilder sb = new StringBuilder();
@@ -854,37 +779,16 @@ namespace ManagerSystem.MVC.Controllers
                 sb.AppendFormat("<td class=\"center\">{0}</td>", ((sw.curPage - 1) * sw.pageSize + i + 1).ToString());
                 sb.AppendFormat("<td class=\"left\">{0}</td>", v.ORGNAME);
                 sb.AppendFormat("<td class=\"left\">{0}</td>", v.PERALARMNAME);
-                sb.AppendFormat("<td class=\"center\"><a href=\"/YJJC/PERALARMMan?Method=See&ID={0}&tNo={1}\"title='查看'>{2}</a></td>", v.PERALARMID, tNo, v.PERALARMPHONE);
+                sb.AppendFormat("<td class=\"center\"><a href=\"/YJJC/PERALARMMan?Method=See&ID={0}&tNo={1}\" title='查看'>{2}</a></td>", v.PERALARMID, tNo, v.PERALARMPHONE);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.PERALARMTIME);
                 sb.AppendFormat("<td class=\"left\">{0}</td>", v.PERALARMADDRESS);
                 sb.AppendFormat("<td class=\"left\">{0}</td>", v.ManUserName);
-                //if (v.MANSTATE == "0")
-                //{
-                //    sb.AppendFormat("<td class=\"left\">{0}</td>", "待处理");
-                //    sb.AppendFormat("    <td class=\"center \">");
-                //    sb.AppendFormat("            <a  href=\"/YJJC/PERALARMMan?Method=Mdy&ID={0}&tNo={1}\"title='编辑'>编辑", v.PERALARMID, tNo);
-                //    sb.AppendFormat("            </a>");
-                //    //sb.AppendFormat("            <a href=\"/YJJC/PERALARMMan?Method=Del&ID={0}&tNo={1}\"onclick=\"return confirm('确实要删除该内容吗?')\"title='删除'>", v.PERALARMID, tNo);
-                //    //sb.AppendFormat("            删除</a>");
-                //    sb.AppendFormat("&nbsp;<a href='#' onclick='Del({0})'>删除</a>", v.PERALARMID);
-                ////}
-                //else if (v.MANSTATE == "1")
-                //{
-                //    sb.AppendFormat("<td class=\"left\">{0}</td>", "已处理：非火情");
-                //    sb.AppendFormat("<td class=\"left\">{0}</td>", "&nbsp;");
-                //}
-                //else
-                //{
-                //    sb.AppendFormat("<td class=\"left\">{0}</td>", "已处理：火情");
-                //    sb.AppendFormat("<td class=\"left\">{0}</td>", "&nbsp;");
-                //}
-                sb.AppendFormat("    </td>");
+                sb.AppendFormat("</td>");
                 sb.AppendFormat("</tr>");
                 i++;
             }
             sb.AppendFormat("</tbody>");
             sb.AppendFormat("</table>");
-
             return sb.ToString();
         }
 
@@ -912,14 +816,11 @@ namespace ManagerSystem.MVC.Controllers
             string WD = Request.Params["WD"];
             string JD_DFM = Request.Params["JD_DFM"];
             string WD_DFM = Request.Params["WD_DFM"];
-
             string NEWJD = "";
             string NEWWD = "";
-
             string ALARMTIME = Request.Params["ALARMTIME"];
             string MARK = Request.Params["MARK"];
             string FireName = WXBH + " " + BYORGNAME + " " + date + " " + "卫星热点火情";
-
             if (JD == "" && WD == "")
             {
                 NEWJD = float.Parse(ClsMapCommon.ConvertDegreesToDigital(JD_DFM).ToString()).ToString("F6");
@@ -930,14 +831,11 @@ namespace ManagerSystem.MVC.Controllers
                 NEWJD = JD;
                 NEWWD = WD;
             }
-
             if (float.Parse(NEWJD) >= 180 || float.Parse(NEWJD) <= -180)
-                return Content(JsonConvert.SerializeObject(new Message(false, "经度范围在-180~180之间，请重新输入！", "")), "text/html;charset=UTF-8");
+                return Content(JsonConvert.SerializeObject(new Message(false, "经度范围在-180~180之间,请重新输入!", "")), "text/html;charset=UTF-8");
             if (float.Parse(NEWWD) >= 90 || float.Parse(NEWWD) <= -90)
-                return Content(JsonConvert.SerializeObject(new Message(false, "纬度范围在-90~90之间，请重新输入！", "")), "text/html;charset=UTF-8");
-
+                return Content(JsonConvert.SerializeObject(new Message(false, "纬度范围在-90~90之间,请重新输入!", "")), "text/html;charset=UTF-8");
             JC_FIRE_Model m = new JC_FIRE_Model();
-
             m.FIRENAME = FireName;
             m.BYORGNO = BYORGNO;
             m.FIREFROM = "2";
@@ -975,7 +873,7 @@ namespace ManagerSystem.MVC.Controllers
         {
             if (file == null)
             {
-                return Content("没有文件！", "text/plain");
+                return Content("没有文件!", "text/plain");
             }
             var filepath = Path.Combine(Request.MapPath("~/Upload"), Path.GetFileName(file.FileName));
             try
@@ -1017,37 +915,10 @@ namespace ManagerSystem.MVC.Controllers
             }
             catch
             {
-                return Content("上传异常 ！", "text/plain");
+                return Content("上传异常!", "text/plain");
             }
-
             return View();
         }
-
-        //public ActionResult Upload(YJ_DANGERCLASS_Model m, HttpPostedFileBase file)
-        //{
-        //    if (file == null)
-        //    {
-        //        return Content("没有文件！", "text/plain");
-        //    }
-        //    var fileName = Path.Combine(Request.MapPath("~/Upload"), Path.GetFileName(file.FileName));
-        //    try
-        //    {
-        //        file.SaveAs(fileName);
-        //        //tm.AttachmentPath = fileName;//得到全部model信息
-        //        m.AttachmentPath = "../upload/" + Path.GetFileName(file.FileName);
-        //      //return Content("上传成功！", "text/plain");
-        //        return RedirectToAction("Show",m);
-        //    }
-        //    catch
-        //    {
-        //        return Content("上传异常 ！", "text/plain");
-        //    }
-        //}
-        //public ActionResult Show(YJ_DANGERCLASS_Model m)
-        //{
-        //    return View(m);
-        //}
-
         #endregion
     }
 }

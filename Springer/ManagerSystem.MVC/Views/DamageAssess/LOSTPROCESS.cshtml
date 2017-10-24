@@ -29,22 +29,22 @@
     <input id="HidID" name="HidID" type="hidden" value="" />
     <table cellpadding="0" cellspacing="0">
         <tr>
-            <td style="width:100px;">灾后处理名称: </td>
-            <td><input id="tbxPROCESSNAME" type="text" value="" style="width:98%;" /></td>
-            <td style="width:100px;">灾后处理类别: </td>
-            <td><select id="tbxPROCESSCODE" style="width: 99%;">@Html.Raw(@ViewBag.PROCESSCODEAdd)</select></td>
+            <td class="tdField" style="width:100px;">灾后处理名称: </td>
+            <td><input id="tbxPROCESSNAME" type="text" value="" style="width:95%;" /></td>
+            <td class="tdField" style="width:100px;">灾后处理类别: </td>
+            <td><select id="tbxPROCESSCODE" style="width: 95%;">@Html.Raw(@ViewBag.PROCESSCODEAdd)</select></td>
         </tr>
         <tr>
-            <td id="td1">损失金额:</td>
+            <td class="tdField" id="td1">损失金额:</td>
             <td>
-                <input id="tbxLOSEMONEY" type="text" value="" style="width:85%;" />
-                <span style="color: gray;" id="span1">元</span>
+                <input id="tbxLOSEMONEY" type="text" value="" style="width:80%;" />
+                <span class="spanMark" id="span1">元</span>
             </td>
             <td colspan="2"></td>
         </tr>
         <tr>
-            <td>备注:</td>
-            <td colspan="3"><input id="tbxMARK" type="text" value="" style="width:99%;" /></td>
+            <td class="tdField">备注:</td>
+            <td colspan="3"><input id="tbxMARK" type="text" value="" style="width:96%;" /></td>
         </tr>
     </table>
 </div>
@@ -110,7 +110,7 @@
             layer.open({
                 type: 2,
                 title: '查看灾后处理费用',
-                area: ['70%', '70%'],
+                area: ['600px', '240px'],
                 fix: true,
                 maxmin: true,
                 content: '/DamageAssess/LOSTPROCESSDataSee?PROCESSID=' + ID,
@@ -152,7 +152,7 @@
             layer.open({
                 type: 1,
                 title: str,
-                area: ['70%', '72%'],
+                area: ['600px', '250px'],
                 btn: btnInfo,
                 shade: 0,
                 maxmin: true,

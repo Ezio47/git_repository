@@ -1,0 +1,205 @@
+﻿@using ManagerSystemClassLibrary;
+@{
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+    var curorgno = SystemCls.getCurUserOrgNo();
+    if (string.IsNullOrEmpty(curorgno)==false)
+    {
+        if (curorgno.Substring(6, 9) == "000000000" && curorgno.Substring(4, 2) != "00")
+        {
+            curorgno = curorgno.Substring(0, 6) + "xxxxxxxxx";
+        }
+        else
+        {
+            curorgno = SystemCls.getCurUserOrgNo();
+        }
+    }
+    var curorgno1 = SystemCls.getCurUserOrgNo();//添加的时候组织机判断
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+    <div data-options="region:'center'" title="" style=" border: none;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <ul>
+                        <li class="homeUL">
+                            单位：<div id="tbxBYORGNO" class="easyui-tree"></div>
+                            植物：<select id="tbxGICALTYPECODE">
+                                @Html.Raw(@ViewBag.BOTANY)
+                            </select>
+                            族群：<select id="tbxPOPULATIONTYPE">
+                                @Html.Raw(@ViewBag.POPULATIONTYPE)
+                            </select>
+                            <input type="button" value="查询" onclick="query('1')" class="btnSearchCss" />
+                            <input type="button" value="添加" id="btnAdd" onclick="Add()" @*style="display:none;" *@ class="btnAddCss" />
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" class="LayoutCenterBG">
+                <div class="divTable" id="divTable">
+
+                </div>
+            </div>
+            <div data-options="region:'south'" title="" style=" height:40px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
+                <div class="divPager" id="divPager">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="divMan" id="Phototableadd" style="display:none;margin-left:5px;margin-top:8px">
+
+</div>
+
+
+<script type="text/javascript">
+    var bln = '@ViewBag.isAdd';
+    if (bln == "1") {
+        document.getElementById('btnAdd').style.display = "";
+    }
+    $(function () {
+        $('#tbxBYORGNO').combotree({
+            url: '/DataCenter/OrgTreeget',
+            editable: false,
+            required: true,
+            panelHeight: 300,
+            onLoadSuccess: function (node, data) {
+                var t = $("#tbxBYORGNO").combotree('tree');//获取tree
+                t.tree("collapseAll");
+                node = t.tree("find", data[0].id);
+                t.tree("expand", node.target);//展开节点 expandTo
+            }
+        });
+        $('#tbxBYORGNO').combotree('setValue', "@curorgno");
+        query('1');
+    });
+    function query(Page) {
+        var pagesize = '0';
+        if (document.getElementById("selPageSize") != null) {
+            pagesize = document.getElementById("selPageSize").value;
+        }
+        var ORGNOS = $('#tbxBYORGNO').combotree('getValue');
+        $.ajax({
+            url: '/DataCenter/getWILD_BOTANYDISTRIBUTElist',
+            data: {
+                BYORGNO: ORGNOS,
+                BIOLOGICALTYPECODE: $('#tbxGICALTYPECODE').val(),
+                POPULATIONTYPE: $('#tbxPOPULATIONTYPE').val(),
+                PageSize: pagesize,
+                Page: Page,
+            },
+            type: 'post',
+            success: function (data) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#divTable').html(ar.tableInfo);
+                    $('#divPager').html(ar.pagerInfo);
+                }
+                else {
+                    alert('登录异常');
+                }
+            },
+            error: function (err, ioArgs) {
+                alert('登录异常');
+            }
+        });
+    }
+
+    //地图定位点展示
+    function Position(tablename, id, name) {
+        layer.open({
+            type: 2,
+            title: name + '地图定位',
+            area: ['1000px', '600px'],
+            //shade: 0,
+            fix: true,
+            maxmin: true,
+            content: '/MapCommon/MapPostionCommonIndex?tablename=' + tablename + "&id=" + id
+        })
+    }
+    function Del(Method, ID, page) {
+        layer.confirm('确实要删除吗?', { icon: 3, title: '提示' }, function (index) {
+            $.ajax({
+                url: '/DataCenter/WILD_BOTANYDISTRIBUTEManager',
+                cache: false,
+                data: { WILD_BOTANYDISTRIBUTEID: ID, Method: Method },
+                type: 'post',
+                error: function () {
+                    layer.msg('系统异常!', { icon: 5 });
+                },
+                dataType: 'json',
+                success: function (re) {
+                    if (re.Success) {
+                        layer.msg('删除成功!', { icon: 6 });
+                        query(page);
+                    }
+                    else {
+                        layer.msg(re.Msg, { icon: 5 });
+                    }
+                }
+            });
+        });
+    }
+
+    function Add() {
+        layer.open({
+            type: 2,
+            title: '添加',
+            fix: false, //不固定
+            area: ['650px', '300px'],
+            maxmin: true,
+            content: '/DataCenter/WILD_BOTANYDISTRIBUTEManIndex',
+            end: function () {
+                query(1);
+            }
+        });
+    }
+    function Mdy(Method, ID, page) {
+        layer.open({
+            type: 2,
+            title: "修改",
+            area: ['650px', '300px'],
+            //shade: 0,
+            fix: false,
+            maxmin: true,
+            content: '/DataCenter/WILD_BOTANYDISTRIBUTEManIndex?Method=' + Method + "&ID=" + ID,
+            end: function () {
+                query(1);
+            }
+        });
+    }
+    function SwichIframeUrl(ID, tablename, CODE) {
+        layer.open({
+            type: 2,
+            title: '基本信息',
+            area: ['550px', '480px'],
+            fix: true,
+            maxmin: true,
+            content: '/DataCenter/BOTANYTotalIndex?tablename=' + tablename + "&ID=" + ID + "&CODE=" + CODE
+        })
+    }
+    //照片管理
+    function Photo(PRID, PHOTOTYPE) {
+        layer.open({
+            type: 2,
+            title: '照片管理',
+            area: ['950px', '450px'],
+            fix: true,
+            maxmin: true,
+            content: '/DataCenter/PhotoIndex?PHOTOTYPE=' + PHOTOTYPE + "&PRID=" + PRID
+        })
+    }
+
+    //选中改变颜色
+    function setColor(obj) {
+        $(obj).css("background-color", "#FFDAB9");
+        $("tr").not($(obj)).css("background-color", "");
+    }
+</script>
+

@@ -200,7 +200,7 @@
                     layer.open({
                         type: 1,
                         title: NAME + '物资统计',
-                        area: ['75%', '65%'],
+                        area: ['600px', '350px'],
                         shade: 0,
                         maxmin: true,
                         content: $('#divSupplies')
@@ -221,7 +221,7 @@
         layer.open({
             type: 2,
             title: NAME + '出入库明细',
-            area: ['100%', '100%'],
+            area: ['1100px', '480px'],
             fix: false,
             maxmin: false,
             content: '/DataCenter/DetailIndex?REPID=' + ID + "&NAME=" + newmame
@@ -255,7 +255,7 @@
             type: 2,
             title: '添加',
             fix: false, //不固定
-            area: ['50%', '60%'],
+            area: ['650px', '250px'],
             maxmin: true,
             content: '/DataCenter/DEPTlistMan',
             end: function () {
@@ -263,11 +263,11 @@
             }
         });
     }
-    function Mdy(Method, ID, page) {
+    function Mdy(Method, ID, page, NAME) {
         layer.open({
             type: 2,
-            title: "修改",
-            area: ['50%', '60%'],
+            title:NAME+ "修改",
+            area: ['650px', '250px'],
             //shade: 0,
             fix: false,
             maxmin: true,
@@ -278,44 +278,6 @@
         });
     }
    
-
-    //function getsupliesprop() {
-    //    $.ajax({
-    //        url: '/DataCenter/Suppliesproplist',
-    //        data: {
-    //        },
-    //        type: 'post',
-    //        success: function (data, ioArgs) {
-    //            var ar = eval('(' + data + ')');
-    //            if (ar.Success) {
-    //                $('#supliespropadd').html(ar.tableInfo);
-    //                layer.open({
-    //                    type: 1,
-    //                    title: '物资管理',
-    //                    area: ['60%', '80%'],
-    //                    shade: 0,
-    //                    content: $('#supliespropadd')
-    //                });
-    //            }
-    //            else {
-    //                alert(ar.Msg);
-    //            }
-    //        },
-    //        error: function (err, ioArgs) {
-    //            layer.msg('获取异常，请刷新重试');
-    //        }
-    //    });
-    //}
-    //function SUPOnclik(ID, NAME, MODEL, UNIT, FACTORY, MARK) {
-    //    document.getElementById("DC_SUPPLIESPROP_ID").value = ID;
-    //    document.getElementById("DCSUPPROPNAME").value = NAME;
-    //    document.getElementById("DCSUPPROPMODEL").value = MODEL;
-    //    document.getElementById("DCSUPPROPUNIT").value = UNIT;
-    //    document.getElementById("DCSUPPROPFACTORY").value = FACTORY;
-    //    document.getElementById("MARK").value = MARK;
-    //    document.getElementById('btnPROPMdy').style.display = "";
-    //    document.getElementById('btnPROPDel').style.display = "";
-    //}
     function SUPPLIESPROPManager(Method) {
         var bln = false;
         if (Method == 'Del') {
@@ -364,7 +326,7 @@
             type: 2,
             title: name + '地图位置设置',
             btn: ['保存', '关闭'],
-            area: ['70%', '80%'],
+            area: ['1000px', '600px'],
             fix: false, //不固定
             maxmin: true,
             content: '/MapCommon/GetMapPontIndex?jd=' + jd + "&wd=" + wd,
@@ -389,7 +351,7 @@
         layer.open({
             type: 2,
             title: name + '地图定位',
-            area: ['80%', '90%'],
+            area: ['1000px', '600px'],
             //shade: 0,
             fix: true,
             maxmin: true,
@@ -402,7 +364,7 @@
         layer.open({
             type: 2,
             title: NAME + '入库',
-            area: ['70%', '80%'],
+            area: ['1000px', '450px'],
             fix: false,
             maxmin: true,
             content: '/DataCenter/InportIndex?REPID=' + ID + "&Name=" + newmame
@@ -414,7 +376,7 @@
         layer.open({
             type: 2,
             title: NAME + '出库',
-            area: ['70%', '80%'],
+            area: ['1000px', '500px'],
             fix: false,
             maxmin: true,
             content: '/DataCenter/ExportIndex?REPID=' + ID + "&Name=" + newmame
@@ -426,7 +388,7 @@
         layer.open({
             type: 2,
             title: '仓库查看',
-            area: ['48%', '40%'],
+            area: ['400px', '200px'],
             fix: true,
             maxmin: true,
             content: '/DataCenter/SeeIndex?tablename=' + tablename + "&ID=" + ID

@@ -61,6 +61,42 @@
                 }
             }
         });
+
+        //调节声音
+        $j('#volumn').slider({
+            showTip:true,
+            tipFormatter: function (value) {
+                //console.info("value==" + value);
+                $j('#amount').html(value);
+            },
+            onSlideEnd: function (value) {
+                //alert(value);
+                clickSetVolume(value);
+            }
+            
+        });
+
+        //开关声音
+        $j("#voice").click(function () {
+            if ($(this).is(":checked")) {
+                //console.log("选中");
+                clickOpenSound();
+            } else {
+                clickCloseSound();
+                //console.log("未选中");
+            }
+        });
+
+        //电子放大
+        $j("#zoom").click(function () {
+            if ($(this).is(":checked")) {
+                //console.log("选中");
+                clickEnableEZoom();
+            } else {
+                //console.log("未选中");
+                clickDisableEZoom();
+            }
+        });
     })
 
     //切换命令
@@ -136,6 +172,7 @@
             moveVideoStop();
         }
     }
+  
 </script>
 
 <div>
@@ -192,6 +229,11 @@
                             <td><input type="button" class="btn2" value="开始预览" onclick="clickStartRealPlay();" /></td>
                             <td><input type="button" class="btn2" value="停止预览" onclick="clickStopRealPlay();" /></td>
                         </tr>
+                        <tr>
+                            <td>
+                                <input type="button" class="btn2" value="全屏" onclick="clickFullScreen();" />
+                            </td>
+                        </tr>
                     </table>
                 </div>
             </fieldset>
@@ -206,21 +248,44 @@
                         <td><select id="channels" class="sel"></select></td>
                     </tr>
                     <tr>
+                        @*<td class="tt">音量</td>*@
+                        @*<td><input type="text" id="volume" class="txt" value="50" maxlength="3" />[0-100]</td>
+                        <td><input type="button" class="btn" value="设置" onclick="clickSetVolume();" /></td>*@
+                        @*<td colspan="3" style="text-align:center">
+                            <input id="volumn" style="width:260px;"  data-options="" />   
+                            <span id="amount">0</span>
+                        </td>*@
                         <td class="tt">音量</td>
-                        <td><input type="text" id="volume" class="txt" value="50" maxlength="3" />[0-100]</td>
-                        <td><input type="button" class="btn" value="设置" onclick="clickSetVolume();" /></td>
-                        <td>
+                        <td colspan="2">
+                            <input id="volumn" style="width:100%;" data-options="" /> 
+                        </td>
+                        <td><span id="amount">0</span></td>
+                        @*<td><input type="button" class="btn" value="设置" onclick="clickSetVolume();" /></td>*@
+                        @*<td>
                             <input type="button" class="btn" value="打开声音" onclick="clickOpenSound();" />
                             <input type="button" class="btn" value="关闭声音" onclick="clickCloseSound();" />
+                        </td>*@
+                    </tr>
+                    @*<tr>
+                        <td colspan="4" style="text-align:center"><span id="amount">0</span></td>
+                    </tr>*@
+                    <tr>
+                        @*<td class="tt">声音</td>
+                        <td><input id="voice" type="checkbox" /></td>
+                        <td class="tt">电子放大</td>
+                        <td><input id="zoom" type="checkbox" /></td>*@
+                        <td colspan="4">
+                            声音 <input id="voice" style="margin-right:20px;" type="checkbox" />
+                            电子放大 <input id="zoom" type="checkbox" />
                         </td>
                     </tr>
-                    <tr>
+                    @*<tr>
                         <td colspan="4">
                             <input type="button" class="btn2" value="启用电子放大" onclick="clickEnableEZoom();" />
                             <input type="button" class="btn2" value="禁用电子放大" onclick="clickDisableEZoom();" />
                             <input type="button" class="btn" value="全屏" onclick="clickFullScreen();" />
                         </td>
-                    </tr>
+                    </tr>*@
                 </table>
             </fieldset>
 

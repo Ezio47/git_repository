@@ -18,38 +18,40 @@
                 <div class="divMan">
                     <table cellpadding="0" cellspacing="0">
                         <tr>
-                            <td style="width:100px;">
+                            <td style="width:100px;" class="tdField">
                                 单位：
                             </td>
                             <td>
                                 <select id="BYORGNO" class="easyui-combotree" style="width:180px;"></select>
                             </td>
-                            <td style="width:100px;">
+                            <td style="width:100px;" class="tdField">
                                 长度：
                             </td>
                             <td>
-                                <input id="LENGTH" type="text" class="input-small" value="" />米
+                                <input id="LENGTH" type="text" class="input-small" value="" /><span class="spanMark">米</span>
                             </td>
                         </tr>
 
                         <tr>
-                            <td style="width:100px;">
-                                <span style="color:red;">*</span>
+                            <td style="width:100px;" class="tdField">
+                                @*<span style="color:red;">*</span>*@
                                 名称：
                             </td>
                             <td>
                                 <input type="text" id="NAME" class="input-small" value="" />
+                                <span class="spanRequiredField">*</span>
                             </td>
-                            <td style="width:100px;">
-                                <span style="color:red;">*</span>
+                            <td style="width:100px;" class="tdField">
+                                @*<span style="color:red;">*</span>*@
                                 编号：
                             </td>
                             <td>
                                 <input id="NUMBER" type="text" class="input-small" value="" />
+                                <span class="spanRequiredField">*</span>
                             </td>
                         </tr>
                         <tr>
-                            <td style="width:100px;">
+                            <td style="width:100px;" class="tdField">
                                 使用现状类型：
                             </td>
                             <td>
@@ -57,7 +59,7 @@
                                     @Html.Raw(@ViewBag.usestateadd)
                                 </select>
                             </td>
-                            <td style="width:100px;">
+                            <td style="width:100px;" class="tdField">
                                 维护管理类型：
                             </td>
                             <td>
@@ -67,16 +69,16 @@
                             </td>
                         </tr>
                         <tr>
-                            <td style="width:120px;">
-                                防火通道等级类型：
+                            <td style="width:120px;" class="tdField">
+                                等级类型：
                             </td>
                             <td>
                                 <select id="FIRECHANNELLEVELTYPE">
                                     @Html.Raw(@ViewBag.fireleveltypeadd)
                                 </select>
                             </td>
-                            <td style="width:120px;">
-                                防火通道使用性质：
+                            <td style="width:120px;" class="tdField">
+                               使用性质：
                             </td>
                             <td>
                                 <select id="FIRECHANNELUSERTYPE">
@@ -85,39 +87,29 @@
                             </td>
                         </tr>
                         <tr>
-                            <td style="width:100px;">
+                            <td style="width:160px;" class="tdField">
                                 经纬度点：
                             </td>
-                            <td colspan="2">
-                                <input id="JWDLIST" type="text" style="width:85%" value="" readonly />
-                            </td>
-                            <td>
+                            <td colspan="3">
+                                <input id="JWDLIST" type="text" style="width:75%" value="" readonly />
+                                <span class="spanRequiredField">*</span>
                                 <input type="button" value="地图定位" onclick="setLine()" class="btnMapLoaclCss" />
                             </td>
                         </tr>
                         <tr>
-                            <td style="width:100px;">
-                                规划建设日期：
-                            </td>
-                            <td>
-                                开始时间: <input class="easyui-datebox" id="BUILDDATEBEGIN" type="text" style="width:100px;height:28px;" value="" />&nbsp;&nbsp;&nbsp;
-                                结束时间: <input class="easyui-datebox" id="BUILDDATEEND" type="text" style="width:100px;height:28px;" value="" />
-                            </td>
-                            <td style="width:100px;">
-                                建成日期：
-                            </td>
-                            <td>
-                                <input class="easyui-datebox" id="BUILDDATE" type="text" style="width:100px;height:28px;" value="" />
+                            <td style="width:80px;" class="tdField">规划建设日期：</td>
+                            <td colspan="3">
+                                开始时间:<input class="easyui-datebox" id="BUILDDATEBEGIN" type="text" style="width:120px;height:28px;" value="" />&nbsp;&nbsp;
+                                &nbsp;&nbsp;结束时间:<input class="easyui-datebox" id="BUILDDATEEND" type="text" style="width:120px;height:28px;" value="" />
                             </td>
                         </tr>
                         <tr>
-                            <td style="width:100px;">
-                                总价：
-                            </td>
-                            <td colspan="3">
-                                <input id="WORTH" type="text" class="input-small" value="" />元
-                            </td>
+                            <td style="width:80px;" class="tdField">建成日期：</td>
+                            <td><input class="easyui-datebox" id="BUILDDATE" type="text" style="width:120px;height:28px;" value="" /></td>
+                            <td style="width:80px;" class="tdField">总价：</td>
+                            <td><input id="WORTH" type="text" class="input-small" value="" /><span class="spanMark">元</span></td>
                         </tr>
+                        
                     </table>
                 </div>
             </div>
@@ -185,31 +177,31 @@
     function setLine() {
         var name = document.getElementById("NAME").value;
         var str = document.getElementById("JWDLIST").value;
-        layer.open({
+        parent.layer.open({
             type: 2,
             title: name + '地图位置设置',
             btn: ['保存', '关闭'],
-            area: ['100%', '100%'],
+            area: ['1000px', '600px'],
             fix: false, //不固定
             maxmin: true,
             //content: '/MapCommon/GetMapPontIndex?LINE=1' + "&jwdlist=" + str,
             content: '/MapCommon/GetMapPontIndex?LINE=1',
             success: function (layero, index) {
-                var body = layer.getChildFrame('body', index);
+                var body = parent.layer.getChildFrame('body', index);
                 body.find('#editcollecttxt').text(str);
-                window["layui-layer-iframe" + index].getLocaCollectLine();//线
+                top.window["layui-layer-iframe" + index].getLocaCollectLine();//线
                 //getLocaCollectLine() 线
             },
             yes: function (index, layero) { //或者使用btn1
                 //按钮【按钮一】的回调
 
-                var ptxt = layer.getChildFrame("#editcollecttxt", index);
+                var ptxt = parent.layer.getChildFrame("#editcollecttxt", index);
                 $('#JWDLIST').val(ptxt.html());
-                var lm = layer.getChildFrame("#MjACdtxt", index)//长度
+                var lm = parent.layer.getChildFrame("#MjACdtxt", index)//长度
                 $('#LENGTH').val(lm.html());//长度
-                layer.close(index);
+                parent.layer.close(index);
             }, cancel: function (index) {
-                layer.close(index);
+                parent.layer.close(index);
             }
         });
 

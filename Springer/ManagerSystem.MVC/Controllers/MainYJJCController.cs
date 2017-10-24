@@ -17,7 +17,6 @@ namespace ManagerSystem.MVC.Controllers
 {
     public class MainYJJCController : BaseController
     {
-       
 
         /// <summary>
         /// 预警监测首页
@@ -106,7 +105,6 @@ namespace ManagerSystem.MVC.Controllers
             return View();
         }
 
-
         /// <summary>
         /// 预警响应
         /// </summary>
@@ -173,7 +171,6 @@ namespace ManagerSystem.MVC.Controllers
             var result = GetWeatherList();
             return View(result);
         }
-
 
         /// <summary>
         /// 气象信息首页展示
@@ -278,7 +275,7 @@ namespace ManagerSystem.MVC.Controllers
             if (string.IsNullOrEmpty(page))
                 page = "1";
             //查询条件
-            string[] arr = new string[7];//存放查询条件的数组 根据实际存放的数据
+            string[] arr = new string[8];//存放查询条件的数组 根据实际存放的数据
             if (string.IsNullOrEmpty(trans) == false)
                 arr = ClsStr.DecryptA01(trans, "kkkkkkkk").Split('|');
             if (string.IsNullOrEmpty(arr[0]) == true)
@@ -309,6 +306,7 @@ namespace ManagerSystem.MVC.Controllers
             sw.BeginTime = arr[4];//开始时间
             sw.EndTime = arr[5];//结束时间
             sw.HOTTYPE = arr[6];//热点类别
+            sw.ISOUTFIRE = arr[7];//火情是否已灭
             ViewBag.starttime = arr[4];//开始时间
             ViewBag.endtime = arr[5];//结束时间
 
@@ -342,11 +340,256 @@ namespace ManagerSystem.MVC.Controllers
             string Starttime = Request.Params["Starttime"];
             string Endtime = Request.Params["Endtime"];
             string HotType = Request.Params["HotType"];
-            string str = ClsStr.EncryptA01(PageSize + "|" + OrgNo + "|" + State + "|" + Source + "|" + Starttime + "|" + Endtime + "|" + HotType, "kkkkkkkk");
+            string OutFire = Request.Params["OutFire"];
+            string str = ClsStr.EncryptA01(PageSize + "|" + OrgNo + "|" + State + "|" + Source + "|" + Starttime + "|" + Endtime + "|" + HotType + "|" + OutFire, "kkkkkkkk");
             return Content(JsonConvert.SerializeObject(new Message(true, "", "/MainYJJC/YJResponseIndex?trans=" + str + "&page=" + Page)), "text/html;charset=UTF-8");
         }
 
         #region Ajax
+
+        public  ActionResult See()
+        {
+            var id = Request.Params["ID"];
+            ViewBag.orgno = JC_FIRECls.getByorgno(new JC_FIRE_SW { JCFID = id });
+            return View();
+        }
+
+        public ActionResult FireInfo()
+        {
+            var id = Request.Params["ID"];
+            StringBuilder sb = new StringBuilder();
+            var model = JC_FIRECls.getModel(new JC_FIRE_SW { JCFID = id, BYORGNO = SystemCls.getCurUserOrgNo() });
+            //var model = JC_INFRAREDCAMERACls.getModel(new JC_INFRAREDCAMERA_BASICINFO_SW { INFRAREDCAMERAID = id });
+
+            var fklist = GetFKInfoList(id);
+            var strstatus="";
+            var recordlist = fklist.Select(p => p.MANSTATE).ToList();//MANSTATE状态集合
+            if (Convert.ToInt32(model.MANSTATE) > 10)//大于10 说明已经入反馈阶段有顺序 
+            {
+                strstatus = StateSwitch.QSStateNew(SystemCls.getCurUserOrgNo(), model.MANSTATE);
+            }
+            else//签收无顺序性 状态判断是否反馈表包含 签到状态 1 市 2 县 3 乡镇
+            {
+                strstatus = StateSwitch.QSStateNewList(SystemCls.getCurUserOrgNo(), recordlist.ToList());
+            }
+
+            sb.AppendFormat("<div class=\"divTable\" style=\"margin-left:5px;margin-top:8px\">");
+            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
+            sb.AppendFormat("<thead>");
+            sb.AppendFormat("<tr><th colspan=\"4\">基本信息</th></tr>");
+            sb.AppendFormat("</thead>");
+            sb.AppendFormat("<tr>");
+            if (model.FIREFROM == "2")//卫星热点
+            {
+                sb.AppendFormat("<td class=\"left tdField\" style=\"width:15%\" >区域:</td>");
+                sb.AppendFormat("<td style=\"width:35%\">{0}</td>", model.ZQWZ);
+                sb.AppendFormat("<td class=\"left tdField\" style=\"width:15%\">火灾发生地:</td>");
+                sb.AppendFormat("<td style=\"width:35%\">{0}</td>", "");
+            }
+            else
+            {
+                sb.AppendFormat("<td class=\"left tdField\" style=\"width:15%\">区域:</td>");
+                sb.AppendFormat("<td style=\"width:35%\">{0}</td>", model.ORGNAME);
+                sb.AppendFormat("<td class=\"left tdField\" style=\"width:15%\">火灾发生地:</td>");
+                sb.AppendFormat("<td style=\"width:35%\">{0}</td>", model.ZQWZ);
+            }
+            sb.AppendFormat("</tr>");
+            sb.AppendFormat("<tr>");
+            sb.AppendFormat("<td class=\"left tdField\" style=\"width:15%\">火情来源:</td>");
+            sb.AppendFormat("<td style=\"width:35%\">{0}</td>", model.FIREFROMName);
+            sb.AppendFormat("<td class=\"left tdField\">反馈情况:</td>");
+            sb.AppendFormat("<td>{0}</td>", strstatus);
+            
+            sb.AppendFormat("</tr>");
+            sb.AppendFormat("<tr>");
+            sb.AppendFormat("<td class=\"left tdField\">接收时间:</td>");
+            sb.AppendFormat("<td>{0}</td>", ClsSwitch.SwitTM(model.FIRETIME));
+            sb.AppendFormat("<td class=\"left tdField\">是否已灭:</td>");
+            if (model.ISOUTFIRE == "1")
+                sb.AppendFormat("<td>已灭</td>");
+            else
+                sb.AppendFormat("<td>未灭</td>");
+            
+            sb.AppendFormat("</tr>");
+            sb.AppendFormat("<tr>");
+            //sb.AppendFormat("<td>像素:</td>");
+            //sb.AppendFormat("<td>{0}</td>", model.RSMJ);
+            sb.AppendFormat("<td class=\"left tdField\">经度:</td>");
+            sb.AppendFormat("<td>{0}</td>", model.JD);
+            sb.AppendFormat("<td class=\"left tdField\">纬度:</td>");
+            sb.AppendFormat("<td>{0}</td>", model.WD);
+            //sb.AppendFormat("<td></td>");
+            //sb.AppendFormat("<td></td>");
+            sb.AppendFormat("</tr>");
+            sb.AppendFormat("</table>");
+
+            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
+            sb.AppendFormat("<thead>");
+            sb.AppendFormat("<tr><th colspan=\"4\">"+ model.FIREFROMName +"详细信息</th></tr>");
+            sb.AppendFormat("</thead>");
+
+            if (model.FIREFROM == "2")//卫星热点
+            {
+                sb.AppendFormat("<tr>");
+                sb.AppendFormat("<td class=\"left tdField\" style=\"width:15%\">卫星编号:</td>");
+                sb.AppendFormat("<td style=\"width:35%\">{0}</td>", model.WXBH);
+                sb.AppendFormat("<td class=\"left tdField\" style=\"width:15%\">热点编号:</td>");
+                sb.AppendFormat("<td style=\"width:35%\">{0}</td>", model.DQRDBH);
+                sb.AppendFormat("</tr>");
+                sb.AppendFormat("<tr>");
+                sb.AppendFormat("<td class=\"left tdField\">像素:</td>");
+                sb.AppendFormat("<td>{0}</td>", model.RSMJ);
+                sb.AppendFormat("<td class=\"left tdField\">备注:</td>");
+                sb.AppendFormat("<td>{0}</td>", model.MARK);
+                sb.AppendFormat("</tr>");
+            }
+            if (model.FIREFROM == "3")//电话报警
+            {
+                var m = JC_PERALARMCls.getModel(new JC_PERALARM_SW { PERALARMID = model.FIREFROMID});
+                if (m!=null)
+                {
+                    sb.AppendFormat("<tr>");
+                    sb.AppendFormat("<td class=\"left tdField\">火情名称:</td>");
+                    sb.AppendFormat("<td>{0}</td>", m.FIRENAME);
+                    sb.AppendFormat("<td class=\"left tdField\">报警时间:</td>");
+                    sb.AppendFormat("<td>{0}</td>", m.PERALARMTIME);
+                    sb.AppendFormat("</tr>");
+                    sb.AppendFormat("<tr>");
+                    sb.AppendFormat("<td class=\"left tdField\">报警人:</td>");
+                    sb.AppendFormat("<td>{0}</td>", m.PERALARMNAME);
+                    sb.AppendFormat("<td class=\"left tdField\">电话号码:</td>");
+                    sb.AppendFormat("<td>{0}</td>", m.PERALARMPHONE);
+                    sb.AppendFormat("</tr>");
+                    sb.AppendFormat("<tr>");
+                    sb.AppendFormat("<td class=\"left tdField\">火灾发生地:</td>");
+                    sb.AppendFormat("<td>{0}</td>", m.PERALARMADDRESS);
+                    sb.AppendFormat("<td class=\"left tdField\">报警内容:</td>");
+                    sb.AppendFormat("<td>{0}</td>", m.PERALARMCONTENT);
+                    sb.AppendFormat("</tr>");
+                }            
+            }
+            if (model.FIREFROM == "4")//电子监控
+            {
+                //var m = JC_MONITORCls.getModelMonitor(new JC_MONITOR_SW{})
+                var m = JC_MONITORCls.getModel(new JC_MONITOR_BASICINFO_SW { EMID = model.FIREFROMID });
+                if (m!=null)
+                {
+                    sb.AppendFormat("<tr>");
+                    sb.AppendFormat("<td class=\"left tdField\">监控名称:</td>");
+                    sb.AppendFormat("<td>{0}</td>", m.EMNAME);
+                    sb.AppendFormat("<td class=\"left tdField\">设备编号:</td>");
+                    sb.AppendFormat("<td>{0}</td>", m.TTBH);
+                    sb.AppendFormat("</tr>");
+                    sb.AppendFormat("<tr>");
+                    sb.AppendFormat("<td class=\"left tdField\">型号:</td>");
+                    sb.AppendFormat("<td>{0}</td>", m.XH);
+                    sb.AppendFormat("<td class=\"left tdField\">品牌:</td>");
+                    sb.AppendFormat("<td>{0}</td>", m.PP);
+                    sb.AppendFormat("</tr>");
+                    sb.AppendFormat("<tr>");
+                    sb.AppendFormat("<td class=\"left tdField\">设备高度:</td>");
+                    sb.AppendFormat("<td>{0}</td>", m.GD);
+                    sb.AppendFormat("<td class=\"left tdField\">高程:</td>");
+                    sb.AppendFormat("<td>{0}</td>", m.GC);
+                    sb.AppendFormat("</tr>");
+                    sb.AppendFormat("<tr>");
+                    sb.AppendFormat("<td class=\"left tdField\">设备类型:</td>");
+                    if (m.TYPE =="0")
+                       sb.AppendFormat("<td>{0}</td>", "海康视频");
+                    else
+                       sb.AppendFormat("<td>{0}</td>", "森林眼视频");
+                    sb.AppendFormat("<td class=\"left tdField\">最大监控距离:</td>");
+                    sb.AppendFormat("<td>{0}</td>", m.JCJL);
+                    sb.AppendFormat("</tr>");
+                    sb.AppendFormat("<tr>");
+                    sb.AppendFormat("<td class=\"left tdField\">登录名:</td>");
+                    sb.AppendFormat("<td>{0}</td>", m.LOGINUSERNAME);
+                    sb.AppendFormat("<td class=\"left tdField\">密码:</td>");
+                    sb.AppendFormat("<td>{0}</td>", m.USERPWD);
+                    sb.AppendFormat("</tr>");
+                    sb.AppendFormat("<tr>");
+                    sb.AppendFormat("<td class=\"left tdField\">IP地址:</td>");
+                    sb.AppendFormat("<td>{0}</td>", m.IP);
+                    sb.AppendFormat("<td class=\"left tdField\">端口号:</td>");
+                    sb.AppendFormat("<td>{0}</td>", m.PORT);
+                    sb.AppendFormat("</tr>");
+                    sb.AppendFormat("<tr>");
+                    sb.AppendFormat("<td class=\"left tdField\">地址:</td>");
+                    sb.AppendFormat("<td colspan=\"3\">{0}</td>", m.ADDRESS);
+                    //sb.AppendFormat("<td></td>");
+                    //sb.AppendFormat("<td></td>");
+                    sb.AppendFormat("</tr>");
+                }
+            }
+            if (model.FIREFROM == "5")//瞭望护林员
+            {
+                var m = T_IPSRPT_REPORTCls.getModel(new T_IPSRPT_REPORT_SW { REPORTID = model.FIREFROMID });
+                var n = T_IPSFR_USERCls.getModel(new T_IPSFR_USER_SW { HID = m.HID});
+                sb.AppendFormat("<tr>");
+                sb.AppendFormat("<td class=\"left tdField\">护林员姓名:</td>");
+                sb.AppendFormat("<td>{0}</td>", n.HNAME);
+                sb.AppendFormat("<td class=\"left tdField\">性别:</td>");
+                if (n.SEX == "0")
+                    sb.AppendFormat("<td>{0}</td>", "男");
+                else
+                    sb.AppendFormat("<td>{0}</td>","女");
+                sb.AppendFormat("</tr>");
+                sb.AppendFormat("<tr>");
+                sb.AppendFormat("<td class=\"left tdField\">手机号码:</td>");
+                sb.AppendFormat("<td>{0}</td>", n.PHONE);
+                sb.AppendFormat("<td class=\"left tdField\">出生日期:</td>");
+                sb.AppendFormat("<td>{0}</td>", n.BIRTH);
+                sb.AppendFormat("</tr>");
+                sb.AppendFormat("<tr>");
+                sb.AppendFormat("<td class=\"left tdField\">巡检距离:</td>");
+                sb.AppendFormat("<td>{0}</td>", n.PATROLLENGTH);
+                sb.AppendFormat("<td class=\"left tdField\">固/兼职:</td>");
+                if (n.ONSTATE =="0")
+                    sb.AppendFormat("<td>{0}</td>", "兼职");
+                else
+                    sb.AppendFormat("<td>{0}</td>", "固职");
+                sb.AppendFormat("</tr>");
+            }
+            if (model.FIREFROM == "6")//无人机巡护
+            {
+
+            }
+            if (model.FIREFROM == "50")
+            {
+                var m = FIRERECORD_FIREINFOCls.getModel(new FIRERECORD_FIREINFO_SW { JCFID = model.JCFID });
+                var Firetype = T_SYS_DICTCls.getDicName(new T_SYS_DICTSW { DICTTYPEID = "301", DICTVALUE = m.FIRERECINFO000 });
+                var Firelevel = T_SYS_DICTCls.getDicName(new T_SYS_DICTSW { DICTTYPEID = "304", DICTVALUE = m.FIRERECINFO001 });
+                var Fire = T_SYS_DICTCls.getDicName(new T_SYS_DICTSW { DICTTYPEID = "203", DICTVALUE = (m.FIRERECINFO140) });//火源是否查明
+                sb.AppendFormat("<tr>");
+                sb.AppendFormat("<td class=\"left tdField\">火灾编号:</td>");
+                sb.AppendFormat("<td>{0}</td>", m.FIRECODE);
+                sb.AppendFormat("<td class=\"left tdField\">火源:</td>");
+                sb.AppendFormat("<td>{0}</td>", m.FIRERECINFO150);
+                //sb.AppendFormat("<td>详细地址:</td>");
+                //sb.AppendFormat("<td>{0}</td>", m.FIREADDRESS);
+                sb.AppendFormat("</tr>");
+                sb.AppendFormat("<tr>");
+                sb.AppendFormat("<td class=\"left tdField\">起火时间:</td>");
+                sb.AppendFormat("<td>{0}</td>", m.FIRETIME);
+                sb.AppendFormat("<td class=\"left tdField\">灭火时间:</td>");
+                sb.AppendFormat("<td >{0}</td>", m.FIREENDTIME);
+                sb.AppendFormat("</tr>");
+                sb.AppendFormat("<tr>");
+                sb.AppendFormat("<td class=\"left tdField\">火灾等级:</td>");
+                sb.AppendFormat("<td>{0}</td>", Firelevel);
+                sb.AppendFormat("<td class=\"left tdField\">火灾种类:</td>");
+                sb.AppendFormat("<td>{0}</td>", Firetype);
+                sb.AppendFormat("</tr>");
+                sb.AppendFormat("<tr>");
+                sb.AppendFormat("<td class=\"left tdField\">已查明火源:</td>");
+                sb.AppendFormat("<td colspan=\"3\">{0}</td>", Fire);                
+                sb.AppendFormat("</tr>");
+            }
+            sb.AppendFormat("</table>");
+            sb.AppendFormat("</div>");
+            ViewBag.detail = sb.ToString();
+            return View();
+        }
 
         /// <summary>
         /// 火险等级文件导入
@@ -378,22 +621,20 @@ namespace ManagerSystem.MVC.Controllers
                     bool bo = ReadTxt(path);//读取txt 文件 入库
                     if (bo)
                     {
-                        ms = new Message(true, "上传成功", "");
+                        ms = new Message(true, "上传成功!", "");
                     }
                     else
                     {
-                        ms = new Message(false, "上传失败,检查导入文件格式", "");
+                        ms = new Message(false, "上传失败,检查导入文件格式!", "");
                     }
                 }
                 catch (Exception)
                 {
-                    ms = new Message(false, "上传出错", "");
+                    ms = new Message(false, "上传出错!", "");
                 }
-
             }
             return Json(ms);
         }
-
 
         /// <summary>
         /// 获取火情监测信息按类别获取
@@ -457,7 +698,6 @@ namespace ManagerSystem.MVC.Controllers
             // return Content(JsonConvert.SerializeObject(ms), "text/html;charset=UTF-8");
         }
 
-
         /// <summary>
         /// 获取html标签
         /// </summary>
@@ -498,8 +738,10 @@ namespace ManagerSystem.MVC.Controllers
                 sb.AppendFormat("<tbody>");
                 if (list.Any())
                 {
+                    int i = 0;
                     foreach (var item in list)
                     {
+                        i++;
                         if (string.IsNullOrEmpty(item.MANSTATE))
                         {
                             item.MANSTATE = "0";
@@ -514,7 +756,14 @@ namespace ManagerSystem.MVC.Controllers
                         {
                             strstatus = StateSwitch.QSStateNewList(SystemCls.getCurUserOrgNo(), recordlist.ToList());
                         }
-                        sb.AppendFormat("  <tr> ");
+                        if (i % 2 == 0)
+                        {
+                            sb.AppendFormat("  <tr> ");
+                        }
+                        else
+                        {
+                            sb.AppendFormat("  <tr class='row1'> ");
+                        }
                         sb.AppendFormat("<td style=\"text-align: center\"><input type=\"checkbox\" value=\"{0}\" name=\"chk_list\" id=\"CHK_{0}\"/></td>", item.JCFID);
                         sb.AppendFormat("<td>{0}</td>", item.WXBH);
                         sb.AppendFormat("<td>{0}</td>", item.ZQWZ);
@@ -651,6 +900,15 @@ namespace ManagerSystem.MVC.Controllers
                         int i = 0;
                         foreach (var item in list)
                         {
+                            i++;
+                            if (i % 2 == 0)
+                            {
+                                sb.AppendFormat("  <tr> ");
+                            }
+                            else
+                            {
+                                sb.AppendFormat("  <tr class='row1'> ");
+                            }
                             if (string.IsNullOrEmpty(item.MANSTATE))
                             {
                                 item.MANSTATE = "0";
@@ -665,7 +923,7 @@ namespace ManagerSystem.MVC.Controllers
                             {
                                 strstatus = StateSwitch.QSStateNewList(SystemCls.getCurUserOrgNo(), recordlist.ToList());
                             }
-                            sb.AppendFormat("  <tr> ");
+                            //sb.AppendFormat("  <tr> ");
                             sb.AppendFormat("<td style=\"text-align: center\"><input type=\"checkbox\" name=\"chk_list\" value=\"{0}\" id=\"CHK_{0}\"/></td>", item.JCFID);
                             sb.AppendFormat("<td>{0}</td>", (++i).ToString());
                             sb.AppendFormat("<td>{0}</td>", item.FIRENAME);
@@ -799,6 +1057,8 @@ namespace ManagerSystem.MVC.Controllers
                         int i = 0;
                         foreach (var item in list)
                         {
+                            i++;
+
                             if (string.IsNullOrEmpty(item.MANSTATE))
                             {
                                 item.MANSTATE = "0";
@@ -813,7 +1073,14 @@ namespace ManagerSystem.MVC.Controllers
                             {
                                 strstatus = StateSwitch.QSStateNewList(SystemCls.getCurUserOrgNo(), recordlist.ToList());
                             }
-                            sb.AppendFormat("  <tr> ");
+                            if (i % 2 == 0)
+                            {
+                                sb.AppendFormat("  <tr> ");
+                            }
+                            else
+                            {
+                                sb.AppendFormat("  <tr class='row1'> ");
+                            }
                             sb.AppendFormat("<td style=\"text-align: center\"><input type=\"checkbox\" name=\"chk_list\" value=\"{0}\" id=\"CHK_{0}\"/></td>", item.JCFID);
                             sb.AppendFormat("<td>{0}</td>", (++i).ToString());
                             //sb.AppendFormat("<td>{0}</td>", item.FIRENAME);
@@ -839,8 +1106,6 @@ namespace ManagerSystem.MVC.Controllers
             }
             return sb.ToString();
         }
-
-
 
         /// <summary>
         /// 市县乡镇反馈信息
@@ -950,8 +1215,6 @@ namespace ManagerSystem.MVC.Controllers
             var ms = JC_FIRECls.QSFireTrans(model, sw);
             return Json(ms);
         }
-
-
 
         /// <summary>
         /// 签收(市局县局) 弃用
@@ -1101,7 +1364,7 @@ namespace ManagerSystem.MVC.Controllers
                 var msg = getLogsStr(sw, orgno);
                 ms = new Message(true, msg, "");
             }
-            return Json(ms,JsonRequestBehavior.AllowGet);
+            return Json(ms, JsonRequestBehavior.AllowGet);
         }
         #endregion
 
@@ -1144,16 +1407,16 @@ namespace ManagerSystem.MVC.Controllers
                     {
                         if (PublicCls.OrgIsShi(item.BYORGNO) && item.PFFLAG != "1")
                         {
-                            sb.AppendFormat("<td> <a href=\"javascript:void(0);\" onClick=\"ShowMapLoc(" + item.JCFID + ")\">二维定位</a>  <a href=\"javascript:void(0);\" onClick=\"Show3DMapLoc(" + item.JCFID + ")\">三维定位</a>   <a href=\"javascript:void(0);\" onClick=\"CityQSOrgSelect(" + item.JCFID + "," + type + ",'')\">签收</a></td>");
+                            sb.AppendFormat("<td> <a href=\"javascript:void(0);\" onClick=\"See(" + item.JCFID + ")\">查看</a> <a href=\"javascript:void(0);\" onClick=\"ShowMapLoc(" + item.JCFID + ")\">二维定位</a>  <a href=\"javascript:void(0);\" onClick=\"Show3DMapLoc(" + item.JCFID + ")\">三维定位</a>   <a href=\"javascript:void(0);\" onClick=\"CityQSOrgSelect(" + item.JCFID + "," + type + ",'')\">签收</a></td>");
                         }
                         else
                         {
-                            sb.AppendFormat("<td> <a href=\"javascript:void(0);\" onClick=\"ShowMapLoc(" + item.JCFID + ")\">二维定位</a> <a href=\"javascript:void(0);\" onClick=\"Show3DMapLoc(" + item.JCFID + ")\">三维定位</a>  <a href=\"javascript:void(0);\" onClick=\"CityQS(" + item.JCFID + "," + type + ",'')\">签收</a></td>");
+                            sb.AppendFormat("<td> <a href=\"javascript:void(0);\" onClick=\"See(" + item.JCFID + ")\">查看</a> <a href=\"javascript:void(0);\" onClick=\"ShowMapLoc(" + item.JCFID + ")\">二维定位</a> <a href=\"javascript:void(0);\" onClick=\"Show3DMapLoc(" + item.JCFID + ")\">三维定位</a>  <a href=\"javascript:void(0);\" onClick=\"CityQS(" + item.JCFID + "," + type + ",'')\">签收</a></td>");
                         }
                     }
                     else
                     {
-                        sb.AppendFormat("<td> <a href=\"javascript:void(0);\" onClick=\"ShowMapLoc(" + item.JCFID + ")\">二维定位</a>  <a href=\"javascript:void(0);\" onClick=\"Show3DMapLoc(" + item.JCFID + ")\">三维定位</a>  <a href=\"javascript:void(0);\" onClick=\"CityQS(" + item.JCFID + "," + type + ",'')\">签收</a></td>");
+                        sb.AppendFormat("<td> <a href=\"javascript:void(0);\" onClick=\"See(" + item.JCFID + ")\">查看</a> <a href=\"javascript:void(0);\" onClick=\"ShowMapLoc(" + item.JCFID + ")\">二维定位</a>  <a href=\"javascript:void(0);\" onClick=\"Show3DMapLoc(" + item.JCFID + ")\">三维定位</a>  <a href=\"javascript:void(0);\" onClick=\"CityQS(" + item.JCFID + "," + type + ",'')\">签收</a></td>");
                     }
                 }
                 else if (item.MANSTATE == "11" || item.MANSTATE == "15" || item.MANSTATE == "18" || item.MANSTATE == "19")
@@ -1163,11 +1426,11 @@ namespace ManagerSystem.MVC.Controllers
                     {
                         manstate = "18";
                     }
-                    sb.AppendFormat("<td><a href=\"javascript:void(0);\" onClick=\"ShowMapLoc(" + item.JCFID + ")\">二维定位</a> <a href=\"javascript:void(0);\" onClick=\"Show3DMapLoc(" + item.JCFID + ")\">三维定位</a>  <a href=\"javascript:void(0);\" onClick=\"FkFireInfo('../JCFireInfo/FireHtmlFKIndex'," + item.JCFID + "," + type + "," + manstate + ",'')\">审核</a></td>");
+                    sb.AppendFormat("<td> <a href=\"javascript:void(0);\" onClick=\"See(" + item.JCFID + ")\">查看</a> <a href=\"javascript:void(0);\" onClick=\"ShowMapLoc(" + item.JCFID + ")\">二维定位</a> <a href=\"javascript:void(0);\" onClick=\"Show3DMapLoc(" + item.JCFID + ")\">三维定位</a>  <a href=\"javascript:void(0);\" onClick=\"FkFireInfo('../JCFireInfo/FireHtmlFKIndex'," + item.JCFID + "," + type + "," + manstate + ",'')\">审核</a></td>");
                 }
                 else
                 {
-                    sb.AppendFormat("<td><a href=\"javascript:void(0);\" onClick=\"ShowMapLoc(" + item.JCFID + ")\">二维定位</a> <a href=\"javascript:void(0);\" onClick=\"Show3DMapLoc(" + item.JCFID + ")\">三维定位</a>  <span style=\"color: red;\">正在核查中...</span></td>");
+                    sb.AppendFormat("<td> <a href=\"javascript:void(0);\" onClick=\"See(" + item.JCFID + ")\">查看</a> <a href=\"javascript:void(0);\" onClick=\"ShowMapLoc(" + item.JCFID + ")\">二维定位</a> <a href=\"javascript:void(0);\" onClick=\"Show3DMapLoc(" + item.JCFID + ")\">三维定位</a>  <span style=\"color: red;\">正在核查中...</span></td>");
                     //sb.AppendFormat("<td><a href=\"javascript:void(0);\" onClick=\"ShowMapLoc(" + item.JCFID + ")\">定位</a></td>");
                 }
             }
@@ -1179,16 +1442,16 @@ namespace ManagerSystem.MVC.Controllers
                     {
                         if (PublicCls.OrgIsZhen(item.BYORGNO))//乡镇
                         {
-                            sb.AppendFormat("<td> <a href=\"javascript:void(0);\" onClick=\"ShowMapLoc(" + item.JCFID + ")\">二维定位</a>  <a href=\"javascript:void(0);\" onClick=\"Show3DMapLoc(" + item.JCFID + ")\">三维定位</a>  <a href=\"javascript:void(0);\" onClick=\"QSSXJOrg(" + item.JCFID + "," + type + ",'')\">签收</a></td>");
+                            sb.AppendFormat("<td> <a href=\"javascript:void(0);\" onClick=\"See(" + item.JCFID + ")\">查看</a> <a href=\"javascript:void(0);\" onClick=\"ShowMapLoc(" + item.JCFID + ")\">二维定位</a>  <a href=\"javascript:void(0);\" onClick=\"Show3DMapLoc(" + item.JCFID + ")\">三维定位</a>  <a href=\"javascript:void(0);\" onClick=\"QSSXJOrg(" + item.JCFID + "," + type + ",'')\">签收</a></td>");
                         }
                         else if (PublicCls.OrgIsXian(item.BYORGNO))
                         {
-                            sb.AppendFormat("<td> <a href=\"javascript:void(0);\" onClick=\"ShowMapLoc(" + item.JCFID + ")\">二维定位</a> <a href=\"javascript:void(0);\" onClick=\"Show3DMapLoc(" + item.JCFID + ")\">三维定位</a>   <a href=\"javascript:void(0);\" onClick=\"QSSXJOrgSelect(" + item.JCFID + "," + type + ",'')\">签收</a></td>");
+                            sb.AppendFormat("<td> <a href=\"javascript:void(0);\" onClick=\"See(" + item.JCFID + ")\">查看</a> <a href=\"javascript:void(0);\" onClick=\"ShowMapLoc(" + item.JCFID + ")\">二维定位</a> <a href=\"javascript:void(0);\" onClick=\"Show3DMapLoc(" + item.JCFID + ")\">三维定位</a>   <a href=\"javascript:void(0);\" onClick=\"QSSXJOrgSelect(" + item.JCFID + "," + type + ",'')\">签收</a></td>");
                         }
                     }
                     else
                     {
-                        sb.AppendFormat("<td> <a href=\"javascript:void(0);\" onClick=\"ShowMapLoc(" + item.JCFID + ")\">二维定位</a> <a href=\"javascript:void(0);\" onClick=\"Show3DMapLoc(" + item.JCFID + ")\">三维定位</a>   <a href=\"javascript:void(0);\" onClick=\"QSSXJOrgSelect(" + item.JCFID + "," + type + ",'')\">签收</a></td>");
+                        sb.AppendFormat("<td> <a href=\"javascript:void(0);\" onClick=\"See(" + item.JCFID + ")\">查看</a> <a href=\"javascript:void(0);\" onClick=\"ShowMapLoc(" + item.JCFID + ")\">二维定位</a> <a href=\"javascript:void(0);\" onClick=\"Show3DMapLoc(" + item.JCFID + ")\">三维定位</a>   <a href=\"javascript:void(0);\" onClick=\"QSSXJOrgSelect(" + item.JCFID + "," + type + ",'')\">签收</a></td>");
                     }
                 }
                 else if (item.MANSTATE == "31" || item.MANSTATE == "19" || item.MANSTATE == "11" || item.MANSTATE == "34" || item.PFFLAG == "2" || item.MANSTATE == "18" || item.MANSTATE == "15" || item.MANSTATE == "33")
@@ -1198,11 +1461,11 @@ namespace ManagerSystem.MVC.Controllers
                     {
                         manstate = "15";
                     }
-                    sb.AppendFormat("<td> <a href=\"javascript:void(0);\" onClick=\"ShowMapLoc(" + item.JCFID + ")\">二维定位</a>  <a href=\"javascript:void(0);\" onClick=\"Show3DMapLoc(" + item.JCFID + ")\">三维定位</a>  <a href=\"javascript:void(0);\" onClick=\"FkFireInfo('../JCFireInfo/FireHtmlFKIndex'," + item.JCFID + "," + type + "," + manstate + ",'')\">反馈</a></td>");
+                    sb.AppendFormat("<td> <a href=\"javascript:void(0);\" onClick=\"See(" + item.JCFID + ")\">查看</a> <a href=\"javascript:void(0);\" onClick=\"ShowMapLoc(" + item.JCFID + ")\">二维定位</a>  <a href=\"javascript:void(0);\" onClick=\"Show3DMapLoc(" + item.JCFID + ")\">三维定位</a>  <a href=\"javascript:void(0);\" onClick=\"FkFireInfo('../JCFireInfo/FireHtmlFKIndex'," + item.JCFID + "," + type + "," + manstate + ",'')\">反馈</a></td>");
                 }
                 else
                 {
-                    sb.AppendFormat("<td><a href=\"javascript:void(0);\" onClick=\"ShowMapLoc(" + item.JCFID + ")\">二维定位</a>  <a href=\"javascript:void(0);\" onClick=\"Show3DMapLoc(" + item.JCFID + ")\">三维定位</a> <span  style=\"color: red;\">正在核查中...</span></td>");
+                    sb.AppendFormat("<td> <a href=\"javascript:void(0);\" onClick=\"See(" + item.JCFID + ")\">查看</a> <a href=\"javascript:void(0);\" onClick=\"ShowMapLoc(" + item.JCFID + ")\">二维定位</a>  <a href=\"javascript:void(0);\" onClick=\"Show3DMapLoc(" + item.JCFID + ")\">三维定位</a> <span  style=\"color: red;\">正在核查中...</span></td>");
                     //sb.AppendFormat("<td><a href=\"javascript:void(0);\" onClick=\"ShowMapLoc(" + item.JCFID + ")\">定位</a> <a href=\"javascript:void(0);\" onClick=\"FkFireInfo('../JCFireInfo/FireHtmlFKIndex'," + item.JCFID + "," + type + ",3,'')\">反馈</a></td>");
                 }
             }
@@ -1210,11 +1473,11 @@ namespace ManagerSystem.MVC.Controllers
             {
                 if (item.MANSTATE == "0" && !recordlist.Contains("3"))
                 {
-                    sb.AppendFormat("<td> <a href=\"javascript:void(0);\" onClick=\"ShowMapLoc(" + item.JCFID + ")\">二维定位</a> <a href=\"javascript:void(0);\" onClick=\"Show3DMapLoc(" + item.JCFID + ")\">三维定位</a>   <a href=\"javascript:void(0);\" onClick=\"QSXZJOrgSelect(" + item.JCFID + "," + type + ",'')\">签收</a></td>");
+                    sb.AppendFormat("<td> <a href=\"javascript:void(0);\" onClick=\"See(" + item.JCFID + ")\">查看</a> <a href=\"javascript:void(0);\" onClick=\"ShowMapLoc(" + item.JCFID + ")\">二维定位</a> <a href=\"javascript:void(0);\" onClick=\"Show3DMapLoc(" + item.JCFID + ")\">三维定位</a>   <a href=\"javascript:void(0);\" onClick=\"QSXZJOrgSelect(" + item.JCFID + "," + type + ",'')\">签收</a></td>");
                 }
                 else
                 {
-                    sb.AppendFormat("<td> <a href=\"javascript:void(0);\" onClick=\"ShowMapLoc(" + item.JCFID + ")\">二维定位</a> <a href=\"javascript:void(0);\" onClick=\"Show3DMapLoc(" + item.JCFID + ")\">三维定位</a>   <a href=\"javascript:void(0);\" onClick=\"FkFireInfo('../JCFireInfo/FireHtmlFKIndex'," + item.JCFID + "," + type + ",31,'')\">反馈</a></td>");
+                    sb.AppendFormat("<td> <a href=\"javascript:void(0);\" onClick=\"See(" + item.JCFID + ")\">查看</a> <a href=\"javascript:void(0);\" onClick=\"ShowMapLoc(" + item.JCFID + ")\">二维定位</a> <a href=\"javascript:void(0);\" onClick=\"Show3DMapLoc(" + item.JCFID + ")\">三维定位</a>   <a href=\"javascript:void(0);\" onClick=\"FkFireInfo('../JCFireInfo/FireHtmlFKIndex'," + item.JCFID + "," + type + ",31,'')\">反馈</a></td>");
                 }
             }
             return sb;
@@ -1310,7 +1573,6 @@ namespace ManagerSystem.MVC.Controllers
                             m.DValue = model.DANGERCLASS.Trim();
                             var mm = YJ_DANGERCLASSCls.UpdateAceHuoXianDengJiData(m);
                         }
-
                         bo = ms.Success;
                     }
                 }
@@ -1395,19 +1657,20 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("<thead>");
             sb.AppendFormat("    <tr role=\"row\">");
             sb.AppendFormat("        <th style=\"width: 57px;\">序号</th>");
-            sb.AppendFormat("        <th>编号</th>");
+            sb.AppendFormat("        <th >编号</th>");
             sb.AppendFormat("        <th>状态</th>");
             sb.AppendFormat("        <th>热点区域</th>");
             sb.AppendFormat("        <th>来源</th>");
             sb.AppendFormat("        <th>热点类别</th>");
+            sb.AppendFormat("        <th>是否已灭</th>");
             sb.AppendFormat("        <th>经度</th>");
             sb.AppendFormat("        <th>纬度</th>");
-            sb.AppendFormat("        <th>接收时间</th>");
+            sb.AppendFormat("        <th>火情发生时间</th>");
             sb.AppendFormat("        <th>像素</th>");
             sb.AppendFormat("        <th>烟云</th>");
             sb.AppendFormat("        <th>连续</th>");
             sb.AppendFormat("        <th>地类</th>");
-            // sb.AppendFormat("        <th></th>");
+             sb.AppendFormat("        <th>操作</th>");
             sb.AppendFormat("    </tr>");
             sb.AppendFormat("</thead>");
             sb.AppendFormat("<tbody role=\"alert\" aria-live=\"polite\" aria-relevant=\"all\">");
@@ -1506,13 +1769,18 @@ namespace ManagerSystem.MVC.Controllers
                     {
                         sb.AppendFormat("<td class=\"center\"><a  href=\"javascript:void(0);\" onClick=\"FkFireInfo('../JCFireInfo/FireHtmlFKIndex'," + item.JCFID + "," + item.FIREFROM + ",31,'reload')\">{0}</a></td>", StateSwitch.DicStateName("热点类别", record.JC_FireFKData.HOTTYPE));//快速反馈(热点类别)
                     }
+                    if (item.ISOUTFIRE == "1")
+                        sb.AppendFormat("<td class=\"center\">已灭</td>");
+                    else
+                        sb.AppendFormat("<td class=\"center\">未灭</td>");
                     sb.AppendFormat("<td class=\"center\">{0}</td>", item.JD);
                     sb.AppendFormat("<td class=\"center\">{0}</td>", item.WD);
                     sb.AppendFormat("<td class=\"center\">{0}</td>", item.FIRETIME);
                     sb.AppendFormat("<td class=\"center\">{0}</td>", item.RSMJ);
                     sb.AppendFormat("<td class=\"center\">{0}</td>", StateSwitch.DicStateName("烟云类别", record.JC_FireFKData.YY));//烟云（烟云类别）
                     sb.AppendFormat("<td class=\"center\">{0}</td>", StateSwitch.DicStateName("是否连续", record.JC_FireFKData.JXHQSJ));//是否连续
-                    sb.AppendFormat("<td class=\"center\">{0}</td>", StateSwitch.DicStateName("地类", record.JC_FireFKData.DL));//地类
+                    sb.AppendFormat("<td class=\"center\">{0}</td>", StateSwitch.DicStateName("地类", record.JC_FireFKData.DL));//地类 
+                    sb.AppendFormat("<td class=\"center\"><a href=\"javascript:void(0);\" onClick=\"See(" + item.JCFID + ")\">查看</a></td>");//地类 
                     sb.AppendFormat("</tr>");
                     i++;
                 }
@@ -1720,7 +1988,7 @@ namespace ManagerSystem.MVC.Controllers
                 strorgname = StateSwitch.GetOrgNameByOrgNO(orgno);
             }
             else if (bx)
-            {   
+            {
                 strorgname = StateSwitch.GetOrgNameByOrgNO(orgno.Remove(orgno.Length - 9, 9) + "000000000");
                 strxzname = StateSwitch.GetOrgNameByOrgNO(orgno);
             }

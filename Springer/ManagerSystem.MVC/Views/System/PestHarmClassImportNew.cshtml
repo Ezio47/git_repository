@@ -1,0 +1,80 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+    var strcolor = "green";
+}
+
+@section Header{
+    <script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+    <link href="~/Scripts/uploadify/uploadify.css" rel="stylesheet" />
+    <script src="~/Scripts/uploadify/jquery.uploadify.min.js"></script>
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+
+    <div data-options="region:'center'" title="" class="LayoutCenterBG">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <ul>
+                        <li class="home">
+                            <input type="file" name="uploadify" id="uploadify" /> &nbsp;&nbsp;&nbsp;&nbsp;
+                        </li>
+                        <li class="active" style="margin-left:20px;">
+                            <a style="color:#3c7915;font-size:15px;" href="~/UploadFile/PESTHARMCLASSExcel/有害生物危害等级模板.rar" target="_blank" title="右键，另存为">下载模板</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div data-options="region:'center'" title="" class="LayoutCenterBG">
+                <div class="divTable">
+                    @Html.Raw(@ViewBag.TableList)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $("#uploadify").uploadify({
+        //指定swf文件
+        'swf': '/Scripts/uploadify/uploadify.swf',
+        //后台处理的页面
+        'uploader': '@Url.Action("ImportPestHarmClass", "System")',
+        //按钮显示的文字
+        'buttonText': '有害生物危害等级文件导入',
+        //显示的高度和宽度，默认 height 30；width 120
+        'height': 25,
+        'width': 180,
+        //上传文件的类型  默认为所有文件    'All Files'  ;  '*.*'
+        //在浏览窗口底部的文件类型下拉菜单中显示的文本
+        'fileTypeDesc': 'Image Files',
+        //允许上传的文件后缀
+        'fileTypeExts': '*.txt',
+        //发送给后台的其他参数通过formData指定
+        //'formData': { 'someKey': 'someValue', 'someOtherKey': 1 },
+        //上传文件页面中，你想要用来作为文件队列的元素的id, 默认为false  自动生成,  不带#
+        //'queueID': 'fileQueue',
+        //选择文件后自动上传
+        'auto': true,
+        //设置为true将允许多文件上传
+        'multi': false,
+        //上传成功后执行
+        'onUploadSuccess': function (file, data, response) {
+            var dataObj = eval("(" + data + ")");//转换为json对象
+            if (dataObj != null) {
+                if (dataObj.Success) {
+                    layer.msg('导入成功!', { icon: 6 });
+                    location.reload(true);
+                }
+                else {
+                    layer.msg(dataObj.Msg, { icon: 5 });
+                }
+            }
+        }
+    });
+</script>
+

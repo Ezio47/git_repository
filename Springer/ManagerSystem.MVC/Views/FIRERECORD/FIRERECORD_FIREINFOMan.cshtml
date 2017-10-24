@@ -2,7 +2,8 @@
     Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
 }
 @model ManagerSystemModel.FIRERECORD_FIREINFO_Model
-<style>
+
+<style type="text/css">
     td {
         padding-left: 2px;
     }
@@ -18,10 +19,14 @@
         background: url(../images/ico/firereport_icon.png) 7px 6px no-repeat;
         padding-left: 28px;
     }
+    .divTable tbody td span {
+        color: #cccccc;
+    }
 </style>
 @section Header{
     <script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
 }
+
 <div class="easyui-layout" data-options="fit:true" style=" border:0;">
     <div data-options="region:'center'" title="" style=" border: none; ">
         <div class="divTable">
@@ -33,94 +38,71 @@
                     <td colspan="6" style="height:40px"><h1>基 本 信 息</h1></td>
                 </tr>
                 <tr>
-                    <td style="width:125px;color:#3c7915">起火地点：</td>
+                    <td class="tdField" style="width:125px;">起火地点：</td>
                     <td style="padding-left:5px;width:205px" colspan="5">
                         <select id="tbxBYORGNO" onchange="loadXIAN();" style="display:none; width:45%;padding:1px">
                             <option value="532500000000000" selected>州级</option>
                         </select>
-                        &nbsp;<span style="color:#3c7915">县：</span><select id="tbxFIREADDRESSCOUNTY" onchange="loadXZ();" style="width:100px;padding:1px;" onclick="Change()"></select>
-
-                        &nbsp;<span style="color:#3c7915"> 乡： </span><select id="tbxFIREADDRESSTOWNS" style="width:135px;padding:1px;" onchange="Change()"></select>
-
-                        &nbsp;<span style="color:#3c7915">村：</span><input id="tbxFIREADDRESSVILLAGES" type="text" value="@Model.FIREADDRESSVILLAGES" style="width: 16%;" onkeyup="WriteCun()" />
-                        &nbsp;<span style="color:#3c7915">详细地：</span><input id="tbxFIREADDRESS" type="text" value="@Model.FIREADDRESS" style="width: 33%;" />
+                        县：<select id="tbxFIREADDRESSCOUNTY" onchange="loadXZ();" style="width:100px;padding:1px;" onclick="Change()"></select>&nbsp;&nbsp;
+                        乡：<select id="tbxFIREADDRESSTOWNS" style="width:135px;padding:1px;" onchange="Change()"></select>&nbsp;&nbsp;
+                        村：<input id="tbxFIREADDRESSVILLAGES" type="text" value="@Model.FIREADDRESSVILLAGES" style="width: 16%;" onkeyup="WriteCun()" />&nbsp;&nbsp;
+                        详细地：<input id="tbxFIREADDRESS" type="text" value="@Model.FIREADDRESS" style="width: 33%;" />
                     </td>
                 </tr>
                 <tr>
-                    <td style="color:#3c7915;width:130px;">火灾编号：</td>
+                    <td class="tdField" style="width:130px;">火灾编号：</td>
                     <td style="padding-left:1px;"><input id="tbxFIRECODE" name="tbxFIRECODE" type="text" value="@Model.FIRECODE" style="width: 70%;" /></td>
-                    <td style="color:#3c7915;width:140px;">起火时间：</td>
-                    <td>
-                        <input class="Wdate" id="tbxFIRETIME" value="@Html.Raw(@ViewBag.StartTime)" type="text" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss' })" style="width:90%;padding:1px;" />
-                    </td>
-                    <td style="color:#3c7915;width:120px;">灭火时间：</td>
-                    <td>
-                        <input class="Wdate" id="tbxFIREENDTIME" value="@Html.Raw(@ViewBag.EndTime)" type="text" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss' })" style="width:90%;padding:1px;" />
-                    </td>
+                    <td class="tdField" style="width:140px;">起火时间：</td>
+                    <td><input class="Wdate" id="tbxFIRETIME" value="@Html.Raw(@ViewBag.StartTime)" type="text" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss' })" style="width:90%;padding:1px;" /></td>
+                    <td class="tdField" style="width:120px;">灭火时间：</td>
+                    <td><input class="Wdate" id="tbxFIREENDTIME" value="@Html.Raw(@ViewBag.EndTime)" type="text" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss' })" style="width:90%;padding:1px;" /></td>
                 </tr>
                 <tr>
-                    <td style="color:#3c7915">火灾等级：</td>
-                    <td>
-                        <select style="width: 70%;" id="tbxFIRERECINFO001">
-                            @Html.Raw(@ViewBag.FIRERECINFO001)
-                        </select>
-                    </td>
-                    <td style="color:#3c7915">火灾种类：</td>
-                    <td>
-                        <select style="width: 90%;" id="tbxFIRERECINFO000">
-                            @Html.Raw(@ViewBag.FIRERECINFO000)
-                        </select>
-                    </td>
+                    <td class="tdField">火灾等级：</td>
+                    <td><select style="width: 70%;" id="tbxFIRERECINFO001">@Html.Raw(@ViewBag.FIRERECINFO001)</select></td>
+                    <td class="tdField">火灾种类：</td>
+                    <td><select style="width: 90%;" id="tbxFIRERECINFO000">@Html.Raw(@ViewBag.FIRERECINFO000) </select></td>
                     <td colspan=" 2"></td>
                 </tr>
                 <tr>
-
-                    <td style="color:#3c7915">已查明火源：</td>
-                    <td>
-                        <select style="width: 70%;" id="tbxFIRERECINFO140">
-                            @Html.Raw(@ViewBag.FIRERECINFO140)
-                        </select>
-                    </td>
-                    <td style="color:#3c7915">火源：</td>
-                    <td>
-                        <select style="width: 90%;" id="tbxFIRERECINFO160">
-                            @Html.Raw(@ViewBag.FIRERECINFO160)
-                        </select>
-                    </td>
+                    <td class="tdField">已查明火源：</td>
+                    <td><select style="width: 70%;" id="tbxFIRERECINFO140">@Html.Raw(@ViewBag.FIRERECINFO140)</select></td>
+                    <td class="tdField">火源：</td>
+                    <td><select style="width: 90%;" id="tbxFIRERECINFO160">@Html.Raw(@ViewBag.FIRERECINFO160)</select></td>
                     <td colspan="2 "></td>
                 </tr>
                 <tr style="width:95%;">
                     <td colspan="6" style="height:40px"><h1>火 场 信 息</h1></td>
                 </tr>
                 <tr>
-                    <td style="color:#3c7915">受害森林面积：</td>
-                    <td><input id="tbxFIRELOSEAREA" name="tbxFIRELOSEAREA" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(公顷)</span></td>
-                    <td style="color:#3c7915">火场总面积：</td>
-                    <td><input id="tbxFIRERECINFO020" name="tbxFIRERECINFO020" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(公顷)</span></td>
-                    <td style="color:#3c7915">有林地面积：</td>
-                    <td><input id="tbxFIRERECINFO021" name="tbxFIRERECINFO021" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(公顷)</span></td>
+                    <td class="tdField">受害森林面积：</td>
+                    <td><input id="tbxFIRELOSEAREA" name="tbxFIRELOSEAREA" type="text" value="0" style="width: 70%;" /><span class="spanMark">公顷</span></td>
+                    <td class="tdField">火场总面积：</td>
+                    <td><input id="tbxFIRERECINFO020" name="tbxFIRERECINFO020" type="text" value="0" style="width: 70%;" /><span class="spanMark">公顷</span></td>
+                    <td class="tdField">有林地面积：</td>
+                    <td><input id="tbxFIRERECINFO021" name="tbxFIRERECINFO021" type="text" value="0" style="width: 70%;" /><span class="spanMark">公顷</span></td>
 
                 </tr>
                 <tr>
-                    <td style="color:#3c7915">原始林受灾面积：</td>
-                    <td><input id="tbxFIRERECINFO030" name="tbxFIRERECINFO030" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(公顷)</span></td>
-                    <td style="color:#3c7915">次生林受灾面积：</td>
-                    <td><input id="tbxFIRERECINFO031" name="tbxFIRERECINFO031" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(公顷)</span></td>
-                    <td style="color:#3c7915">人工林受灾面积：</td>
-                    <td><input id="tbxFIRERECINFO032" name="tbxFIRERECINFO032" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(公顷)</span></td>
+                    <td class="tdField">原始林受灾面积：</td>
+                    <td><input id="tbxFIRERECINFO030" name="tbxFIRERECINFO030" type="text" value="0" style="width: 70%;" /><span class="spanMark">公顷</span></td>
+                    <td class="tdField">次生林受灾面积：</td>
+                    <td><input id="tbxFIRERECINFO031" name="tbxFIRERECINFO031" type="text" value="0" style="width: 70%;" /><span class="spanMark">公顷</span></td>
+                    <td class="tdField">人工林受灾面积：</td>
+                    <td><input id="tbxFIRERECINFO032" name="tbxFIRERECINFO032" type="text" value="0" style="width: 70%;" /><span class="spanMark">公顷</span></td>
 
                 </tr>
                 <tr>
-                    <td style="color:#3c7915">成林蓄积损失:</td>
-                    <td><input id="tbxFIRERECINFO040" name="tbxFIRERECINFO040" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(立方米)</span></td>
-                    <td style="color:#3c7915">幼林株数损失：</td>
-                    <td><input id="tbxFIRERECINFO041" name="tbxFIRERECINFO041" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(万株)</span></td>
+                    <td class="tdField">成林蓄积损失:</td>
+                    <td><input id="tbxFIRERECINFO040" name="tbxFIRERECINFO040" type="text" value="0" style="width: 70%;" /><span class="spanMark">立方米</span></td>
+                    <td class="tdField">幼林株数损失：</td>
+                    <td><input id="tbxFIRERECINFO041" name="tbxFIRERECINFO041" type="text" value="0" style="width: 70%;" /><span class="spanMark">万株</span></td>
                     <td colspan="2 "></td>
                 </tr>
                 <tr>
-                    <td style="color:#3c7915">林龄：</td>
-                    <td><input id="tbxFIRERECINFO051" name="tbxFIRERECINFO051" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(年)</span></td>
-                    <td style="color:#3c7915">林分组成：</td>
+                    <td class="tdField">林龄：</td>
+                    <td><input id="tbxFIRERECINFO051" name="tbxFIRERECINFO051" type="text" value="0" style="width: 70%;" /><span class="spanMark">年</span></td>
+                    <td class="tdField">林分组成：</td>
                     <td><input id="tbxFIRERECINFO050" name="tbxFIRERECINFO050" type="text" value="@Model.FIRERECINFO050" style="width: 70%;" /></td>
                     <td colspan="2 "></td>
                 </tr>
@@ -128,58 +110,54 @@
                     <td colspan="6" style="height:40px"><h1>扑 救 信 息</h1></td>
                 </tr>
                 <tr>
-                    <td style="color:#3c7915">火场指挥员姓名：</td>
+                    <td class="tdField">火场指挥员姓名：</td>
                     <td><input id="tbxFIRERECINFO060" name="tbxFIRERECINFO060" type="text" value="@Model.FIRERECINFO060" style="width: 70%;" /></td>
-                    <td style="color:#3c7915">火场指挥员职务：</td>
+                    <td class="tdField">火场指挥员职务：</td>
                     <td><input id="tbxFIRERECINFO061" name="tbxFIRERECINFO061" type="text" value="@Model.FIRERECINFO061" style="width: 70%;" /></td>
                     <td colspan="2 "></td>
                 </tr>
                 <tr>
-                    <td style="color:#3c7915">火案查处已处理：</td>
-                    <td>
-                        <select style="width: 70%;" id="tbxFIRERECINFO080">
-                            @Html.Raw(@ViewBag.FIRERECINFO080)
-                        </select>
-                    </td>
-                    <td style="color:#3c7915">林政处罚人数：</td>
-                    <td><input id="tbxFIRERECINFO081" name="tbxFIRERECINFO081" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(人)</span></td>
-                    <td style="color:#3c7915">刑事处罚人数：</td>
-                    <td><input id="tbxFIRERECINFO082" name="tbxFIRERECINFO082" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(人)</span></td>
+                    <td class="tdField">火案查处已处理：</td>
+                    <td><select style="width: 70%;" id="tbxFIRERECINFO080">@Html.Raw(@ViewBag.FIRERECINFO080)</select></td>
+                    <td class="tdField">林政处罚人数：</td>
+                    <td><input id="tbxFIRERECINFO081" name="tbxFIRERECINFO081" type="text" value="0" style="width: 70%;" /><span class="spanMark">人</span></td>
+                    <td class="tdField">刑事处罚人数：</td>
+                    <td><input id="tbxFIRERECINFO082" name="tbxFIRERECINFO082" type="text" value="0" style="width: 70%;" /><span class="spanMark">人</span></td>
 
                 </tr>
                 <tr>
-                    <td style="color:#3c7915">人员伤亡轻伤人数：</td>
-                    <td><input id="tbxFIRERECINFO070" name="tbxFIRERECINFO070" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(人)</span></td>
-                    <td style="color:#3c7915">人员伤亡重伤人数：</td>
-                    <td><input id="tbxFIRERECINFO071" name="tbxFIRERECINFO071" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(人)</span></td>
-                    <td style="color:#3c7915">人员伤亡死亡人数：</td>
-                    <td><input id="tbxFIRERECINFO072" name="tbxFIRERECINFO072" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(人)</span></td>
+                    <td class="tdField">人员伤亡轻伤：</td>
+                    <td><input id="tbxFIRERECINFO070" name="tbxFIRERECINFO070" type="text" value="0" style="width: 70%;" /><span class="spanMark">人</span></td>
+                    <td class="tdField">人员伤亡重伤：</td>
+                    <td><input id="tbxFIRERECINFO071" name="tbxFIRERECINFO071" type="text" value="0" style="width: 70%;" /><span class="spanMark">人</span></td>
+                    <td class="tdField">人员伤亡死亡：</td>
+                    <td><input id="tbxFIRERECINFO072" name="tbxFIRERECINFO072" type="text" value="0" style="width: 70%;" /><span class="spanMark">人</span></td>
                 </tr>
                 <tr>
-                    <td style="color:#3c7915">扑火经费：</td>
-                    <td><input id="tbxFIRERECINFO130" name="tbxFIRERECINFO130" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(万元)</span></td>
-                    <td style="color:#3c7915">其他损失折款：</td>
-                    <td><input id="tbxFIRERECINFO090" name="tbxFIRERECINFO090" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(万元)</span></td>
+                    <td class="tdField">扑火经费：</td>
+                    <td><input id="tbxFIRERECINFO130" name="tbxFIRERECINFO130" type="text" value="0" style="width: 70%;" /><span class="spanMark">万元</span></td>
+                    <td class="tdField">其他损失折款：</td>
+                    <td><input id="tbxFIRERECINFO090" name="tbxFIRERECINFO090" type="text" value="0" style="width: 70%;" /><span class="spanMark">万元</span></td>
                     <td colspan="2 "></td>
                 </tr>
                 <tr>
-                    <td style="color:#3c7915">出动扑火人工：</td>
-                    <td><input id="tbxFIRERECINFO100" name="tbxFIRERECINFO100" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(工日)</span></td>
-                    <td style="color:#3c7915">出动飞机：</td>
-                    <td><input id="tbxFIRERECINFO120" name="tbxFIRERECINFO120" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(架次)</span></td>
+                    <td class="tdField">出动扑火人工：</td>
+                    <td><input id="tbxFIRERECINFO100" name="tbxFIRERECINFO100" type="text" value="0" style="width: 70%;" /><span class="spanMark">工日</span></td>
+                    <td class="tdField">出动飞机：</td>
+                    <td><input id="tbxFIRERECINFO120" name="tbxFIRERECINFO120" type="text" value="0" style="width: 70%;" /><span class="spanMark">架次</span></td>
                     <td colspan="2 "></td>
                 </tr>
                 <tr>
-                    <td style="color:#3c7915">出动车辆合计：</td>
-                    <td><input id="tbxFIRERECINFO111" name="tbxFIRERECINFO111" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(台)</span></td>
-                    <td style="color:#3c7915">其中汽车：</td>
-                    <td><input id="tbxFIRERECINFO110" name="tbxFIRERECINFO110" type="text" value="0" style="width: 70%;" /><span style="color:#3c7915">(台)</span></td>
+                    <td class="tdField">出动车辆合计：</td>
+                    <td><input id="tbxFIRERECINFO111" name="tbxFIRERECINFO111" type="text" value="0" style="width: 70%;" /><span class="spanMark">台</span></td>
+                    <td class="tdField">其中汽车：</td>
+                    <td><input id="tbxFIRERECINFO110" name="tbxFIRERECINFO110" type="text" value="0" style="width: 70%;" /><span class="spanMark">台</span></td>
                     <td colspan="2 "></td>
                 </tr>
                 <tr id="JWD">
-                    <td style="color:#3c7915">经度：</td>
+                    <td class="tdField">经度：</td>
                     <td><input id="tbxJD" name="tbxJD" type="text" value="" style="width: 70%;" /></td>
-                    <td style="color:#3c7915">纬度：</td>
+                    <td class="tdField">纬度：</td>
                     <td><input id="tbxWD" name="tbxWD" type="text" value="" style="width: 70%;" /></td>
                     <td colspan="2 "><input type="button" value="地图定位" onclick="setPoint()" class="btnMapLoaclCss" /></td>
                 </tr>
@@ -325,7 +303,28 @@
             },
             error: function (err, ioArgs) {
                 layer.msg("登录异常", { icon: 5 });
-
+            }
+        });
+    }
+    if ('@ViewBag.Method' == 'Mdy' || '@ViewBag.Method' == 'See1') {
+        $.ajax({
+            url: '/DataCenter/GetArchivaljson',
+            cache: false,
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: { JCFID: '@ViewBag.JCFID' },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.JCFID != null) {
+                    $('#hidsx').val(ar.BYORGNO.substring(0, 6) + "000000000");
+                    $('#hidxz').val(ar.BYORGNO);
+                    document.getElementById("tbxFIRETIME").value = ar.FIRETIME;
+                    document.getElementById("tbxFIREENDTIME").value = ar.FIREENDTIME;
+                    document.getElementById("tbxJD").value = ar.JD;
+                    document.getElementById("tbxWD").value = ar.WD;
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("查询异常!", { icon: 5 });
             }
         });
     }
@@ -339,6 +338,7 @@
             return false;
         }
     }
+
     //获取填入的县乡村
     window.setTimeout(WriteCun, 1000);
     function WriteCun() {
@@ -348,31 +348,7 @@
         window.setTimeout(Change, 600);
         document.getElementById('tbxFIREADDRESS').value = $("#tbxFIREADDRESSCOUNTY").find("option:selected").text() + $("#tbxFIREADDRESSTOWNS").find("option:selected").text() + document.getElementById("tbxFIREADDRESSVILLAGES").value;
     }
-    if ('@ViewBag.Method' == 'Mdy' || '@ViewBag.Method' == 'See1') {
-        $.ajax({
-            url: '/DataCenter/GetArchivaljson',
-            cache: false,
-            timeout: 10000, //10秒后超时，如果为0则永不超时
-            data: { JCFID: '@ViewBag.JCFID' },
-            success: function (data, ioArgs) {
-                var ar = eval('(' + data + ')');
-                if (ar.JCFID != null) {
-                    //document.getElementById("tbxFIREADDRESSCOUNTY").value = ar.BYORGNO;
-                    // document.getElementById("tbxFIREADDRESSTOWNS").value = ar.BYORGNO;
-                    $('#hidsx').val(ar.BYORGNO.substring(0, 6) + "000000000");
-                    $('#hidxz').val(ar.BYORGNO);
-                    document.getElementById("tbxFIRETIME").value = ar.FIRETIME;
-                    document.getElementById("tbxFIREENDTIME").value = ar.FIREENDTIME;
-                    document.getElementById("tbxJD").value = ar.JD;
-                    document.getElementById("tbxWD").value = ar.WD;
-                }
-                // loadXIAN();
-            },
-            error: function (err, ioArgs) {
-                layer.msg("查询异常!", { icon: 5 });
-            }
-        });
-    }
+
     function Manager() {
         var FIRETIME = $("#tbxFIRETIME").val();
         var FIREENDTIME = $("#tbxFIREENDTIME").val();
@@ -380,19 +356,6 @@
             layer.msg("开始时间不能大于结束时间!", { icon: 5 });
             return;
         }
-        //var FIRETIME = $("#tbxFIRETIME").val();
-        //if ($.trim(FIRETIME) = "") {
-        //        layer.msg('请输入起火时间!', { icon: 5 });
-        //        $('#tbxFIRETIME').focus();
-        //        return;
-        //}
-        //var FIREENDTIME = $("#tbxFIREENDTIME").val();
-        //if ($.trim(FIREENDTIME)= "") {
-        //    layer.msg('请输入灭火时间!', { icon: 5 });
-        //    $('#tbxFIREENDTIME').focus();
-        //    return;
-        //}
-        //var reg = /^\d+$/;
         var FIRECODE = $('#tbxFIRECODE').val();
         if ($.trim(FIRECODE) == "") {
             layer.msg('请输入火灾编号!', { icon: 5 });
@@ -406,8 +369,8 @@
             return;
         }
         else {
-            if (!CheckNUM2(FIRELOSEAREA)) {
-                layer.msg('受害面积请输入数字,且最多保留2位有效数字!', { icon: 5 });
+            if (!CheckNUM(FIRELOSEAREA)) {
+                layer.msg('受害面积请输入数字!', { icon: 5 });
                 $('#tbxFIRELOSEAREA').focus();
                 return;
             }
@@ -419,8 +382,8 @@
             return;
         }
         else {
-            if (!CheckNUM2(FIRERECINFO020)) {
-                layer.msg('火场总请输入数字,且最多保留2位有效数字!', { icon: 5 });
+            if (!CheckNUM(FIRERECINFO020)) {
+                layer.msg('火场总请输入数字!', { icon: 5 });
                 $('#tbxFIRERECINFO020').focus();
                 return;
             }
@@ -432,8 +395,8 @@
             return;
         }
         else {
-            if (!CheckNUM2(FIRERECINFO021)) {
-                layer.msg('有林地面积请输入数字,且最多保留2位有效数字!', { icon: 5 });
+            if (!CheckNUM(FIRERECINFO021)) {
+                layer.msg('有林地面积请输入数字!', { icon: 5 });
                 $('#tbxFIRERECINFO021').focus();
                 return;
             }
@@ -445,13 +408,12 @@
             return;
         }
         else {
-            if (!CheckNUM2(FIRERECINFO030)) {
-                layer.msg('原始林受灾面积请输入数字,且最多保留2位有效数字!', { icon: 5 });
+            if (!CheckNUM(FIRERECINFO030)) {
+                layer.msg('原始林受灾面积请输入数字!', { icon: 5 });
                 $('#tbxFIRERECINFO030').focus();
                 return;
             }
         }
-
         var FIRERECINFO031 = $('#tbxFIRERECINFO031').val();
         if ($.trim(FIRERECINFO031) == "") {
             layer.msg('请输入次生林受害面积!', { icon: 5 });
@@ -459,8 +421,8 @@
             return;
         }
         else {
-            if (!CheckNUM2(FIRERECINFO031)) {
-                layer.msg('次生林受害面积请输入数字,且最多保留2位有效数字!', { icon: 5 });
+            if (!CheckNUM(FIRERECINFO031)) {
+                layer.msg('次生林受害面积请输入数字!', { icon: 5 });
                 $('#tbxFIRERECINFO031').focus();
                 return;
             }
@@ -472,8 +434,8 @@
             return;
         }
         else {
-            if (!CheckNUM2(FIRERECINFO032)) {
-                layer.msg('人工林受害面积请输入数字,且最多保留2位有效数字!', { icon: 5 });
+            if (!CheckNUM(FIRERECINFO032)) {
+                layer.msg('人工林受害面积请输入数字!', { icon: 5 });
                 $('#tbxFIRERECINFO032').focus();
                 return;
             }
@@ -485,8 +447,8 @@
             return;
         }
         else {
-            if (!CheckNUM2(FIRERECINFO040)) {
-                layer.msg('成林蓄积损失请输入数字,且最多保留2位有效数字!', { icon: 5 });
+            if (!CheckNUM(FIRERECINFO040)) {
+                layer.msg('成林蓄积损失请输入数字!', { icon: 5 });
                 $('#tbxFIRERECINFO040').focus();
                 return;
             }
@@ -498,8 +460,8 @@
             return;
         }
         else {
-            if (!CheckNUM2(FIRERECINFO041)) {
-                layer.msg('幼林株数损失请输入数字,且最多保留2位有效数字!', { icon: 5 });
+            if (!CheckNUM(FIRERECINFO041)) {
+                layer.msg('幼林株数损失请输入数字!', { icon: 5 });
                 $('#tbxFIRERECINFO041').focus();
                 return;
             }
@@ -510,24 +472,17 @@
             $('#tbxFIRERECINFO060').focus();
             return;
         }
-        var FIRERECINFO061 = $('#tbxFIRERECINFO061').val();
-        if ($.trim(FIRERECINFO061) == "") {
-            layer.msg('请输入火场指挥员职务!', { icon: 5 });
-            $('#tbxFIRERECINFO061').focus();
-            return;
-        }
         var FIRERECINFO051 = $('#tbxFIRERECINFO051').val();
         if ($.trim(FIRERECINFO051) == "") {
             layer.msg('请输入林龄!', { icon: 5 });
             $('#tbxFIRERECINFO051').focus();
             return;
         }
-        else {
-            if (!CheckNUM2(FIRERECINFO051)) {
-                layer.msg('林龄请输入数字,且最多保留2位有效数字!', { icon: 5 });
-                $('#tbxFIRERECINFO051').focus();
-                return;
-            }
+        var FIRERECINFO061 = $('#tbxFIRERECINFO061').val();
+        if ($.trim(FIRERECINFO061) == "") {
+            layer.msg('请输入火场指挥员职务!', { icon: 5 });
+            $('#tbxFIRERECINFO061').focus();
+            return;
         }
         var FIRERECINFO070 = $('#tbxFIRERECINFO070').val();
         if ($.trim(FIRERECINFO070) == "") {
@@ -537,7 +492,7 @@
         }
         else {
             if (!CheckINT1(FIRERECINFO070)) {
-                layer.msg('人员伤亡轻伤人数请输入整数数字!', { icon: 5 });
+                layer.msg('人员伤亡轻伤人数请输入正整数!', { icon: 5 });
                 $('#tbxFIRERECINFO070').focus();
                 return;
             }
@@ -551,7 +506,7 @@
         }
         else {
             if (!CheckINT1(FIRERECINFO071)) {
-                layer.msg('人员伤亡重伤人数请输入整数数字!', { icon: 5 });
+                layer.msg('人员伤亡重伤人数请输入正整数!', { icon: 5 });
                 $('#tbxFIRERECINFO071').focus();
                 return;
             }
@@ -564,7 +519,7 @@
         }
         else {
             if (!CheckINT1(FIRERECINFO072)) {
-                layer.msg('人员伤亡死亡人数请输入整数数字!', { icon: 5 });
+                layer.msg('人员伤亡死亡人数请输入正整数!', { icon: 5 });
                 $('#tbxFIRERECINFO072').focus();
                 return;
             }
@@ -577,7 +532,7 @@
         }
         else {
             if (!CheckINT1(FIRERECINFO081)) {
-                layer.msg('林政处罚人数请输入整数数字!', { icon: 5 });
+                layer.msg('林政处罚人数请输入正整数!', { icon: 5 });
                 $('#tbxFIRERECINFO081').focus();
                 return;
             }
@@ -590,7 +545,7 @@
         }
         else {
             if (!CheckINT1(FIRERECINFO082)) {
-                layer.msg('刑事处罚人数请输入整数数字!', { icon: 5 });
+                layer.msg('刑事处罚人数请输入正整数!', { icon: 5 });
                 $('#tbxFIRERECINFO082').focus();
                 return;
             }
@@ -616,7 +571,7 @@
         }
         else {
             if (!CheckINT1(FIRERECINFO100)) {
-                layer.msg('出动扑火人工请输入整数数字!', { icon: 5 });
+                layer.msg('出动扑火人工请输入正整数!', { icon: 5 });
                 $('#tbxFIRERECINFO100').focus();
                 return;
             }
@@ -629,7 +584,7 @@
         }
         else {
             if (!CheckINT1(FIRERECINFO110)) {
-                layer.msg('其中汽车请输入整数数字!', { icon: 5 });
+                layer.msg('其中汽车请输入正整数!', { icon: 5 });
                 $('#tbxFIRERECINFO110').focus();
                 return;
             }
@@ -642,7 +597,7 @@
         }
         else {
             if (!CheckINT1(FIRERECINFO111)) {
-                layer.msg('出动车辆合计请输入整数数字!', { icon: 5 });
+                layer.msg('出动车辆合计请输入正整数!', { icon: 5 });
                 $('#tbxFIRERECINFO111').focus();
                 return;
             }
@@ -655,7 +610,7 @@
         }
         else {
             if (!CheckINT1(FIRERECINFO120)) {
-                layer.msg('出动飞机请输入整数数字!', { icon: 5 });
+                layer.msg('出动飞机请输入正整数!', { icon: 5 });
                 $('#tbxFIRERECINFO120').focus();
                 return;
             }
@@ -736,10 +691,6 @@
             success: function (data, ioArgs) {
                 var ar = eval('(' + data + ')');
                 if (ar.Success) {
-                    //if (confirm(ar.Msg + ' 请返回?')) {
-                    //    var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
-                    //    parent.layer.close(index);
-                    //}
                     layer.confirm(ar.Msg + ' 请返回?', { icon: 3, title: '提示' }, function (index2) {
                         layer.close(index2);
                         var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
@@ -755,11 +706,9 @@
             }
         });
     }
+
     window.setTimeout(loadXIAN, 400);
-    //loadXIAN();
-    //加载县
     function loadXIAN() {
-        //var selectorgsx = "";
         var ORGNO = document.getElementById('tbxBYORGNO').value;
         if (ORGNO != "") {
             $.ajax({
@@ -784,7 +733,7 @@
             });
         }
     }
-    //loadXZ();
+
     //加载乡
     function loadXZ() {
         var SHICODE = document.getElementById('tbxFIREADDRESSCOUNTY').value;
@@ -802,7 +751,6 @@
                         $('#tbxFIREADDRESSTOWNS').html('');
                         $('#tbxFIREADDRESSTOWNS').html(data.Msg);
                         var xz = $('#hidxz').val();
-                        //alert("xz===s"+xz);
                         if (xz != "") {
                             $('#tbxFIREADDRESSTOWNS').val(xz);
                         }
@@ -812,10 +760,6 @@
         }
     }
 
-    @*var bln = '@ViewBag.isAdd';
-    if (bln == "1") {
-        document.getElementById('btnAdd').style.display = "";
-    }*@
     //地图定位
     function setPoint() {
         var name = "火情档案";
@@ -840,10 +784,10 @@
                     $('#tbxWD').val(wd);
                 }
                 layer.close(index);
-            }, cancel: function (index) {
+            },
+            cancel: function (index) {
                 layer.close(index);
             }
         });
-
     }
 </script>

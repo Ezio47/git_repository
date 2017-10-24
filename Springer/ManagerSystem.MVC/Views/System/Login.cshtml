@@ -42,11 +42,11 @@
                         window.location.assign(data.Url);
                     }
                     else {
-                        layer.msg(data.Msg, { icon: 5 });
+                        layer.msg(data.Msg);
                     }
                 },
                 error: function (err, ioArgs) {
-                    layer.msg('登录异常', { icon: 5 });
+                    layer.msg('登录异常');
                 }
             });
         }

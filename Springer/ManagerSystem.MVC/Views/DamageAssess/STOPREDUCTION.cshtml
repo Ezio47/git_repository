@@ -29,34 +29,34 @@
     <input id="HidID" name="HidID" type="hidden" value="" />
     <table cellpadding="0" cellspacing="0">
         <tr>
-            <td style="width:100px;">停(减)产名称: </td>
-            <td><input id="tbxSTOPNAME" type="text" value="" style="width:99%;" /></td>
-            <td style="width:100px;">停(减)产类别: </td>
-            <td><select id="tbxSTOPCODE" style="width: 99%;" onchange="stopCodeChange(null)">@Html.Raw(@ViewBag.STOPCODEAdd)</select></td>
+            <td class="tdField" style="width:100px;">停(减)产名称: </td>
+            <td><input id="tbxSTOPNAME" type="text" value="" style="width:95%;" /></td>
+            <td class="tdField" style="width:100px;">停(减)产类别: </td>
+            <td><select id="tbxSTOPCODE" style="width: 95%;" onchange="stopCodeChange(null)">@Html.Raw(@ViewBag.STOPCODEAdd)</select></td>
         </tr>
         <tr>
-            <td id="td1">停产人数:</td>
+            <td class="tdField" id="td1">停产人数:</td>
             <td>
-                <input id="tbxSTOPCOUNT" type="text" value="" style="width:80%;" disabled="" />
+                <input id="tbxSTOPCOUNT" type="text" value="" style="width:70%;" disabled="" />
                 <span style="color: gray;" id="span1">人</span>
             </td>
-            <td id="td2">停产天数:</td>
+            <td class="tdField" id="td2">停产天数:</td>
             <td>
-                <input id="tbxSTOPTIME" type="text" value="" style="width: 80%;" />
-                <span style="color: gray;" id="span2">d</span>
+                <input id="tbxSTOPTIME" type="text" value="" style="width: 70%;" />
+                <span class="spanMark" id="span2">d</span>
             </td>
         </tr>
         <tr>
-            <td id="td3">日均工资总额:</td>
+            <td class="tdField" id="td3">日均工资总额:</td>
             <td>
-                <input id="tbxSTOPPRICE" type="text" value="" style="width: 70%;" />
-                <span style="color: gray;" id="span3">元/人/d</span>
+                <input id="tbxSTOPPRICE" type="text" value="" style="width: 65%;" />
+                <span class="spanMark" id="span3">元/人/d</span>
             </td>
             <td colspan="2"></td>
         </tr>
         <tr>
-            <td>备注:</td>
-            <td colspan="3"><input id="tbxMARK" type="text" value="" style="width:99%;" /></td>
+            <td class="tdField">备注:</td>
+            <td colspan="3"><input id="tbxMARK" type="text" value="" style="width:96%;" /></td>
         </tr>
     </table>
 </div>
@@ -172,7 +172,7 @@
             layer.open({
                 type: 2,
                 title: '查看停(减)产损失',
-                area: ['70%', '70%'],
+                area: ['600px', '240px'],
                 fix: true,
                 maxmin: true,
                 content: '/DamageAssess/STOPREDUCTIONDataSee?STOPID=' + ID,
@@ -220,7 +220,7 @@
             layer.open({
                 type: 1,
                 title: str,
-                area: ['70%', '72%'],
+                area: ['600px', '260px'],
                 btn: btnInfo,
                 shade: 0,
                 maxmin: true,

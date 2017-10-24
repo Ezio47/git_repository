@@ -29,26 +29,26 @@
     <input id="HidID" name="HidID" type="hidden" value="" />
     <table cellpadding="0" cellspacing="0">
         <tr>
-            <td style="width:100px;">农牧产品名称: </td>
-            <td><input id="tbxPRODUCNAME" type="text" value="" style="width:99%;" /></td>
-            <td style="width:100px;">损失类别: </td>
-            <td><select id="tbxPRODUCCODE" style="width: 99%;" onchange="codeChange(null)">@Html.Raw(@ViewBag.PRODUCCODEAdd)</select></td>
+            <td class="tdField" style="width:100px;">农牧产品名称: </td>
+            <td><input id="tbxPRODUCNAME" type="text" value="" style="width:95%;" /></td>
+            <td class="tdField" style="width:100px;" >损失类别: </td>
+            <td><select id="tbxPRODUCCODE" style="width: 95%;" onchange="codeChange(null)">@Html.Raw(@ViewBag.PRODUCCODEAdd)</select></td>
         </tr>
         <tr>
-            <td id="td1">损失数量:</td>
+            <td class="tdField" id="td1">损失数量:</td>
             <td>
                 <input id="tbxLOSECOUNT" type="text" value="" style="width:70%;" />
-                <span style="color: gray;" id="span1">kg</span>
+                <span class="spanMark" id="span1">kg</span>
             </td>
-            <td id="td2">市场平均现价:</td>
+            <td class="tdField" id="td2">市场平均现价:</td>
             <td>
                 <input id="tbxBASEPRICE" type="text" value="" style="width:62%;" />
-                <span style="color: gray;" id="span2">元/kg</span>
+                <span class="spanMark" id="span2">元/kg</span>
             </td>
         </tr>
         <tr>
-            <td>备注:</td>
-            <td colspan="3"><input id="tbxMARK" type="text" value="" style="width:99%;" /></td>
+            <td class="tdField">备注:</td>
+            <td colspan="3"><input id="tbxMARK" type="text" value="" style="width:96%;" /></td>
         </tr>
     </table>
 </div>
@@ -146,7 +146,7 @@
             layer.open({
                 type: 2,
                 title: '查看农牧产品损失',
-                area: ['70%', '70%'],
+                area: ['600px', '240px'],
                 fix: true,
                 maxmin: true,
                 content: '/DamageAssess/FARMPASTUREPRODUCTDataSee?PRODUCTID=' + ID,
@@ -192,7 +192,7 @@
             layer.open({
                 type: 1,
                 title: str,
-                area: ['70%', '65%'],
+                area: ['600px', '250px'],
                 btn: btnInfo,
                 shade: 0,
                 maxmin: true,

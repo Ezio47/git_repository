@@ -149,10 +149,7 @@ namespace ManagerSystemClassLibrary
         public static IEnumerable<ART_DOCUMENT_Model> getModelList(ART_DOCUMENT_SW sw, out int total)
         {
             var result = new List<ART_DOCUMENT_Model>();
-
-            //DataTable dtType = BaseDT.ART_TYPE.getDT(new ART_TYPE_SW {  });
             DataTable dt = BaseDT.ART_DOCUMENT.getDT(sw, out total);//列表
-
             DataTable dtUser = BaseDT.T_SYSSEC_USER.getDT(new T_SYSSEC_IPSUSER_SW { });
             DataTable dtORG = BaseDT.T_SYS_ORG.getDT(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag() });//获取单位
             string typeid = "";

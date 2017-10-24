@@ -173,7 +173,7 @@ namespace PublicClassLibrary
             //{
             //    sBuilder.Append(data[i].ToString("x2"));
             //}
-            //return sBuilder.ToString().Substring(8, 16); ;
+            //return sBuilder.ToString().Substring(8, 16); 
         }
 
         /// <summary>

@@ -304,6 +304,218 @@ namespace ManagerSystemClassLibrary
             return str.Substring(0, 12);
         }
 
+        //界、门、纲、目、科、属、种
+
+        /// <summary>
+        /// 判断生物分别编码是否界
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static bool BioCodeIsJie(string str)
+        {
+            if (string.IsNullOrEmpty(str))
+                return false;
+            if (str.Length != 14)
+                return false;
+            if (str.Substring(2, 12) == "000000000000" && str.Substring(0, 2) != "00")
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// 判断生物分别编码是否门
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static bool BioCodeIsMen(string str)
+        {
+            if (string.IsNullOrEmpty(str))
+                return false;
+            if (str.Length != 14)
+                return false;
+            if (str.Substring(4, 10) == "0000000000" && str.Substring(0, 2) != "00" && str.Substring(2, 2) != "00")
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// 判断生物分别编码是否纲
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static bool BioCodeIsGang(string str)
+        {
+            if (string.IsNullOrEmpty(str))
+                return false;
+            if (str.Length != 14)
+                return false;
+            if (str.Substring(6, 8) == "00000000" && str.Substring(0, 2) != "00" && str.Substring(2, 2) != "00" && str.Substring(4, 2) != "00")
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// 判断生物分别编码是否目
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static bool BioCodeIsMu(string str)
+        {
+            if (string.IsNullOrEmpty(str))
+                return false;
+            if (str.Length != 14)
+                return false;
+            if (str.Substring(8, 6) == "000000" && str.Substring(0, 2) != "00" && str.Substring(2, 2) != "00" && str.Substring(4, 2) != "00" && str.Substring(6, 2) != "00")
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// 判断生物分别编码是否科
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static bool BioCodeIsKe(string str)
+        {
+            if (string.IsNullOrEmpty(str))
+                return false;
+            if (str.Length != 14)
+                return false;
+            if (str.Substring(10, 4) == "0000" && str.Substring(0, 2) != "00" && str.Substring(2, 2) != "00" && str.Substring(4, 2) != "00" && str.Substring(6, 2) != "00" && str.Substring(8, 2) != "00")
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// 判断生物分别编码是否属
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static bool BioCodeIsShu(string str)
+        {
+            if (string.IsNullOrEmpty(str))
+                return false;
+            if (str.Length != 14)
+                return false;
+            if (str.Substring(12, 2) == "00" && str.Substring(0, 2) != "00" && str.Substring(2, 2) != "00" && str.Substring(4, 2) != "00" && str.Substring(6, 2) != "00"  && str.Substring(8, 2) != "00" && str.Substring(10, 2) != "00")
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// 判断生物分别编码是否种
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static bool BioCodeIsZHong(string str)
+        {
+            if (string.IsNullOrEmpty(str))
+                return false;
+            if (str.Length != 14)
+                return false;
+            if (str.Substring(0, 2) != "00" && str.Substring(2, 2) != "00" && str.Substring(4, 2) != "00" && str.Substring(6, 2) != "00"  && str.Substring(8, 2) != "00" && str.Substring(10, 2) != "00" && str.Substring(12, 2) != "00")
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// 获取界级编码 
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static string GetJieBioCode(string str)
+        {
+            if (string.IsNullOrEmpty(str))
+                return "";
+            if (str.Length != 14)
+                return "";
+            return str.Substring(0, 2);
+        }
+
+        /// <summary>
+        /// 获取门级编码 
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static string GetMenBioCode(string str)
+        {
+            if (string.IsNullOrEmpty(str))
+                return "";
+            if (str.Length != 14)
+                return "";
+            return str.Substring(0, 4);
+        }
+
+        /// <summary>
+        /// 获取纲级编码 
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static string GetGangBioCode(string str)
+        {
+            if (string.IsNullOrEmpty(str))
+                return "";
+            if (str.Length != 14)
+                return "";
+            return str.Substring(0, 6);
+        }
+
+        /// <summary>
+        /// 获取目级编码 
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static string GetMuBioCode(string str)
+        {
+            if (string.IsNullOrEmpty(str))
+                return "";
+            if (str.Length != 14)
+                return "";
+            return str.Substring(0, 8);
+        }
+
+        /// <summary>
+        /// 获取科级编码 
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static string GetKeBioCode(string str)
+        {
+            if (string.IsNullOrEmpty(str))
+                return "";
+            if (str.Length != 14)
+                return "";
+            return str.Substring(0, 10);
+        }
+
+        /// <summary>
+        /// 获取属级编码 
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static string GetShuBioCode(string str)
+        {
+            if (string.IsNullOrEmpty(str))
+                return "";
+            if (str.Length != 14)
+                return "";
+            return str.Substring(0, 12);
+        }
+
+        /// <summary>
+        /// 获取种级编码 
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static string GetZhongBioCode(string str)
+        {
+            if (string.IsNullOrEmpty(str))
+                return "";
+            if (str.Length != 14)
+                return "";
+            return str.Substring(0, 14);
+        }
+
         /// <summary>
         /// 获取树种渐进名称
         /// </summary>

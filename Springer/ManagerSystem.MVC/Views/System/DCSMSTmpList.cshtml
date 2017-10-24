@@ -13,8 +13,7 @@
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
                 <div class="divOP">
                     <div class="home ">
-                        火灾等级：
-                        <select id="tbxDANGERCLASS"> @Html.Raw(@ViewBag.vdDANGERCLASS)</select>
+                        火灾等级：<select id="tbxDANGERCLASS" onchange="query()"> @Html.Raw(@ViewBag.vdDANGERCLASS)</select>
                         <input type="button" value="查询" onclick="query()" class="btnSearchCss" />
                         <input type="button" value="添加" onclick="Add()" class="btnAddCss" />
                         <input type="button" value="删除" onclick="Mdy1('', 'Del')" class="btnDelCss" />
@@ -33,13 +32,33 @@
 </div>
 
 <script type="text/javascript">
+    query();
+    function query() {
+        $.ajax({
+            url: '/System/getDCSMSListJson',
+            cache: false,
+            data: { FIRELEVEL: document.getElementById("tbxDANGERCLASS").value },
+            type: 'post',
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#tableList').html(ar.Msg);
+                }
+                else {
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('系统错误!', { icon: 5 });
+            }
+        });
+    }
 
     function Add() {
         layer.open({
             type: 2,
             title: '添加',
             fix: false, //不固定
-            area: ['60%', '75%'],
+            area: ['650px', '450px'],
             maxmin: true,
             content: '/System/DCSMSTmpMan',
             end: function () {
@@ -53,7 +72,7 @@
             type: 2,
             title: '修改',
             fix: false, //不固定
-            area: ['60%', '75%'],
+            area: ['650px', '450px'],
             maxmin: true,
             content: '/System/DCSMSTmpMan?YJ_DCSMS_TMPID=' + YJ_DCSMS_TMPID + "&Method=" + Method,
             end: function () {
@@ -95,25 +114,4 @@
             }
         });
     }
-
-    function query() {
-        $.ajax({
-            url: '/System/getDCSMSListJson',
-            cache: false,
-            data: { FIRELEVEL: document.getElementById("tbxDANGERCLASS").value },
-            type: 'post',
-            success: function (data, ioArgs) {
-                var ar = eval('(' + data + ')');
-                if (ar.Success) {
-                    $('#tableList').html(ar.Msg);
-                }
-                else {
-                }
-            },
-            error: function (err, ioArgs) {
-                layer.msg('系统错误!', { icon: 5 });
-            }
-        });
-    }
-    query();
 </script>

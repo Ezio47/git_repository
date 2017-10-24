@@ -589,8 +589,8 @@ namespace ManagerSystemClassLibrary.BaseDT
 
             if (!string.IsNullOrEmpty(sw.BeginTime) && !string.IsNullOrEmpty(sw.EndTime))
             {
-                sb.AppendFormat(" AND a.RECEIVETIME >='{0} 00:00:00'", sw.BeginTime);
-                sb.AppendFormat(" AND a.RECEIVETIME <='{0} 23:59:59'", sw.EndTime);
+                sb.AppendFormat(" AND a.FIRETIME >='{0} 00:00:00'", sw.BeginTime);
+                sb.AppendFormat(" AND a.FIRETIME <='{0} 23:59:59'", sw.EndTime);
             }
             if (!string.IsNullOrEmpty(sw.HOTTYPE))
             {
@@ -810,21 +810,21 @@ namespace ManagerSystemClassLibrary.BaseDT
                 if (PublicCls.OrgIsShi(orgNo))//市
                 {
                     if (string.IsNullOrEmpty(DICTVALUE))
-                        return dt.Compute("count(JCFID)", "substring(BYORGNO,1,4)='" + PublicCls.getShiIncOrgNo(orgNo) + "'and FIREFROM in ('1','2','3','4','5','6')").ToString();
+                        return dt.Compute("count(JCFID)", "substring(BYORGNO,1,4)='" + PublicCls.getShiIncOrgNo(orgNo) + "'and FIREFROM in ('1','2','3','4','5','6','50')").ToString();
                     else
                         return dt.Compute("count(JCFID)", "substring(BYORGNO,1,4)='" + PublicCls.getShiIncOrgNo(orgNo) + "' and FIREFROM='" + DICTVALUE + "'").ToString();
                 }
                 else if (PublicCls.OrgIsXian(orgNo))//县
                 {
                     if (string.IsNullOrEmpty(DICTVALUE))
-                        return dt.Compute("count(JCFID)", "substring(BYORGNO,1,6)='" + PublicCls.getXianIncOrgNo(orgNo) + "'and FIREFROM in ('1','2','3','4','5','6') ").ToString();
+                        return dt.Compute("count(JCFID)", "substring(BYORGNO,1,6)='" + PublicCls.getXianIncOrgNo(orgNo) + "'and FIREFROM in ('1','2','3','4','5','6','50') ").ToString();
                     else
                         return dt.Compute("count(JCFID)", "substring(BYORGNO,1,6)='" + PublicCls.getXianIncOrgNo(orgNo) + "' and FIREFROM='" + DICTVALUE + "'").ToString();
                 }
                 else if (PublicCls.OrgIsZhen(orgNo))
                 {
                     if (string.IsNullOrEmpty(DICTVALUE))
-                        return dt.Compute("count(JCFID)", "substring(BYORGNO,1,9)='" + PublicCls.getZhenIncOrgNo(orgNo) + "'and FIREFROM in ('1','2','3','4','5','6')").ToString();
+                        return dt.Compute("count(JCFID)", "substring(BYORGNO,1,9)='" + PublicCls.getZhenIncOrgNo(orgNo) + "'and FIREFROM in ('1','2','3','4','5','6','50')").ToString();
                     else
                         return dt.Compute("count(JCFID)", "substring(BYORGNO,1,9)='" + PublicCls.getZhenIncOrgNo(orgNo) + "' and FIREFROM='" + DICTVALUE + "'").ToString();
                 }
@@ -1123,11 +1123,11 @@ namespace ManagerSystemClassLibrary.BaseDT
         {
             string total = "";
             StringBuilder sb = new StringBuilder();
-            sb.Append(" Left Join JC_FIRETICKLING b   on a.JCFID=b.JCFID ");
-            sb.Append(" Where  (b.FKID=(select max(fkid) from JC_FIRETICKLING where jcfid=b.jcfid) or b.fkid is null) and a.ISOUTFIRE=1 and (FIREFROM=50 or a.hottype in(1,6,10))");
-            if (sw.BYORGNO.Substring(4, 5) == "00000")//获取所有市的
+            //sb.Append(" Left Join JC_FIRETICKLING b   on a.JCFID=b.JCFID ");
+            sb.Append(" Where   a.ISOUTFIRE=1 and (a.FIREFROM=50 or a.hottype in(1,6,10))");
+            if (sw.BYORGNO.Substring(4, 11) == "00000000000")//获取所有市的
                 sb.AppendFormat(" AND (SUBSTRING(a.BYORGNO,1,4) = '{0}' )", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 4)));
-            else if (sw.BYORGNO.Substring(6, 3) == "000")//获取所有县的
+            else if (sw.BYORGNO.Substring(6, 9) == "000000000")//获取所有县的
                 sb.AppendFormat(" AND (SUBSTRING(a.BYORGNO,1,6) = '{0}' )", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 6)));
             else
                 sb.AppendFormat(" AND a.BYORGNO = '{0}'", ClsSql.EncodeSql(sw.BYORGNO));
@@ -1147,8 +1147,8 @@ namespace ManagerSystemClassLibrary.BaseDT
         public static DataTable GetDCDT(JC_FIRE_SW sw, out int total)
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append(" Left Join JC_FIRETICKLING b   on a.JCFID=b.JCFID ");
-            sb.Append(" Where  (b.FKID=(select max(fkid) from JC_FIRETICKLING where jcfid=b.jcfid) or b.fkid is null) and (FIREFROM=50 or a.hottype in(1,6,10))");
+            //sb.Append(" Left Join JC_FIRETICKLING b   on a.JCFID=b.JCFID ");
+            sb.Append(" Where a.ISOUTFIRE=1 and  (a.FIREFROM=50 or a.hottype in(1,6,10))");
             if (!string.IsNullOrEmpty(sw.BYORGNO))
             {
                 if (sw.BYORGNO.Substring(4, 11) == "00000000000")//获取所有市的

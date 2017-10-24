@@ -16,7 +16,7 @@ namespace ManagerSystem.MVC.CloudPlatForm
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
-                defaults: new { controller = "System", action = "Login", id = UrlParameter.Optional }
+                defaults: new { controller = "System", action = "NewLogin", id = UrlParameter.Optional }
             );
         }
     }

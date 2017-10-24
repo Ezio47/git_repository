@@ -8,9 +8,7 @@ namespace ManagerSystem.MVC.Controllers
 {
     public class UavController : BaseController
     {
-        //
-        // GET: /Uav/
-
+ 
         public ActionResult Index()
         {
             pubViewBag("028", "028", "无人机");

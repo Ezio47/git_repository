@@ -57,15 +57,7 @@
     });
 
     function Manager() {
-        //var id = document.getElementsByName('tbxRightID');
-        //var RightIDList = new Array();
-        //for (var i = 0; i < id.length; i++) {
-        //    if (id[i].checked)
-        //        RightIDList.push(id[i].value);
-        //}
-        var RightIDList = $("input:checkbox[name='tbxRightID']:checked").map(function (index, elem) {
-            return $(elem).val();
-        }).get().join(',');
+        var RightIDList = $("input:checkbox[name='tbxRightID']:checked").map(function (index, elem) {return $(elem).val(); }).get().join(',');
         $.ajax({
             url: '/System/RoleManager',
             timeout: 10000, //10秒后超时，如果为0则永不超时

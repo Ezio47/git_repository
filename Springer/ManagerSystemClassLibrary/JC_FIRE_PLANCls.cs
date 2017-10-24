@@ -37,7 +37,6 @@ namespace ManagerSystemClassLibrary
                 //SystemCls.LogSave("4", "通知公告:" + m.INFOTITLE, ClsStr.getModelContent(m));
                 Message msgUser = BaseDT.JC_FIRE_PLAN.Mdy(m);
                 return new Message(msgUser.Success, msgUser.Msg, m.returnUrl);
-
             }
             if (m.opMethod == "Del")
             {
@@ -46,8 +45,6 @@ namespace ManagerSystemClassLibrary
                 return new Message(msgUser.Success, msgUser.Msg, m.returnUrl);
             }
             return new Message(false, "无效操作", "");
-
-
         }
 
         #endregion
@@ -135,7 +132,6 @@ namespace ManagerSystemClassLibrary
         }
 
         #endregion
-
 
         #region 获取分页
         /// <summary>

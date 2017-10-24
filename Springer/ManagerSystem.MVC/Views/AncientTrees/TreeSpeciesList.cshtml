@@ -145,20 +145,20 @@
             if ($.trim(TSPCODE) != "") {
                 var reg = new RegExp("^[0-9]*$");
                 if (!reg.test(TSPCODE)) {
-                    layer.msg('请输入' + len2 + '数字编码!', { icon: 5 });
+                    layer.msg('请输入' + len2 + '位数字编码!', { icon: 5 });
                     $("#tbxTSPCODE").focus();
                     return;
                 }
                 else {
                     if (TSPCODE.length != len2) {
-                        layer.msg('请输入' + len2 + '数字编码!', { icon: 5 });
+                        layer.msg('请输入' + len2 + '位数字编码!', { icon: 5 });
                         $("#tbxTSPCODE").focus();
                         return;
                     }
                     else {
                         if (len > 0) {
                             if (TSPCODE.substring(0, len) != code) {
-                                layer.msg('请输入' + len2 + '数字编码,请前' + len + '位为' + code + '!', { icon: 5 });
+                                layer.msg('请输入' + len2 + '位数字编码,请前' + len + '位为' + code + '!', { icon: 5 });
                                 $("#tbxTSPCODE").focus();
                                 return;
                             }
@@ -167,7 +167,7 @@
                 }
             }
             else {
-                layer.msg('请输入' + len2 + '数字编码!', { icon: 5 });
+                layer.msg('请输入' + len2 + '位数字编码!', { icon: 5 });
                 $("#tbxTSPCODE").focus();
                 return
             }

@@ -67,7 +67,6 @@
 <script type="text/javascript">
     var oDiv = document.getElementById("tab");
     var oLi = oDiv.getElementsByTagName("div")[0].getElementsByTagName("li");
-    //var aCon = oDiv.getElementsByTagName("div")[1].getElementsByTagName("div");
     var timer = null;
     for (var i = 0; i < oLi.length; i++) {
         oLi[i].index = i;
@@ -86,8 +85,8 @@
     }
     function switchIframeUrl(flag) {
         var jcfid = getQueryString("ID");
-        var tablename = 'JC_FIRE';// getQueryString("tablename");
-        var orgno =@ViewBag.orgno;// getQueryString("orgno");
+        var tablename = 'JC_FIRE';
+        var orgno ='@ViewBag.orgno';
         var FRFIID = getQueryString("FRFIID");//@ViewBag.FRFIID;
         var Method = getQueryString("See1");
         if (flag == 1) {
@@ -118,11 +117,10 @@
                 dataType: "json",
                 success: function (obj) {
                     if (obj != null && obj.Success) {
-                        //alert(obj.Msg);
                         $('#divTable').html(obj.Msg);
                     }
                     else {
-                        layer.msg('取值失败！', { icon: 5 });
+                        layer.msg('取值失败!', { icon: 5 });
                     }
                 }
             });
@@ -132,9 +130,7 @@
             $.ajax({
                 type: "Post",
                 url: "/DataCenter/getFIRETICKLINGjson",
-                data: {
-                    JCFID: ID,
-                },
+                data: { JCFID: ID },
                 dataType: "json",
                 error: function () {
                     layer.msg('错误:异常!', 'error');
@@ -148,9 +144,7 @@
             $.ajax({
                 type: "Post",
                 url: "/DataCenter/getFIREReport",
-                data: {
-                    JCFID: ID,
-                },
+                data: {JCFID: ID},
                 dataType: "json",
                 error: function () {
                     layer.msg('错误:异常!', 'error');
@@ -168,5 +162,4 @@
         var r = window.location.search.substr(1).match(reg);
         if (r != null) return unescape(r[2]); return null;
     }
-
 </script>

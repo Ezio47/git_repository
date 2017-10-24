@@ -167,8 +167,13 @@
     <Content Include="Content\default\CSS.css" />
     <Content Include="Content\default\font-awesome.css" />
     <Content Include="Content\default\jbox.css" />
+    <Content Include="Content\default\public.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
+    <Content Include="Images\img\icons.png" />
+    <Content Include="Images\img\login_img.png" />
+    <Content Include="Images\img\map.png" />
+    <Content Include="Images\img\zl1.png" />
     <Content Include="Images\Index\1.png" />
     <Content Include="Images\Index\2.png" />
     <Content Include="Images\Index\3.png" />
@@ -199,6 +204,7 @@
     <Content Include="Scirpts\layer\skin\default\loading-2.gif" />
     <Content Include="Scirpts\layer\skin\layer.css" />
     <Content Include="Scirpts\layer\skin\layer.ext.css" />
+    <Content Include="Scirpts\login.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -222,6 +228,15 @@
     <Content Include="packages.config" />
     <None Include="Project_Readme.html" />
     <None Include="Properties\PublishProfiles\SpringerCloud.pubxml" />
+    <Content Include="Views\System\NewLogin.cshtml" />
+    <Content Include="Views\Home\NewIndex.cshtml" />
+    <Content Include="Views\System\Desk.cshtml" />
+    <Content Include="Views\System\ZHYJ.cshtml" />
+    <Content Include="Views\System\ZHYY.cshtml" />
+    <Content Include="Views\System\ZWFW.cshtml" />
+    <Content Include="Views\System\JWFW.cshtml" />
+    <Content Include="Views\System\JCGZ.cshtml" />
+    <Content Include="Views\System\JCZC.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

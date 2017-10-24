@@ -5,36 +5,37 @@
 }
 
 <div class="easyui-layout" data-options="fit:true" style=" border:0;">
-
     <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
         @Html.Raw(@ViewBag.PageLeftMenu)
     </div>
+
     <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
         <div class="easyui-layout" data-options="fit:true" style=" border:0;">
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
                 <div class="divOP">
-                   <ul>
+                    <ul>
                         <li class="homeUL">
                             单位：<select id="tbxBYORGNO" onchange="query('1')">@Html.Raw(@ViewBag.vdOrg)</select>
                             姓名/电话：<input id="tbxHNAME" type="text" value="@ViewBag.HNAME" style="width:80px;" />
-                            状态：<select id="tbxISENABLE">@Html.Raw(@ViewBag.vdISENABLE)</select>
+                            状态：<select id="tbxISENABLE" style="width:90px;" onchange="query('1')">@Html.Raw(@ViewBag.vdISENABLE)</select>
                             <input type="button" value="查询" onclick="query(1)" class="btnSearchCss" />
                             <input type="hidden" id="PRID" value="">
                             <input type="hidden" id="PHOTOTYPE" value="">
                             <input type="button" value="添加" onclick="Add()" class="btnAddCss" />
                             <input type="button" value="启用" onclick="Mdy1('0', 'Enable')" class="btnEnableCss" />
                             <input type="button" value="禁用" onclick="Mdy1('1', 'UnEnable')" class="btnUnEnableCss" />
+                            <input type="button" value="导入" onclick="Upload()" class="btnUnEnableCss" />
                         </li>
-                        <li class="active">
+                        @*<li class="active">
 
                             @using (@Html.BeginForm("FRUserList", "System", FormMethod.Post, new { enctype = "multipart/form-data" }))
                             {
-                                <input name="file" style="width:130px;" type="file" id="file" class="btn btn-info btn-sm" />
-                                <button type="submit" name="Upload" value="导入" class="btnInputCss">导 入</button>
+                            <input name="file" style="width:130px;" type="file" id="file" class="btn btn-info btn-sm" />
+                            <button type="submit" name="Upload" value="导入" class="btnInputCss">导 入</button>
                             }
                         <li class="active">
                             <a href="~/UploadFile/HRExcel/护林员模板.xls" target="_blank" title="右键，另存为">下载模板</a>
-                        </li>
+                        </li>*@
                     </ul>
 
                 </div>
@@ -45,24 +46,22 @@
                 </div>
             </div>
             <div data-options="region:'south'" title="" style=" height:40px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
-                <div class="divPager" id="divPager">                    
+                <div class="divPager" id="divPager">
                     @*@Html.Raw(@ViewBag.PagerInfo)*@
                 </div>
             </div>
 
         </div>
     </div>
-
 </div>
+
 <div class="divMan" id="Phototableadd" style="display:none;margin-left:5px;margin-top:8px">
 
 </div>
 
 <script type="text/javascript">
     function Mdy1(isenable, method) {
-        var IDList = $("input:checkbox[name='chk']:checked").map(function (index, elem) {
-            return $(elem).val();
-        }).get().join(',');
+        var IDList = $("input:checkbox[name='chk']:checked").map(function (index, elem) { return $(elem).val(); }).get().join(',');
         $.ajax({
             url: '/System/FRUserManager',
             cache: false,
@@ -78,7 +77,7 @@
             success: function (re) {
                 var ar = eval('(' + re + ')');
                 if (ar.Success) {
-                    layer.msg('操作成功');
+                    layer.msg('操作成功', { icon: 6 });
                     query(page);
                 }
                 else {
@@ -87,12 +86,13 @@
             }
         });
     }
+
     function Add() {
         layer.open({
             type: 2,
             title: '添加',
             fix: false, //不固定
-            area: ['45%', '50%'],
+            area: ['650px', '300px'],
             maxmin: true,
             content: '/System/FRUserMan',
             end: function () {
@@ -101,30 +101,31 @@
         });
     }
 
-
-    function Mdy(Method,ID,tno) {
+    function Mdy(Method, ID, tno) {
         layer.open({
             type: 2,
             title: '修改',
             fix: false, //不固定
-            area: ['45%', '50%'],
+            area: ['650px', '300px'],
             maxmin: true,
             content: '/System/FRUserMan?ID=' + ID + '&tNo=' + tno + '&Method=Mdy',
             end: function () {
                 query(page);
-            }  
+            }
         });
     }
+
     function See(Method, ID, tno) {
         layer.open({
             type: 2,
             title: '查看',
             fix: false, //不固定
-            area: ['45%', '50%'],
+            area: ['440px', '260px'],
             maxmin: true,
             content: '/System/FRUserMan?ID=' + ID + '&tNo=' + tno + '&Method=See',
         });
     }
+
     var page = 1;//当前默认页面为1
     query(1);
     function query(Page) {
@@ -140,7 +141,7 @@
             data: {
                 PageSize: pagesize,//document.getElementById("selPageSize").value,
                 HNAME: document.getElementById("tbxHNAME").value,
-                Page:Page,// document.getElementById("selPage").value,
+                Page: Page,// document.getElementById("selPage").value,
                 BYORGNO: document.getElementById("tbxBYORGNO").value,
                 ISENABLE: document.getElementById("tbxISENABLE").value
             },
@@ -165,23 +166,19 @@
             $.ajax({
                 url: '/System/FRUserManager',
                 cache: false,
-                data: {
-                    ID: id
-                    , Method: 'Del'
-                    , returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)'
-                },
+                data: { ID: id, Method: 'Del', returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)' },
                 type: 'post',
                 error: function () {
-                    layer.msg('错误:异常!', 'error');
+                    layer.msg('错误:异常!', { icon: 5 });
                 },
                 success: function (re) {
                     var ar = eval('(' + re + ')');
                     if (ar.Success) {
-                        layer.msg('操作成功');
+                        layer.msg(ar.Msg, { icon: 6 });
                         query(page);
                     }
                     else {
-                        layer.msg(ar.Msg,  { icon: 5 });
+                        layer.msg(ar.Msg, { icon: 5 });
                     }
                 }
             });
@@ -225,8 +222,22 @@
             content: '/DataCenter/PhotoIndex?PHOTOTYPE=T_IPSFR_USER&PRID=' + ID
         })
     }
+    ///上传弹出上传界面
+    function Upload() {
+        layer.open({
+            type: 2,
+            title: '上传',
+            area: ['1000px', '500px'],
+            //shade: 0,
+            fix: true,
+            maxmin: true,
+            content: '/System/FRUserListBrowse',
+            end: function () {
+                query(1);
+            }
+        })
+    }
 </script>
-
 
 <script type="text/javascript">
     function selectall(v, c) {

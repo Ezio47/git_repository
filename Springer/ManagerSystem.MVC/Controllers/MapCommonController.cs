@@ -62,18 +62,39 @@ namespace ManagerSystem.MVC.Controllers
             {
                 foreach (var item in list)
                 {
-                    var info = JC_FIRETICKLINGCls.GetFKFireInfoData(item.JCFID);
+                    //var info = JC_FIRETICKLINGCls.GetFKFireInfoData(item.JCFID);
+                    var fklist = GetFKInfoList(item.JCFID);
+                    var recordlist = fklist.Select(p => p.MANSTATE).ToList();//MANSTATE状态集合
+
                     var model = new MapShowModel();
                     model.JCFID = item.JCFID;
                     model.AREA = item.ZQWZ;
                     model.BH = item.WXBH;
                     model.JD = item.JD;
                     model.WD = item.WD;
-                    model.FKSTATE = StateSwitch.QSStateNew(SystemCls.getCurUserOrgNo(), info.JC_FireFKData.MANSTATE);
+                    if (Convert.ToInt32(item.MANSTATE) > 10)//大于10 说明已经入反馈阶段有顺序 
+                    {
+                        model.FKSTATE = StateSwitch.QSStateNew(SystemCls.getCurUserOrgNo(), item.MANSTATE);
+                    }
+                    else//签收无顺序性 状态判断是否反馈表包含 签到状态 1 市 2 县 3 乡镇
+                    {
+                        model.FKSTATE = StateSwitch.QSStateNewList(SystemCls.getCurUserOrgNo(), recordlist);
+                    }
+                    //model.FKSTATE = StateSwitch.QSStateNew(SystemCls.getCurUserOrgNo(), info.JC_FireFKData.MANSTATE);
                     result.Add(model);
                 }
             }
             return View(result);
+        }
+
+        /// <summary>
+        /// 获取监测反馈信息
+        /// </summary>
+        /// <param name="jcfid"></param>
+        /// <returns></returns>
+        private IEnumerable<JC_FIRETICKLING_Model> GetFKInfoList(string jcfid)
+        {
+            return JC_FIRETICKLINGCls.GetModelList(new JC_FIRETICKLING_SW { JCFID = jcfid });
         }
 
         /// <summary>
@@ -321,6 +342,12 @@ namespace ManagerSystem.MVC.Controllers
                 case "CUNZHUDI"://自定义数据
                     result = "OBJECTID";
                     break;
+                case "WILD_ANIMALDISTRIBUTE"://野生动物
+                    result = "WILD_ANIMALDISTRIBUTEID";
+                    break;
+                case "WILD_BOTANYDISTRIBUTE"://野生动物
+                    result = "WILD_BOTANYDISTRIBUTEID";
+                    break;
             }
             return result;
         }
@@ -380,6 +407,17 @@ namespace ManagerSystem.MVC.Controllers
                         else
                             ViewBag.method = "ShowMsg()";
                     }
+                    else if (tablename.Trim().ToUpper() == "WILD_ANIMALDISTRIBUTE")
+                    {
+                        var model = WILD_ANIMALDISTRIBUTECls.getModel(new WILD_ANIMALDISTRIBUTE_SW { WILD_ANIMALDISTRIBUTEID = id });
+                        if (!string.IsNullOrEmpty(model.JWDLIST))
+                        {
+                            ViewBag.jwdlist = model.JWDLIST;
+                            ViewBag.method = "getLocaCollectPolygon()";//地图定位
+                        }
+                        else
+                            ViewBag.method = "ShowMsg()";
+                    }
                     else if (tablename.Trim().ToUpper() == "DC_UTILITY_ISOLATIONSTRIP")
                     {
                         var model = DC_UTILITY_ISOLATIONSTRIPCls.getModel(new DC_UTILITY_ISOLATIONSTRIP_SW { DC_UTILITY_ISOLATIONSTRIP_ID = id });
@@ -409,6 +447,28 @@ namespace ManagerSystem.MVC.Controllers
                 else if (tablename.Trim().ToUpper() == "DC_REPOSITORY")
                 {
                     var model = DC_REPOSITORYCls.getModel(new DC_REPOSITORY_SW { DCREPOSITORYID = id });
+                    if (!string.IsNullOrEmpty(model.JD) && !string.IsNullOrEmpty(model.WD))
+                        ViewBag.method = "getLocaCollectPont(" + model.JD + "," + model.WD + ")";//地图定位
+                    else
+                        ViewBag.method = "ShowMsg()";
+                }
+                #endregion
+
+                #region WILD_ANIMALDISTRIBUTE
+                else if (tablename.Trim().ToUpper() == "WILD_ANIMALDISTRIBUTE")
+                {
+                    var model = WILD_ANIMALDISTRIBUTECls.getModel(new WILD_ANIMALDISTRIBUTE_SW { WILD_ANIMALDISTRIBUTEID = id });
+                    if (!string.IsNullOrEmpty(model.JD) && !string.IsNullOrEmpty(model.WD))
+                        ViewBag.method = "getLocaCollectPont(" + model.JD + "," + model.WD + ")";//地图定位
+                    else
+                        ViewBag.method = "ShowMsg()";
+                }
+                #endregion
+
+                #region WILD_BOTANYDISTRIBUTE
+                else if (tablename.Trim().ToUpper() == "WILD_BOTANYDISTRIBUTE")
+                {
+                    var model = WILD_BOTANYDISTRIBUTECls.getModel(new WILD_BOTANYDISTRIBUTE_SW { WILD_BOTANYDISTRIBUTEID = id });
                     if (!string.IsNullOrEmpty(model.JD) && !string.IsNullOrEmpty(model.WD))
                         ViewBag.method = "getLocaCollectPont(" + model.JD + "," + model.WD + ")";//地图定位
                     else

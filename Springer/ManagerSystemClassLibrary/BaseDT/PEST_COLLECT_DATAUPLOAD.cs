@@ -50,7 +50,7 @@ namespace ManagerSystemClassLibrary.BaseDT
         public static Message Mdy(PEST_COLLECT_DATAUPLOAD_Model m)
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("UPDATE PEST_COLLECT_DATAUPLOAD SET");
+            sb.AppendFormat("UPDATE PEST_COLLECT_DATAUPLOAD SET ");
             sb.AppendFormat(" UPLOADNAME='{0}'", ClsSql.EncodeSql(m.UPLOADNAME));
             sb.AppendFormat(",UPLOADDESCRIBE={0}", ClsSql.saveNullField(m.UPLOADDESCRIBE));
             sb.AppendFormat(",UPLOADURL={0}", ClsSql.saveNullField(m.UPLOADURL));
@@ -74,8 +74,8 @@ namespace ManagerSystemClassLibrary.BaseDT
         public static Message MdyTP(PEST_COLLECT_DATAUPLOAD_Model m)
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("UPDATE PEST_COLLECT_DATAUPLOAD SET");
-            sb.AppendFormat("UPLOADNAME='{0}'", ClsSql.EncodeSql(m.UPLOADNAME));
+            sb.AppendFormat("UPDATE PEST_COLLECT_DATAUPLOAD SET ");
+            sb.AppendFormat(" UPLOADNAME='{0}'", ClsSql.EncodeSql(m.UPLOADNAME));
             sb.AppendFormat(",UPLOADDESCRIBE={0}", ClsSql.saveNullField(m.UPLOADDESCRIBE));
             sb.AppendFormat(" where PESTCOLLDATAUPLOADID= '{0}'", ClsSql.EncodeSql(m.PESTCOLLDATAUPLOADID));
             bool bln = DataBaseClass.ExeSql(sb.ToString());

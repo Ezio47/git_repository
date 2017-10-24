@@ -61,6 +61,7 @@
             layer.msg('请先选择要更新的操作!', { icon: 5 });
             return false;
         }
+        $('.layout').css("position", "absolute");
         if (updateId == "1") {
             $('#updateFrame').attr('src', '/SystemConfig/UpdateDataBase');
         }

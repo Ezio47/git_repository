@@ -29,36 +29,31 @@
                         <div id="divFloatToolsView" style=" height: 100%;">
                             <div>
                                 <div style="font-size:14px;font-weight:800">
-                                    市&nbsp;&nbsp;&nbsp;县：
-                                    <input type="text" id="argxian" style="width:180px;height:24px;" placeholder="" />
+                                    市&nbsp;&nbsp;&nbsp;县：<input type="text" id="argxian" style="width:180px;height:24px;" placeholder="" />
                                 </div>
                                 <div style="font-size:14px;font-weight:800">
-                                    乡&nbsp;&nbsp;&nbsp;镇：
-                                    <input type="text" id="argxiang" style="width: 180px; height: 24px;" placeholder="" />
+                                    乡&nbsp;&nbsp;&nbsp;镇：<input type="text" id="argxiang" style="width: 180px;height: 24px;" placeholder="" />
                                 </div>
                                 <div style="font-size:14px;font-weight:800">
-                                    村&nbsp;&nbsp;&nbsp;名：
-                                    <input type="text" id="argcun" style="width: 180px; height: 24px;" placeholder="" />
+                                    村&nbsp;&nbsp;&nbsp;名： <input type="text" id="argcun" style="width: 180px;height: 24px;" placeholder="" />
                                 </div>
                                 <div style="font-size:14px;font-weight:800">
-                                    林班号：
-                                    <input type="text" id="arglin" style="width: 180px; height: 24px;" placeholder="" />
+                                    林班号：<input type="text" id="arglin" style="width: 180px;height: 24px;" placeholder="" />
                                 </div>
                                 <div style="font-size:14px;font-weight:800">
-                                    小班号：
-                                    <input type="text" id="argxiao" style="width: 180px; height: 24px;" placeholder="" />
+                                    小班号：<input type="text" id="argxiao" style="width: 180px;height: 24px;" placeholder="" />
                                 </div>
                                 <div>
                                     <input type="button" value="查询" onclick="searchUser()" class="btnSearchCss" />
                                 </div>
                                 <br />
-
                             </div>
                             <hr />
                         </div>
                     </li>
                 </ul>
             </li>
+
             <li id="li2">
                 <label><h1><span>查询结果</span></h1></label>
                 <ul class="skyLineLeftMenu">
@@ -94,6 +89,7 @@
     function menuOclick(id) {
         $(".ulhlytree>li:eq(" + id + ")>label").click();
     }
+
     function menuEvent(id) {
         var $parent_li, $ul, $span;
         $(".ulhlytree li>label").click(function () {
@@ -105,6 +101,7 @@
         });
         $(".ulhlytree>li:eq(" + id + ")>label").click();
     }
+
     function show_arg1() {
         var arg0 = $("#arg0").val();
         $("#arg1 option").remove();
@@ -122,8 +119,8 @@
             $("#arg1").append("<option value='like'>包括</option>");
         }
     }
+
     function addArg() {
-        //
         var arg0 = $("#arg0").val();
         var arg1 = $("#arg1").val();
         var arg2 = $("#arg2").val();
@@ -132,7 +129,7 @@
             $("#arg").val('');
         }
         if (arg0 == "" || arg1 == "" || arg2 == "") {
-            alert("请输入完整的查询条件!");
+            layer.msg("请输入完整的查询条件!");
             return;
         }
         var str = $("#arg").val();
@@ -145,14 +142,14 @@
         else {
             str = str + " " + arg0 + "　" + arg1 + "　'" + arg2 + "' " + arg3;
         }
-
         $("#arg").val(str);
-
     }
+
     //重置
     function resetArg() {
         $("#arg").val('');
     }
+
     //空间数据检索方法
     function query(page) {
         var pagesize = '10';
@@ -190,20 +187,20 @@
                 else {
                     //关闭
                     layer.close(index);
-                    alert('登录异常');
+                    layer.msg("登录异常!");
                 }
             },
             error: function (err, ioArgs) {
                 //关闭
                 layer.close(index);
                 menuOclick('0');
-                alert('查询条件有误');
+                layer.msg("查询条件有误!");
             }
         });
     }
+
     //空间数据查询
     function searchUser() {
-       
         query('1');//默认第一页
         menuOclick('1');
     }

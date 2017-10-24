@@ -28,28 +28,28 @@
     <input id="HidID" name="HidID" type="hidden" value="" />
     <table cellpadding="0" cellspacing="0">
         <tr>
-            <td style="width:100px;">资产名称: </td>
-            <td><input id="tbxASSETSNAME" type="text" value="" style="width:99%;" /></td>
-            <td style="width:100px;">资产单位: </td>
-            <td><input id="tbxASSETSUNIT" type="text" value="" style="width:99%;" /> </td>
+            <td class="tdField" style="width:100px;">资产名称: </td>
+            <td><input id="tbxASSETSNAME" type="text" value="" style="width:95%;" /></td>
+            <td class="tdField" style="width:100px;">资产单位: </td>
+            <td><input id="tbxASSETSUNIT" type="text" value="" style="width:95%;" /> </td>
         </tr>
         <tr>
-            <td>资产数量:</td>
-            <td><input id="tbxASSETSCOUNT" type="text" value="" style="width:99%;" /></td>
-            <td>购入价格:</td>
-            <td><input id="tbxASSETSPRICE" type="text" value="" style="width:99%;" /></td>
+            <td class="tdField">资产数量:</td>
+            <td><input id="tbxASSETSCOUNT" type="text" value="" style="width:95%;" /></td>
+            <td class="tdField">购入价格:</td>
+            <td><input id="tbxASSETSPRICE" type="text" value="" style="width:95%;" /></td>
         </tr>
         <tr>
-            <td>残值:</td>
+            <td class="tdField">残值:</td>
             <td>
                 <input id="tbxRESIDUALVALUE" type="text" value="" style="width:85%;" />
-                <span style="color: gray;">元</span>
+                <span class="spanMark">元</span>
             </td>
             <td colspan="2"></td>
         </tr>
         <tr>
-            <td>备注:</td>
-            <td colspan="3"><input id="tbxMARK" type="text" value="" style="width:99%;" /></td>
+            <td class="tdField">备注:</td>
+            <td colspan="3"><input id="tbxMARK" type="text" value="" style="width:96%;" /></td>
         </tr>
     </table>
 </div>
@@ -115,7 +115,7 @@
             layer.open({
                 type: 2,
                 title: '查看流动资产损失',
-                area: ['70%', '70%'],
+                area: ['600px', '240px'],
                 fix: true,
                 maxmin: true,
                 content: '/DamageAssess/CURRENTASSETSDataSee?CURRENTASSETSID=' + ID,
@@ -161,7 +161,7 @@
             layer.open({
                 type: 1,
                 title: str,
-                area: ['70%', '72%'],
+                area: ['600px', '280px'],
                 btn: btnInfo,
                 shade: 0,
                 maxmin: true,

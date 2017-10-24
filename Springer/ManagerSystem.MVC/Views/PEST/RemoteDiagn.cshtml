@@ -18,10 +18,10 @@
                         <li class="homeUL">
                             主题：<input id="tbxTITLE" type="text" class="input-small" style="width:120px" value="" />&nbsp;&nbsp;&nbsp;
                             诊断状态：<select id="tbxSTATUS" onchange="query('1')">@Html.Raw(@ViewBag.DIAGNSTATUS)</select>&nbsp;&nbsp;&nbsp;
-                            开始时间：<input id="tbxStartTime" type="text" class="Wdate" style="width:100px" value="@ViewBag.StartTime" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd'})" />&nbsp;&nbsp;&nbsp;
-                            结束时间：<input id="tbxEndTime" type="text" class="Wdate" style="width:100px" value="@ViewBag.EndTime" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd'})" />&nbsp;&nbsp;&nbsp;
-                            <input type="button" value="查询" onclick="query('1')" class="btnSearchCss" />
-                            <input type="button" value="添加" onclick="Manager('Add','','')" id="btnAdd" style="display:none;" class="btnAddCss" />
+                            求诊时间：<input id="tbxStartTime" type="text" class="Wdate" style="width:100px" value="@ViewBag.StartTime" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd'})" />&nbsp;&nbsp;&nbsp;
+                            至&nbsp;&nbsp;<input id="tbxEndTime" type="text" class="Wdate" style="width:100px" value="@ViewBag.EndTime" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd'})" />&nbsp;&nbsp;&nbsp;
+                            <input type="button" value="查 询" onclick="query('1')" class="btnSearchCss" />
+                            <input type="button" value="添 加" onclick="Manager('Add','','')" id="btnAdd" style="display:none;" class="btnAddCss" />
                         </li>
                     </ul>
                 </div>
@@ -44,17 +44,17 @@
     <input id="HidID" name="HidID" type="hidden" value="" />
     <table cellpadding="0" cellspacing="0">
         <tr>
-            <td style="width:15%;">主题: </td>
+            <td class="tdField" style="width:15%;">主题: </td>
             <td style="width:35%;"><input id="tbxDIAGNTITLE" type="text" value="" style="width:98%;" /></td>
-            <td style="width:15%;">诊断状态: </td>
+            <td class="tdField" style="width:15%;">诊断状态: </td>
             <td style="width:35%;"><select id="tbxDIAGNSTATUS" style="width:98%;">@Html.Raw(@ViewBag.DIAGNSTATUSAdd)</select></td>
         </tr>
         <tr>
-            <td style="width: 80px;">参与专家:</td>
+            <td class="tdField" style="width: 80px;">参与专家:</td>
             <td colspan="3"><input type="text" id="tbxDIAGNEXPERTS" value="" style="width:99%;" placeholder="多位专家名字以、分割" /></td>
         </tr>
         <tr>
-            <td>内容:</td>
+            <td class="tdField">内容:</td>
             <td colspan="3"><textarea id="tbxDIAGNCONTENT" style="width: 99%; height: 100px"></textarea></td>
         </tr>
     </table>
@@ -158,7 +158,7 @@
             layer.open({
                 type: 2,
                 title: '查看诊断信息',
-                area: ['60%', '50%'],
+                area: ['750px', '300px'],
                 fix: true,
                 maxmin: true,
                 content: '/PEST/RemoteDiagnDataSee?PEST_REMOTEDIAGNID=' + ID,
@@ -168,6 +168,7 @@
             if (Method == 'Add') {
                 $('#HidID').val('');
                 $("#tbxDIAGNTITLE").val('');
+                $('#tbxDIAGNSTATUS').val('1');
                 $("#tbxDIAGNEXPERTS").val('');
                 $("#tbxDIAGNCONTENT").val('');
             }
@@ -198,7 +199,7 @@
             layer.open({
                 type: 1,
                 title: str,
-                area: ['50%', '50%'],
+                area: ['750px', '300px'],
                 btn: btnInfo,
                 shade: 0,
                 maxmin: true,

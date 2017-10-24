@@ -24,9 +24,9 @@
                 if (data.Success) {
                     $('#divImg').html('');
                     $('#divImg').html(data.Msg);
-                    if (data.Url > 1) {
-                        $('#btnUp').css('display', '');
-                        $('#btnDown').css('display', '');
+                    if (data.Url < 1) {
+                        $("#btnUp").attr("disabled", true);
+                        $("#btnDown").attr("disabled", true);
                     }
                 }
                 else {

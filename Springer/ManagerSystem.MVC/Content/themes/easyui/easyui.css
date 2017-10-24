@@ -908,7 +908,7 @@ body {
 }
 
 .layout {
-    /*position: relative;*/
+    position: relative;
     overflow: hidden;
     margin: 0px 0px 0px 0px;
     padding: 0;

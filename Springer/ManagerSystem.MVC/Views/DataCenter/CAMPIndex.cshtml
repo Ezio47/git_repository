@@ -2,6 +2,8 @@
 @{
     Layout = "~/Views/Shared/_LayoutIndex.cshtml";
     var curorgno = SystemCls.getCurUserOrgNo();
+    if (string.IsNullOrEmpty(curorgno) == false)
+    {
     if (curorgno.Substring(6, 9) == "000000000" && curorgno.Substring(4, 2) != "00")
     {
         curorgno = curorgno.Substring(0, 6) + "xxxxxxxxx";
@@ -9,6 +11,7 @@
     else
     {
         curorgno = SystemCls.getCurUserOrgNo();
+    }
     }
     var curorgno1 = SystemCls.getCurUserOrgNo();//添加的时候组织机判断
 }
@@ -29,8 +32,9 @@
                             编号：<input id="tbxNUMBER" type="text" class="input-small" style="width:100px" value="" />
                             <input type="button" value="查询" onclick="query('1')" class="btnSearchCss" />
                             <input type="button" value="添加" id="btnAdd" onclick="Add()" style="display:none;" class="btnAddCss" />
+                            <input type="button" value="导入" onclick="Upload()" class="btnUnEnableCss" />
                         </li>
-                        <li class="active">
+                        @*<li class="active">
                             @using (@Html.BeginForm("CAMPList", "DataCenter", FormMethod.Post, new { enctype = "multipart/form-data" }))
                             {
                             <input name="file" style="width:90px;" type="file" id="file" class="btn btn-info btn-sm" />
@@ -39,7 +43,7 @@
                         </li>
                         <li class="active">
                             <a href="~/UploadFile/DataCenterExcel/营房模板.xls" target="_blank" title="右键，另存为">下载模板</a>
-                        </li>
+                        </li>*@
                     </ul>
                 </div>
             </div>
@@ -132,7 +136,7 @@
         layer.open({
             type: 2,
             title: name + '地图定位',
-            area: ['70%', '80%'],
+            area: ['1000px', '600px'],
             //shade: 0,
             fix: true,
             maxmin: true,
@@ -168,7 +172,7 @@
             type: 2,
             title: '添加',
             fix: false, //不固定
-            area: ['80%', '80%'],
+            area: ['650px', '420px'],
             maxmin: true,
             content: '/DataCenter/CAMPManIndex',
             end: function () {
@@ -180,7 +184,7 @@
         layer.open({
             type: 2,
             title: "修改",
-            area: ['80%', '80%'],
+            area: ['650px', '420px'],
             //shade: 0,
             fix: false,
             maxmin: true,
@@ -190,15 +194,29 @@
             }
         });
     }
-    //数据查看
-    function See(ID, tablename) {
+    ///上传弹出上传界面
+    function Upload() {
         layer.open({
             type: 2,
-            title: '营房查看',
-            area: ['60%', '60%'],
+            title: '营房上传',
+            area: ['1000px', '500px'],
+            //shade: 0,
             fix: true,
             maxmin: true,
-            content: '/DataCenter/SeeIndex?tablename=' + tablename + "&ID=" + ID
+            content: '/DataCenter/CAMPList',
+            end: function () {
+                query(1);
+            }
+        })
+    }
+    function SwichIframeUrl(ID, tablename) {
+        layer.open({
+            type: 2,
+            title: '基本信息',
+            area: ['550px', '350px'],
+            fix: true,
+            maxmin: true,
+            content: '/DataCenter/CAMPTotalIndex?tablename=' + tablename + "&ID=" + ID
         })
     }
     //照片管理
@@ -206,7 +224,7 @@
         layer.open({
             type: 2,
             title: '照片管理',
-            area: ['60%', '60%'],
+            area: ['900px', '450px'],
             fix: true,
             maxmin: true,
             content: '/DataCenter/PhotoIndex?PHOTOTYPE=' + PHOTOTYPE + "&PRID=" + PRID

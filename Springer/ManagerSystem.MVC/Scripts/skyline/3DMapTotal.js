@@ -1,7 +1,7 @@
 ﻿var sg = new Object();
 sg.sgmap = 'sgmap';//div ID
 //sg.flyURL = "http://36.7.68.79:9000/SkylineFly/index.FLY";//三维默认加载地址
-sg.flyURL = "http://36.7.68.79:8020/SkylineFly/index.FLY";//沈晨机器fly文件
+sg.flyURL = "http://36.7.68.79:8020/SkylineFly/index8020.FLY";//沈晨机器fly文件
 var adrHost = 'http://' + window.location.host;//"http://localhost:33844";
 var iTime = null;
 //===
@@ -1051,7 +1051,7 @@ function moveto(x, y, title, jcid) {
                     html += "<li class='' style=\"cursor: pointer;\"  onclick='onloadFlie(\"" + adrHost + "/UploadFile/FlaFile/" + datalist[i].PLOTTINGFILENAME + "\")'><span class='span2_02'></span>第"
                         + (++num) + "阶段：" + datalist[i].PLOTTINGTITLE + "<a class='cor_ff7 padd_10' onclick='removeFile(\"" + datalist[i].JC_FIRE_PLOTTINGID + "\")'>删除</a></li>";
                 }
-                html += "<li><span></span>当前火点总共有（" + num + "）个阶段标会" + "</li>";
+                html += "<li><span></span>当前火点总共有（" + num + "）个阶段标绘" + "</li>";
                 $('#flydiv').html(html);
             }
             else {
@@ -2019,7 +2019,7 @@ function flySaveAs() {
                         html += "<li class='' style=\"cursor: pointer;\"  onclick='onloadFlie(\"" + adrHost + "/UploadFile/FlaFile/" + datalist[i].PLOTTINGFILENAME + "\")'><span class='span2_02'></span>第"
                             + (++num) + "阶段：" + datalist[i].PLOTTINGTITLE + "<a class='cor_ff7 padd_10' onclick='removeFile(\"" + datalist[i].JC_FIRE_PLOTTINGID + "\")'>删除</a></li>";
                     }
-                    html += "<li><span></span>当前火点总共有（" + num + "）个阶段标会" + "</li>";
+                    html += "<li><span></span>当前火点总共有（" + num + "）个阶段标绘" + "</li>";
                     $('#flydiv').html(html);
                 }
                 else {

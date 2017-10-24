@@ -5,10 +5,6 @@
 @model ManagerSystemModel.FIRELOST_FIREINFO_Model
 
 <style type="text/css">
-    td {
-        padding-left: 2px;
-    }
-
     .divTable table tr td h1 {
         width: 80px;
         height: 28px;
@@ -20,175 +16,175 @@
         background: url(../images/ico/firereport_icon.png) 7px 6px no-repeat;
         padding-left: 28px;
     }
+    .divTable tbody td span {
+        color: #cccccc;
+    }
 </style>
 
 <div class="easyui-layout" data-options="fit:true" style=" border:0;">
-    <div class="easyui-layout" data-options="fit:true" style=" border:0;">
-        <div data-options="region:'center'" title="" style=" border: none; " class="LayoutCenterBG">
-            <input id="JCFID" name="JCFID" type="hidden" value="@ViewBag.JCFID" />
-            <input id="FIREINFOID" name="FIREINFOID" type="hidden" value="@Model.FIRELOST_FIREINFOID" />
-            <input id="dicCount" name="dicCount" type="hidden" value="@ViewBag.dicCount" />
-            <div class="divTable" style="margin-left:5px;margin-top:8px">
-                <table cellpadding="0" cellspacing="0" style="text-align: left; color: #3c7915">
-                    <tr style="width:95%;">
-                        <td colspan="10" style="height:40px"><h1>基本信息</h1></td>
-                    </tr>
-                    <tr>
-                        <td style="width:78px;">森林火灾编号:</td>
-                        <td style="width:70px;">@ViewBag.FIRECODE</td>
-                        <td style="width:78px;">起火单位:</td>
-                        <td style="width:80px;">@ViewBag.ORGNAME</td>
-                        <td style="width:80px;">起火时间:</td>
-                        <td style="width:80px;">@ViewBag.FIRETIME</td>
-                        <td style="width:84px;">森林总面积:</td>
-                        <td style="width:110px;">
-                            <input id="TOTALAREA" type="text" value="@Model.TOTALAREA" style="width:42%;" />
-                            <span style="color: gray;">hm²</span>
-                            <input id="TOTALAREAJWDLIST" type="hidden" value="@Model.TOTALAREAJWDLIST" />
-                            <input type="button" value="定位" onclick="SetLine('TOTAL')" class="searchBox_01 LinkLocation" />
-                        </td>
-                        <td style="width:70px;">火场面积:</td>
-                        <td style="width:120px;">
-                            <input id="FIREAREA" type="text" value="@Model.FIREAREA" style="width:42%;" />
-                            <span style="color: gray;">hm²</span>
-                            <input id="FIREAREAJWDLIST" type="hidden" value="@Model.FIREAREAJWDLIST" />
-                            <input type="button" value="定位" onclick="SetLine('FIRE')" class="searchBox_01 LinkLocation" />
-                        </td>
-
-                    </tr>
-                    <tr>
-                        <td>灾区森林总蓄积量:</td>
-                        <td>
-                            <input id="TOTALXJL" type="text" value="@Model.TOTALXJL" style="width:70%;" />
-                            <span style="color: gray;">m³</span>
-                        </td>
-                        <td>森林蓄积损失量:</td>
-                        <td>
-                            <input id="XJLLOSE" type="text" value="@Model.XJLLOSE" style="width:60%;" />
-                            <span style="color: gray;">m³</span>
-                        </td>
-                        <td>灾区总人数:</td>
-                        <td>
-                            <input id="TOTALPERSON" type="text" value="@Model.TOTALPERSON" style="width:70%;" />
-                            <span style="color: gray;">人</span>
-                        </td>
-                        <td>伤(亡)人数:</td>
-                        <td>
-                            <input id="CASUALTYCOUNT" type="text" value="@Model.CASUALTYCOUNT" style="width:70%;" />
-                            <span style="color: gray;">人</span>
-                        </td>
-                        <td style="width:100px;">火灾受害面积:</td>
-                        <td style="width:110px;">
-                            <input id="FIRELOSEAREA" type="text" value="@Model.FIRELOSEAREA" style="width:42%;" />
-                            <span style="color: gray;">hm²</span>
-                            <input id="FIRELOSEAREAJWDLIST" type="hidden" value="@Model.FIRELOSEAREAJWDLIST" />
-                            <input type="button" value="定位" onclick="SetLine('FIRELOSE')" class="searchBox_01 LinkLocation" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>建筑物(或构建物)损失量:</td>
-                        <td>
-                            <input id="BUILDINGLOSECOUNT" type="text" value="@Model.BUILDINGLOSECOUNT" style="width:70%;" />
-                            <span style="color: gray;">m²</span>
-                        </td>
-                        <td>机械设备损失量:</td>
-                        <td>
-                            <input id="MACHINERYLOSECOUNT" type="text" value="@Model.MACHINERYLOSECOUNT" style="width:60%;" />
-                            <span style="color: gray;">台、件</span>
-                        </td>
-                    </tr>
-                    @if (ViewBag.dicType501 != null)
+    <div data-options="region:'center'" title="" style=" border: none; " class="LayoutCenterBG">
+        <input id="JCFID" name="JCFID" type="hidden" value="@ViewBag.JCFID" />
+        <input id="FIREINFOID" name="FIREINFOID" type="hidden" value="@Model.FIRELOST_FIREINFOID" />
+        <input id="dicCount" name="dicCount" type="hidden" value="@ViewBag.dicCount" />
+        <div class="divTable" style="margin-left:5px;margin-top:8px">
+            <table cellpadding="0" cellspacing="0" style="text-align: left;">
+                <tr style="width:95%;">
+                    <td colspan="10" style="height:40px"><h1>基本信息</h1></td>
+                </tr>
+                <tr>
+                    <td style="width:78px;" class="tdField">森林火灾编号:</td>
+                    <td style="width:70px;">@ViewBag.FIRECODE</td>
+                    <td style="width:78px;" class="tdField">起火单位:</td>
+                    <td style="width:80px;">@ViewBag.ORGNAME</td>
+                    <td style="width:80px;" class="tdField">起火时间:</td>
+                    <td style="width:80px;">@ViewBag.FIRETIME</td>
+                    <td style="width:84px;" class="tdField">森林总面积:</td>
+                    <td style="width:110px;">
+                        <input id="TOTALAREA" type="text" value="@Model.TOTALAREA" style="width:42%;" />
+                        <span class="spanMark">hm²</span>
+                        <input id="TOTALAREAJWDLIST" type="hidden" value="@Model.TOTALAREAJWDLIST" />
+                        <input type="button" value="定位" onclick="SetLine('TOTAL')" class="searchBox_01 LinkLocation" />
+                    </td>
+                    <td style="width:70px;" class="tdField">火场面积:</td>
+                    <td style="width:120px;">
+                        <input id="FIREAREA" type="text" value="@Model.FIREAREA" style="width:42%;" />
+                        <span class="spanMark">hm²</span>
+                        <input id="FIREAREAJWDLIST" type="hidden" value="@Model.FIREAREAJWDLIST" />
+                        <input type="button" value="定位" onclick="SetLine('FIRE')" class="searchBox_01 LinkLocation" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="tdField">灾区森林总蓄积量:</td>
+                    <td>
+                        <input id="TOTALXJL" type="text" value="@Model.TOTALXJL" style="width:70%;" />
+                        <span class="spanMark">m³</span>
+                    </td>
+                    <td class="tdField">森林蓄积损失量:</td>
+                    <td>
+                        <input id="XJLLOSE" type="text" value="@Model.XJLLOSE" style="width:60%;" />
+                        <span class="spanMark">m³</span>
+                    </td>
+                    <td class="tdField">灾区总人数:</td>
+                    <td>
+                        <input id="TOTALPERSON" type="text" value="@Model.TOTALPERSON" style="width:70%;" />
+                        <span class="spanMark">人</span>
+                    </td>
+                    <td class="tdField">伤(亡)人数:</td>
+                    <td>
+                        <input id="CASUALTYCOUNT" type="text" value="@Model.CASUALTYCOUNT" style="width:70%;" />
+                        <span class="spanMark">人</span>
+                    </td>
+                    <td style="width:100px;" class="tdField">火灾受害面积:</td>
+                    <td style="width:110px;">
+                        <input id="FIRELOSEAREA" type="text" value="@Model.FIRELOSEAREA" style="width:42%;" />
+                        <span class="spanMark">hm²</span>
+                        <input id="FIRELOSEAREAJWDLIST" type="hidden" value="@Model.FIRELOSEAREAJWDLIST" />
+                        <input type="button" value="定位" onclick="SetLine('FIRELOSE')" class="searchBox_01 LinkLocation" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="tdField">建筑物(或构建物)损失量:</td>
+                    <td>
+                        <input id="BUILDINGLOSECOUNT" type="text" value="@Model.BUILDINGLOSECOUNT" style="width:70%;" />
+                        <span class="spanMark">m²</span>
+                    </td>
+                    <td class="tdField">机械设备损失量:</td>
+                    <td>
+                        <input id="MACHINERYLOSECOUNT" type="text" value="@Model.MACHINERYLOSECOUNT" style="width:60%;" />
+                        <span class="spanMark">台、件</span>
+                    </td>
+                </tr>
+                @if (ViewBag.dicType501 != null)
+                {
+                    T_SYS_DICTTYPE_Model dicType501 = (T_SYS_DICTTYPE_Model)ViewBag.dicType501;
+                    if (dicType501.DICTTYPEListModel.Count > 0)
                     {
-                        T_SYS_DICTTYPE_Model dicType501 = (T_SYS_DICTTYPE_Model)ViewBag.dicType501;
-                        if (dicType501.DICTTYPEListModel.Count > 0)
+                        for (int i = 0; i < dicType501.DICTTYPEListModel.Count; i++)
                         {
-                            for (int i = 0; i < dicType501.DICTTYPEListModel.Count; i++)
+                            int dicCount = dicType501.DICTTYPEListModel[i].DICTListModel.Count;
+                            string title = "";
+                            string sMoney = "";
+                            string sMark = "";
+                            string sMx = "";
+                            string sId = "";
+                            if (dicCount > 0)
                             {
-                                int dicCount = dicType501.DICTTYPEListModel[i].DICTListModel.Count;
-                                string title = "";
-                                string sMoney = "";
-                                string sMark = "";
-                                string sMx = "";
-                                string sId = "";
-                                if (dicCount > 0)
+                                title = dicType501.DICTTYPEListModel[i].DICTTYPENAME + "-" + dicType501.DICTTYPEListModel[i].DICTListModel[0].DICTNAME;
+                                sMoney = "tbxMoney" + dicType501.DICTTYPEListModel[i].DICTListModel[0].DICTVALUE;
+                                sMark = "tbxMark" + dicType501.DICTTYPEListModel[i].DICTListModel[0].DICTVALUE;
+                                sMx = "div" + dicType501.DICTTYPEListModel[i].DICTListModel[0].DICTVALUE;
+                                sId = "a" + dicType501.DICTTYPEListModel[i].DICTListModel[0].DICTVALUE;
+                                <tr style="width:95%;">
+                                    <td colspan="2" style="height:40px"><h1 style="width:200px">@title</h1></td>
+                                    <td class="tdField">损失金额:</td>
+                                    <td>
+                                        <input id="@sMoney" type="text" value="" style="width:65%;" />
+                                        <span class="spanMark">元</span>
+                                    </td>
+                                    <td class="tdField">备注:</td>
+                                    <td><input id="@sMark" type="text" value="" style="width:98%;" /></td>
+                                    <td colspan="5"><a id="@sId" href="#" onclick="ManagerLostType('@dicType501.DICTTYPEListModel[i].DICTListModel[0].DICTNAME','@dicType501.DICTTYPEListModel[i].DICTListModel[0].DICTVALUE')" title='管理' class="searchBox_01 LinkDel">管理</a></td>
+                                </tr>
+                                <tr>
+                                    <td class="center" colspan="10" id="@sMx"></td>
+                                </tr>
+                                for (int j = 1; j < dicCount; j++)
                                 {
-                                    title = dicType501.DICTTYPEListModel[i].DICTTYPENAME + "-" + dicType501.DICTTYPEListModel[i].DICTListModel[0].DICTNAME;
-                                    sMoney = "tbxMoney" + dicType501.DICTTYPEListModel[i].DICTListModel[0].DICTVALUE;
-                                    sMark = "tbxMark" + dicType501.DICTTYPEListModel[i].DICTListModel[0].DICTVALUE;
-                                    sMx = "div" + dicType501.DICTTYPEListModel[i].DICTListModel[0].DICTVALUE;
-                                    sId = "a" + dicType501.DICTTYPEListModel[i].DICTListModel[0].DICTVALUE;
+                                    title = dicType501.DICTTYPEListModel[i].DICTTYPENAME + "-" + dicType501.DICTTYPEListModel[i].DICTListModel[j].DICTNAME;
+                                    sMoney = "tbxMoney" + dicType501.DICTTYPEListModel[i].DICTListModel[j].DICTVALUE;
+                                    sMark = "tbxMark" + dicType501.DICTTYPEListModel[i].DICTListModel[j].DICTVALUE;
+                                    sMx = "div" + dicType501.DICTTYPEListModel[i].DICTListModel[j].DICTVALUE;
+                                    sId = "a" + dicType501.DICTTYPEListModel[i].DICTListModel[j].DICTVALUE;
                                     <tr style="width:95%;">
-                                        <td colspan="2" style="height:40px"><h1 style="width:200px">@title</h1></td>
-                                        <td>损失金额:</td>
+                                        <td colspan="2" style="height:40px;width:100px;"><h1 style="width:200px">@title</h1></td>
+                                        <td class="tdField">损失金额:</td>
                                         <td>
                                             <input id="@sMoney" type="text" value="" style="width:65%;" />
-                                            <span style="color: gray;">(元)</span>
+                                            <span class="spanMark">元</span>
                                         </td>
-                                        <td>备注:</td>
+                                        <td class="tdField">备注:</td>
                                         <td><input id="@sMark" type="text" value="" style="width:98%;" /></td>
-                                        <td colspan="5"><a id="@sId" href="#" onclick="ManagerLostType('@dicType501.DICTTYPEListModel[i].DICTListModel[0].DICTNAME','@dicType501.DICTTYPEListModel[i].DICTListModel[0].DICTVALUE')" title='管 理' class="searchBox_01 LinkDel">管 理</a></td>
+                                        <td colspan="5"><a id="@sId" href="#" onclick="ManagerLostType('@dicType501.DICTTYPEListModel[i].DICTListModel[j].DICTNAME','@dicType501.DICTTYPEListModel[i].DICTListModel[j].DICTVALUE')" title='管理' class="searchBox_01 LinkDel">管理</a></td>
                                     </tr>
                                     <tr>
-                                        <td class="center" colspan="10" id="@sMx"></td>
+                                        <td colspan="10" id="@sMx"></td>
                                     </tr>
-                                    for (int j = 1; j < dicCount; j++)
-                                    {
-                                        title = dicType501.DICTTYPEListModel[i].DICTTYPENAME + "-" + dicType501.DICTTYPEListModel[i].DICTListModel[j].DICTNAME;
-                                        sMoney = "tbxMoney" + dicType501.DICTTYPEListModel[i].DICTListModel[j].DICTVALUE;
-                                        sMark = "tbxMark" + dicType501.DICTTYPEListModel[i].DICTListModel[j].DICTVALUE;
-                                        sMx = "div" + dicType501.DICTTYPEListModel[i].DICTListModel[j].DICTVALUE;
-                                        sId = "a" + dicType501.DICTTYPEListModel[i].DICTListModel[j].DICTVALUE;
-                                        <tr style="width:95%;">
-                                            <td colspan="2" style="height:40px;width:100px;"><h1 style="width:200px">@title</h1></td>
-                                            <td>损失金额:</td>
-                                            <td>
-                                                <input id="@sMoney" type="text" value="" style="width:65%;" />
-                                                <span style="color: gray;">(元)</span>
-                                            </td>
-                                            <td>备注:</td>
-                                            <td><input id="@sMark" type="text" value="" style="width:98%;" /></td>
-                                            <td colspan="5"> <a id="@sId" href="#" onclick="ManagerLostType('@dicType501.DICTTYPEListModel[i].DICTListModel[j].DICTNAME','@dicType501.DICTTYPEListModel[i].DICTListModel[j].DICTVALUE')" title='管 理' class="searchBox_01 LinkDel">管 理</a></td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="10" id="@sMx"></td>
-                                        </tr>
-                                    }
                                 }
                             }
                         }
                     }
-                    <tr style="width:95%;">
-                        <td colspan="10" style="height:40px"><h1>评估指标</h1></td>
-                    </tr>
-                    <tr>
-                        <td>损失总计:<input id="HidLOSSCOUNT" name="HidLOSSCOUNT" type="hidden" value="" /></td>
-                        <td id="LOSSCOUNT" class="center">@Model.LOSSCOUNT 元</td>
-                        <td>森林资源损失率:<input id="HidFORESTRESOURCELOSSRATIO" name="HidFORESTRESOURCELOSSRATIO" type="hidden" value="" /></td>
-                        <td id="FORESTRESOURCELOSSRATIO" class="center">@Model.FORESTRESOURCELOSSRATIO</td>
-                        <td>人均损失价值:<input id="HidAVGLOSSPERCATITAVALUE" name="HidAVGLOSSPERCATITAVALUE" type="hidden" value="" /></td>
-                        <td id="AVGLOSSPERCATITAVALUE" class="center">@Model.AVGLOSSPERCATITAVALUE 元/人</td>
-                        <td>林地损失平均价值量:<input id="HidWOODLANDLOSSAVGVALUE" name="HidWOODLANDLOSSAVGVALUE" type="hidden" value="" /></td>
-                        <td id="WOODLANDLOSSAVGVALUE" class="center">@Model.WOODLANDLOSSAVGVALUE 元/hm² </td>
-                        <td>扑火成效比:<input id="HidFIRESUPPEFFECTTHAN" name="HidFIRESUPPEFFECTTHAN" type="hidden" value="" /></td>
-                        <td id="FIRESUPPEFFECTTHAN" class="center">@Model.FIRESUPPEFFECTTHAN</td>
-                        @*<input id="FORESTRESOURCELOSSRATIO" type="text" value="@Model.FORESTRESOURCELOSSRATIO" style="width:80%;" />
-                            <span style="color: gray;">%</span>*@
-                        @*<input id="AVGLOSSPERCATITAVALUE" type="text" value="@Model.AVGLOSSPERCATITAVALUE" style="width:70%;" />
-                            <span style="color: gray;">元/人</span>*@
-                        @*<input id="WOODLANDLOSSAVGVALUE" type="text" value="@Model.WOODLANDLOSSAVGVALUE" style="width:65%;" />
-                            <span style="color: gray;">元/hm²</span>*@
-                        @*<input id="FIRESUPPEFFECTTHAN" type="text" value="@Model.FIRESUPPEFFECTTHAN" style="width:80%;" />
-                            <span style="color: gray;">%</span>*@
-                    </tr>
-                </table>
-            </div>
+                }
+                <tr style="width:95%;">
+                    <td colspan="10" style="height:40px"><h1>评估指标</h1></td>
+                </tr>
+                <tr>
+                    <td class="tdField">损失总计:<input id="HidLOSSCOUNT" name="HidLOSSCOUNT" type="hidden" value="" /></td>
+                    <td id="LOSSCOUNT">@Model.LOSSCOUNT 元</td>
+                    <td class="tdField">森林资源损失率:<input id="HidFORESTRESOURCELOSSRATIO" name="HidFORESTRESOURCELOSSRATIO" type="hidden" value="" /></td>
+                    <td id="FORESTRESOURCELOSSRATIO">@Model.FORESTRESOURCELOSSRATIO</td>
+                    <td class="tdField">人均损失价值:<input id="HidAVGLOSSPERCATITAVALUE" name="HidAVGLOSSPERCATITAVALUE" type="hidden" value="" /></td>
+                    <td id="AVGLOSSPERCATITAVALUE">@Model.AVGLOSSPERCATITAVALUE 元/人</td>
+                    <td class="tdField">林地损失平均价值量:<input id="HidWOODLANDLOSSAVGVALUE" name="HidWOODLANDLOSSAVGVALUE" type="hidden" value="" /></td>
+                    <td id="WOODLANDLOSSAVGVALUE">@Model.WOODLANDLOSSAVGVALUE 元/hm² </td>
+                    <td class="tdField">扑火成效比:<input id="HidFIRESUPPEFFECTTHAN" name="HidFIRESUPPEFFECTTHAN" type="hidden" value="" /></td>
+                    <td id="FIRESUPPEFFECTTHAN">@Model.FIRESUPPEFFECTTHAN</td>
+                    @*<input id="FORESTRESOURCELOSSRATIO" type="text" value="@Model.FORESTRESOURCELOSSRATIO" style="width:80%;" />
+                    <span style="color: gray;">%</span>*@
+                    @*<input id="AVGLOSSPERCATITAVALUE" type="text" value="@Model.AVGLOSSPERCATITAVALUE" style="width:70%;" />
+                    <span style="color: gray;">元/人</span>*@
+                    @*<input id="WOODLANDLOSSAVGVALUE" type="text" value="@Model.WOODLANDLOSSAVGVALUE" style="width:65%;" />
+                    <span style="color: gray;">元/hm²</span>*@
+                    @*<input id="FIRESUPPEFFECTTHAN" type="text" value="@Model.FIRESUPPEFFECTTHAN" style="width:80%;" />
+                    <span style="color: gray;">%</span>*@
+                </tr>
+            </table>
         </div>
+    </div>
 
-        <div data-options="region:'south'" title="" style=" height:35px; border: none; overflow:hidden; text-align:center;">
-            <div class="divOP">
-                <input type="button" value="保 存" onclick="SaveLostInfo('Save')" class="btnSaveCss" />&nbsp;&nbsp;&nbsp;
-                <input type="button" value="报 表" onclick="LostInfoReport()" class="btnDefaultValueCss" />&nbsp;&nbsp;&nbsp;
-            </div>
+    <div data-options="region:'south'" title="" style=" height:35px; border: none; overflow:hidden; text-align:center;">
+        <div class="divOP">
+            <input type="button" value="保 存" onclick="SaveLostInfo('Save')" class="btnSaveCss" />&nbsp;&nbsp;&nbsp;
+            <input type="button" value="报 表" onclick="LostInfoReport()" class="btnDefaultValueCss" />&nbsp;&nbsp;&nbsp;
         </div>
     </div>
 </div>
@@ -418,7 +414,7 @@
         var str = DICTNAME + "管理";
         var firInfoId = $('#FIREINFOID').val();
         var url = "";
-        var area = ['65%', '78%'];
+        var area = ['750px', '450px'];
         if (DICTVALUE == '001') {
 
         }
@@ -442,7 +438,7 @@
         }
         if (DICTVALUE == '008') {
             url = '/DamageAssess/CASUALTY?FIREINFOID=' + firInfoId
-            var area = ['65%', '95%'];
+            area = ['800px', '540px'];
         }
         if (DICTVALUE == '009') {
             url = '/DamageAssess/RESIDENTPROPERTY?FIREINFOID=' + firInfoId
@@ -467,7 +463,7 @@
             maxmin: true,
             content: url,
             end: function () {
-                end: queryMX(firInfoId, DICTVALUE);
+                queryMX(firInfoId, DICTVALUE);
                 SaveLostType();
             }
         })
@@ -678,7 +674,7 @@
             dataType: "json",
             success: function (re) {
                 if (re.Success) {
-                    $('#FIREINFOID').val(re.Url);                   
+                    $('#FIREINFOID').val(re.Url);
                     if (type == 'Save') {
                         layer.msg(re.Msg, { icon: 6 });
                     }
@@ -699,7 +695,7 @@
         layer.open({
             type: 2,
             title: '灾损评估报表',
-            area: ['55%', '90%'],
+            area: ['750px', '550px'],
             fix: true,
             maxmin: true,
             content: '/DamageAssess/FireLostReport?JCFID=' + $('#JCFID').val(),

@@ -16,28 +16,6 @@ namespace ManagerSystemClassLibrary.BaseDT
     /// </summary>
     public class T_SYS_MENU
     {
-        ///// <summary>
-        ///// 获取列表
-        ///// </summary>
-        ///// <param name="sw">参见模型 sw.SYSFLAG系统标识符 sw.MENUCODE 菜单编码</param>
-        ///// <returns></returns>
-        //public static DataTable getDT(T_SYS_MENU_SW sw)
-        //{
-
-        //    StringBuilder sb = new StringBuilder();
-        //    sb.AppendFormat("SELECT    MENUID, MENUCODE, MENUNAME, MENUURL, MENUICO, LICLASS, ORDERBY, MENURIGHTFLAG, SYSFLAG");
-        //    sb.AppendFormat(" FROM      T_SYS_MENU");
-        //    sb.AppendFormat(" WHERE   1=1");
-        //    if (string.IsNullOrEmpty(sw.SYSFLAG) == false)
-        //        sb.AppendFormat(" AND SYSFLAG = '{0}'", sw.SYSFLAG);
-        //    if (string.IsNullOrEmpty(sw.MENUCODE) == false)
-        //        sb.AppendFormat(" AND MENUCODE = '{0}'", ClsSql.EncodeSql(sw.MENUCODE));
-        //    sb.AppendFormat(" ORDER BY MENUCODE");
-
-        //    DataSet ds = DataBaseClass.FullDataSet(sb.ToString());
-        //    return ds.Tables[0];
-        //}
-
         #region 添加
         /// <summary>
         /// 添加菜单管理
@@ -46,37 +24,44 @@ namespace ManagerSystemClassLibrary.BaseDT
         /// <returns>参见模型</returns>
         public static Message Add(T_SYS_MENU_Model m)
         {
+            List<string> sqlList = new List<string>();
+
+            #region T_SYS_MENU
             if (isExists(new T_SYS_MENU_SW { MENUCODE = m.MENUCODE, }) == true)
                 return new Message(false, "添加失败，该编码已存在!", "");
-            StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("INSERT  INTO  T_SYS_MENU(MENUCODE,MENUNAME,MENUURL,MENUICO,LICLASS,ORDERBY,MENURIGHTFLAG,SYSFLAG,MENUOPENMETHOD,MENULINKMODE,MENUDROWMTHOD,ISTOPMENU)");
-            sb.AppendFormat("VALUES(");
-            sb.AppendFormat("'{0}'", ClsSql.EncodeSql(m.MENUCODE));
-            sb.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.MENUNAME));
-            sb.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.MENUURL));
-            sb.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.MENUICO));
-            sb.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.LICLASS));
-            sb.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.ORDERBY));
-            sb.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.MENURIGHTFLAG));
-            sb.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.SYSFLAG));
-            sb.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.MENUOPENMETHOD));
-            sb.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.MENULINKMODE));
-            sb.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.MENUDROWMTHOD));
-            sb.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.ISTOPMENU));
-            sb.AppendFormat(")");
-            //添加数据至T_SYSSEC_RIGHT表中
-            sb.AppendFormat(";");
-            sb.AppendFormat("INSERT  INTO  T_SYSSEC_RIGHT(RIGHTID,RIGHTNAME,SYSFLAG)");
-            sb.AppendFormat("VALUES(");
-            sb.AppendFormat("'{0}'", ClsSql.EncodeSql(m.MENUCODE));
-            sb.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.MENUNAME));
-            sb.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.SYSFLAG));
-            sb.AppendFormat(")");
-            bool bln = DataBaseClass.ExeSql(sb.ToString());
-            if (bln == true)
-                return new Message(true, "添加成功!", m.returnUrl);
+            StringBuilder sb1 = new StringBuilder();
+            sb1.AppendFormat("INSERT  INTO  T_SYS_MENU(MENUCODE,MENUNAME,MENUURL,MENUICO,LICLASS,ORDERBY,MENURIGHTFLAG,SYSFLAG,MENUOPENMETHOD,MENULINKMODE,MENUDROWMTHOD,ISTOPMENU) VALUES( ");
+            sb1.AppendFormat(" '{0}'", ClsSql.EncodeSql(m.MENUCODE));
+            sb1.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.MENUNAME));
+            sb1.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.MENUURL));
+            sb1.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.MENUICO));
+            sb1.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.LICLASS));
+            sb1.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.ORDERBY));
+            sb1.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.MENURIGHTFLAG));
+            sb1.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.SYSFLAG));
+            sb1.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.MENUOPENMETHOD));
+            sb1.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.MENULINKMODE));
+            sb1.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.MENUDROWMTHOD));
+            sb1.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.ISTOPMENU));
+            sb1.AppendFormat(")");
+            sqlList.Add(sb1.ToString());
+            #endregion
+
+            #region T_SYSSEC_RIGHT
+            StringBuilder sb2 = new StringBuilder();
+            sb2.AppendFormat("INSERT  INTO  T_SYSSEC_RIGHT(RIGHTID,RIGHTNAME,SYSFLAG) VALUES( ");
+            sb2.AppendFormat("'{0}'", ClsSql.EncodeSql(m.MENUCODE));
+            sb2.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.MENUNAME));
+            sb2.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.SYSFLAG));
+            sb2.AppendFormat(")");
+            sqlList.Add(sb2.ToString());
+            #endregion
+
+            var y = DataBaseClass.ExecuteSqlTran(sqlList);
+            if (y > 0)
+                return new Message(true, "添加成功!", "");
             else
-                return new Message(false, "添加失败，请检查各输入框是否正确!", m.returnUrl);
+                return new Message(false, "添加失败,事物回滚机制!", "");
         }
         #endregion
 
@@ -88,37 +73,42 @@ namespace ManagerSystemClassLibrary.BaseDT
         /// <returns>参见模型</returns>
         public static Message Mdy(T_SYS_MENU_Model m)
         {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("Update T_SYS_MENU");
-            sb.AppendFormat(" set ");
-            sb.AppendFormat("MENUCODE='{0}'", ClsSql.EncodeSql(m.MENUCODE));
-            sb.AppendFormat(",MENUNAME='{0}'", ClsSql.EncodeSql(m.MENUNAME));
-            sb.AppendFormat(",MENUURL='{0}'", ClsSql.EncodeSql(m.MENUURL));
-            sb.AppendFormat(",MENUICO='{0}'", ClsSql.EncodeSql(m.MENUICO));
-            sb.AppendFormat(",LICLASS='{0}'", ClsSql.EncodeSql(m.LICLASS));
-            sb.AppendFormat(",ORDERBY='{0}'", ClsSql.EncodeSql(m.ORDERBY));
-            sb.AppendFormat(",MENURIGHTFLAG='{0}'", ClsSql.EncodeSql(m.MENURIGHTFLAG));
-            sb.AppendFormat(",SYSFLAG='{0}'", ClsSql.EncodeSql(m.SYSFLAG));
-            sb.AppendFormat(",MENUOPENMETHOD='{0}'", ClsSql.EncodeSql(m.MENUOPENMETHOD));
-            sb.AppendFormat(",MENULINKMODE='{0}'", ClsSql.EncodeSql(m.MENULINKMODE));
-            sb.AppendFormat(",MENUDROWMTHOD='{0}'", ClsSql.EncodeSql(m.MENUDROWMTHOD));
-            sb.AppendFormat(",ISTOPMENU='{0}'", ClsSql.EncodeSql(m.ISTOPMENU));
-            sb.AppendFormat(" where MENUCODE= '{0}'", ClsSql.EncodeSql(m.MENUCODE));
+            List<string> sqlList = new List<string>();
 
-            //修改T_SYSSEC_RIGHT表中的数据
-            // sb.AppendFormat(";");
-            sb.AppendFormat("Update T_SYSSEC_RIGHT");
-            sb.AppendFormat(" set ");
-            sb.AppendFormat("RIGHTID='{0}'", ClsSql.EncodeSql(m.MENUCODE));
-            sb.AppendFormat(",RIGHTNAME='{0}'", ClsSql.EncodeSql(m.MENUNAME));
-            sb.AppendFormat(",SYSFLAG='{0}'", ClsSql.EncodeSql(m.SYSFLAG));
-            sb.AppendFormat(" where RIGHTID= '{0}'", ClsSql.EncodeSql(m.MENUCODE));
+            #region T_SYS_MENU
+            StringBuilder sb1 = new StringBuilder();
+            sb1.AppendFormat(" Update T_SYS_MENU SET ");
+            sb1.AppendFormat(" MENUCODE='{0}'", ClsSql.EncodeSql(m.MENUCODE));
+            sb1.AppendFormat(",MENUNAME='{0}'", ClsSql.EncodeSql(m.MENUNAME));
+            sb1.AppendFormat(",MENUURL='{0}'", ClsSql.EncodeSql(m.MENUURL));
+            sb1.AppendFormat(",MENUICO='{0}'", ClsSql.EncodeSql(m.MENUICO));
+            sb1.AppendFormat(",LICLASS='{0}'", ClsSql.EncodeSql(m.LICLASS));
+            sb1.AppendFormat(",ORDERBY='{0}'", ClsSql.EncodeSql(m.ORDERBY));
+            sb1.AppendFormat(",MENURIGHTFLAG='{0}'", ClsSql.EncodeSql(m.MENURIGHTFLAG));
+            sb1.AppendFormat(",SYSFLAG='{0}'", ClsSql.EncodeSql(m.SYSFLAG));
+            sb1.AppendFormat(",MENUOPENMETHOD='{0}'", ClsSql.EncodeSql(m.MENUOPENMETHOD));
+            sb1.AppendFormat(",MENULINKMODE='{0}'", ClsSql.EncodeSql(m.MENULINKMODE));
+            sb1.AppendFormat(",MENUDROWMTHOD='{0}'", ClsSql.EncodeSql(m.MENUDROWMTHOD));
+            sb1.AppendFormat(",ISTOPMENU='{0}'", ClsSql.EncodeSql(m.ISTOPMENU));
+            sb1.AppendFormat(" where MENUCODE= '{0}'", ClsSql.EncodeSql(m.MENUCODE));
+            sqlList.Add(sb1.ToString());
+            #endregion
 
-            bool bln = DataBaseClass.ExeSql(sb.ToString());
-            if (bln == true)
-                return new Message(true, "修改成功!", m.returnUrl);
+            #region T_SYSSEC_RIGHT
+            StringBuilder sb2 = new StringBuilder();
+            sb2.AppendFormat(" Update T_SYSSEC_RIGHT SET ");
+            sb2.AppendFormat(" RIGHTID='{0}'", ClsSql.EncodeSql(m.MENUCODE));
+            sb2.AppendFormat(",RIGHTNAME='{0}'", ClsSql.EncodeSql(m.MENUNAME));
+            sb2.AppendFormat(",SYSFLAG='{0}'", ClsSql.EncodeSql(m.SYSFLAG));
+            sb2.AppendFormat(" where RIGHTID= '{0}'", ClsSql.EncodeSql(m.MENUCODE));
+            sqlList.Add(sb2.ToString());
+            #endregion
+
+            var y = DataBaseClass.ExecuteSqlTran(sqlList);
+            if (y > 0)
+                return new Message(true, "修改成功!", "");
             else
-                return new Message(false, "修改失败，请检查各输入框是否正确!", m.returnUrl);
+                return new Message(false, "修改失败,事物回滚机制!", "");
         }
 
         #endregion
@@ -135,31 +125,38 @@ namespace ManagerSystemClassLibrary.BaseDT
             for (int i = 0; i < arrMENUCODE.Length; i++)
             {
                 if (isExistsChild(new T_SYS_MENU_SW { MENUCODE = arrMENUCODE[i] }))
-                {
                     return new Message(false, "存在下属菜单管理，暂无法删除!先删除下属菜单，再删除本级!", m.returnUrl);
-                }
             }
-            StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("delete from T_SYS_MENU");
-            sb.AppendFormat(" where MENUCODE  in  (");
+            List<string> sqlList = new List<string>();
+
+            #region T_SYS_MENU
+            StringBuilder sb1 = new StringBuilder();
+            sb1.AppendFormat("delete from T_SYS_MENU ");
+            sb1.AppendFormat(" where MENUCODE  in  (");
             for (int i = 0; i < arrMENUCODE.Length; i++)
             {
                 if (i != arrMENUCODE.Length - 1)
-                    sb.AppendFormat("'{0}',", ClsSql.EncodeSql(arrMENUCODE[i]));
+                    sb1.AppendFormat("'{0}',", ClsSql.EncodeSql(arrMENUCODE[i]));
                 else
-                    sb.AppendFormat("'{0}'", ClsSql.EncodeSql(arrMENUCODE[i]));
+                    sb1.AppendFormat("'{0}'", ClsSql.EncodeSql(arrMENUCODE[i]));
             }
-            sb.AppendFormat(")");
-            //删除T_SYSSEC_RIGHT表中的数据
-            sb.AppendFormat("delete from T_SYSSEC_RIGHT");
-            sb.AppendFormat(" where rightid  =");
-            sb.AppendFormat("'{0}'", ClsSql.EncodeSql(m.MENUCODE));
+            sb1.AppendFormat(")");
+            sqlList.Add(sb1.ToString()); 
+            #endregion
 
-            bool bln = DataBaseClass.ExeSql(sb.ToString());
-            if (bln == true)
-                return new Message(true, "删除成功！", "");
+            #region T_SYSSEC_RIGHT
+            StringBuilder sb2 = new StringBuilder();
+            sb2.AppendFormat("delete from T_SYSSEC_RIGHT ");
+            sb2.AppendFormat(" where rightid  =");
+            sb2.AppendFormat("'{0}'", ClsSql.EncodeSql(m.MENUCODE));
+            sqlList.Add(sb2.ToString()); 
+            #endregion
+
+            var y = DataBaseClass.ExecuteSqlTran(sqlList);
+            if (y > 0)
+                return new Message(true, "删除成功!", "");
             else
-                return new Message(false, "删除失败，请检查各输入框是否正确！", "");
+                return new Message(false, "删除失败,事物回滚机制!", "");
         }
 
         #endregion

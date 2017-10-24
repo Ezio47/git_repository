@@ -12,7 +12,7 @@
     }
 }
 <script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
-<script src="~/Scripts/test.js"></script>
+
 
 <div class="easyui-layout" data-options="fit:true" style=" border:0;">
     <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
@@ -57,33 +57,33 @@
 </div>
 
 <div class="divMan" id="tableadd" style="display:none;margin-left:5px;margin-top:8px">
-    <table cellpadding="0" cellspacing="0">
+    <table cellpadding="0" cellspacing="0" style="text-align:left">
         <tr>
-            <td style="width:80px;">单位名称：</td>
+            <td class="tdField" style="width:80px;">单位名称：</td>
             <td><select id="BYORGNO" class="easyui-combotree" style="width:180px"></select></td>
-            <td style="width:80px;">任务名称：</td>
+            <td class="tdField" style="width:80px;">任务名称：</td>
             <td style="width:35%"><input type="text" id="NAME" style="width:80%" class="input-small" value="" /></td>
         </tr>
         <tr>
-            <td style="width:80px;">任务类型：</td>
+            <td class="tdField" style="width:80px;">任务类型：</td>
             <td><select id="TASKTYPE" style="width:80%">@Html.Raw(@ViewBag.TASKTYPE) </select></td>
-            <td style="width:80px;">任务级别：</td>
+            <td class="tdField" style="width:80px;">任务级别：</td>
             <td style="width:35%"><select id="TASKLEVEL" style="width:80%">@Html.Raw(@ViewBag.TASKLEVEL)</select></td>
         </tr>
         <tr>
-            <td style="width:100px;">任务开始时间：</td>
+            <td class="tdField" style="width:100px;">任务开始时间：</td>
             <td><input class="Wdate" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss' })" id="tbxBEGINTIME" type="text" value="" style="width:80%;" /></td>
-            <td style="width:100px;">任务结束时间：</td>
+            <td class="tdField" style="width:100px;">任务结束时间：</td>
             <td style="width:35%"><input class="Wdate" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss'})" id="tbxENDTIME" type="text" value="" style="width:80%;" /></td>
         </tr>
         <tr>
-            <td style="width:80px;">任务发起时间：</td>
+            <td class="tdField" style="width:80px;">任务发起时间：</td>
             <td><input class="Wdate" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss'})" id="tbxSTARTTIME" type="text" value="" style="width:80%;" /></td>
-            <td style="width:80px;">是否下发：</td>
+            <td class="tdField" style="width:80px;">是否下发：</td>
             <td style="width:35%"><input type="checkbox" id="chk"></td>
         </tr>
         <tr>
-            <td style="width:80px;">指派护林员：</td>
+            <td class="tdField" style="width:80px;">指派护林员：</td>
             <td colspan="3">
                 @*<input type="checkbox" id="chk">*@
                 @*<select id="HlyList" class="easyui-combotree" style="width:200px"></select>*@
@@ -94,7 +94,7 @@
             </td>
         </tr>
         <tr>
-            <td style="width:80px;">任务内容： </td>
+            <td class="tdField" style="width:80px;">任务内容： </td>
             <td colspan="3"><textarea id="tbxCONTENT" style="width:95%;height:50px; margin-top:10px; OVERFLOW:visible"></textarea></td>
         </tr>
     </table>

@@ -1,0 +1,108 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+}
+
+@section Header{
+    <style>
+        ul, li {
+            list-style: none;
+        }
+
+        ul {
+            position: fixed;
+            z-index: 4;
+        }
+
+        #tab {
+            position: relative;
+        }
+
+            #tab .tabList ul li {
+                float: left;
+                background: #fefefe;
+                background: -moz-linear-gradient(top, #fefefe, #e6fbe9);
+                background: -o-linear-gradient(left top,left bottom, from(#fefefe), to(#e6fbe9));
+                background: -webkit-gradient(linear,left top,left bottom, from(#fefefe), to(#e6fbe9));
+                border: 1px solid #ccc;
+                border-top: none;
+                border-bottom: none;
+                padding: 5px 0;
+                width: 150px;
+                height: 25px;
+                line-height: 25px;
+                text-align: center;
+                margin-left: -1px;
+                position: relative;
+                cursor: pointer;
+                color: #156c02;
+                border-radius: 3px;
+            }
+
+            #tab .tabList li.cur {
+                border-bottom: none;
+                background: #3EC136;
+                color: #fff;
+                font-size: larger;
+            }
+    </style>
+
+    <script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.8.2.min.js")"></script>
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'north'" title="" style="height:40px">
+        <div id="tab">
+            <div class="tabList">
+                <ul>
+                    <li class="cur">野生植物属性管理</li>
+                    <li>附件管理</li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+    <div data-options="region:'center'" title="" class="LayoutCenterBG" style="overflow-y:hidden;margin-top:-6px;">
+        <div class=" divTable" id="divTable" style="width:100%;height:100%;">
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var oDiv = document.getElementById("tab");
+    var oLi = oDiv.getElementsByTagName("div")[0].getElementsByTagName("li");
+    var timer = null;
+    for (var i = 0; i < oLi.length; i++) {
+        oLi[i].index = i;
+        oLi[i].onclick = function () {
+            show(this.index);
+            switchIframeUrl((this.index + 1))
+        }
+    }
+    function show(index) {
+        var alpha = 0;
+        for (var j = 0; j < oLi.length; j++) {
+            oLi[j].className = "";
+        }
+        oLi[index].className = "cur";
+    }
+    switchIframeUrl(1);
+    function switchIframeUrl(flag) {
+        var bioCode = getQueryString("BioCode");
+        if (flag == 1) {
+            $('#divTable').html('<iframe style="width:100%;height:100%;" scrolling="no" frameborder="0" id="ifame1"></iframe>');
+            $('#ifame1').attr("src", '/System/WILD_BOTANYPROPMan?BioCode=' + bioCode);
+        }
+        else if (flag == 2) {
+            $('#divTable').html('<iframe style="width:100%;height:100%;" scrolling="no" frameborder="0" id="ifame2"></iframe>');
+            $('#ifame2').attr("src", '/System/WILD_BOTANYInfoFileMan?BioCode=' + bioCode);
+        }
+    }
+
+    //js获取url 参数
+    function getQueryString(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return unescape(r[2]); return null;
+    }
+</script>
+

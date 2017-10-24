@@ -14,8 +14,8 @@
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
                 <div class="divOP">
                     <div class="home ">
-                        单位名称：<select id="tbxORGNO"> @Html.Raw(@ViewBag.vdOrg)  </select>
-                        科室： <select id="tbxDEPARTMENT">@Html.Raw(@ViewBag.depart) </select>
+                        单位名称：<select id="tbxORGNO" onchange="setDepeart();"> @Html.Raw(@ViewBag.vdOrg)  </select>
+                        科室： <select id="tbxDEPARTMENT" onchange="query('1')">@Html.Raw(@ViewBag.depart) </select>
                         登录名：<input id="tbxLoginUserName" type="text" value="" />
                         姓名： <input id="tbxUserName" type="text" value="" />
                         <input type="button" value="查询" onclick="query(1)" class="btnSearchCss" />
@@ -77,8 +77,30 @@
         });
     }
 
+    //根据单位动态绑定科室
+    function setDepeart() {
+        //获取机构的ID
+        var orgNo = $("#tbxORGNO").val();
+        $.ajax({
+            url: "/System/GetOrgByDepartByFlag/",
+            type: "post",
+            dataType: "html",
+            data: { orgNo: orgNo, showAll: "1" },
+            success: function (result) {
+                var myHTML = "";
+                $('#tbxDEPARTMENT').html("");//赋值之前先清空
+                myHTML = result;
+                $('#tbxDEPARTMENT').html(myHTML);
+                query('1');
+            },
+            error: function (result) {
+                layer.msg(result.responseText, { icon: 5 });
+            }
+        });
+    }
+
     function Manager(id) {
-        if (confirm('确实要删除该内容吗?')) {
+        layer.confirm('确实要删除吗?', { icon: 3, title: '提示' }, function (index) {
             $.ajax({
                 url: '/System/UserManager',
                 cache: false,
@@ -87,7 +109,7 @@
                 error: function () {
                     layer.msg('系统异常!', { icon: 5 });
                 },
-                dataType:'json',
+                dataType: 'json',
                 success: function (re) {
                     if (re.Success) {
                         layer.msg('删除成功!', { icon: 6 });
@@ -98,7 +120,7 @@
                     }
                 }
             });
-        }
+        });
     }
 
     function Add() {
@@ -106,7 +128,7 @@
             type: 2,
             title: '添加',
             fix: false, //不固定
-            area: ['60%', '60%'],
+            area: ['900px', '350px'],
             maxmin: true,
             content: '/System/UserMan',
             end: function () {
@@ -120,7 +142,7 @@
             type: 2,
             title: '修改',
             fix: false, //不固定
-            area: ['60%', '60%'],
+            area: ['900px', '350px'],
             maxmin: true,
             content: '/System/UserMan?USERID=' + USERID + "&Method=" + Method,
             end: function () {
@@ -134,7 +156,7 @@
             type: 2,
             title: '查看',
             fix: false, //不固定
-            area: ['60%', '60%'],
+            area: ['900px', '350px'],
             maxmin: true,
             content: '/System/UserMan?USERID=' + USERID + "&Method=" + Method,
         });

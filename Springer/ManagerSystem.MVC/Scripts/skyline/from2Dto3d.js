@@ -1,5 +1,5 @@
 ﻿var sg = new Object();
-sg.flyURL = "http://36.7.68.79:9000/SkylineFly/index.FLY";//三维默认加载地址
+sg.flyURL = "http://36.7.68.79:8020/SkylineFly/index8020.FLY";//三维默认加载地址
 var adrHost = 'http://' + window.location.host;// "http://localhost:33844";
 var sgworld = null;
 sg.sgmap = 'sgmap';//div ID
@@ -21,7 +21,9 @@ $(document).ready(function () {
 });
 //三维地图加载结束
 function OnProjectLoadFinished() {
-    sgworld.ProjectTree.SetVisibility(sgworld.ProjectTree.FindItem("森林火险等级区划图"), false);
+    var sgworld = new CreateSGObj()
+    if (sgworld.ProjectTree.FindItem("森林火险等级区划图") != 0)
+        sgworld.ProjectTree.SetVisibility(sgworld.ProjectTree.FindItem("森林火险等级区划图"), false);
     if (sgworld.ProjectTree.FindItem("资源") != 0)
         sgworld.ProjectTree.SetVisibility(sgworld.ProjectTree.FindItem("资源"), false);
     if (sgworld.ProjectTree.FindItem("装备") != 0)
@@ -62,6 +64,12 @@ function OnProjectLoadFinished() {
         sgworld.ProjectTree.SetVisibility(sgworld.ProjectTree.FindItem("县道"), false);
     if (sgworld.ProjectTree.FindItem("乡镇村道") != 0)
         sgworld.ProjectTree.SetVisibility(sgworld.ProjectTree.FindItem("乡镇村道"), false);
+    if (sgworld.ProjectTree.FindItem("乡镇边界") != 0)
+        sgworld.ProjectTree.SetVisibility(sgworld.ProjectTree.FindItem("乡镇边界"), false);
+    if (sgworld.ProjectTree.FindItem("越南") != 0)
+        sgworld.ProjectTree.SetVisibility(sgworld.ProjectTree.FindItem("越南"), false);
+    if (sgworld.ProjectTree.FindItem("周边市县") != 0)
+        sgworld.ProjectTree.SetVisibility(sgworld.ProjectTree.FindItem("周边市县"), false);
     if (sgworld.ProjectTree.FindItem("消防队伍") != 0)
         sgworld.ProjectTree.SetVisibility(sgworld.ProjectTree.FindItem("消防队伍"), false);
     if (sgworld.ProjectTree.FindItem("其他设施") != 0)
@@ -180,12 +188,7 @@ function OnProjectLoadFinished() {
         sgworld.ProjectTree.SetVisibility(sgworld.ProjectTree.FindItem("火情档案"), false);
     if (sgworld.ProjectTree.FindItem("有害生物监测点") != 0)
         sgworld.ProjectTree.SetVisibility(sgworld.ProjectTree.FindItem("有害生物监测点"), false);
-    var AllNAME = $("#AllNAME").val();
-    var Allarr = AllNAME.split(',');
-    for (var i = 0; i < Allarr.length; i++) {
-        if (sgworld.ProjectTree.FindItem(Allarr[i]) != 0)
-            sgworld.ProjectTree.SetVisibility(sgworld.ProjectTree.FindItem(Allarr[i]), false);
-    }
+   
     //边界
     if (sgworld.ProjectTree.FindItem("个旧边界") != 0)
         sgworld.ProjectTree.SetVisibility(sgworld.ProjectTree.FindItem("个旧边界"), false);
@@ -213,6 +216,33 @@ function OnProjectLoadFinished() {
         sgworld.ProjectTree.SetVisibility(sgworld.ProjectTree.FindItem("开远边界"), false);
     if (sgworld.ProjectTree.FindItem("绿春边界") != 0)
         sgworld.ProjectTree.SetVisibility(sgworld.ProjectTree.FindItem("绿春边界"), false);
+    var AllNAME = $("#AllNAME").val();
+    var Allarr = AllNAME.split(',');
+    for (var i = 0; i < Allarr.length; i++) {
+        if (sgworld.ProjectTree.FindItem(Allarr[i]) != 0)
+            sgworld.ProjectTree.SetVisibility(sgworld.ProjectTree.FindItem(Allarr[i]), false);
+    }
+
+    var LAYERNAME = $("#LAYERNAME").val();
+    var DEFAULTCH = $("#DEFAULTCH").val();
+    var arrayLAYERNAME = LAYERNAME.split(',');//ISDEFAULTCH
+    var arrayDEFAULTCH = DEFAULTCH.split(',');
+    var data = new Array();
+    for (var i = 0; i < arrayLAYERNAME.length; i++) {
+        data[i] = new Array(); //将每一个子元素又定义为数组
+        data[i] = arrayLAYERNAME[i] + ":" + arrayDEFAULTCH[i];
+    }
+    for (var j = 0; j < data.length; j++) {
+        //var sgworld = new CreateSGObj();
+        var tempdata = data[j].split(':');
+        if (tempdata[1] == "1") {
+            var name = tempdata[0];
+            var ItemID = sgworld.ProjectTree.FindItem(name);
+            if (ItemID != 0) {
+                sgworld.ProjectTree.SetVisibility(ItemID, true);
+            }
+        }
+    }
     //检索点
     var jcfidvalue = $("#hidjcfid").val();
     $.ajax({

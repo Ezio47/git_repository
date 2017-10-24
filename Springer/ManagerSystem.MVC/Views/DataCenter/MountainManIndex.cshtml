@@ -19,25 +19,26 @@
                 <div class="divMan">
                     <table cellpadding="0" cellspacing="0">
                         <tr>
-                            <td style="width:80px;">
-                                <span style="color:red;">*</span>
+                            <td style="width:80px;" class="tdField">
+                                @*<span style="color:red;">*</span>*@
                                 所属县市：
                             </td>
                             <td>
                                 <select id="BYORGNOXS" style="width:120px;" class="easyui-combobox" data-options="editable:false,valueField:'id', textField:'text'"></select>
-
+                                <span class="spanRequiredField">*</span>
 
                             </td>
-                            <td style="width:80px;">
-                                <span style="color:red;">*</span>
+                            <td style="width:80px;" class="tdField">
+                                @*<span style="color:red;">*</span>*@
                                 所属乡镇：
                             </td>
                             <td>
                                 <select id="BYORGNO" class="easyui-combobox" style="width:120px;" data-options="editable:false,valueField:'id', textField:'text'"></select>
+                                <span class="spanRequiredField">*</span>
                             </td>
                         </tr>
                         <tr>
-                            <td style="width:80px;">
+                            <td style="width:80px;" class="tdField">
                                 所属自然村：
                             </td>
                             <td colspan="3">
@@ -45,37 +46,41 @@
                             </td>
                         </tr>
                         <tr>
-                            <td style="width:120px;">
-                                <span style="color:red;">*</span>
+                            <td style="width:120px;" class="tdField">
+                                @*<span style="color:red;">*</span>*@
                                 名称：
                             </td>
                             <td>
                                 <input type="text" id="NAME" class="input-small" value="" />
+                                <span class="spanRequiredField">*</span>
                             </td>
-                            <td style="width:80px;">
-                                <span style="color:red;">*</span>
+                            <td style="width:80px;" class="tdField">
+                                @*<span style="color:red;">*</span>*@
                                 所属地类：
                             </td>
                             <td>
                                 <select id="TYPE" style="width:120px">
                                     @Html.Raw(@ViewBag.typeadd)
                                 </select>
+                                <span class="spanRequiredField">*</span>
                             </td>
                         </tr>
                         <tr>
-                            <td style="width:80px;">
-                                <span style="color:red;">*</span>
+                            <td style="width:80px;" class="tdField">
+                                @*<span style="color:red;">*</span>*@
                                 经度：
                             </td>
                             <td>
                                 <input id="JD" type="text" class="input-small" value="" />
+                                <span class="spanRequiredField">*</span>
                             </td>
-                            <td style="width:80px;">
-                                <span style="color:red;">*</span>
+                            <td style="width:80px;" class="tdField">
+                                @*<span style="color:red;">*</span>*@
                                 纬度：
                             </td>
                             <td>
                                 <input id="WD" type="text" class="input-small" value="" />
+                                <span class="spanRequiredField">*</span>
                                 <input type="button" value="地图定位" onclick="setPoint()" class="btnMapLoaclCss" />
                             </td>
                         </tr>
@@ -251,18 +256,18 @@
             var jd = arr[0];
             var wd = arr[1];
         }
-        layer.open({
+        parent.layer.open({
             type: 2,
             title: name + '地图位置设置',
             btn: ['保存', '关闭'],
-            area: ['100%', '100%'],
+            area: ['1000px', '600px'],
             fix: true, //不固定
             shade: false,
             maxmin: true,
             content: '/MapCommon/GetMapPontIndex?jd=' + jd + "&wd=" + wd,
             yes: function (index, layero) { //或者使用btn1
                 //按钮【按钮一】的回调
-                var ptxt = layer.getChildFrame("p", index);
+                var ptxt = parent.layer.getChildFrame("p", index);
                 var arr = ptxt.html().split(',');
                 if ($.trim(arr) != "") {
                     var lng = parseFloat(arr[0]).toFixed(6);
@@ -274,9 +279,9 @@
                     $('#WD').val(LAT1);
 
                 }
-                layer.close(index);
+                parent.layer.close(index);
             }, cancel: function (index) {
-                layer.close(index);
+                parent.layer.close(index);
             } 
         });
     }

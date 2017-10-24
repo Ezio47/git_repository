@@ -2,6 +2,8 @@
 @{
     Layout = "~/Views/Shared/_LayoutIndex.cshtml";
     var curorgno = SystemCls.getCurUserOrgNo();
+    if (string.IsNullOrEmpty(curorgno) == false)
+    {
     if (curorgno.Substring(6, 9) == "000000000" && curorgno.Substring(4, 2) != "00")
     {
         curorgno = curorgno.Substring(0, 6) + "xxxxxxxxx";
@@ -9,6 +11,7 @@
     else
     {
         curorgno = SystemCls.getCurUserOrgNo();
+    }
     }
     var curorgno1 = SystemCls.getCurUserOrgNo();//添加的时候组织机判断
 }
@@ -37,8 +40,9 @@
                                 号牌：<input id="tbxPLATENUM" type="text" class="input-small" style="width:100px" value="" />*@
                             <input type="button" value="查询" onclick="query('1')" class="btnSearchCss" />
                             <input type="button" value="添加" id="btnAdd" onclick="Add()" style="display:none;" class="btnAddCss"/>
+                            <input type="button" value="导入" onclick="Upload()" class="btnUnEnableCss" />
                         </li>
-                        <li class="active">
+                        @*<li class="active">
                             @using (@Html.BeginForm("CarList", "DataCenter", FormMethod.Post, new { enctype = "multipart/form-data" }))
                             {
                                 <input name="file" style="width:90px;" type="file" id="file" class="btn btn-info btn-sm" />
@@ -49,7 +53,7 @@
                             }
                         <li class="active">
                             <a href="~/UploadFile/DataCenterExcel/车辆模板.xls" target="_blank" title="右键，另存为">下载模板</a>
-                        </li>
+                        </li>*@
                     </ul>
                 </div>
             </div>
@@ -157,7 +161,7 @@
             type: 2,
             title: '添加',
             fix: false, //不固定
-            area: ['80%', '80%'],
+            area: ['700px', '400px'],
             maxmin: true,
             content: '/DataCenter/CarManIndex',
             end: function () {
@@ -166,12 +170,12 @@
         });
     }
 
-    function Manager(Method, ID, JD, WD)
+    function Manager(Method, ID, JD, WD, NAME)
     {
         layer.open({
             type: 2,
-            title: "修改",
-            area: ['80%', '80%'],
+            title:NAME+ "修改",
+            area: ['700px', '400px'],
             //shade: 0,
             fix: false,
             maxmin: true,
@@ -181,12 +185,27 @@
             }
         });
     }
+    ///上传弹出上传界面
+    function Upload() {
+        layer.open({
+            type: 2,
+            title: '车辆上传',
+            area: ['1200px', '500px'],
+            //shade: 0,
+            fix: true,
+            maxmin: true,
+            content: '/DataCenter/CarList',
+            end: function () {
+                query(1);
+            }
+        })
+    }
     //地图定位展示
     function Position(tablename, id,name ) {
         layer.open({
             type: 2,
             title:name+ '地图定位',
-            area: ['70%', '80%'],
+            area: ['1000px', '600px'],
             //shade: 0,
             fix: true,
             maxmin: true,
@@ -198,7 +217,7 @@
         layer.open({
             type: 2,
             title: '车辆查看',
-            area: ['50%', '65%'],
+            area: ['500px', '320px'],
             fix: true,
             maxmin: true,
             content: '/DataCenter/SeeIndex?tablename=' + tablename + "&ID=" + ID

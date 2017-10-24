@@ -18,15 +18,15 @@
                     <div class="divMan" id="supexport" margin-left:5px;margin-top:8px">
                         <table cellpadding="0" cellspacing="0" id="cktable1">
                             <tr>
-                                <td class="center" style="width:25%">日期:</td>
+                                <td class="center tdField" style="width:25%">日期:</td>
                                 <td class="center" style="width:25%"><input class="easyui-datebox" id="tbxDCREPTIME" type="text" style="width:70%;height:28px;" value="@ViewBag.DCREPTIME" /></td>
-                                <td class="center" style="width:25%"> 编号:</td>
+                                <td class="center tdField" style="width:25%"> 编号:</td>
                                 <td class="center" style="width:25%"><input id="tbxnumber" type="text" value="@ViewBag.number" style="width:90%;" readonly /></td>
                             </tr>
                             <tr>
-                                <td class="center" style="width:25%">调出单位:</td>
+                                <td class="center tdField" style="width:25%">调出单位:</td>
                                 <td class="center" style="width:25%"> <label id="tbxinorg"></label></td>
-                                <td class="center" style="width:25%">调入单位:</td>
+                                <td class="center tdField" style="width:25%">调入单位:</td>
                                 <td class="center" style="width:25%"><input id="tbxDCUSERORG" type="text" value="" style="width:90%;" /></td>
                             </tr>
                         </table>
@@ -46,28 +46,47 @@
                             <tbody>
                                 @for (int i = 1; i <= 6; i++)
                                 {
-                                    <tr>
-                                        <td class="center" style="width:20%"> <input id="tbxDCSUPPROPNAME_@i.ToString()" name="DCSUPPROPNAME" style="width:180px;height:30px;" /></td>
-                                        <td class="center" style="width:20%"> </td>
-                                        <td class="center" style="width:10%" id="kcnum_@i.ToString()"> </td>
-                                        <td class="center" style="width:5%"></td>
-                                        <td class="center" style="width:10%"> <input id="tbxDCREPSUPCOUNT_@i.ToString()" type="text" value="" style="width:90%;" onblur="jsfunc(this)" /></td>
-                                        <td class="center" style="width:10%" id="price_@i.ToString()"></td>
-                                        <td class="center" style="width:10%" id="sumprice_@i.ToString()"></td>
-                                        @if (i == 1)
-                                        {
-                                            <td class="center" style="width:15%" rowspan="6"><textarea id="tbxMARK" cols=40 rows=9></textarea></td>
-                                        }
-                                    </tr>
+                                    if (i % 2 == 0)
+                                    {
+                                        <tr>
+                                            <td class="center" style="width:20%"> <input id="tbxDCSUPPROPNAME_@i.ToString()" name="DCSUPPROPNAME" style="width:180px;height:30px;" /></td>
+                                            <td class="center" style="width:20%"> </td>
+                                            <td class="center" style="width:10%" id="kcnum_@i.ToString()"> </td>
+                                            <td class="center" style="width:5%"></td>
+                                            <td class="center" style="width:10%"> <input id="tbxDCREPSUPCOUNT_@i.ToString()" type="text" value="" style="width:90%;" onblur="jsfunc(this)" /></td>
+                                            <td class="center" style="width:10%" id="price_@i.ToString()"></td>
+                                            <td class="center" style="width:10%" id="sumprice_@i.ToString()"></td>
+                                            @if (i == 1)
+                                            {
+                                                <td class="center" style="width:15%" rowspan="6"><textarea id="tbxMARK" cols=40 rows=9></textarea></td>
+                                            }
+                                        </tr>
+                                    }
+                                    else
+                                    {
+                                        <tr class="row1">
+                                            <td class="center" style="width:20%"> <input id="tbxDCSUPPROPNAME_@i.ToString()" name="DCSUPPROPNAME" style="width:180px;height:30px;" /></td>
+                                            <td class="center" style="width:20%"> </td>
+                                            <td class="center" style="width:10%" id="kcnum_@i.ToString()"> </td>
+                                            <td class="center" style="width:5%"></td>
+                                            <td class="center" style="width:10%"> <input id="tbxDCREPSUPCOUNT_@i.ToString()" type="text" value="" style="width:90%;" onblur="jsfunc(this)" /></td>
+                                            <td class="center" style="width:10%" id="price_@i.ToString()"></td>
+                                            <td class="center" style="width:10%" id="sumprice_@i.ToString()"></td>
+                                            @if (i == 1)
+                                            {
+                                                <td class="center" style="width:15%" rowspan="6"><textarea id="tbxMARK" cols=40 rows=9></textarea></td>
+                                            }
+                                        </tr>
+                                    }
                                 }
                             </tbody>
                         </table>
                         <table cellpadding="0" cellspacing="0" id="cktable3">
                             <tr>
-                                <td class="center" style="width:20%">主管：<input id="tbxRESPONSIBLEMAN" type="text" value="@ViewBag.depotman" style="width:70%;" readonly /> </td>
-                                <td class="center" style="width:20%">制单人：<input id="tbxDCZHIBIAOREN" type="text" value="" style="width:70%;" /></td>
-                                <td class="center" style="width:20%">发放人：<input id="tbxDCFAFANGREN" type="text" value="" style="width:70%;" /></td>
-                                <td style="width:20%">调入单位经办人：<input id="tbxDCUSERID" type="text" value="" style="width:50%;" /></td>
+                                <td class="center tdField" style="width:20%">主管：<input id="tbxRESPONSIBLEMAN" type="text" value="@ViewBag.depotman" style="width:70%;" readonly /> </td>
+                                <td class="center tdField" style="width:20%">制单人：<input id="tbxDCZHIBIAOREN" type="text" value="" style="width:70%;" /></td>
+                                <td class="center tdField" style="width:20%">发放人：<input id="tbxDCFAFANGREN" type="text" value="" style="width:70%;" /></td>
+                                <td class="center tdField" style="width:20%">调入单位经办人：<input id="tbxDCUSERID" type="text" value="" style="width:50%;" /></td>
                             </tr>
                         </table>
                     </div>

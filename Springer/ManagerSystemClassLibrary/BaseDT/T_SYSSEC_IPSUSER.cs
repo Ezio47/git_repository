@@ -16,6 +16,8 @@ namespace ManagerSystemClassLibrary.BaseDT
     /// </summary>
     public class T_SYSSEC_IPSUSER
     {
+        #region 增、删、改
+
         /// <summary>
         /// 添加
         /// </summary>
@@ -25,7 +27,7 @@ namespace ManagerSystemClassLibrary.BaseDT
         {
             //判断用户序号是否存在于系统扩展表中
             if (T_SYSSEC_USER.isExists(new T_SYSSEC_IPSUSER_SW { USERID = m.USERID }) == false)
-                return new Message(false, "添加失败，系统用户不存在！", "");
+                return new Message(false, "添加失败，系统用户不存在!", "");
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("INSERT INTO T_SYSSEC_IPSUSER(USERID,SEX,PHONE,USERJOB)");
             sb.AppendFormat("VALUES(");
@@ -36,9 +38,9 @@ namespace ManagerSystemClassLibrary.BaseDT
             sb.AppendFormat(")");
             bool bln = DataBaseClass.ExeSql(sb.ToString());
             if (bln == true)
-                return new Message(true, "添加成功！", "");
+                return new Message(true, "添加成功!", "");
             else
-                return new Message(false, "添加失败，请检查各输入框是否正确！", "");
+                return new Message(false, "添加失败，请检查各输入框是否正确!", "");
         }
 
         /// <summary>
@@ -50,7 +52,7 @@ namespace ManagerSystemClassLibrary.BaseDT
         {
             //判断用户序号是否存在于系统扩展表中
             if (T_SYSSEC_USER.isExists(new T_SYSSEC_IPSUSER_SW { USERID = m.USERID }) == false)
-                return new Message(false, "修改失败，系统用户不存在！", "");
+                return new Message(false, "修改失败，系统用户不存在!", "");
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("update T_SYSSEC_IPSUSER");
             sb.AppendFormat(" set ");
@@ -60,9 +62,9 @@ namespace ManagerSystemClassLibrary.BaseDT
             sb.AppendFormat(" where USERID= '{0}'", ClsSql.EncodeSql(m.USERID));
             bool bln = DataBaseClass.ExeSql(sb.ToString());
             if (bln == true)
-                return new Message(true, "修改成功！", "");
+                return new Message(true, "修改成功!", "");
             else
-                return new Message(false, "修改失败，请检查各输入框是否正确！", "");
+                return new Message(false, "修改失败，请检查各输入框是否正确!", "");
         }
 
         /// <summary>
@@ -74,7 +76,7 @@ namespace ManagerSystemClassLibrary.BaseDT
         {
             //判断用户序号是否存在于系统扩展表中
             if (T_SYSSEC_USER.isExists(new T_SYSSEC_IPSUSER_SW { USERID = m.USERID }) == false)
-                return new Message(false, "修改失败，系统用户不存在！", "");
+                return new Message(false, "修改失败，系统用户不存在!", "");
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("update T_SYSSEC_USER");
             sb.AppendFormat(" set ");
@@ -82,9 +84,9 @@ namespace ManagerSystemClassLibrary.BaseDT
             sb.AppendFormat(" where USERID= '{0}'", ClsSql.EncodeSql(m.USERID));
             bool bln = DataBaseClass.ExeSql(sb.ToString());
             if (bln == true)
-                return new Message(true, "修改成功！", "");
+                return new Message(true, "修改成功!", "");
             else
-                return new Message(false, "修改失败，请检查各输入框是否正确！", "");
+                return new Message(false, "修改失败，请检查各输入框是否正确!", "");
         }
 
         /// <summary>
@@ -96,17 +98,19 @@ namespace ManagerSystemClassLibrary.BaseDT
         {
             //判断用户序号是否存在于系统扩展表中
             if (isExists(new T_SYSSEC_IPSUSER_SW { USERID = m.USERID }) == false)
-                return new Message(false, "删除失败，系统用户不存在！", "");
+                return new Message(false, "删除失败，系统用户不存在!", "");
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("delete T_SYSSEC_IPSUSER");
             sb.AppendFormat(" where USERID= '{0}'", ClsSql.EncodeSql(m.USERID));
             bool bln = DataBaseClass.ExeSql(sb.ToString());
             if (bln == true)
-                return new Message(true, "删除成功！", "");
+                return new Message(true, "删除成功!", "");
             else
-                return new Message(false, "删除失败，请检查各输入框是否正确！", "");
+                return new Message(false, "删除失败，请检查各输入框是否正确!", "");
         }
+        #endregion
 
+        #region 判断记录是否存在
         /// <summary>
         /// 判断记录是否存在
         /// </summary>
@@ -120,7 +124,9 @@ namespace ManagerSystemClassLibrary.BaseDT
                 sb.AppendFormat(" and USERID={0}", sw.USERID);
             return DataBaseClass.JudgeRecordExists(sb.ToString());
         }
+        #endregion
 
+        #region 获取数据列表
         /// <summary>
         /// 获取数据
         /// </summary>
@@ -244,14 +250,12 @@ namespace ManagerSystemClassLibrary.BaseDT
                 else
                     sb.AppendFormat(" AND b.ORGNO = '{0}'", ClsSql.EncodeSql(sw.ORGNO));
             }
-            string sql = "SELECT    a.GID, a.SEX, a.PHONE, a.USERJOB"
-                + ",b.USERID, b.ORGNO, b.LOGINUSERNAME, b.USERNAME, b.USERPWD, b.DEPARTMENT"
-                + ", b.REGISTERTIME, b.LOGINNUM, b.LOGINIP, b.LASTTIME, b.NOTE,b.LASTOPTIME"
-                + sb.ToString()
-            + " order by b.ORGNO";
+            string sql = "SELECT  a.GID, a.SEX, a.PHONE, a.USERJOB" + ",b.USERID, b.ORGNO, b.LOGINUSERNAME, b.USERNAME, b.USERPWD, b.DEPARTMENT"
+                + ", b.REGISTERTIME, b.LOGINNUM, b.LOGINIP, b.LASTTIME, b.NOTE,b.LASTOPTIME" + sb.ToString() + " order by b.ORGNO";
             DataSet ds = DataBaseClass.FullDataSet(sql);
             return ds.Tables[0];
         }
+        #endregion
 
         #region 获取手机号码字符串组合
         /// <summary>

@@ -37,11 +37,12 @@ namespace ManagerSystemClassLibrary.BaseDT
             sb.AppendFormat(")");
             bool bln = DataBaseClass.ExeSql(sb.ToString());
             if (bln == true)
-                return new Message(true, "操作成功！", "");
+                return new Message(true, "操作成功!", "");
             else
-                return new Message(false, "操作失败！", "");
+                return new Message(false, "操作失败!", "");
         }
         #endregion
+
         #region 增加--返回值
         /// <summary>
         /// 增加--返回值
@@ -66,6 +67,7 @@ namespace ManagerSystemClassLibrary.BaseDT
         }
 
         #endregion
+
         #region 修改
         /// <summary>
         /// 修改
@@ -91,11 +93,12 @@ namespace ManagerSystemClassLibrary.BaseDT
             sb.AppendFormat(" where EMAILID= '{0}'", ClsSql.EncodeSql(m.EMAILID));
             bool bln = DataBaseClass.ExeSql(sb.ToString());
             if (bln == true)
-                return new Message(true, "删除成功！", "");
+                return new Message(true, "更新成功!", "");
             else
-                return new Message(false, "删除失败！", "");
+                return new Message(false, "更新失败!", "");
         }
         #endregion
+
         #region 多条修改
         /// <summary>
         /// 多条修改
@@ -110,11 +113,12 @@ namespace ManagerSystemClassLibrary.BaseDT
             sb.AppendFormat(" where EMAILID in({0})", ClsSql.EncodeSql(m.EMAILID));
             bool bln = DataBaseClass.ExeSql(sb.ToString());
             if (bln == true)
-                return new Message(true, "删除成功！", "");
+                return new Message(true, "删除成功!", "");
             else
-                return new Message(false, "删除失败！", "");
+                return new Message(false, "删除失败!", "");
         }
         #endregion
+
         #region 删除
         /// <summary>
         /// 删除 只能删除草稿 对于已发送邮件需要更改状态为已删除
@@ -128,11 +132,12 @@ namespace ManagerSystemClassLibrary.BaseDT
             sb.AppendFormat(" where EMAILID in({0})", ClsSql.EncodeSql(m.EMAILID));
             bool bln = DataBaseClass.ExeSql(sb.ToString());
             if (bln == true)
-                return new Message(true, "删除成功！", "");
+                return new Message(true, "删除成功!", "");
             else
-                return new Message(false, "删除失败！", "");
+                return new Message(false, "删除失败!", "");
         }
         #endregion
+
         #region 获取邮件主题ID
         /// <summary>
         /// 获取邮件主题ID
@@ -151,6 +156,7 @@ namespace ManagerSystemClassLibrary.BaseDT
 
         }
         #endregion
+
         #region 获取数据
         /// <summary>
         /// 获取数据
@@ -179,6 +185,7 @@ namespace ManagerSystemClassLibrary.BaseDT
             return ds.Tables[0];
         }
         #endregion
+
         #region 获取分页数据
         /// <summary>
         /// 获取分页数据

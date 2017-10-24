@@ -299,23 +299,23 @@ namespace ManagerSystemClassLibrary.BaseDT.SDE
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("    from    MOUNTAIN a ");
             sb.AppendFormat("where 1 = 1 ");
-            if (orgno.Substring(4, 5) == "00000")//获取所有市的
+            if (orgno.Substring(4, 11) == "00000000000")//获取所有市的
                 sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,4) = '{0}' )", ClsSql.EncodeSql(orgno.Substring(0, 4)));
-            else if (orgno.Substring(6, 3) == "000")//获取所有县的
+            else if (orgno.Substring(6, 9) == "000000000")//获取所有县的
                 sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,6) = '{0}' )", ClsSql.EncodeSql(orgno.Substring(0, 6)));
             else
-                sb.AppendFormat(" AND BYORGNO = '{0}'", ClsSql.EncodeSql(orgno));
+                sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,9) = '{0}')", ClsSql.EncodeSql(orgno.Substring(0, 9)));
             string sqlC = "select count(1) " + sb.ToString();
             total = SDEDataBaseClass.ReturnSqlField(sqlC);
             StringBuilder sb1 = new StringBuilder();
             sb1.AppendFormat("    from    CUNZHUDI a ");
             sb1.AppendFormat("where 1 = 1 ");
-            if (orgno.Substring(4, 5) == "00000")//获取所有市的
-                sb1.AppendFormat(" AND (SUBSTRING(BYORGNO,1,4) = '{0}')", ClsSql.EncodeSql(orgno.Substring(0, 4)));
-            else if (orgno.Substring(6, 3) == "000")//获取所有县的
-                sb1.AppendFormat(" AND (SUBSTRING(BYORGNO,1,6) = '{0}')", ClsSql.EncodeSql(orgno.Substring(0, 6)));
+            if (orgno.Substring(4, 11) == "00000000000")//获取所有市的
+                sb1.AppendFormat(" AND (SUBSTRING(BYORGNO,1,4) = '{0}' )", ClsSql.EncodeSql(orgno.Substring(0, 4)));
+            else if (orgno.Substring(6, 9) == "000000000")//获取所有县的
+                sb1.AppendFormat(" AND (SUBSTRING(BYORGNO,1,6) = '{0}' )", ClsSql.EncodeSql(orgno.Substring(0, 6)));
             else
-                sb1.AppendFormat(" AND BYORGNO = '{0}'", ClsSql.EncodeSql(orgno));
+                sb1.AppendFormat(" AND (SUBSTRING(BYORGNO,1,9) = '{0}')", ClsSql.EncodeSql(orgno.Substring(0, 9)));
             string sql = "select count(1) " + sb1.ToString();
             total1 = SDEDataBaseClass.ReturnSqlField(sql);
             if (total=="")

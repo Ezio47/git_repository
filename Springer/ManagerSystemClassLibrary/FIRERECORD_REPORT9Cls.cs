@@ -32,11 +32,10 @@ namespace ManagerSystemClassLibrary
                 return new Message(msgMENU.Success, msgMENU.Msg, m.returnUrl);
             }
            
-            return new Message(false, "无效操作", m.returnUrl);
+            return new Message(false, "无效操作!", m.returnUrl);
         }
 
         #endregion
-
 
         #region 获取森林防火办事人员统计单条数据
         /// <summary>

@@ -38,37 +38,28 @@ namespace ManagerSystemClassLibrary
                 Message msgUser = BaseDT.T_SYSSEC_USER.Add(m);
                 if (msgUser.Success == false)
                     return new Message(msgUser.Success, msgUser.Msg, "");
-
                 //获取新添加的UserID
                 DataTable dt = BaseDT.T_SYSSEC_USER.getDT(new T_SYSSEC_IPSUSER_SW { LOGINUSERNAME = m.LOGINUSERNAME });
                 string UserID = "";
                 if (dt.Rows.Count > 0)
-                {
                     UserID = dt.Rows[0]["USERID"].ToString();
-                }
                 dt.Clear();
                 dt.Dispose();
                 //判断扩展表中是否存在记录
                 if (string.IsNullOrEmpty(UserID) == true)
-                    return new Message(false, "系统用户不存在", ""); ;//系统用户不存在
+                    return new Message(false, "系统用户不存在!", ""); ;//系统用户不存在
                 m.USERID = UserID;
                 Message msg = new Message(false, "", "");
                 //判断扩展表中是否存在，如果存在，则修改，否则添加
                 if (BaseDT.T_SYSSEC_IPSUSER.isExists(new T_SYSSEC_IPSUSER_SW { USERID = UserID }))
-                {
                     msg = BaseDT.T_SYSSEC_IPSUSER.Mdy(m);
-                }
                 else
-                {
                     msg = BaseDT.T_SYSSEC_IPSUSER.Add(m);
-                }
                 if (msg.Success == false)
                     return new Message(msg.Success, "系统用户添加成功，但用户扩展信息" + msg.Msg, "");// "系统用户添加成功，但扩展信息保存失败，请修改该用户扩展信息", "");
-
                 //保存角色
                 BaseDT.T_SYSSEC_USER_ROLE.Save(new T_SYSSEC_USER_ROLE_Model { ROLEID = m.ROLEIDList, USERID = UserID });
-
-                return new Message(true, "添加成功", m.returnUrl);
+                return new Message(true, "添加成功!", m.returnUrl);
             }
             if (m.opMethod == "Mdy")
             {
@@ -79,19 +70,14 @@ namespace ManagerSystemClassLibrary
                 Message msg = new Message(false, "", "");
                 //判断扩展表中是否存在，如果存在，则修改，否则添加
                 if (BaseDT.T_SYSSEC_IPSUSER.isExists(new T_SYSSEC_IPSUSER_SW { USERID = m.USERID }))
-                {
                     msg = BaseDT.T_SYSSEC_IPSUSER.Mdy(m);
-                }
                 else
-                {
                     msg = BaseDT.T_SYSSEC_IPSUSER.Add(m);
-                }
                 if (msg.Success == false)
                     return new Message(msg.Success, "系统用户修改成功，但用户扩展信息" + msg.Msg, "");// "系统用户添加成功，但扩展信息保存失败，请修改该用户扩展信息", "");
                 //保存角色
                 BaseDT.T_SYSSEC_USER_ROLE.Save(new T_SYSSEC_USER_ROLE_Model { ROLEID = m.ROLEIDList, USERID = m.USERID });
-
-                return new Message(true, "修改成功", m.returnUrl);
+                return new Message(true, "修改成功!", m.returnUrl);
             }
             if (m.opMethod == "MdyLastOpTime")
             {
@@ -106,13 +92,11 @@ namespace ManagerSystemClassLibrary
                 Message msg = BaseDT.T_SYSSEC_IPSUSER.Del(m);
                 if (msg.Success == false)
                     return new Message(msg.Success, "系统用户删除成功，但用户扩展信息" + msg.Msg, "");// "系统用户添加成功，但扩展信息保存失败，请修改该用户扩展信息", "");
-
                 //保存角色
                 BaseDT.T_SYSSEC_USER_ROLE.Save(new T_SYSSEC_USER_ROLE_Model { ROLEID = "", USERID = m.USERID });
-
-                return new Message(true, "删除成功", m.returnUrl);
+                return new Message(true, "删除成功!", m.returnUrl);
             }
-            return new Message(false, "无效操作", "");
+            return new Message(false, "无效操作!", "");
         }
 
         #endregion

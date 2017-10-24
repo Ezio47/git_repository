@@ -35,7 +35,6 @@ namespace ManagerSystemClassLibrary
                 //SystemCls.LogSave("4", "通知公告:" + m.INFOTITLE, ClsStr.getModelContent(m));
                 Message msgUser = BaseDT.T_SYS_ADDREDDTYPE.Mdy(m);
                 return new Message(msgUser.Success, msgUser.Msg, m.returnUrl);
-
             }
             if (m.opMethod == "Del")
             {
@@ -44,14 +43,10 @@ namespace ManagerSystemClassLibrary
                 return new Message(msgUser.Success, msgUser.Msg, m.returnUrl);
             }
             return new Message(false, "无效操作", "");
-
-
         }
-
         #endregion
 
-
-        #region 获取单条
+        #region 获取单条数据
         /// <summary>
         /// 根据查询条件获取某一条信息记录，用于修改、删除、用户登录验证
         /// </summary>
@@ -60,11 +55,8 @@ namespace ManagerSystemClassLibrary
         public static T_SYS_ADDREDDTYPE_Model getModel(T_SYS_ADDREDDTYPE_SW sw)
         {
             var result = new List<T_SYS_ADDREDDTYPE_Model>();
-
             DataTable dt = BaseDT.T_SYS_ADDREDDTYPE.getDT(sw);//列表
-
             T_SYS_ADDREDDTYPE_Model m = new T_SYS_ADDREDDTYPE_Model();
-
             if (dt.Rows.Count > 0)
             {
                 int i = 0;
@@ -80,16 +72,15 @@ namespace ManagerSystemClassLibrary
 
         #endregion
 
-        #region 获取列表
+        #region 获取数据列表
         /// <summary>
-        /// 获取文档列表
+        /// 获取数据列表
         /// </summary>
         /// <param name="sw"></param>
         /// <returns></returns>
         public static IEnumerable<T_SYS_ADDREDDTYPE_Model> getModelList(T_SYS_ADDREDDTYPE_SW sw)
         {
             var result = new List<T_SYS_ADDREDDTYPE_Model>();
-
             DataTable dt = BaseDT.T_SYS_ADDREDDTYPE.getDT(sw);//列表
             for (int i = 0; i < dt.Rows.Count; i++)
             {
@@ -104,7 +95,6 @@ namespace ManagerSystemClassLibrary
             dt.Dispose();
             return result;
         }
-
         #endregion
 
         #region 下拉框
@@ -120,8 +110,8 @@ namespace ManagerSystemClassLibrary
             dt.Clear();
             dt.Dispose();
             return str;
-
         }
+
         private static string getSelectOptionChiled(DataTable dt, string curID, string id, int index)
         {
             string str = "";
@@ -130,18 +120,17 @@ namespace ManagerSystemClassLibrary
             {
                 string ATID = dr[i]["ATID"].ToString();
                 string chk = (curID == ATID) ? " selected" : "";
-                 str += "<option value=\""+ATID+"\"";
-                str+=chk;
-                str+=">";
+                str += "<option value=\"" + ATID + "\"";
+                str += chk;
+                str += ">";
                 for (int k = 0; k < index; k++)
                     str += "　";
-                    str += dr[i]["RTNAME"].ToString();
-                str+="</option>";
-                str+=getSelectOptionChiled(dt,curID,ATID,index+1);
+                str += dr[i]["RTNAME"].ToString();
+                str += "</option>";
+                str += getSelectOptionChiled(dt, curID, ATID, index + 1);
             }
             return str;
         }
-
         #endregion
     }
 }

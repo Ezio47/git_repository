@@ -34,12 +34,16 @@ namespace ManagerSystemClassLibrary.BaseDT
                 StringBuilder sbDelete = new StringBuilder();
                 sbDelete.AppendFormat("delete from PEST_REPORT_QUARANTINE where 1=1");
                 sbDelete.AppendFormat(" and HAPPENYEAR='{0}' ",m.HAPPENYEAR);
-                if (m.TopORGNO.Substring(4, 5) == "00000")
-                    sbDelete.AppendFormat(" AND SUBSTRING(BYORGNO,1,4)='{0}'", m.TopORGNO.Substring(0, 4));
-                else if (m.TopORGNO.Substring(6, 3) == "000" && m.TopORGNO.Substring(4, 5) != "00000")
-                    sbDelete.AppendFormat(" AND SUBSTRING(BYORGNO,1,6)='{0}'", m.TopORGNO.Substring(0, 6));
+                if (m.TopORGNO.Substring(4, 11) == "00000000000") //所有市
+                    sbDelete.AppendFormat(" and SUBSTRING(BYORGNO,1,4)='{0}'", m.TopORGNO.Substring(0, 4));
+                else if (m.TopORGNO.Substring(6, 9) == "000000000" && m.TopORGNO.Substring(4, 11) != "00000000000") //所有县
+                    sbDelete.AppendFormat(" and SUBSTRING(BYORGNO,1,6)='{0}'", m.TopORGNO.Substring(0, 6));
+                else if (m.TopORGNO.Substring(9, 6) == "000000" && m.TopORGNO.Substring(6, 9) != "000000000") //所有乡镇
+                    sbDelete.AppendFormat(" and SUBSTRING(BYORGNO,1,9)='{0}'", m.TopORGNO.Substring(0, 9));
+                else if (m.TopORGNO.Substring(9, 6) != "000000") //所有村
+                    sbDelete.AppendFormat(" and SUBSTRING(BYORGNO,1,12)='{0}'", m.TopORGNO.Substring(0, 12));
                 else
-                    sbDelete.AppendFormat(" AND BYORGNO='{0}'", m.TopORGNO);
+                    sbDelete.AppendFormat(" and BYORGNO='{0}'", m.TopORGNO);
                 DataBaseClass.ExeSql(sbDelete.ToString());
                 #endregion
 

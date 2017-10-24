@@ -42,9 +42,7 @@ namespace ManagerSystemClassLibrary
                 Message msgUser = BaseDT.T_SYS_ORG_LINK.Del(m);
                 return new Message(msgUser.Success, msgUser.Msg, m.returnUrl);
             }
-            return new Message(false, "无效操作", "");
-
-
+            return new Message(false, "无效操作!", "");
         }
 
         #endregion
@@ -143,7 +141,7 @@ namespace ManagerSystemClassLibrary
             var result = new List<T_SYS_ORG_LINK_Model>();
 
             DataTable dt = BaseDT.T_SYS_ORG_LINK.getDT(sw);//列表
-            
+
             DataTable dtORG = BaseDT.T_SYS_ORG.getDT(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag() });//获取单位
             DataTable dt45 = BaseDT.T_SYS_DICT.getDT(new T_SYS_DICTSW { DICTTYPEID = "45" });//组织机构联系人类型
             for (int i = 0; i < dt.Rows.Count; i++)
@@ -240,22 +238,27 @@ namespace ManagerSystemClassLibrary
                 m.STANDBY2 = dt45.Rows[i]["STANDBY2"].ToString();
                 m.STANDBY3 = dt45.Rows[i]["STANDBY3"].ToString();
                 m.STANDBY4 = dt45.Rows[i]["STANDBY4"].ToString();
-                DataRow[] dr = dt.Select("ORGLINKTYPE='"+m.DICTVALUE+"'");
+                DataRow[] dr = dt.Select("ORGLINKTYPE='" + m.DICTVALUE + "'");
                 //if(dr.Count()>0)不需要判断是否有记录，而是显示所有类别
-                    result.Add(m);
+                result.Add(m);
             }
             return result;
         }
         #endregion
 
         #region 组织机构联系人TREE
+        /// <summary>
+        /// 组织机构联系人TREE
+        /// </summary>
+        /// <param name="OrgNo">组织结构编码</param>
+        /// <returns></returns>
         public static string GetOrgTree(string OrgNo)
         {
             JArray jObjects = new JArray();
             string curUserOrg = SystemCls.getCurUserOrgNo();//获取当前登录用户的机构编码
             if (string.IsNullOrEmpty(OrgNo) == false)
-                curUserOrg = OrgNo; 
-            var  dtOrg = BaseDT.T_SYS_ORG.getDT(new T_SYS_ORGSW { TopORGNO = curUserOrg, SYSFLAG = ConfigCls.getSystemFlag() });//获取当前登录用户有权限查看的单位
+                curUserOrg = OrgNo;
+            var dtOrg = BaseDT.T_SYS_ORG.getDT(new T_SYS_ORGSW { TopORGNO = curUserOrg, SYSFLAG = ConfigCls.getSystemFlag() });//获取当前登录用户有权限查看的单位
 
             DataTable dtLink = BaseDT.T_SYS_ORG_LINK.getDT(new T_SYS_ORG_LINK_SW { });
             DataTable dtVillagecommittee = BaseDT.T_SYS_ORG_CWH.getDT(new T_SYS_ORG_CWH_SW { });
@@ -470,24 +473,24 @@ namespace ManagerSystemClassLibrary
         /// <param name="orgno"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static SendMessage_Model getstr(string orgno,string type)
+        public static SendMessage_Model getstr(string orgno, string type)
         {
             var s = "";
             var d = "";
             var dt = new DataTable();
             var dtvillage = new DataTable();
             var dtipuser = new DataTable();
-            if (orgno=="1")
+            if (orgno == "1")
             {
-                 dt = BaseDT.T_SYS_ORG_LINK.getDT(new T_SYS_ORG_LINK_SW { BYORGNO = SystemCls.getCurUserOrgNo() });//列表
+                dt = BaseDT.T_SYS_ORG_LINK.getDT(new T_SYS_ORG_LINK_SW { BYORGNO = SystemCls.getCurUserOrgNo() });//列表
             }
-            else if (orgno=="2")
+            else if (orgno == "2")
             {
-              dtipuser = BaseDT.T_IPSFR_USER.getDT(new T_IPSFR_USER_SW { BYORGNO = SystemCls.getCurUserOrgNo() });
+                dtipuser = BaseDT.T_IPSFR_USER.getDT(new T_IPSFR_USER_SW { BYORGNO = SystemCls.getCurUserOrgNo() });
             }
             else
             {
-                if (PublicCls.OrgIsShi(orgno) == false && PublicCls.OrgIsXian(orgno) == false && PublicCls.OrgIsZhen(orgno)==false)
+                if (PublicCls.OrgIsShi(orgno) == false && PublicCls.OrgIsXian(orgno) == false && PublicCls.OrgIsZhen(orgno) == false)
                 {
                     dtvillage = BaseDT.T_SYS_ORG_CWH.getVillagecComDT(new T_SYS_ORG_CWH_SW { CWHID = orgno });
                 }
@@ -498,9 +501,9 @@ namespace ManagerSystemClassLibrary
                     dtipuser = BaseDT.T_IPSFR_USER.getDT(new T_IPSFR_USER_SW { BYORGNO = orgno });
                 }
             }
-            if (type =="1")
+            if (type == "1")
             {
-                if (PublicCls.OrgIsShi(orgno) == false && PublicCls.OrgIsXian(orgno) == false && PublicCls.OrgIsZhen(orgno)==false)
+                if (PublicCls.OrgIsShi(orgno) == false && PublicCls.OrgIsXian(orgno) == false && PublicCls.OrgIsZhen(orgno) == false)
                 {
                     for (int i = 0; i < dtvillage.Rows.Count; i++)
                     {

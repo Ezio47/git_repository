@@ -18,13 +18,13 @@
                 <div class="divMan">
                     <table cellpadding="0" cellspacing="0">
                         <tr>
-                            <td style="width:80px;">
+                            <td style="width:80px;" class="tdField">
                                 单位名称：
                             </td>
                             <td>
                                 <select id="ORGNOS" class="easyui-combotree" style="width:200px;"></select>
                             </td>
-                            <td style="width:80px;">
+                            <td style="width:80px;" class="tdField">
                                 资源类型：
                             </td>
                             <td>
@@ -35,24 +35,26 @@
                         </tr>
 
                         <tr>
-                            <td style="width:80px;">
-                                <span style="color:red;">*</span>
+                            <td style="width:80px;" class="tdField">
+                                @*<span style="color:red;">*</span>*@
                                 名称：
                             </td>
                             <td>
                                 <input type="text" id="NAME" class="input-small" value="" />
+                                <span class="spanRequiredField">*</span>
                             </td>
-                            <td style="width:80px;">
-                                <span style="color:red;">*</span>
+                            <td style="width:80px;" class="tdField">
+                                @*<span style="color:red;">*</span>*@
                                 编号：
                             </td>
                             <td>
                                 <input id="NUMBER" type="text" class="input-small" value="" />
+                                <span class="spanRequiredField">*</span>
                             </td>
                         </tr>
 
                         <tr>
-                            <td style="width:80px;">
+                            <td style="width:80px;" class="tdField">
                                 林龄类型：
                             </td>
                             <td>
@@ -60,7 +62,7 @@
                                     @Html.Raw(@ViewBag.agetypeadd)
                                 </select>
                             </td>
-                            <td style="width:80px;">
+                            <td style="width:80px;" class="tdField">
                                 起源类型：
                             </td>
                             <td>
@@ -70,7 +72,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td style="width:80px;">
+                            <td style="width:80px;" class="tdField">
                                 可燃类型：
                             </td>
                             <td>
@@ -78,7 +80,7 @@
                                     @Html.Raw(@ViewBag.burntypeadd)
                                 </select>
                             </td>
-                            <td style="width:80px;">
+                            <td style="width:80px;" class="tdField" >
                                 林木类型：
                             </td>
                             <td>
@@ -88,39 +90,38 @@
                             </td>
                         </tr>
                         <tr>
-                            <td style="width:160px;">
-                                <span style="color:red;">*</span>
+                            <td style="width:160px;" class="tdField">
+                                @*<span style="color:red;">*</span>*@
                                 经纬度点：
                             </td>
-                            <td colspan="2">
-                                <input id="JWDLIST" type="text" style="width:97%" value="" readonly />
-                            </td>
-                            <td>
+                            <td colspan="3">
+                                <input id="JWDLIST" type="text" style="width:75%" value="" readonly />
+                                <span class="spanRequiredField">*</span>
                                 <input type="button" value="地图定位" onclick="setLine()" class="btnMapLoaclCss" />
                             </td>
                         </tr>
                         <tr>
-                            <td style="width:80px;">
+                            <td style="width:80px;" class="tdField">
                                 树种：
                             </td>
                             <td>
                                 <input id="KINDTYPE" type="text" class="input-small" value="" />
                             </td>
-                            <td style="width:80px;">
+                            <td style="width:80px;" class="tdField">
                                 面积：
                             </td>
                             <td>
-                                <input id="AREA" type="text" class="input-small" value="" />公顷
+                                <input id="AREA" type="text" class="input-small" value="" /><span class="spanMark">公顷</span>
                             </td>
                         </tr>
                         <tr>
-                            <td style="width:80px;">
+                            <td style="width:80px;" class="tdField">
                                 坡向：
                             </td>
                             <td>
                                 <input id="ASPECT" type="text" class="input-small" value="" />
                             </td>
-                            <td style="width:80px;">
+                            <td style="width:80px;" class="tdField">
                                 坡度：
                             </td>
                             <td>
@@ -128,35 +129,13 @@
                             </td>
                         </tr>
                         <tr>
-                            <td style="width:80px;">
-                                挂钩领导：
-                            </td>
-                            <td>
-                                <input id="POTHOOKLEADER" type="text" class="input-small" value="" />
-                            </td>
-                            <td style="width:80px;">
-                                职务：
-                            </td>
-                            <td>
-                                <input id="POTHOOKLEADERJOB" type="text" class="input-small" value="" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="width:80px;">
-                                领导电话：
-                            </td>
-                            <td colspan="3">
-                                <input id="POTHOOKLEADERTLEE" type="text" class="input-small" value="" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="width:80px;">
+                            <td style="width:80px;" class="tdField">
                                 责任人：
                             </td>
                             <td>
                                 <input id="DUTYPERSON" type="text" class="input-small" value="" />
                             </td>
-                            <td style="width:80px;">
+                            <td style="width:80px;" class="tdField">
                                 责任人电话：
                             </td>
                             <td>
@@ -164,14 +143,36 @@
                             </td>
                         </tr>
                         <tr>
-                            <td style="width:80px;">
+                            <td style="width:80px;" class="tdField">
+                                挂钩领导：
+                            </td>
+                            <td>
+                                <input id="POTHOOKLEADER" type="text" class="input-small" value="" />
+                            </td>
+                            <td style="width:80px;" class="tdField">
+                                职务：
+                            </td>
+                            <td>
+                                <input id="POTHOOKLEADERJOB" type="text" class="input-small" value="" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:80px;" class="tdField">
+                                领导电话：
+                            </td>
+                            <td colspan="3">
+                                <input id="POTHOOKLEADERTLEE" style="width:97%" type="text" class="input-small" value="" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:80px;" class="tdField">
                                 备注：
                             </td>
                             <td colspan="3">
-                                <input id="MARK" type="text" class="input-small" value="" />
+                                <input id="MARK" style="width:97%" type="text" class="input-small" value="" />
                             </td>
                         </tr>
-                    </table>
+                  </table>
                 </div>
             </div>
         </div>
@@ -241,28 +242,28 @@
     function setLine() {
         var name = document.getElementById("NAME").value;
         var str = document.getElementById("JWDLIST").value;
-        layer.open({
+        parent.layer.open({
             type: 2,
             title: name + '地图位置设置',
             btn: ['保存', '关闭'],
-            area: ['100%', '100%'],
+            area: ['1000px', '600px'],
             fix: false, //不固定
             maxmin: true,
             content: '/MapCommon/GetMapPontIndex?LINE=2',
             success: function (layero, index) {
-                var body = layer.getChildFrame('body', index);
+                var body = parent.layer.getChildFrame('body', index);
                 body.find('#editcollecttxt').text(str);
-                window["layui-layer-iframe" + index].getLocaCollectPolygon();//面
+                top.window["layui-layer-iframe" + index].getLocaCollectPolygon();//面
             },
             yes: function (index, layero) { //或者使用btn1
                 //按钮【按钮一】的回调
-                var ptxt = layer.getChildFrame("#editcollecttxt", index);
-                var lm = layer.getChildFrame("#MjACdtxt", index)
+                var ptxt = parent.layer.getChildFrame("#editcollecttxt", index);
+                var lm = parent.layer.getChildFrame("#MjACdtxt", index)
                 $('#AREA').val(lm.html());//面积
                 $('#JWDLIST').val(ptxt.html());//经纬度
-                layer.close(index);
+                parent.layer.close(index);
             }, cancel: function (index) {
-                layer.close(index);
+                parent.layer.close(index);
             }
         });
 

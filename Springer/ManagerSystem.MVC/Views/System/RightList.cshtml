@@ -48,8 +48,8 @@
                 </div>
             </div>
         </div>
-            </div>
-        </div>
+    </div>
+</div>
 
 <script type="text/javascript">
     function selectall(v, c) {
@@ -92,6 +92,7 @@
         document.getElementById("tbxSYSFLAG").value = "";
         document.getElementById("tbxORDERBY").value = "";
     }
+
     function queryValue() {
         var rightID = document.getElementById("tbxSubRIGHTID").value;
         if (rightID == '')
@@ -157,21 +158,20 @@
                 SYSFLAG: document.getElementById("tbxSYSFLAG").value,
                 ORDERBY: document.getElementById("tbxORDERBY").value,
                 Method: Method,
-                returnUrl: ' @Html.Raw(@ViewBag.T_UrlReferrer)'
+                returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)'
             },
             success: function (data, ioArgs) {
                 var ar = eval('(' + data + ')');
                 if (ar.Success) {
                     layer.msg(ar.Msg, { icon: 6 });
                     queryValue();
-                    //  window.location.assign(ar.Url);
                 }
                 else {
                     layer.msg(ar.Msg, { icon: 5 });
                 }
             },
             error: function (err, ioArgs) {
-                layer.msg('保存异常!', { icon: 5 });
+                layer.msg('系统异常!', { icon: 5 });
             }
         });
     }

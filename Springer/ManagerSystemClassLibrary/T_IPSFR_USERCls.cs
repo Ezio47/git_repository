@@ -110,6 +110,7 @@ namespace ManagerSystemClassLibrary
                 m.SEXNAME = BaseDT.T_SYS_DICT.getName(dtSex, dt.Rows[i]["SEX"].ToString());
                 m.ISENABLE = dt.Rows[i]["ISENABLE"].ToString();
                 m.MOBILEPARAMLIST = dt.Rows[i]["MOBILEPARAMLIST"].ToString();
+                m.PATROLLENGTH = dt.Rows[i]["PATROLLENGTH"].ToString();
                 m.ISENABLENAME = BaseDT.T_SYS_DICT.getName(dtIsEnable, dt.Rows[i]["ISENABLE"].ToString());
                 m.ONSTATENAME = BaseDT.T_SYS_DICT.getName(dtOnState, dt.Rows[i]["ONSTATE"].ToString());
             }
@@ -125,6 +126,24 @@ namespace ManagerSystemClassLibrary
             dtIsEnable.Dispose();
             return m;
         }
+        #endregion
+
+        #region 判断电话号码和设备重复
+        /// <summary>
+        /// 判断电话号码和设备重复
+        /// </summary>
+        /// <param name="sw"></param>
+        /// <returns></returns>
+
+        public static bool isExists(T_IPSFR_USER_SW sw)
+        {
+            bool bln = false;
+            if (BaseDT.T_IPSFR_USER.isExists(sw) == true)
+            {
+                bln = true;
+            }
+            return bln;
+        } 
         #endregion
 
         #region 获取模型
@@ -164,7 +183,7 @@ namespace ManagerSystemClassLibrary
                 m.ISENABLE = dt.Rows[i]["ISENABLE"].ToString();
                 m.ISENABLENAME = BaseDT.T_SYS_DICT.getName(dtIsEnable, dt.Rows[i]["ISENABLE"].ToString());
                 m.MOBILEPARAMLIST = dt.Rows[i]["MOBILEPARAMLIST"].ToString();
-
+                m.PATROLLENGTH = dt.Rows[i]["PATROLLENGTH"].ToString();
                 m.isExitsLine = (BaseDT.T_IPSFR_ROUTERAIL.getCountByHidRoadtype(dtRoute, m.HID, "0") == "0") ? "0" : "1";
                 m.isExitsRail = (BaseDT.T_IPSFR_ROUTERAIL.getCountByHidRoadtype(dtRoute, m.HID, "1") == "0") ? "0" : "1";
                 result.Add(m);
@@ -194,6 +213,8 @@ namespace ManagerSystemClassLibrary
             var result = new List<T_IPSFR_USER_Model>();
             DataTable dt = BaseDT.T_IPSFR_USER.getDT(sw);
             DataTable dtSex = BaseDT.T_SYS_DICT.getDT(new T_SYS_DICTSW { DICTFLAG = "性别" });//性别
+            DataTable dtORG = BaseDT.T_SYS_ORG.getDT(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag() });//获取单位
+            DataTable dtOnState = BaseDT.T_SYS_DICT.getDT(new T_SYS_DICTSW { DICTFLAG = "固兼职状态" });
             for (int i = 0; i < dt.Rows.Count; i++)
             {
                 var m = new T_IPSFR_USER_Model();
@@ -204,9 +225,28 @@ namespace ManagerSystemClassLibrary
                 m.SEXNAME = BaseDT.T_SYS_DICT.getName(dtSex, dt.Rows[i]["SEX"].ToString());
                 m.BIRTH = dt.Rows[i]["BIRTH"].ToString();
                 m.ONSTATE = dt.Rows[i]["ONSTATE"].ToString();
+                m.ONSTATENAME = BaseDT.T_SYS_DICT.getName(dtOnState, dt.Rows[i]["ONSTATE"].ToString());
                 m.BYORGNO = dt.Rows[i]["BYORGNO"].ToString();
                 m.ISENABLE = dt.Rows[i]["ISENABLE"].ToString();
+                if (PublicCls.OrgIsCun(m.BYORGNO))
+                {
+                    string orgxz = m.BYORGNO.Substring(0, 9) + "000000";
+                    m.ORGXZNAME = BaseDT.T_SYS_ORG.getName(dtORG, orgxz);
+                   string orgxs = m.BYORGNO.Substring(0, 6) + "000000000000000";
+                   m.ORGXSNAME = BaseDT.T_SYS_ORG.getName(dtORG, orgxs);
+                }
+                else if (PublicCls.OrgIsZhen(m.BYORGNO))
+                {
+                    m.ORGXZNAME = BaseDT.T_SYS_ORG.getName(dtORG, m.BYORGNO);
+                    string orgxs = m.BYORGNO.Substring(0, 6) + "000000000000000";
+                    m.ORGXSNAME = BaseDT.T_SYS_ORG.getName(dtORG, orgxs);
+                }
+                else 
+                {
+                     m.ORGXSNAME = BaseDT.T_SYS_ORG.getName(dtORG, m.BYORGNO);
+                }
                 m.ORGNAME = dt.Rows[i]["ORGNAME"].ToString();
+                m.PATROLLENGTH = dt.Rows[i]["PATROLLENGTH"].ToString();
                 m.PHONE = dt.Rows[i]["PHONE"].ToString();
                 result.Add(m);
             }

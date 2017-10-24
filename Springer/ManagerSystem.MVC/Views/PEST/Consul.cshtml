@@ -16,11 +16,11 @@
                 <div class="divOP">
                     <ul>
                         <li class="homeUL">
-                            主题：<input id="tbxTITLE" type="text" class="input-small" style="width:120px" value="" />&nbsp;&nbsp;&nbsp;
-                            开始时间：<input id="tbxStartTime" type="text" class="Wdate" style="width:100px" value="@ViewBag.StartTime" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd'})" />&nbsp;&nbsp;&nbsp;
-                            结束时间：<input id="tbxEndTime" type="text" class="Wdate" style="width:100px" value="@ViewBag.EndTime" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd'})" />&nbsp;&nbsp;&nbsp;
-                            <input type="button" value="查询" onclick="query('1')" class="btnSearchCss" />
-                            <input type="button" value="添加" onclick="Manager('Add','','')" id="btnAdd" style="display:none;" class="btnAddCss" />
+                            主题：<input id="tbxTITLE" type="text"  style="width:120px" value="" />&nbsp;&nbsp;&nbsp;
+                            提问时间：<input id="tbxStartTime" type="text" class="Wdate" style="width:100px" value="@ViewBag.StartTime" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd'})" />&nbsp;&nbsp;
+                            至&nbsp;&nbsp;<input id="tbxEndTime" type="text" class="Wdate" style="width:100px" value="@ViewBag.EndTime" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd'})" />&nbsp;&nbsp;&nbsp;
+                            <input type="button" value="查 询" onclick="query('1')" class="btnSearchCss" />
+                            <input type="button" value="添 加" onclick="Manager('Add','','')" id="btnAdd" style="display:none;" class="btnAddCss" />
                         </li>
                     </ul>
                 </div>
@@ -43,15 +43,15 @@
     <input id="HidID" name="HidID" type="hidden" value="" />
     <table cellpadding="0" cellspacing="0">
         <tr>
-            <td style="width:100px;">主题: </td>
+            <td class="tdField" style="width:100px;">主题: </td>
             <td><input id="tbxCONSULTITLE" type="text" value="" style="width:99%;" /></td>
         </tr>
         <tr>
-            <td style="width: 100px;">手机号码:</td>
+            <td class="tdField" style="width: 100px;">手机号码:</td>
             <td><input type="text" id="tbxCONSULPHONE" value="" style="width:99%;" /></td>
         </tr>
         <tr>
-            <td>内容:</td>
+            <td class="tdField">内容:</td>
             <td><textarea id="tbxCONSULCONTENT" style="width: 99%; height: 100px"></textarea></td>
         </tr>
     </table>
@@ -116,7 +116,7 @@
         layer.open({
             type: 2,
             title: '照片管理',
-            area: ['60%', '60%'],
+            area: ['800px', '450px'],
             fix: true,
             maxmin: true,
             content: '/PEST/PESTPhoto?TableName=' + TableName + '&DataId=' + DataId
@@ -151,7 +151,7 @@
             layer.open({
                 type: 2,
                 title: '会诊回复',
-                area: ['62%', '98%'],
+                area: ['800px', '580px'],
                 fix: true,
                 //maxmin: true,
                 content: '/PEST/ConsulRealy?PEST_CONSULTATIONID=' + ID,
@@ -164,7 +164,7 @@
             layer.open({
                 type: 2,
                 title: '查看会诊信息',
-                area: ['62%', '98%'],
+                area: ['800px', '580px'],
                 fix: true,
                 //maxmin: true,
                 content: '/PEST/ConsulDataSee?PEST_CONSULTATIONID=' + ID,
@@ -204,7 +204,7 @@
             layer.open({
                 type: 1,
                 title: str,
-                area: ['50%', '50%'],
+                area: ['700px', '300px'],
                 btn: btnInfo,
                 shade: 0,
                 maxmin: true,

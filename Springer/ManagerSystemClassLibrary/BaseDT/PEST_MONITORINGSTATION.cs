@@ -211,7 +211,7 @@ namespace ManagerSystemClassLibrary.BaseDT
                 else
                     sb.AppendFormat(" AND BYORGNO = '{0}'", ClsSql.EncodeSql(sw.BYORGNO));
             }
-            string sql = "SELECT PEST_MONITORINGSTATIONID, NUMBER, NAME, ADDRESS, MODEL, BYORGNO, TRANSFERMODETYPE, MONICONTENT, BUILDDATE, USESTATE, MANAGERSTATE, MARK, JD, WD, WORTH"
+            string sql = "SELECT PEST_MONITORINGSTATIONID, NUMBER, NAME, ADDRESS, MODEL, BYORGNO, TRANSFERMODETYPE, MONICONTENT, BUILDDATE, USESTATE, MANAGERSTATE, MARK, JD, WD, WORTH "
                 + sb.ToString() + " ORDER BY BYORGNO, BUILDDATE DESC ";
             string sqlC = "select count(1) " + sb.ToString();
             total = int.Parse(DataBaseClass.ReturnSqlField(sqlC));

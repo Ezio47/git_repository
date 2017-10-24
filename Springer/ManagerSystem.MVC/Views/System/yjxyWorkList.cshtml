@@ -1,60 +1,42 @@
 ﻿@{
-    //ViewBag.Title =  "首页";
     Layout = "~/Views/Shared/_LayOutIndex.cshtml";
-    // Layout = null;
 }
 
 <div class="easyui-layout" data-options="fit:true" style=" border:0;">
-
-
     <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
-
         @Html.Raw(@ViewBag.PageLeftMenu)
     </div>
+
     <div data-options="region:'east'" title="" style=" width:320px; border: none; ">
-
         <div class="easyui-layout" data-options="fit:true" style=" border:0;">
-
-
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
                 <div class="divOP">
-                    <div class="homeUL">
-                        管理
-                    </div>
+                    <div class="homeUL"> 管理 </div>
                 </div>
             </div>
             <div data-options="region:'center'" title="" style=" border: none; ">
-
                 <div class="divMan">
                     <table cellpadding="0" cellspacing="0">
-
                         <tr class='row1'>
-                            <td style="width:80px;">
+                            <td style="width:80px;" class="tdField">
                                 火险级别:
                             </td>
-                            <td>
-                                <input id="tbxDANGERCLASSName" type="text" value="" style="width:95%;" readonly="readonly" />
-                            </td>
+                            <td><input id="tbxDANGERCLASSName" type="text" value="" style="width:95%;" readonly="readonly" /></td>
                         </tr>
                         <tr>
-                            <td>
+                            <td class="tdField">
                                 响应部门:
                             </td>
-                            <td>
-                                <input id="tbxYJXYDEPTName" type="text" value="" style="width:95%;" readonly="readonly" />
-                            </td>
+                            <td><input id="tbxYJXYDEPTName" type="text" value="" style="width:95%;" readonly="readonly" /></td>
                         </tr>
                         <tr>
-                            <td>
+                            <td class="tdField">
                                 响应措施:
                             </td>
-                            <td>
-                                <textarea id="tbxYJXYCONTENT" style="width:95%;height:150px; margin-top:10px; OVERFLOW:visible"></textarea>
-                            </td>
+                            <td><textarea id="tbxYJXYCONTENT" style="width:95%;height:150px; margin-top:10px; OVERFLOW:visible"></textarea> </td>
                         </tr>
                         <tr class=''>
                             <td colspan="3" style="text-align:center;">
-
                                 <input id="tbxYJXYID" type="hidden" value="" style="" />
                                 <input id="tbxDANGERCLASS" type="hidden" value="" style="" />
                                 <input id="tbxYJXYDEPT" type="hidden" value="" style="" />
@@ -63,58 +45,57 @@
                                 <input type="button" value="删除" id="btnDel" onclick="Manager('Del')" style="display :none;" class="btnDelCss">
                             </td>
                         </tr>
-
                     </table>
                 </div>
             </div>
-
         </div>
 
     </div>
     <div data-options="region:'center'" title="" style=" border: none;">
-
         <div class="divTable" id="DivTableList">
-            @*@Html.Raw(ViewBag.PERALARMList)*@
+
         </div>
     </div>
 
 </div>
 <script type="text/javascript">
-    function load(){
-    $.ajax({
-        url: '/System/getYJ_XY_WORKTable',
-
-        data: {
-        },
-        success: function (data, ioArgs) {
-            var ar = eval('(' + data + ')');
-            if (ar.Success) {
-                $('#DivTableList').html(ar.Msg);
-                //layer.msg(ar.Msg);//   alert('保存成功!！');
-                clear();
-
-            }
-            else {
-                alert(ar.Msg);
-            }
-        },
-        error: function (err, ioArgs) {
-            layer.msg('获取异常，请刷新重试');
-        }
-    });
-    }
     load();
+    clear();
+    function load() {
+        $.ajax({
+            url: '/System/getYJ_XY_WORKTable',
+            data: {},
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#DivTableList').html(ar.Msg);
+                    clear();
+                }
+                else {
+                    layer.msg(ar.Msg, { icon: 5 });
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('系统异常!', { icon: 5 });
+            }
+        });
+    }
+     
+    function clear() {
+        document.getElementById('btnMdy').style.display = "none";
+        document.getElementById('btnDel').style.display = "none";
+        document.getElementById('btnAdd').style.display = "none";
+        document.getElementById("tbxYJXYID").value = '';
+        document.getElementById("tbxDANGERCLASS").value = '';
+        document.getElementById("tbxDANGERCLASSName").value = '';
+        document.getElementById("tbxYJXYDEPT").value = '';
+        document.getElementById("tbxYJXYDEPTName").value = '';
+        document.getElementById("tbxYJXYCONTENT").value = '';
+    }
 
     function Manager(Method) {
-
-        //if (Method == "Del") {
-
-        //    if (confirm('确实要删除该内容吗?') == false)
-        //        return false;
-        //}
         $.ajax({
             url: '/System/YJ_XY_WORKManger',
-            
             data: {
                 YJXYID: document.getElementById("tbxYJXYID").value,
                 DANGERCLASS: document.getElementById("tbxDANGERCLASS").value,
@@ -125,51 +106,29 @@
             success: function (data, ioArgs) {
                 var ar = eval('(' + data + ')');
                 if (ar.Success) {
-                    layer.msg(ar.Msg);//   alert('保存成功!！');
+                    layer.msg(ar.Msg, { icon: 6 });
                     clear();
                     load();
-
                 }
                 else {
-                    alert(ar.Msg);
+                    layer.msg(ar.Msg, { icon: 5 });
                 }
             },
             error: function (err, ioArgs) {
-                alert('保存异常');
+                layer.msg('保存异常!', { icon: 5 });
             }
         });
     }
-    clear();
-    function clear() {
 
-        document.getElementById('btnMdy').style.display = "none";
-        document.getElementById('btnDel').style.display = "none";
-        document.getElementById('btnAdd').style.display = "none";
-        document.getElementById("tbxYJXYID").value = '';
-        document.getElementById("tbxDANGERCLASS").value = '';
-        document.getElementById("tbxDANGERCLASSName").value = '';
-        document.getElementById("tbxYJXYDEPT").value = '';
-        document.getElementById("tbxYJXYDEPTName").value = '';
-        document.getElementById("tbxYJXYCONTENT").value = '';
-    } 
-    
-    
-    
-
-    function show( DANGERCLASS, YJXYDEPT) {
+    function show(DANGERCLASS, YJXYDEPT) {
         clear();
-
         $.ajax({
             url: '/System/getYJ_XY_WORKJson',
             //timeout: 10000, //10秒后超时，如果为0则永不超时
-
-            data: {
-                 DANGERCLASS: DANGERCLASS
-                , YJXYDEPT: YJXYDEPT
-            },
+            data: { DANGERCLASS: DANGERCLASS, YJXYDEPT: YJXYDEPT},
             success: function (data) {
                 var ar = eval('(' + data + ')');
-                if (ar.YJXYID != null && ar.YJXYID!='') {
+                if (ar.YJXYID != null && ar.YJXYID != '') {
                     document.getElementById("tbxYJXYID").value = ar.YJXYID;
                     document.getElementById("tbxDANGERCLASS").value = ar.DANGERCLASS;
                     document.getElementById("tbxYJXYDEPT").value = ar.YJXYDEPT;
@@ -188,9 +147,8 @@
                 }
             },
             error: function (err, ioArgs) {
-                layer.msg('获取异常，请刷新重试');
+                layer.msg('系统异常!', { icon: 5 });
             }
         });
-
     }
 </script>

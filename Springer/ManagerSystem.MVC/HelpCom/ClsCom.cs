@@ -44,7 +44,8 @@ namespace ManagerSystem.MVC.HelpCom
 
         public static void ReadVoice()
         {
-            SpeechSynthesizer voice = new SpeechSynthesizer();   
+            SpeechSynthesizer voice = new SpeechSynthesizer();
+            voice.SetOutputToDefaultAudioDevice();
             voice.Rate = -2; //设置语速,[-10,10]
             voice.Volume = 100; //设置音量,[0,100]
             voice.Speak("欢迎进入红河州森林生态保护信息指挥系统大数据实时监控,当前监控时间为"+DateTime.Now.ToString("yyyy-MM-dd"));  //播放指定的字符串

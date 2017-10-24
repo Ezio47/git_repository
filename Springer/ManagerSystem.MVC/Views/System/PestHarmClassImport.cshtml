@@ -1,0 +1,119 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+}
+@section Header{
+    <script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+
+    <div data-options="region:'center'" title="" class="LayoutCenterBG">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <ul>
+                        <li class="homeUL ">
+                            日期：<input type="text" id="tbxDcDate" class="Wdate" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd' })" value="@ViewBag.DcDate" />
+                            <input type="button" value="查 询" onclick="query()" class="btnSearchCss" />&nbsp;&nbsp;
+                        </li>
+                        <li>
+                            @using (@Html.BeginForm("PestHarmClassImport", "System", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                            {
+                                <input type="file" id="file" name="file" style="width:160px;" class="btn btn-info btn-sm" />
+                                <button type="submit" id="Upload" value="导 入" class="btnInputCss">导 入</button>
+                            }
+                        </li>
+                        <li class="active" style="margin-left:20px;">
+                            <a style="color:#3c7915;font-size:15px;" href="~/UploadFile/PESTHARMCLASSExcel/有害生物危害等级模板.xls" target="_blank" title="右键,另存为">下载模板</a>&nbsp;&nbsp;
+                        </li>
+                        <li>
+                            <input type="button" value="保 存" onclick="saveHarmClass()" class="btnSaveCss" />
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div data-options="region:'center'" title="" class="LayoutCenterBG">
+                <input id="dic126Value" type="hidden" value="@ViewBag.dic126Value" />
+                <div class="divTable">
+                    @Html.Raw(@ViewBag.tableList)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function query() {
+        var date = $('#tbxDcDate').val();
+        if ($.trim(date) == "") {
+            layer.msg('请选择查询日期!', { icon: 5 });
+            $('#tbxDcDate').focus();
+            return;
+        }
+        window.location.assign('/System/PestHarmClassImport?DcDate=' + date);
+    }
+
+    function saveHarmClass() {
+        var _len = $("#harmClassTable tr").length - 2;//行数
+        if (_len > 0) {
+            var arr126Value = $('#dic126Value').val().split(',');
+            var minStr = arr126Value[0]
+            var maxStr = arr126Value[arr126Value.length - 1];
+            var minValue = parseInt(minStr);
+            var maxValue = parseInt(maxStr);
+
+            var strBYORGNO = "";
+            var strTOWNNAME = "";
+            var strJD = "";
+            var strWD = "";
+            var strHARMCLASS = "";
+            var strDCDATE = "";
+
+            for (var i = 0; i < _len; i++) {
+                var s = $('#tbxHarmClass_' + i.toString() + '').val();
+                if ($.trim(s) != "") {
+                    if (parseInt(s) > maxValue || parseInt(s) < minValue) {
+                        layer.msg('危害等级只能导入' + minValue + '-' + maxValue + '!', { icon: 5 });
+                        $('#tbxHarmClass_' + i.toString() + '').focus();
+                        return;
+                    }
+                    strBYORGNO = strBYORGNO + $('#tbxAREACODE_' + i + '').val() + ",";
+                    strTOWNNAME = strTOWNNAME + $('#tbxAREANAME_' + i + '').val() + ",";
+                    strJD = strJD + $('#tbxJD_' + i + '').val() + ",";
+                    strWD = strWD + $('#tbxWD_' + i + '').val() + ",";
+                    strHARMCLASS = strHARMCLASS + s + ",";
+                    strDCDATE = strDCDATE + $('#tbxDcDate_' + i + '').val() + ",";
+                }
+            }
+        }
+        $.ajax({
+            url: '/System/PestHarmClassImportManager',
+            type: 'post',
+            timeout: 10000, //10秒后超时，如果为0则永不超时           
+            data: {
+                DcDate: strDCDATE,
+                ByOrgno: strBYORGNO,
+                TownName: strTOWNNAME,
+                JD: strJD,
+                WD: strWD,
+                HarmClass: strHARMCLASS
+            },
+            dataType: 'json',
+            success: function (data, ioArgs) {
+                if (data.Success) {
+                    layer.msg(data.Msg, { icon: 6 });
+                }
+                else {
+                    layer.msg(data.Msg, { icon: 5 });
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("保存异常!", { icon: 5 });
+            }
+        });
+    }
+</script>

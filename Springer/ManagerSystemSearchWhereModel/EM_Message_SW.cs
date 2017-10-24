@@ -39,5 +39,13 @@ namespace ManagerSystemSearchWhereModel
         /// 排序号
         /// </summary>
         public string ORDERBY { get; set; }
+        /// <summary>
+        /// 页数总数
+        /// </summary>
+        public int pageSize { get; set; }
+        /// <summary>
+        /// 当前页数
+        /// </summary>
+        public int curPage { get; set; }
     }
 }

@@ -15,11 +15,11 @@
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
                 <div class="divOP">
                     <div class="home ">
-                        单位：<select id="tbxORGNO" onchange="Query()">@Html.Raw(@ViewBag.vdOrg)</select>&nbsp;&nbsp;&nbsp;
+                        单位：<select id="tbxORGNO" onchange="query()">@Html.Raw(@ViewBag.vdOrg)</select>&nbsp;&nbsp;&nbsp;
                         年份：<input id="tbxTime" type="text" class="Wdate" style="width:100px" value="@ViewBag.Time" onclick="WdatePicker({ dateFmt: 'yyyy'})" />
-                        <input type="button" value="查询" onclick="Query()" class="btnSearchCss" />
-                        <input type="button" value="保存" onclick="Manager()" id="btnSave" class="btnSaveCss" style="display:none;">
-                        <input type="button" value="导出" onclick="Export()" id="btnExport" class="btnOutputCss" style="display:none;">
+                        <input type="button" value="查 询" onclick="query()" class="btnSearchCss" />
+                        <input type="button" value="保 存" onclick="Manager()" id="btnSave" class="btnSaveCss" style="display:none;">
+                        <input type="button" value="导 出" onclick="Export()" id="btnExport" class="btnOutputCss" style="display:none;">
                     </div>
                 </div>
             </div>
@@ -43,8 +43,8 @@
     if (blnExport == "1") {
         document.getElementById('btnExport').style.display = "";
     }
-    Query();
-    function Query() {
+    query();
+    function query() {
         var time = $('#tbxTime').val();
         if (time == "") {
             layer.msg("请选择查询年份!", { icon: 5 });
@@ -114,7 +114,7 @@
                 success: function (data, ioArgs) {
                     if (data.Success) {
                         layer.msg(data.Msg, { icon: 6 });
-                        Query();
+                        query();
                     }
                     else {
                         layer.msg(data.Msg, { icon: 5 });

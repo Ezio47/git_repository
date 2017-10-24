@@ -37,8 +37,8 @@ namespace ManagerSystem.MVC.Controllers
         /// 二维浮动窗口
         /// </summary>
         /// <returns></returns>
-        public ActionResult Float2DIndex() 
-        {         
+        public ActionResult Float2DIndex()
+        {
             var reportMenuList = new List<MenuTypeModel>();//数据上报菜单
             var collectMenuList = new List<MenuTypeModel>();//数据采集
             var jgMenuList = new List<MenuTypeModel>();//实时监管
@@ -47,8 +47,8 @@ namespace ManagerSystem.MVC.Controllers
             if (hlyList != null)
             {
                 foreach (var item in hlyList.subMenuModel)
-                {                               
-                    if (item.MENUCODE.Substring(0,4)=="0301")//实时监管
+                {
+                    if (item.MENUCODE.Substring(0, 4) == "0301")//实时监管
                     {
                         var jgmodel = new MenuTypeModel();
                         jgmodel.LICLASS = item.LICLASS;
@@ -62,7 +62,7 @@ namespace ManagerSystem.MVC.Controllers
                         reportmodel.LICLASS = item.LICLASS;
                         reportmodel.MENUNAME = item.MENUNAME;
                         reportmodel.DICTVALUE = item.MENUURL.Substring(item.MENUURL.Length - 1, 1);
-                        reportMenuList.Add(reportmodel);                        
+                        reportMenuList.Add(reportmodel);
                     }
                     else if (item.MENUCODE.Substring(0, 4) == "0303") //数据采集
                     {
@@ -73,12 +73,13 @@ namespace ManagerSystem.MVC.Controllers
                         collectmodel.DICTVALUE = item.MENUURL.Substring(item.MENUURL.Length - 1, 1);
                         collectMenuList.Add(collectmodel);
                     }
-                    else if(item.MENUCODE.Substring(0,4)=="0300"){ //护林员
+                    else if (item.MENUCODE.Substring(0, 4) == "0300") //护林员
+                    { 
                         var hlymodel = new MenuTypeModel();
                         hlymodel.LICLASS = item.LICLASS;
                         hlymodel.MENUNAME = item.MENUNAME;
                         hlyMenuList.Add(hlymodel);
-                    }                    
+                    }
                 }
             }
             ViewBag.NewcollectList = collectMenuList;//数据采集项目获取
@@ -134,13 +135,9 @@ namespace ManagerSystem.MVC.Controllers
                     sw.ORGNO = "111111111";//市县级别不用首页定位
                     return Json(null);
                 }
-
             }
-            // sw.SearchTime = DateTime.Now.ToString("yyyy-MM-dd");
-            //  var model = T_IPS_REALDATATEMPORARYCls.getHRUserModelList(sw);//选取当天最新的一条记录
             var model = T_IPS_REALDATATEMPORARYCls.getTopOneModelList(sw);//选取最新的一条记录
             return Json(model);
-
         }
 
         /// <summary>
@@ -157,8 +154,6 @@ namespace ManagerSystem.MVC.Controllers
             var model = T_IPSFR_USERCls.getModel(info);//获取护林员详细信息
             if (model != null)
             {
-                //string sexstr = model.SEX == "1" ? "男" : "女";
-                //string statestr = model.ONSTATE == "1" ? "固职" : "兼职";
                 string enablestr = model.ISENABLE == "1" ? "启用" : "禁用";
                 string imageurl = "../Images/photo.png";
                 StringBuilder sb = new StringBuilder();
@@ -186,7 +181,6 @@ namespace ManagerSystem.MVC.Controllers
                 sb.AppendFormat("</div>");
                 msg = new Message(true, sb.ToString(), "");
             }
-
             return Json(msg);
         }
 
@@ -200,7 +194,6 @@ namespace ManagerSystem.MVC.Controllers
         {
             string uid = Request.Params["uid"];//护林员id
             string maptype = Request.Params["maptype"];
-
             MessageListObject msg = null;
             var sw = new T_IPS_REALDATASW();
             sw.PHONE = phone.Trim();
@@ -218,11 +211,6 @@ namespace ManagerSystem.MVC.Controllers
             {
                 sw.DateEnd = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             }
-            //if (string.IsNullOrEmpty(phone))
-            //{
-            //    msg = new MessageListObject(false, null);
-            //    return Json(msg);
-            //}
             var list = T_IPS_REALDATACls.getModelList(sw);
             if (list.Count() > 0)
             {
@@ -247,7 +235,7 @@ namespace ManagerSystem.MVC.Controllers
             Message ms = null;
             if (string.IsNullOrEmpty(uid) || string.IsNullOrEmpty(starttime) || string.IsNullOrEmpty(endtime))
             {
-                ms = new Message(false, "参数错误", "");
+                ms = new Message(false, "参数错误!", "");
                 return Json(ms);
             }
             StringBuilder sb = new StringBuilder();
@@ -273,7 +261,6 @@ namespace ManagerSystem.MVC.Controllers
                 int i = 0;
                 foreach (var item in list.OrderByDescending(e => e.SBDATE))
                 {
-
                     sb.AppendFormat("<tr>");
                     sb.AppendFormat("<td>{0}</td>", item.SBDATE);
                     sb.AppendFormat("<td><a href='javascript:void(0)' onClick=\"hisgjPlay('" + item.USERID + "','" + item.SBDATE + "','" + i.ToString() + "')\">轨迹回放</a><p id=\"divplay_" + i.ToString() + "\" style=\"display:none;\"><a id=\"playst_" + i.ToString() + "\" onClick=\"pauseAndStart('" + i.ToString() + "')\">暂停</a>|<a onClick=\"drawOver()\">完成</a></p></td>");
@@ -285,7 +272,6 @@ namespace ManagerSystem.MVC.Controllers
             {
                 sb.AppendFormat("<tr>");
                 sb.AppendFormat("<td colspan=\"2\">暂无历史轨迹</td>");
-
                 sb.AppendFormat("</tr>");
             }
             sb.AppendFormat("</tbody>");
@@ -396,10 +382,8 @@ namespace ManagerSystem.MVC.Controllers
                     }
                     else
                     {
-
                         sb.AppendFormat("<td><span class=\"label label-sm label-grey\">离线</span></td>");
                     }
-
                     sb.AppendFormat("</tr>");
                 }
             }
@@ -429,11 +413,6 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public JsonResult GetElectricAjax(string uid, string startTime, string endTime)
         {
-            /// sw.SearchTime   查询日期，查询某日的电量信息
-            /// sw.USERID       护林员序号（多序号以逗号分隔）
-            /// sw.DateBegin    开始日期
-            /// sw.DateEnd      结束日期
-            /// 
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
             sb.AppendFormat("<thead><tr>");
@@ -470,17 +449,6 @@ namespace ManagerSystem.MVC.Controllers
                         sb.AppendFormat("<td>{0}</td>", item.PHONE);
                         sb.AppendFormat("<td>{0}</td>", item.SBTIME);
                         sb.AppendFormat("<td>{0}</td>", item.ELECTRIC);
-                        //if (Convert.ToDouble(item.ELECTRIC) >= 50)
-                        //{
-                        //    sb.AppendFormat("<td><div class=\"progress progress-striped\" data-percent=\"{0}%\"><div class=\"progress-bar progress-bar-success\" style=\"width: {0}%;\"></div></div></td>", item.ELECTRIC);
-                        //}
-                        //else
-                        //{
-                        //    sb.AppendFormat("<td><div class=\"progress progress-striped\" data-percent=\"{0}%\"><div class=\"progress-bar progress-bar-danger\" style=\"width: {0}%;\"></div></div></td>", item.ELECTRIC);
-                        //}
-                        //<div class="progress progress-striped" data-percent="25%">
-                        //	 <div class="progress-bar progress-bar-success" style="width: 25%;"></div>
-                        //		 </div>
                         sb.AppendFormat("</tr>");
                     }
                 }
@@ -489,7 +457,7 @@ namespace ManagerSystem.MVC.Controllers
                     sb.AppendFormat("<tr>");
                     sb.AppendFormat("<td colspan=\"6\">暂无电量信息</td>");
                     sb.AppendFormat("</tr>");
-                    ms = new Message(false, sb.ToString(), "检索的数据量过大，请缩短时间间隔或减少查询护林员数量");
+                    ms = new Message(false, sb.ToString(), "检索的数据量过大,请缩短时间间隔或减少查询护林员数量!");
                     return Json(ms);
                 }
             }
@@ -548,7 +516,6 @@ namespace ManagerSystem.MVC.Controllers
             }
             var sw = new T_IPS_ALARM_SW();
             sw.ALARMID = alarmid;
-
             var model = T_IPS_ALARMCls.getModel(sw);
             ms = new MessageObject(true, model);
             return Json(ms);
@@ -588,7 +555,7 @@ namespace ManagerSystem.MVC.Controllers
             Message ms = null;
             if (string.IsNullOrEmpty(alarmid))
             {
-                ms = new Message(false, "alarmid参数传递错误", "");
+                ms = new Message(false, "alarmid参数传递错误!", "");
                 return Json(ms);
             }
             var m = new T_IPS_ALARM_Model();
@@ -601,7 +568,6 @@ namespace ManagerSystem.MVC.Controllers
             return Json(ms);
         }
 
-
         /// <summary>
         /// 检索报警信息列表Html
         /// </summary>
@@ -613,15 +579,15 @@ namespace ManagerSystem.MVC.Controllers
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
             sb.AppendFormat("<thead>");
-            sb.AppendFormat("  <tr> ");
-            sb.AppendFormat("  <th>序号</th>");
-            sb.AppendFormat("  <th>报警单位</th>");
-            sb.AppendFormat("  <th>报警人</th>");
-            sb.AppendFormat("  <th>电话号码</th>");
-            sb.AppendFormat("  <th>报警时间</th>");
-            sb.AppendFormat("  <th>状态</th>");
-            sb.AppendFormat("  <th>操作</th>");
-            sb.AppendFormat("   </tr>");
+            sb.AppendFormat("<tr> ");
+            sb.AppendFormat("<th>序号</th>");
+            sb.AppendFormat("<th>报警单位</th>");
+            sb.AppendFormat("<th>报警人</th>");
+            sb.AppendFormat("<th>电话号码</th>");
+            sb.AppendFormat("<th>报警时间</th>");
+            sb.AppendFormat("<th>状态</th>");
+            sb.AppendFormat("<th>操作</th>");
+            sb.AppendFormat("</tr>");
             sb.AppendFormat("</thead>");
             sb.AppendFormat("<tbody>");
             string txtAlarmStartTime = Request.Params["txtAlarmStartTime"];//开始时间
@@ -655,7 +621,6 @@ namespace ManagerSystem.MVC.Controllers
                     {
                         sb.AppendFormat("<td><a class=\"label label-success\">已处理</a></td>");
                     }
-                    //class=\"icon-flag\" 
                     sb.AppendFormat("<td><a href=\"javascript:void(0);\" onClick=\"getLocaAlarm(" + item.ALARMID + ")\">定位</a></td>");
                     sb.AppendFormat("</tr>");
                 }
@@ -668,11 +633,9 @@ namespace ManagerSystem.MVC.Controllers
             }
             sb.AppendFormat("</tbody>");
             sb.AppendFormat("</table>");
-
             ms = new Message(true, sb.ToString(), "");
             return Json(ms);
         }
-
 
         /// <summary>
         /// 删除报警点
@@ -684,10 +647,9 @@ namespace ManagerSystem.MVC.Controllers
             Message ms = null;
             if (string.IsNullOrEmpty(alarmid))
             {
-                ms = new Message(false, "报警主键ALAEMID传参失败", "");
+                ms = new Message(false, "报警主键ALAEMID传参失败!", "");
                 return Json(ms);
             }
-
             var m = new T_IPS_ALARM_Model();
             m.opMethod = "Del";
             m.ALARMID = alarmid;
@@ -709,7 +671,6 @@ namespace ManagerSystem.MVC.Controllers
             string state = Request.Params["state"];
             var sw = new T_IPS_HOTS_SW();
             sw.MANSTATE = state;
-
             var list = T_IPS_HOTSCls.getModelList(sw);
             if (list.Any())
             {
@@ -756,7 +717,7 @@ namespace ManagerSystem.MVC.Controllers
             string hotresult = Request.Params["hotresult"];
             if (string.IsNullOrEmpty(hotid))
             {
-                ms = new Message(false, "hotid参数传递错误", "");
+                ms = new Message(false, "hotid参数传递错误!", "");
                 return Json(ms);
             }
             var m = new T_IPS_HOTS_Model();
@@ -817,17 +778,17 @@ namespace ManagerSystem.MVC.Controllers
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
             sb.AppendFormat("<thead>");
-            sb.AppendFormat("  <tr> ");
-            sb.AppendFormat("  <th>序号</th>");
-            sb.AppendFormat("  <th>编号</th>");
-            sb.AppendFormat("  <th>热点区域</th>");
-            sb.AppendFormat("  <th>接收时间</th>");
-            sb.AppendFormat("  <th>像素</th>");
-            sb.AppendFormat("  <th>烟云</th>");
-            sb.AppendFormat("  <th>连续</th>");
-            sb.AppendFormat("  <th>状态</th>");
-            sb.AppendFormat("  <th>操作</th>");
-            sb.AppendFormat("   </tr>");
+            sb.AppendFormat("<tr>");
+            sb.AppendFormat("<th>序号</th>");
+            sb.AppendFormat("<th>编号</th>");
+            sb.AppendFormat("<th>热点区域</th>");
+            sb.AppendFormat("<th>接收时间</th>");
+            sb.AppendFormat("<th>像素</th>");
+            sb.AppendFormat("<th>烟云</th>");
+            sb.AppendFormat("<th>连续</th>");
+            sb.AppendFormat("<th>状态</th>");
+            sb.AppendFormat("<th>操作</th>");
+            sb.AppendFormat("</tr>");
             sb.AppendFormat("</thead>");
             sb.AppendFormat("<tbody>");
             string txtHotStartTime = Request.Params["txtHotStartTime"];//开始时间
@@ -862,7 +823,6 @@ namespace ManagerSystem.MVC.Controllers
                     {
                         sb.AppendFormat("<td><a class=\"label label-success\">已处理</a></td>");
                     }
-                    //class=\"icon-flag\" 
                     sb.AppendFormat("<td><a  href=\"javascript:void(0);\" onClick=\"getLocaHot(" + item.HOTSID + ")\">定位</a></td>");
                     sb.AppendFormat("</tr>");
                 }
@@ -889,7 +849,7 @@ namespace ManagerSystem.MVC.Controllers
             string hotid = Request.Params["hotid"];
             if (string.IsNullOrEmpty(hotid))
             {
-                ms = new Message(false, "hotid热点id传参失败", "");
+                ms = new Message(false, "hotid热点id传参失败!", "");
                 return Json(ms);
             }
             var m = new T_IPS_HOTS_Model();

@@ -116,12 +116,13 @@ namespace ManagerSystemClassLibrary.BaseDT
                 var str = orgNo.Substring(0, 6) + "%";
                 sb.AppendFormat(" where ORGNO LIKE '{0}'", str);
             }
-            else if (orgNo.Substring(9,6)=="0000000")//获取所有乡镇的
+            else if (orgNo.Substring(9, 6) == "0000000")//获取所有乡镇的
             {
                 var str = orgNo.Substring(0, 9) + "%";
                 sb.AppendFormat(" where ORGNO LIKE '{0}'", str);
             }
-            else{
+            else
+            {
                 sb.AppendFormat(" where ORGNO='{0}'", ClsSql.EncodeSql(m.ORGNO));
             }
             bool bln = DataBaseClass.ExeSql(sb.ToString());
@@ -227,16 +228,14 @@ namespace ManagerSystemClassLibrary.BaseDT
             if (string.IsNullOrEmpty(sw.OnlyGetShiXian) == false) //只获取市、县
                 sb.AppendFormat(" AND (SUBSTRING(ORGNO,1,4)='{0}' and SUBSTRING(ORGNO,7,9) = '000000000')", ClsSql.EncodeSql(sw.TopORGNO.Substring(0, 4)));
             if (string.IsNullOrEmpty(sw.OnlyGetXianXZ) == false) //只获取县、乡镇
-                sb.AppendFormat(" AND (SUBSTRING(ORGNO,1,6)='{0}' and SUBSTRING(ORGNO,7,9) = '000000000')", ClsSql.EncodeSql(sw.TopORGNO.Substring(0, 6)));
+                sb.AppendFormat(" AND (SUBSTRING(ORGNO,1,6)='{0}' and SUBSTRING(ORGNO,10,15) = '000000')", ClsSql.EncodeSql(sw.TopORGNO.Substring(0, 6)));
+            if (string.IsNullOrEmpty(sw.OnlyGetXZCun) == false) //只获取乡镇、村
+                sb.AppendFormat(" AND (SUBSTRING(ORGNO,1,9)='{0}')", ClsSql.EncodeSql(sw.TopORGNO.Substring(0, 9)));
             if (sw.IsEnableCUN == "1")
             {
-
             }
             else
-            {
                 sb.AppendFormat(" AND SUBSTRING(ORGNO,10,15) = '{0}'", "000000");
-
-            }
             sb.AppendFormat(" ORDER BY ORGNO");
             DataSet ds = DataBaseClass.FullDataSet(sb.ToString());
             return ds.Tables[0];
@@ -392,6 +391,46 @@ namespace ManagerSystemClassLibrary.BaseDT
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("SELECT ORGNO FROM      T_SYS_ORG where SUBSTRING(ORGNO,1,6)=(SELECT SUBSTRING(ORGNO,1,6) FROM      T_SYS_ORG where ORGNAME='{0}') and ORGNAME='{1}'", xianName, zhenName);
             return DataBaseClass.ReturnSqlField(sb.ToString());
+        }
+        #endregion
+
+        #region 根据编码获取经纬度
+        /// <summary>
+        /// 根据编码获取经度
+        /// </summary>
+        /// <param name="dt"></param>
+        /// <param name="value"></param>
+        /// <returns>参见模型</returns>
+        public static string getJD(DataTable dt, string value)
+        {
+            if (dt == null)
+                return "";
+            if (string.IsNullOrEmpty(value))
+                return "";
+            string str = "";
+            DataRow[] dr = dt.Select("ORGNO='" + value + "'");
+            if (dr.Length > 0)
+                str = dr[0]["JD"].ToString();
+            return str;
+        }
+
+        /// <summary>
+        /// 根据编码获取纬度
+        /// </summary>
+        /// <param name="dt"></param>
+        /// <param name="value"></param>
+        /// <returns>参见模型</returns>
+        public static string getWD(DataTable dt, string value)
+        {
+            if (dt == null)
+                return "";
+            if (string.IsNullOrEmpty(value))
+                return "";
+            string str = "";
+            DataRow[] dr = dt.Select("ORGNO='" + value + "'");
+            if (dr.Length > 0)
+                str = dr[0]["WD"].ToString();
+            return str;
         }
         #endregion
     }

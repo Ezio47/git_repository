@@ -94,6 +94,9 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult From2Dto3D()
         {
+            CookieModel cookieInfo1 = SystemCls.getCookieInfo();
+            ViewBag.LAYERNAME = T_SYS_LAYERCls.getLayerNameStr(new T_SYS_LAYER_SW { USERID = cookieInfo1.UID });
+            ViewBag.DEFAULTCH = T_SYS_LAYERCls.getLayerDEFAULTCHStr(new T_SYS_LAYER_SW { USERID = cookieInfo1.UID });
             ViewBag.AllNAME = T_SYS_LAYERCls.getLayerAllNAME();
             var result = new List<MapShowModel>();
             var sw = new JC_FIRE_SW();
@@ -116,17 +119,39 @@ namespace ManagerSystem.MVC.Controllers
             {
                 foreach (var item in list)
                 {
-                    var info = JC_FIRETICKLINGCls.GetFKFireInfoData(item.JCFID);
+                    //var info = JC_FIRETICKLINGCls.GetFKFireInfoData(item.JCFID);
+                    var fklist = GetFKInfoList(item.JCFID);
+                    var recordlist = fklist.Select(p => p.MANSTATE).ToList();//MANSTATE状态集合
+
                     var model = new MapShowModel();
                     model.JCFID = item.JCFID;
                     model.AREA = item.ZQWZ;
                     model.BH = item.WXBH;
-                    model.FKSTATE = StateSwitch.QSStateNew(SystemCls.getCurUserOrgNo(), info.JC_FireFKData.MANSTATE);
+                    if (Convert.ToInt32(item.MANSTATE) > 10)//大于10 说明已经入反馈阶段有顺序 
+                    {
+                        model.FKSTATE = StateSwitch.QSStateNew(SystemCls.getCurUserOrgNo(), item.MANSTATE);
+                    }
+                    else//签收无顺序性 状态判断是否反馈表包含 签到状态 1 市 2 县 3 乡镇
+                    {
+                        model.FKSTATE = StateSwitch.QSStateNewList(SystemCls.getCurUserOrgNo(), recordlist);
+                    }
+                    //model.FKSTATE = StateSwitch.QSStateNew(SystemCls.getCurUserOrgNo(), info.JC_FireFKData.MANSTATE);
                     result.Add(model);
                 }
             }
             return View(result);
         }
+
+        /// <summary>
+        /// 获取监测反馈信息
+        /// </summary>
+        /// <param name="jcfid"></param>
+        /// <returns></returns>
+        private IEnumerable<JC_FIRETICKLING_Model> GetFKInfoList(string jcfid)
+        {
+            return JC_FIRETICKLINGCls.GetModelList(new JC_FIRETICKLING_SW { JCFID = jcfid });
+        }
+
         /// <summary>
         /// 三维查询
         /// </summary>

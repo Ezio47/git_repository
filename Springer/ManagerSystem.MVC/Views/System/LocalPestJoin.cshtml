@@ -1,0 +1,102 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        单位：<select id="tbxORGNO" onchange="query('1')">@Html.Raw(@ViewBag.vdOrg)</select>&nbsp;&nbsp;&nbsp;
+                        调查类型：<select id="tbxSEARCHTYPE" onchange="query('1')">@Html.Raw(@ViewBag.vdSearType)</select>&nbsp;&nbsp;&nbsp;
+                        <input type="button" value="查 询" onclick="query('1')" class="btnSearchCss" />
+                        <input type="button" value="本地化管理" onclick="manager('local','')" class="btnSaveCss" style="width:100px">
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <div class="divTable" id="divTable">
+
+                </div>
+            </div>
+            <div data-options="region:'south'" title="" style=" height:40px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
+                <div class="divPager" id="divPager">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        query('1');
+    });
+
+    var page = 1;//当前默认页面为1
+    function query(Page) {
+        page = Page;
+        var pagesize = '0';
+        if (document.getElementById("selPageSize") != null) {
+            pagesize = document.getElementById("selPageSize").value;
+        }
+        $.ajax({
+            url: '/System/LocalPestJoinQuery',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: {
+                PageSize: pagesize,
+                ORGNO: $('#tbxORGNO').val(),
+                SEARCHTYPE: $('#tbxSEARCHTYPE').val(),
+                Page: page
+            },
+            dataType: 'json',
+            success: function (data, ioArgs) {
+                if (data.Success) {
+                    $('#divTable').html(data.tableInfo);
+                    $('#divPager').html(data.pagerInfo);
+                }
+                else {
+                    $('#divTable').html('');
+                    $('#divPager').html('');
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('系统异常', { icon: 5 });
+            }
+        });
+    }
+
+    function manager(source, biocode) {
+        if (source == 'local') {
+            layer.open({
+                type: 2,
+                title: '本地化生物管理',
+                area: ['700px', '500px'],
+                fix: true,
+                maxmin: true,
+                content: '/System/LocalPestJoinMan',
+                end: function () {
+                    query('1');
+                }
+            });
+        }
+        if (source == 'prop') {
+            layer.open({
+                type: 2,
+                title: '属性管理',
+                area: ['780px', '500px'],
+                fix: true,
+                maxmin: true,
+                content: '/System/PropTotalMan?BioCode=' + biocode,
+                end: function () {
+                    query('1');
+                }
+            });
+        }
+    }
+</script>

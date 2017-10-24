@@ -1,15 +1,16 @@
 ﻿@using ManagerSystemClassLibrary;
 @{
     Layout = "~/Views/Shared/_LayOutIndex.cshtml";
-    var curorgno = SystemCls.getCurUserOrgNo();
-    if (curorgno.Substring(6, 3) == "000" && curorgno.Substring(4, 2) != "00")
+     var curorgno = SystemCls.getCurUserOrgNo();
+    if (curorgno.Substring(6, 9) == "000000000" && curorgno.Substring(4, 2) != "00")
     {
-        curorgno = curorgno.Substring(0, 6) + "xxx";
+        curorgno = curorgno.Substring(0, 6) + "xxxxxxxxx";
     }
     else
     {
         curorgno = SystemCls.getCurUserOrgNo();
     }
+    var curorgno1 = SystemCls.getCurUserOrgNo();//添加的时候组织机判断
 }
 
 <div class="easyui-layout" data-options="fit:true" style=" border:0;">
@@ -27,8 +28,8 @@
                             无线电传输方式：<select id="tbxTRANSFERMODETYPE">@Html.Raw(@ViewBag.TransfermodeType)</select>&nbsp;&nbsp;&nbsp;
                             使用现状：<select id="tbxUSESTATE">@Html.Raw(@ViewBag.UsesSate)</select>&nbsp;&nbsp;&nbsp;
                             名称：<input id="tbxNAME" type="text" class="input-small" style="width:120px" value="" />
-                            <input type="button" value="查询" onclick="query('1')" class="btnSearchCss" />
-                            <input type="button" value="添加" onclick="Manager('Add','','')" id="btnAdd" style="display:none;" class="btnAddCss" />
+                            <input type="button" value="查 询" onclick="query('1')" class="btnSearchCss" />
+                            <input type="button" value="添 加" onclick="Manager('Add','','')" id="btnAdd" style="display:none;" class="btnAddCss" />
                         </li>
                     </ul>
                 </div>
@@ -51,51 +52,51 @@
     <input id="HidID" name="HidID" type="hidden" value="" />
     <table cellpadding="0" cellspacing="0">
         <tr>
-            <td style="width:80px;">单位：</td>
+            <td class="tdField" style="width:80px;">单位：</td>
             <td><select id="BYORGNO" class="easyui-combotree" style="width:200px;"></select> </td>
-            <td style="width:110px;">无线电传输方式：</td>
+            <td class="tdField" style="width:110px;">无线电传输方式：</td>
             <td><select id="TRANSFERMODETYPE" style="width:99%">@Html.Raw(@ViewBag.TransfermodeTypeAdd) </select> </td>
         </tr>
         <tr>
-            <td style="width:80px;"><span style="color:red;">*</span>编号：</td>
-            <td><input id="NUMBER" type="text" class="input-small" value="" style="width:99%;" /></td>
-            <td style="width:80px;"><span style="color:red;">*</span>名称：</td>
-            <td><input id="NAME" type="text" class="input-small" value="" style="width:99%;" /></td>
+            <td class="tdField" style="width:80px;">编号：</td>
+            <td><input id="NUMBER" type="text"  value="" style="width:90%;" /><span class="spanRequiredField">*</span></td>
+            <td class="tdField" style="width:80px;">名称：</td>
+            <td><input id="NAME" type="text"  value="" style="width:90%;" /><span class="spanRequiredField">*</span></td>
         </tr>
         <tr>
-            <td style="width:80px;"><span style="color:red;">*</span>型号：</td>
-            <td><input id="MODEL" type="text" class="input-small" value="" style="width:99%;" /></td>
-            <td style="width:80px;"><span style="color:red;">*</span>监测内容：</td>
-            <td><input id="MONICONTENT" type="text" class="input-small" value="" style="width:99%;" /></td>
+            <td class="tdField" style="width:80px;">型号：</td>
+            <td><input id="MODEL" type="text"  value="" style="width:90%;" /><span class="spanRequiredField">*</span></td>
+            <td class="tdField" style="width:80px;">监测内容：</td>
+            <td><input id="MONICONTENT" type="text"  value="" style="width:90%;" /><span class="spanRequiredField">*</span></td>
         </tr>
         <tr>
-            <td style="width:100px;">使用现状：</td>
-            <td><select id="USESTATE" style="width:99%">@Html.Raw(@ViewBag.UsesSateAdd) </select></td>
-            <td style="width:100px;">维护管理：</td>
-            <td><select id="MANAGERSTATE" style="width:99%">@Html.Raw(@ViewBag.ManagerStateAdd) </select></td>
+            <td class="tdField" style="width:100px;">使用现状：</td>
+            <td><select id="USESTATE" style="width:95%">@Html.Raw(@ViewBag.UsesSateAdd) </select></td>
+            <td class="tdField" style="width:100px;">维护管理：</td>
+            <td><select id="MANAGERSTATE" style="width:95%">@Html.Raw(@ViewBag.ManagerStateAdd) </select></td>
         </tr>
         <tr>
-            <td style="width:80px;">经度：</td>
-            <td><input id="JD" type="text" class="input-small" value="" style="width:99%;" /></td>
-            <td style="width:80px;">纬度：</td>
+            <td class="tdField" style="width:80px;">经度：</td>
+            <td><input id="JD" type="text"  value="" style="width:95%;" /></td>
+            <td class="tdField" style="width:80px;">纬度：</td>
             <td>
-                <input id="WD" type="text" class="input-small" value="" style="width:65%;" />
+                <input id="WD" type="text"  value="" style="width:65%;" />
                 <input type="button" value="地图定位" onclick="setPoint()" class="btnMapLoaclCss" />
             </td>
         </tr>
         <tr>
-            <td style="width:80px;">建设日期：</td>
-            <td><input id="BUILDDATE" type="text" class="easyui-datebox" style="width:200px;height:28px;" value="" /> </td>
-            <td style="width:80px;">总价：</td>
-            <td><input id="WORTH" type="text" class="input-small" value="" style="width:86%" />&nbsp;万元</td>
+            <td class="tdField" style="width:80px;">建设日期：</td>
+            <td><input id="BUILDDATE" type="text" class="easyui-datebox" style="width:200px;height:28px;" value="" /></td>
+            <td class="tdField" style="width:80px;">总价：</td>
+            <td><input id="WORTH" type="text"  value="" style="width:86%" /><span class="spanMark">&nbsp;万元</span></td>
         </tr>
         <tr>
-            <td style="width:80px;">地址：</td>
-            <td colspan="3"><input id="ADDRESS" type="text" class="input-small" value="" style="width:99%;" /></td>
+            <td class="tdField" style="width:80px;">地址：</td>
+            <td colspan="3"><input id="ADDRESS" type="text"  value="" style="width:96%;" /></td>
         </tr>
         <tr>
-            <td style="width:80px;">备注：</td>
-            <td colspan="3"><input id="MARK" type="text" class="input-small" value="" style="width:99%;" /></td>
+            <td class="tdField" style="width:80px;">备注：</td>
+            <td colspan="3"><input id="MARK" type="text"  value="" style="width:96%;" /></td>
         </tr>
     </table>
 </div>
@@ -254,7 +255,7 @@
             layer.open({
                 type: 2,
                 title: '查看监测点',
-                area: ['55%', '65%'],
+                area: ['800px', '400px'],
                 fix: true,
                 maxmin: true,
                 content: '/PEST/MonitoringStationDataSee?PEST_MONITORINGSTATIONID=' + ID,
@@ -314,7 +315,7 @@
             layer.open({
                 type: 1,
                 title: str,
-                area: ['55%', '70%'],
+                area: ['800px', '430px'],
                 btn: btnInfo,
                 shade: 0,
                 maxmin: true,

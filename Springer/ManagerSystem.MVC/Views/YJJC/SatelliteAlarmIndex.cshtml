@@ -26,26 +26,25 @@
             <div data-options="region:'center'" title="" class="LayoutCenterBG">
                 <div class="divMan">
                     <table cellpadding="0" cellspacing="0">
-
-                        <tr class="row1">
-                            <td style="width:80px;"><span style="color:red">*</span>卫星编号：</td>
-                            <td style="width:500px;"><input id="tbxWXBH" type="text" value="" style="width:90%;" /></td>
-                            <td style="width:80px;"><span style="color:red">*</span>热点编号：</td>
-                            <td><input id="tbxRDBH" type="text" value="" style="width:90%;" /></td>
+                        <tr >
+                            <td style="width:80px;" class="tdField">卫星编号：</td>
+                            <td style="width:500px;"><input id="tbxWXBH" type="text" value="" style="width:90%;" /><span class="spanRequiredField">*</span></td>
+                            <td style="width:80px;" class="tdField">热点编号：</td>
+                            <td><input id="tbxRDBH" type="text" value="" style="width:90%;" /><span class="spanRequiredField">*</span></td>
                         </tr>
                         <tr>
-                            <td>区域：</td>
+                            <td class="tdField">区域：</td>
                             <td><select id="tbxBYORGNO" style="width:90%;"> @Html.Raw(@ViewBag.vdOrg)</select></td>
-                            <td>像素：</td>
+                            <td class="tdField">像素：</td>
                             <td><input id="tbxXS" type="text" value="" style="width:90%;" /></td>
                         </tr>
-                        <tr class="row1">
-                            <td colspan="4">
+                        <tr >
+                            <td class="tdField" colspan="4">
                                 <input type="radio" value="1" name="typeRadio" id="dfmid" checked /><label for="dfmid">度分秒</label><input type="radio" value="0" name="typeRadio" id="sjzid" /><label for="sjzid">十进制</label>
                             </td>
                         </tr>
                         <tr>
-                            <td><span style="color:red">*</span>经度： </td>
+                            <td class="tdField"><span style="color:red">*</span>经度： </td>
                             <td>
                                 <input id="tbxJD" type="text" value="" style="width:90%;display:none" " />
                                 @*<input id="jd" type="text" value="0" style="width:100px;display:none" onblur="validate('jd','2')" />*@
@@ -53,9 +52,9 @@
                                 <input id="jd_f" type="text" value="" style="width:60px" /><font id="fontDiv2">分</font>
                                 <input id="jd_m" type="text" value="" style="width:60px" /><font id="fontDiv6">秒</font>
                             </td>
-                            <td><span style="color:red">*</span>纬度： </td>
+                            <td class="tdField">纬度： </td>
                             <td>
-                                <input id="tbxWD" type="text" value="" style="width:70%;display:none" />
+                                <input id="tbxWD" type="text" value="" style="width:70%;display:none" /><span class="spanRequiredField">*</span>
                                 <input id="location" type="button" class="btnMapLoaclCss" style="display:none" value=" 地图定位" onclick="setPoint()" />
                                 @*<input id="wd" type="text" value="0" style="width:100px;display:none" onblur="validate('wd','2')" />*@
                                 <input id="wd_d" type="text" value="" style="width:60px" /><font id="fontDiv3">度</font>
@@ -63,15 +62,15 @@
                                 <input id="wd_m" type="text" value="" style="width:60px" /><font id="fontDiv5">秒</font>
                             </td>
                         </tr>
-                        <tr class="row1"></tr>
-                        <tr class="row1">
-                            <td>火情发生时间：</td>
+                        <tr ></tr>
+                        <tr >
+                            <td class="tdField">火情发生时间：</td>
                             <td colspan="3">
                                 <input class="Wdate" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss', maxDate: '%y-%M-%d %H:%m:%s' })" id="tbxALARMTIME" type="text" value="" style="width:16%;" />
                             </td>
                         </tr>
                         <tr>
-                            <td>备注： </td>
+                            <td class="tdField">备注： </td>
                             <td colspan="3">
                                 <textarea id="tbxMARK" style="width:95%;height:50px; margin-top:10px; OVERFLOW:visible"></textarea>
                             </td>

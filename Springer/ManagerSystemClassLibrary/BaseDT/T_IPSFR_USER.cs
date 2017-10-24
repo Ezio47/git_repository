@@ -27,12 +27,12 @@ namespace ManagerSystemClassLibrary.BaseDT
         {
             if (isExists(new T_IPSFR_USER_SW { PHONE = m.PHONE }))
                 return new Message(false, "添加失败，电话号码重复！", "");
-            if (isExists(new T_IPSFR_USER_SW { SN = m.SN }))
-                return new Message(false, "添加失败，终端编号重复！", "");
+            //if (string.IsNullOrEmpty(m.SN) == false && isExists(new T_IPSFR_USER_SW { SN = m.SN }))
+            //    return new Message(false, "添加失败，终端编号重复！", "");
             //if (PublicCls.OrgIsZhen(m.BYORGNO )==false)
             //    return new Message(false, "添加失败，所属单位必须为乡镇！", "");
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("INSERT INTO  T_IPSFR_USER(HNAME, SN, PHONE, SEX, BIRTH, ONSTATE, BYORGNO,ISENABLE)");
+            sb.AppendFormat("INSERT INTO  T_IPSFR_USER(HNAME, SN, PHONE, SEX, BIRTH, ONSTATE, BYORGNO,ISENABLE,PATROLLENGTH,MOBILEPARAMLIST)");
             sb.AppendFormat("VALUES(");
             sb.AppendFormat("'{0}'", ClsSql.EncodeSql(m.HNAME));
             sb.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.SN));
@@ -42,6 +42,8 @@ namespace ManagerSystemClassLibrary.BaseDT
             sb.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.ONSTATE));
             sb.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.BYORGNO));
             sb.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.ISENABLE));
+            sb.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.PATROLLENGTH));
+            sb.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.MOBILEPARAMLIST));
             sb.AppendFormat(")");
             bool bln = DataBaseClass.ExeSql(sb.ToString());
             if (bln == true)
@@ -98,6 +100,8 @@ namespace ManagerSystemClassLibrary.BaseDT
             sb.AppendFormat(",ONSTATE='{0}'", ClsSql.EncodeSql(m.ONSTATE));
             sb.AppendFormat(",BYORGNO='{0}'", ClsSql.EncodeSql(m.BYORGNO));
             sb.AppendFormat(",ISENABLE='{0}'", ClsSql.EncodeSql(m.ISENABLE));
+            sb.AppendFormat(",PATROLLENGTH='{0}'", ClsSql.EncodeSql(m.PATROLLENGTH));
+            sb.AppendFormat(",MOBILEPARAMLIST='{0}'", ClsSql.EncodeSql(m.MOBILEPARAMLIST));
             sb.AppendFormat(" where HID= '{0}'", ClsSql.EncodeSql(m.HID));
             bool bln = DataBaseClass.ExeSql(sb.ToString());
             if (bln == true)
@@ -195,7 +199,6 @@ namespace ManagerSystemClassLibrary.BaseDT
         /// <returns>true存在 false 不存在 </returns>
         public static bool isExists(T_IPSFR_USER_SW sw)
         {
-
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("select 1 from T_IPSFR_USER where 1=1");
             if (string.IsNullOrEmpty(sw.HID) == false)
@@ -262,7 +265,7 @@ namespace ManagerSystemClassLibrary.BaseDT
 
                 sb.AppendFormat(" AND (a.PHONE  like '%{0}%' or a.HNAME like '%{0}%')", ClsSql.EncodeSql(sw.PhoneHname));
             }
-            string sql = "SELECT    HID, HNAME, SN, PHONE, SEX, BIRTH, ONSTATE, BYORGNO,ISENABLE,MOBILEPARAMLIST"
+            string sql = "SELECT    HID, HNAME, SN, PHONE, SEX, BIRTH, ONSTATE, BYORGNO,ISENABLE,PATROLLENGTH,MOBILEPARAMLIST"
                 + sb.ToString()
                 + " order by BYORGNO,HNAME";
             string sqlC = "select count(1) " + sb.ToString();
@@ -300,7 +303,7 @@ namespace ManagerSystemClassLibrary.BaseDT
         public static DataTable getDT(T_IPSFR_USER_SW sw)
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("SELECT a.HID, a.HNAME, a.SN, a.PHONE, a.SEX, a.BIRTH, a.ONSTATE, a.BYORGNO,a.MOBILEPARAMLIST, a.ISENABLE, b.ORGNAME");
+            sb.AppendFormat("SELECT a.HID, a.HNAME, a.SN, a.PHONE, a.SEX, a.BIRTH, a.ONSTATE, a.BYORGNO,a.MOBILEPARAMLIST, a.ISENABLE,a.PATROLLENGTH, b.ORGNAME");
             sb.AppendFormat(" FROM      T_IPSFR_USER  AS a LEFT OUTER JOIN T_SYS_ORG AS b ON a.BYORGNO = b.ORGNO");
             sb.AppendFormat(" WHERE   1=1");
             if (string.IsNullOrEmpty(sw.HID) == false)

@@ -2,14 +2,15 @@
 @{
     Layout = "~/Views/Shared/_LayOutIndex.cshtml";
     var curorgno = SystemCls.getCurUserOrgNo();
-    if (curorgno.Substring(6, 3) == "000" && curorgno.Substring(4, 2) != "00")
+    if (curorgno.Substring(6, 9) == "000000000" && curorgno.Substring(4, 2) != "00")
     {
-        curorgno = curorgno.Substring(0, 6) + "xxx";
+        curorgno = curorgno.Substring(0, 6) + "xxxxxxxxx";
     }
     else
     {
         curorgno = SystemCls.getCurUserOrgNo();
     }
+    var curorgno1 = SystemCls.getCurUserOrgNo();//添加的时候组织机判断
 }
 @section Header{
     <script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
@@ -35,6 +36,11 @@
             </div>
             <div data-options="region:'center'" title="" style=" border: none; " class="LayoutCenterBG">
                 <div id="divTable" class="divTable">
+
+                </div>
+            </div>
+            <div data-options="region:'south'" title="" style=" height:40px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
+                <div class="divPager" id="divPager">
 
                 </div>
             </div>
@@ -107,8 +113,8 @@
         if (Method == "See") {
             layer.open({
                 type: 2,
-                title: '灾损查看',
-                area: ['60%', '90%'],
+                title: '查看',
+                area: ['750px', '550px'],
                 fix: true,
                 maxmin: true,
                 content: '/DamageAssess/FireLostDataSee?JCFID=' + DataId,
@@ -117,16 +123,15 @@
         if (Method == "Assess") {
             var index = layer.open({
                 type: 2,
-                title: '灾损评估',
+                title: '评估',
+                area: ['1060px', '550px'],
                 fix: true,
-                maxmin: false,
-                offset: '10%',
-                content: '/DamageAssess/FireLostAssess?JCFID=' + DataId,
+                maxmin: true,
+                content: '/DamageAssess/FireLostAssessNew?JCFID=' + DataId,
                 end: function () {
                     end: query(Page);
                 }
             });
-            layer.full(index);
         }
     }
 </script>

@@ -182,9 +182,7 @@ namespace ManagerSystemClassLibrary.BaseDT
         public static DataTable getDT(ART_DOCUMENT_SW sw, out int total)
         {
             StringBuilder sb = new StringBuilder();
-
-
-            sb.AppendFormat(" FROM      ART_DOCUMENT");
+            sb.AppendFormat(" FROM   ART_DOCUMENT");
             sb.AppendFormat(" WHERE   1=1");
             if (string.IsNullOrEmpty(sw.ARTTYPEID) == false)
                 sb.AppendFormat(" AND ARTTYPEID = '{0}'", ClsSql.EncodeSql(sw.ARTTYPEID));
@@ -194,7 +192,6 @@ namespace ManagerSystemClassLibrary.BaseDT
                 sb.AppendFormat(" AND ARTTITLE like '%{0}%'", ClsSql.EncodeSql(sw.ARTTITLE));
             if (string.IsNullOrEmpty(sw.ARTTAG) == false)
                 sb.AppendFormat(" AND ARTTAG like '%{0}%'", ClsSql.EncodeSql(sw.ARTTAG));
-
             if (string.IsNullOrEmpty(sw.TIMEBegin) == false)
                 sb.AppendFormat(" AND ARTTIME >= '{0}'", ClsSql.EncodeSql(sw.TIMEBegin));
             if (string.IsNullOrEmpty(sw.TIMEEnd) == false)
@@ -204,15 +201,13 @@ namespace ManagerSystemClassLibrary.BaseDT
             if (string.IsNullOrEmpty(sw.BYORGNO) == false)
                 sb.AppendFormat(" AND BYORGNO = '{0}'", ClsSql.EncodeSql(sw.BYORGNO));
             string sql = "SELECT ARTID, ARTTYPEID, ARTTITLE, ARTTAG, ARTTIME,  ARTCHECKSTATUS, ARTADDUSERID,ARTCHECKTIME, ARTCHECKUSERID,PLANFILENAME,BYORGNO"
-                + sb.ToString()
-                + " order by ARTTIME DESC";
+                + sb.ToString()+ " order by ARTTIME DESC";
             string sqlC = "select count(1) " + sb.ToString();
             total = int.Parse(DataBaseClass.ReturnSqlField(sqlC));
             sw.curPage = PagerCls.getCurPage(new PagerSW { curPage = sw.curPage, pageSize = sw.pageSize, rowCount = total });
             DataSet ds = DataBaseClass.FullDataSet(sql, (sw.curPage - 1) * sw.pageSize, sw.pageSize, "a");
             return ds.Tables[0];
         }
-
         #endregion
     }
 }

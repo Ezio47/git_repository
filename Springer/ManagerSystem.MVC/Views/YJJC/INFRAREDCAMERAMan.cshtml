@@ -4,14 +4,10 @@
 @section Header{
     <script src="~/Scripts/SpringerCommonValidate.js"></script>
 }
+
 <div class="easyui-layout" data-options="fit:true" style=" border:0;">
-
-
     <div data-options="region:'center'" title="" style=" border: none; ">
-
         <div class="easyui-layout" data-options="fit:true" style=" border:0;">
-
-
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
                 <div class="divOP">
                     <div class="homeUL">
@@ -21,66 +17,36 @@
                 </div>
             </div>
             <div data-options="region:'center'" title="" style=" border: none; ">
-
                 <div class="divMan">
                     <table cellpadding="0" cellspacing="0">
-
-                        <tr class='row1'>
-                            <td style="width:100px;">
-                                单位名称:
-                            </td>
-                            <td>
-                                <select id="tbxBYORGNO">
-                                    @Html.Raw(@ViewBag.vdOrg)
-                                </select>
-                            </td>
-                            <td>
-                                相机名:
-                            </td>
-                            <td>
-                                <input id="tbxINFRAREDCAMERANAME" type="text" value="" style="width:90%;" />
-                            </td>
-                           
+                        <tr>
+                            <td style="width:100px;" class="tdField">单位名称: </td>
+                            <td><select id="tbxBYORGNO">@Html.Raw(@ViewBag.vdOrg)</select></td>
+                            <td class="tdField">相机名:</td>
+                            <td><input id="tbxINFRAREDCAMERANAME" type="text" value="" style="width:90%;" /></td>
                         </tr>
                         <tr>
-                            <td style="width:100px;">
-                                手机号码:
-                            </td>
-                            <td>
-                                <input id="tbxPHONE" type="text" value="" style="width:90%;" />
-                            </td>
-                            <td>
-                                高程:
-                            </td>
-                            <td>
-                                <input id="tbxGC" type="text" value="" style="width:90%;" />
-                            </td>
+                            <td style="width:100px;" class="tdField">手机号码:</td>
+                            <td ><input id="tbxPHONE" type="text" value="" style="width:90%;" /></td>
+                            <td class="tdField">高程:</td>
+                            <td><input id="tbxGC" type="text" value="" style="width:90%;" /></td>
                         </tr>
                         <tr>
-                            <td>
-                                经度:
-                            </td>
-                            <td>
-                                <input id="tbxJD" type="text" value="" style="width:90%;" />
-                            </td>
-                            <td>
-                                纬度:
-                            </td>
+                            <td class="tdField">经度:</td>
+                            <td><input id="tbxJD" type="text" value="" style="width:90%;" /></td>
+                            <td class="tdField"> 纬度:</td>
                             <td>
                                 <input id="tbxWD" type="text" value="" style="width:60%;" />
                                 <input type="button" value="地图定位" onclick="setPoint()" class="btnMapLoaclCss" />
                             </td>
                         </tr>
                         <tr>
-                            <td>
-                                地址:
-                            </td>
+                            <td class="tdField">地址:</td>
                             <td colspan="3">
                                 <input id="tbxADDRESS" type="text" value="" style="width:90%;" />
                                 <input id="tbxINFRAREDCAMERAID" type="hidden" value="" />
                             </td>
                         </tr>
-
                     </table>
                 </div>
             </div>
@@ -88,21 +54,19 @@
         </div>
     </div>
 </div>
+
 <script type="text/javascript">
     if ('@ViewBag.T_Method' != 'See')
         document.getElementById("btnSave").style.display = '';
+
     $.ajax({
         url: '/YJJC/GetINFRAREDCAMERA_BASICINFOJson',
         cache: false,
         timeout: 10000, //10秒后超时，如果为0则永不超时
-
-        data: {
-            ID: '@ViewBag.T_ID'
-        },
+        data: { ID: '@ViewBag.T_ID' },
         success: function (data, ioArgs) {
             var ar = eval('(' + data + ')');
             if (ar.INFRAREDCAMERAID != null) {
-
                 document.getElementById("tbxINFRAREDCAMERAID").value = ar.INFRAREDCAMERAID
                 document.getElementById("tbxPHONE").value = ar.PHONE
                 document.getElementById("tbxBYORGNO").value = ar.BYORGNO
@@ -131,43 +95,43 @@
         var t5 = $('#tbxWD').val();
 
         if ($.trim(t2) == "") {
-            layer.msg('相机名称不可为空！', { icon: 5 });
+            layer.msg('相机名称不可为空!', { icon: 5 });
             $('#tbxINFRAREDCAMERANAME').focus();
             return;
         }
 
         if ($.trim(t1) !== "") {
             if (checkPhone(t1) == false) {
-                layer.msg('手机号码格式不正确！', { icon: 5 });
+                layer.msg('手机号码格式不正确!', { icon: 5 });
                 $('#tbxPHONE').focus();
                 return;
             }
         } else {
-            layer.msg('手机号码不可为空！', { icon: 5 });
+            layer.msg('手机号码不可为空!', { icon: 5 });
             $('#tbxPHONE').focus();
             return;
         }
 
         if ($.trim(t4) == "") {
-            layer.msg('经度不可为空！', { icon: 5 });
+            layer.msg('经度不可为空!', { icon: 5 });
             $('#tbxJD').focus();
             return;
         } else {
             reg = /^-?\d+\.\d{1,6}$/;
             if (!reg.test(t4)) {
-                layer.msg('经度格式不正确！', { icon: 5 });
+                layer.msg('经度格式不正确!', { icon: 5 });
                 $('#tbxJD').focus();
                 return;
             }
         }
         if ($.trim(t5) == "") {
-            layer.msg('纬度不可为空！', { icon: 5 });
+            layer.msg('纬度不可为空!', { icon: 5 });
             $('#tbxWD').focus();
             return;
         } else {
             reg = /^-?\d+\.\d{1,6}$/;
             if (!reg.test(t5)) {
-                layer.msg('纬度格式不正确！', { icon: 5 });
+                layer.msg('纬度格式不正确!', { icon: 5 });
                 $('#tbxWD').focus();
                 return;
             }
@@ -177,7 +141,6 @@
             url: '/YJJC/INFRAREDCAMERA_BASICINFOManger',
             cache: false,
             timeout: 10000, //10秒后超时，如果为0则永不超时
-
             data: {
                 INFRAREDCAMERAID: document.getElementById("tbxINFRAREDCAMERAID").value,
                 PHONE: document.getElementById("tbxPHONE").value,
@@ -194,7 +157,7 @@
             success: function (data, ioArgs) {
                 var ar = eval('(' + data + ')');
                 if (ar.Success) {
-                    layer.confirm(ar.Msg, { icon: 3, title: '提示' }, function (index){
+                    layer.confirm(ar.Msg + '请返回?', { icon: 3, title: '提示' }, function (index) {
                         var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
                         parent.layer.close(index);
                         window.location.assign(ar.Url);

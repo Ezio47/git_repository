@@ -29,11 +29,6 @@ namespace ManagerSystem.MVC.Controllers
         static readonly RedisClient redisclient = new RedisClient(host, int.Parse(port));
         private static readonly ILog logs = LogHelper.GetInstance();
 
-        public ActionResult Index()
-        {
-            return View();
-
-        }
 
         /// <summary>
         /// 预警响应
@@ -95,6 +90,10 @@ namespace ManagerSystem.MVC.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// 机构联系人树形菜单
+        /// </summary>
+        /// <returns></returns>
         public ActionResult TreeORGUSERGet()
         {
             string ID = Request.Params["id"];
@@ -140,7 +139,6 @@ namespace ManagerSystem.MVC.Controllers
             return View();
         }
 
-
         /// <summary>
         /// 获取视频下拉列表
         /// </summary>
@@ -148,12 +146,11 @@ namespace ManagerSystem.MVC.Controllers
         public ActionResult GetVideoTree()
         {
             //string str = Request.Params["phonehname"];
-            string id  = Request.Params["id"];//组织机构编码
+            string id = Request.Params["id"];//组织机构编码
             string eid = Request.Params["eid"];//设备标号
-            string result = JC_INFRAREDCAMERACls.getSynTree(id,eid);
+            string result = JC_INFRAREDCAMERACls.getSynTree(id, eid);
             return Content(result, "application/json");
         }
-
 
         /// <summary>
         /// 发送短信
@@ -163,7 +160,6 @@ namespace ManagerSystem.MVC.Controllers
         {
             return View();
         }
-
 
         /// <summary>
         /// 预警响应措施
@@ -213,9 +209,9 @@ namespace ManagerSystem.MVC.Controllers
                     sb.AppendFormat("<tr  style='background:{0};color:#000000'>", v.STANDBY1);
                     sb.AppendFormat("<td style='color:#000;font-weight:bold;font-size:9pt;'>{0}</td>", x.DICTNAME);
                     var jbs = result.Where(p => p.DANGERCLASS == DANGERCLASS && p.YJXYDEPT == x.DICTVALUE).FirstOrDefault();
-                    if (jbs!=null)
-                        sb.AppendFormat("<td style='text-align:left;font-size:9pt;'>{0}</td>",jbs.YJXYCONTENT);
-                        //sb.AppendFormat("{0}", jbs.YJXYCONTENT);
+                    if (jbs != null)
+                        sb.AppendFormat("<td style='text-align:left;font-size:9pt;'>{0}</td>", jbs.YJXYCONTENT);
+                    //sb.AppendFormat("{0}", jbs.YJXYCONTENT);
                     //else
                     //    sb.AppendFormat("{0}", "");
                     //sb.AppendFormat("</td>");
@@ -237,7 +233,7 @@ namespace ManagerSystem.MVC.Controllers
             string startime = Request.Params["startime"];
             if (string.IsNullOrEmpty(startime))
             {
-                ms = new Message(false, "开始时间参数丢失", "");
+                ms = new Message(false, "开始时间参数丢失!", "");
                 return Json(ms);
             }
             var dtstartime = Convert.ToDateTime(startime);
@@ -281,7 +277,7 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public JsonResult SendMsg()
         {
-            Message ms = new Message(false, "错误信息初始化", "");
+            Message ms = new Message(false, "错误信息初始化!", "");
             string SubjectPerson = Request.Params["SubjectPerson"];
             var paraArry1 = SubjectPerson.Split('|');//获取主题+；+人员+；+短信内容| 
             if (paraArry1.Length > 0)
@@ -319,6 +315,7 @@ namespace ManagerSystem.MVC.Controllers
                                     string arrperson = string.Join(",", arrpersonlist);
                                     string txlMobile = arrperson;//通讯录电话列表
                                     string txlContent = "";// 通讯录模板 
+
                                     #region 注释
                                     // foreach (var p in arrperson)
                                     //  {
@@ -345,6 +342,7 @@ namespace ManagerSystem.MVC.Controllers
                                     //   }   
                                     //}
                                     #endregion
+
                                     txlContent = info.TMPCONTENT;
                                     var mm = SmsCom.SendMsg(txlContent, txlMobile.TrimEnd(','));//发送短信
                                     if (mm.Success)
@@ -353,7 +351,6 @@ namespace ManagerSystem.MVC.Controllers
                                         ms.Success = mm.Success;
                                         ms.Url = "";
                                     }
-
                                     //ms
                                     // var mm = Smsclient.SendMsg(txlContent, txlMobile);
                                     // ms = SmsMsgCom.SendMsg(txlContent, txlMobile);//发送短信
@@ -462,7 +459,6 @@ namespace ManagerSystem.MVC.Controllers
                                                 string zbyContent = info.TMPCONTENT;//值班员模板
                                                 foreach (var zby in zbylist)
                                                 {
-
                                                     var m = T_SYSSEC_IPSUSERCls.getModel(new T_SYSSEC_IPSUSER_SW { USERID = zby.ToString() });
                                                     if (!string.IsNullOrEmpty(m.PHONE))
                                                     {
@@ -500,7 +496,6 @@ namespace ManagerSystem.MVC.Controllers
                                                     ms.Success = mm.Success;
                                                     ms.Url = "";
                                                 }
-
                                                 // info.SMSSENDUSERLIST = zbystr;//值班员人员
                                                 //info.SMSSENDSTATUS = "1";//0 未发送 1 已发送 -1 发送失败
                                                 //ms = YJ_DCSMS_SENDCls.Manager(info);
@@ -515,18 +510,18 @@ namespace ManagerSystem.MVC.Controllers
                         }
                         else
                         {
-                            ms = new Message(false, "当前火险等级未达到预警，无需发短信", "");
+                            ms = new Message(false, "当前火险等级未达到预警，无需发短信!", "");
                         }
                     }
                     else
                     {
-                        ms = new Message(false, "没有短信模板，不发短信", "");
+                        ms = new Message(false, "没有短信模板，不发短信!", "");
                     }
                 }
             }
             else
             {
-                ms = new Message(false, "传递短信模板主题与人员id参数错误", "");
+                ms = new Message(false, "传递短信模板主题与人员id参数错误!", "");
             }
             return Json(ms);
         }
@@ -591,12 +586,9 @@ namespace ManagerSystem.MVC.Controllers
                                                 {
                                                     logs.Error(ex.Message);
                                                 }
-
                                             }
                                         }
-
                                         info.SMSSENDSTATUS = "1";//0 未发送 1 已发送 -1 发送失败
-                                        //  ms = YJ_DCSMS_SENDCls.Manager(info);
                                     }
                                 }
                                 #endregion
@@ -711,25 +703,20 @@ namespace ManagerSystem.MVC.Controllers
                                         }
                                     }
                                     #endregion
-
                                 }
                                 #endregion
                             }
                         }
-                        //else
-                        //{
-                        //    ms = new Message(false, "当前火险等级未达到预警，无需发短信", "");
-                        //}
                     }
                 }
                 else
                 {
-                    ms = new Message(true, "短信未设置模板", "");
+                    ms = new Message(true, "短信未设置模板!", "");
                 }
             }
             else
             {
-                ms = new Message(true, "短信发送已设置为手动发送，请手动发送短信", "");
+                ms = new Message(true, "短信发送已设置为手动发送,请手动发送短信!", "");
             }
             return Json(ms);
         }
@@ -817,7 +804,6 @@ namespace ManagerSystem.MVC.Controllers
                 foreach (var item in recordlist.OrderByDescending(p => p.DANGERCLASS))
                 {
                     var model = new YJJCFireLevelModel();
-
                     if (!string.IsNullOrEmpty(item.TOPTOWNNAME))
                     {
                         model.AreaName = item.TOPTOWNNAME + "==>";
@@ -829,10 +815,7 @@ namespace ManagerSystem.MVC.Controllers
                 }
             }
             return result;
-
         }
-
-        #endregion
 
         /// <summary>
         /// 获取市县乡镇天气列表
@@ -864,5 +847,7 @@ namespace ManagerSystem.MVC.Controllers
             }
             return result;
         }
+
+        #endregion
     }
 }

@@ -360,12 +360,12 @@ namespace ManagerSystemClassLibrary.BaseDT
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("    from    DC_CAR a ");
             sb.AppendFormat("where 1 = 1 ");
-            if (sw.BYORGNO.Substring(4, 11) == "00000000000")//获取所有市的
+            if (sw.BYORGNO.Substring(4, 11) == "00000000000")  //获取所有市的
                 sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,4) = '{0}' or BYORGNO is null or BYORGNO='')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 4)));
-            else if (sw.BYORGNO.Substring(6, 9) == "000000000")//获取所有县的
+            else if (sw.BYORGNO.Substring(6, 9) == "000000000" && sw.BYORGNO.Substring(4, 11) != "00000000000") //获取所有县的
                 sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,6) = '{0}' or BYORGNO is null or BYORGNO='')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 6)));
             else
-                sb.AppendFormat(" AND BYORGNO = '{0}'", ClsSql.EncodeSql(sw.BYORGNO));
+                sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,9) = '{0}')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 9)));
             string sqlC = "select count(1) " + sb.ToString();
             total = (DataBaseClass.ReturnSqlField(sqlC)).ToString();
             return total;

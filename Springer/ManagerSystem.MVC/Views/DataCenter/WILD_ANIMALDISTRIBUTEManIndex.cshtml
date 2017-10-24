@@ -1,0 +1,239 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+}
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'center'" title="" style=" border: none; ">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="homeUL">
+                        <input type="button" value="保存" onclick="Manager()" id="btnSave" class="btnSaveCss">
+                    </div>
+                </div>
+            </div>
+
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <div class="divMan">
+                    <table cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td style="width:80px;" class="tdField">
+                                动物：
+                            </td>
+                            <td>
+                                <select id="tbxGICALTYPECODE">
+                                    @Html.Raw(@ViewBag.ANIMALAdd)
+                                </select>
+                            </td>
+                            <td style="width:80px;" class="tdField">
+                                族群：
+                            </td>
+                            <td>
+                                @*<select id="tbxPOPULATIONTYPE" class="easyui-combotree" style="width:200px;"></select>*@
+                                <select id="tbxPOPULATIONTYPE">
+                                    @Html.Raw(@ViewBag.POPULATIONTYPEadd)
+                                </select>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="width:80px;" class="tdField"> 经度： </td>
+                            <td><input id="JD" type="text" class="input-small" value="" /></td>
+                            <td style="width:80px;" class="tdField"> 纬度：</td>
+                            <td>
+                                <input id="WD" type="text" class="input-small" value="" />
+                                <input type="button" value="活动位置" onclick="setPoint()" class="btnMapLoaclCss" />
+                            </td>
+                        </tr>
+                     
+                        <tr>
+                            <td style="width:160px;" class="tdField">
+                                经纬度点：
+                            </td>
+                            <td colspan="3">
+                                <input id="JWDLIST" type="text" style="width:75%" value="" readonly />
+                                <span class="spanRequiredField">*</span>
+                                <input type="button" value="活动区域" onclick="setLine()" class="btnMapLoaclCss" />
+                            </td>
+                        </tr>
+                       
+                     
+                       
+                        <tr>
+                            <td style="width:80px;" class="tdField">
+                                动物数量：
+                            </td>
+                            <td>
+                                <input id="ANIMALCOUNT" type="text" class="input-small" value="" />
+                            </td>
+                            <td style="width:80px;" class="tdField">
+                                备注：
+                            </td>
+                            <td>
+                                <input id="MARK" type="text" class="input-small" value="" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    //$(function () {
+    //    $('#tbxGICALTYPECODE').combotree({
+    //        url: '/DataCenter/WILD_ANIMALDISTRIBUTETreeGet',
+    //        editable: false,
+    //        required: true,
+    //        panelHeight: 300,
+    //        onLoadSuccess: function (node, data) {
+    //            var t = $("#tbxGICALTYPECODE").combotree('tree');//获取tree
+    //            t.tree("collapseAll");
+    //            node = t.tree("find", data[0].id);
+    //            t.tree("expand", node.target);//展开节点 expandTo
+    //        }
+    //    });
+    //});
+    if ('@ViewBag.T_Method' == "Del") {
+        Manager();
+    }
+    if ('@ViewBag.T_Method' == 'Mdy') {
+        $.ajax({
+            url: '/DataCenter/GetWILD_ANIMALDISTRIBUTEjson',
+            cache: false,
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: { WILD_ANIMALDISTRIBUTEID: '@ViewBag.ID' },
+            success: function (data, ioArgs) {
+                var data = eval('(' + data + ')');
+                if (data.WILD_ANIMALDISTRIBUTEID != null) {
+                    document.getElementById("tbxGICALTYPECODE").value = data.BIOLOGICALTYPECODE;
+                    document.getElementById("tbxPOPULATIONTYPE").value = data.POPULATIONTYPE;
+                    document.getElementById("ANIMALCOUNT").value = data.ANIMALCOUNT;
+                    document.getElementById("MARK").value = data.MARK;
+                    document.getElementById("JD").value = data.JD;
+                    document.getElementById("WD").value = data.WD;
+                    var str = data.JWDLIST;
+                    console.info(str);
+                    if (str != null) {
+                        if (str.substring(str.length - 1) != ";") {
+                            document.getElementById("JWDLIST").value = str + ";";
+                        } else {
+                            document.getElementById("JWDLIST").value = str;
+                        }
+                    }
+                    
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('登录异常');
+            }
+        });
+    }
+    function setPoint() {
+        //var name = document.getElementById("NAME").value;
+        var jd = document.getElementById("JD").value;
+        var wd = document.getElementById("WD").value;
+        parent.layer.open({
+            type: 2,
+            title: '地图位置设置',
+            btn: ['保存', '关闭'],
+            area: ['1000px', '600px'],
+            fix: true, //不固定
+            maxmin: true,
+            content: '/MapCommon/GetMapPontIndex?jd=' + jd + "&wd=" + wd,
+            shade: 0,
+            yes: function (index, layero) { //或者使用btn1
+                //按钮【按钮一】的回调
+                var ptxt = parent.layer.getChildFrame("p", index);
+                var arr = ptxt.html().split(',');
+                if ($.trim(arr) != "") {
+                    var jd = parseFloat(arr[0]).toFixed(6);
+                    var wd = parseFloat(arr[1]).toFixed(6);
+                    $('#JD').val(jd);
+                    $('#WD').val(wd);
+                }
+                parent.layer.close(index);
+            }, cancel: function (index) {
+                parent.layer.close(index);
+            }
+        });
+    }
+    function setLine() {
+        //var name = document.getElementById("NAME").value;
+        var str = document.getElementById("JWDLIST").value;
+        parent.layer.open({
+            type: 2,
+            title:'地图位置设置',
+            btn: ['保存', '关闭'],
+            area: ['1000px', '600px'],
+            fix: false, //不固定
+            maxmin: true,
+            content: '/MapCommon/GetMapPontIndex?LINE=2',
+            success: function (layero, index) {
+                var body = parent.layer.getChildFrame('body', index);
+                body.find('#editcollecttxt').text(str);
+                top.window["layui-layer-iframe" + index].getLocaCollectPolygon();//面
+            },
+            yes: function (index, layero) { //或者使用btn1
+                //按钮【按钮一】的回调
+                var ptxt = parent.layer.getChildFrame("#editcollecttxt", index);
+                var lm = parent.layer.getChildFrame("#MjACdtxt", index)
+                $('#AREA').val(lm.html());//面积
+                $('#JWDLIST').val(ptxt.html());//经纬度
+                parent.layer.close(index);
+            }, cancel: function (index) {
+                parent.layer.close(index);
+            }
+        });
+
+    }
+    function Manager() {
+        var t1 = $('#ANIMALCOUNT ').val();
+        if ($.trim(t1) != "") {
+            if (CheckNUM($.trim(t1)) == false) {
+                layer.msg('数量请填写数字！', { icon: 5 });
+                $('#ANIMALCOUNT').focus();
+                return;
+            }
+        }
+        var tt = document.getElementById("JWDLIST").value;
+        if (tt.split('|').length == 1) {
+            layer.msg('请在地图上画出面！', { icon: 5 });
+            return;
+        }
+        $.ajax({
+            type: "Post",
+            url: "/DataCenter/WILD_ANIMALDISTRIBUTEManager",
+            data: {
+                WILD_ANIMALDISTRIBUTEID: '@ViewBag.ID',
+                Method:'@ViewBag.T_Method',
+                BIOLOGICALTYPECODE: document.getElementById("tbxGICALTYPECODE").value,
+                //BIOLOGICALTYPECODE: $('#tbxGICALTYPECODE').combotree('getValue'),
+                POPULATIONTYPE: document.getElementById("tbxPOPULATIONTYPE").value,
+                //POPULATIONTYPE: $('#tbxPOPULATIONTYPE').combotree('getValue'),
+                JD: document.getElementById("JD").value,
+                WD: document.getElementById("WD").value,
+                JWDLIST: document.getElementById("JWDLIST").value,
+                ANIMALCOUNT: document.getElementById("ANIMALCOUNT").value,
+                MARK: document.getElementById("MARK").value,
+            },
+            dataType: "json",
+            success: function (data) {
+                if (data.Success) {
+                    parent.layer.msg(data.Msg,{ icon: 6 });
+                    var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                    parent.layer.close(index);
+                }
+                else {
+                    layer.msg(data.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('保存异常!');
+            }
+        });
+    }
+</script>
+
+
+

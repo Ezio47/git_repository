@@ -24,6 +24,8 @@ dd{list-style: none;}
 .right{text-align:right;}
 .left{text-align:left;}
 .row{position: relative;}
+.spanRequiredField{color:#ff0000;}
+.spanMark{color:#cccccc;}
 /*输入框样式*/
 textarea{border-radius: 3px;border: 1px solid #55bc75;padding: 0 0px;line-height: 24px;width: 128px;}
 textarea:hover{border-radius: 3px;border: 1px solid #4DAF7C;padding: 0 0px;line-height: 24px;width: 128px;}
@@ -154,7 +156,7 @@ select{border-radius: 1px;border: 1px solid #55bc75;padding: 0 0px;height:24px;l
 
 /*顶部表格样式 主要调整列分布*/
 .LayOutHeader{width:100%;position:relative; background-color:#136a00;background:url(images/header_bg.jpg) top center;overflow:hidden;}
-.LayOutHeader .td1{margin: 0 0 0 15px;width: 445px;background: url(Images/yjjc_logo.png);background-repeat:no-repeat; }
+/*.LayOutHeader .td1{margin: 0 0 0 15px;width: 445px;background: url(Images/yjjc_logo.png);background-repeat:no-repeat; }*/
 .LayOutHeader .td11{ width:461px;  margin:25px 0 0 24%; background:url(Images/tz_bg.png) no-repeat;background-position: 50% 20px;  }
 /*.LayOutHeader .td2{width: 245px; text-align: right;}*/
 .LayOutHeader .td3{text-align: right;line-height: 26px;color: #ffffff;}
@@ -260,7 +262,7 @@ select{border-radius: 1px;border: 1px solid #55bc75;padding: 0 0px;height:24px;l
 
 .row1{ background-color:#f5fef8;}
 .row2{ background-color:#effae8;}
-
+.tdField{ background-color:#f5fef8;}
 
 /*新闻内容显示页样式*/
 .divContent{ text-align:center; width:100%; height:100%; position: relative;}
@@ -280,13 +282,25 @@ select{border-radius: 1px;border: 1px solid #55bc75;padding: 0 0px;height:24px;l
 .divMan table{font-size:11pt; background:url(Images/xtgl_bg.png) repeat-x;width:100%;border:0px; border-right:1px solid #b8d3b3;border-bottom:1px solid #b8d3b3;}
 .divMan tbody{ background-color:#fff;}
 .divMan th{font-size:11pt; background:url(Images/xtgl_bg.png) repeat-x; text-align:center; height:30px;border-left:1px solid #b8d3b3;border-top:1px solid #b8d3b3}
-.divMan td{font-size:10pt;height:38px;border-left:1px solid #b8d3b3;border-top:1px solid #b8d3b3; padding-left:2px;}
+.divMan td{font-size:10pt;height:38px;border-left:1px solid #b8d3b3;border-top:1px solid #b8d3b3; padding-left:2px;color:#000000;}
 .divMan .row1{background:#f9f9f9;}
 .divMan a{color:green; /*#337AB7;*/text-decoration: none;}
 .divMan a:hover{color: #ffe5cc;text-decoration: underline;}
 .divMan table tr {background-color:expression((this.sectionRowIndex%2==0)?"#f9f9f9":"#4d951e")}
 
 
+/*管理输入页面样式*/
+.divOrg{color:#156c02; vertical-align:middle; padding:1px 5px 0px 5px; height:auto; margin:0 0 0 0;border-bottom-left-radius: 5px;border-bottom-right-radius: 5px;border-top-left-radius: 5px;border-top-right-radius: 5px;}
+.divOrg .DCThCur{background:#4d951e;color:#fff100}
+.divOrg tr:hover, .divOrg tr.altrow{  /*动态变色 */}
+.divOrg table{font-size:11pt; background:url(Images/xtgl_bg.png) repeat-x;width:100%;border:0px; border-right:1px solid #b8d3b3;border-bottom:1px solid #b8d3b3;}
+.divOrg tbody{ background-color:#fff;}
+.divOrg th{font-size:11pt; background:url(Images/xtgl_bg.png) repeat-x; text-align:center; height:30px;border-left:1px solid #b8d3b3;border-top:1px solid #b8d3b3}
+.divOrg td{font-size:10pt;height:38px;border-left:1px solid #b8d3b3;border-top:1px solid #b8d3b3; padding-left:2px;}
+.divOrg .row1{background:#f9f9f9;}
+.divOrg a{color:green; /*#337AB7;*/text-decoration: none;}
+.divOrg a:hover{color: #ffe5cc;text-decoration: underline;}
+.divOrg table tr {background-color:expression((this.sectionRowIndex%2==0)?"#f9f9f9":"#4d951e")}
 
 /*顶部横向菜单样式 2016年9月20日10时31分11秒*/
 .indexMenuDiv{border-bottom: 1px solid #f5f0ec;height: 0;line-height: 43px;position: absolute;left: 0;z-index: 3;box-sizing: border-box; /*padding-left: 215px;*/font-size: 0;position:fixed; background:url(Images/menu_bg.jpg); background-repeat:repeat-x;}
@@ -574,16 +588,16 @@ select{border-radius: 1px;border: 1px solid #55bc75;padding: 0 0px;height:24px;l
 .pagination-sm>li:last-child>a,.pagination-sm>li:last-child>span{border-top-right-radius:3px;border-bottom-right-radius:3px}
 
 /*--- 组织机构图  2016年9月20日08时56分17秒---*/
-.divOrg{color:#669FC7; vertical-align:middle; padding:1px 5px 0px 5px; height:auto; margin:0 0 0 0;border-bottom-left-radius: 5px;border-bottom-right-radius: 5px;border-top-left-radius: 5px;border-top-right-radius: 5px;}
+/*.divOrg{color:#669FC7; vertical-align:middle; padding:1px 5px 0px 5px; height:auto; margin:0 0 0 0;border-bottom-left-radius: 5px;border-bottom-right-radius: 5px;border-top-left-radius: 5px;border-top-right-radius: 5px;}
 .divOrg .DCThCur{background:#c4e4ff;}
-.divOrg tr:hover, .divMan tr.altrow{  /*动态变色 */}
+.divOrg tr:hover, .divMan tr.altrow{  /*动态变色 * /}
 .divOrg table{font-size:11pt; background:#ffffff;width:100%;border:0px; border-right:1px solid #DDDDDD;border-bottom:1px solid #DDDDDD;}
 .divOrg th{font-size:11pt; background:#F1F1F1; text-align:center; height:30px;border-left:1px solid #DDDDDD;border-top:1px solid #DDDDDD}
 .divOrg td{font-size:10pt;height:38px;line-height:30px; border-left:1px solid #DDDDDD;border-top:1px solid #DDDDDD; padding-left:2px;}
 .divOrg .row1{background:#f9f9f9;}
-.divOrg a{color:green; /*#337AB7;*/text-decoration: none;}
+.divOrg a{color:green; /*#337AB7;* /text-decoration: none;}
 .divOrg a:hover{color: #036740;text-decoration: underline;}
 .divOrg table tr {background-color:expression((this.sectionRowIndex%2==0)?"#f9f9f9":"#c4e4ff")}
 .divOrg .OrgLinkCur{background-color: #D9E6DD;height: 41px;font-size: 15px;font-weight: bold;}
 .divOrg .OrgLinkOrgName{background:url(Images/panneltit_bg.jpg) repeat-x;height: 41px;font-size: 15px;font-weight: bold; color:#156c02;}
-.divOrg .OrgLinkOrgName a{color:#156c02; /*#337AB7;*/text-decoration: none;}
+.divOrg .OrgLinkOrgName a{color:#156c02; /*#337AB7;* /text-decoration: none;}*/

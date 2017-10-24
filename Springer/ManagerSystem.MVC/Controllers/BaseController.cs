@@ -62,8 +62,11 @@ namespace ManagerSystem.MVC.Controllers
             {
                 ViewBag.PageTitle = T_SYS_MENUCls.getModel(new T_SYS_MENU_SW { MENUCODE = PageCode, SYSFLAG = ConfigCls.getSystemFlag() }).MENUNAME;
             }
-            ViewBag.Title = ConfigCls.getSystemName() + "-" + ViewBag.PageTitle; //Title名称     
+            ViewBag.Title = ConfigCls.getSystemName() + "-" + ViewBag.PageTitle; //Title名称   
+            ViewBag.SystemLogo = ConfigCls.getSystemLogo();//获取系统logo图片
             ViewBag.trueName = cookieInfo.trueName;          //当前登录用户姓名
+            ViewBag.TopFireAlarm = ConfigCls.getTopFireAlarm();//是否火情报警
+            ViewBag.TopFireLevel = ConfigCls.getTopFireLevel();//是否显示火险等级
             ViewBag.depName = StateSwitch.GetOrgNameByOrgNO(SystemCls.getCurUserOrgNo()); //部门名称
             string systemFlag = ConfigCls.getSystemFlag();   //系统标识 如Springer
             ViewBag.T_UrlReferrer = Request.UrlReferrer;
@@ -529,6 +532,16 @@ namespace ManagerSystem.MVC.Controllers
                             {
                                 menu = true;
                                 num = TD_MOUNTAINCls.getCount();
+                            }
+                            if (sv.MENUCODE == "042001")
+                            {
+                                menu = true;
+                                num = WILD_ANIMALDISTRIBUTECls.getCount();
+                            }
+                            if (sv.MENUCODE == "043001")
+                            {
+                                menu = true;
+                                num = WILD_BOTANYDISTRIBUTECls.getCount();
                             }
                             if (sv.MENUCODE == "016001")
                             {

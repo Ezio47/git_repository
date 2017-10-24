@@ -1,0 +1,315 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOut.cshtml";
+}
+
+@section Header{
+    <script src="~/Scirpts/Chart/echarts.js"></script>
+}
+
+<html>
+<body>
+    <div class="indexDesk">
+        <div class="fstLine">
+            <div class="deskPanelDiv" style="width: 36%">
+                <div class="deskPanel">
+                    <div class="jsTabs">
+                        <ul class="panelHead">
+                            <li>造林绿化</li>
+                            <li>退耕还林</li>
+                            <li>生物多样性</li>
+                        </ul>
+                        <ul class="panelBody">
+                            <li>
+                                <div class="detailNews">
+                                    <img src="~/Images/img/zl1.png" style="width:60px;height:60px" />
+                                    <div class="text">4年如何抚育森林400万亩？六大工程提升齐鲁“含绿量”</div>
+                                    <div class="time">2017-09-28</div>
+                                </div>
+                                <ul class="deskList">
+                                    <li><a href="#" title="">绿色中国行活动走进塞罕坝林场</a></li>
+                                    <li><a href="#" title="">首都全民义务植树尽责规范管理开创新模式</a></li>
+                                    <li><a href="#" title="">履行《联合国森林战略规划》边会举行</a></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <ul class="deskList">
+                                    <li><a href="#" title="">云南省省林业厅到昆明市督查退耕还林工作</a></li>
+                                    <li><a href="#" title="">重庆市开展退耕还林效益监测设施设备维修工作</a></li>
+                                    <li><a href="#" title="">云南省昆明市认真开展退耕还林存在问题整改工作</a></li>
+                                    <li><a href="#" title="">退耕还林工程简报第3期（总第197期）</a></li>
+                                    <li><a href="#" title="">退耕还林工程简报第2期（总第196期）</a></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <ul class="deskList">
+                                    <li><a href="#" title="">极度濒危物种普氏原羚在华数量14年增长10倍多</a></li>
+                                    <li><a href="#" title="">四川石棉县成功救助稀有珍禽——黑鳽</a></li>
+                                    <li><a href="#" title="">濒危物种黑颈鹤青海三江源再添栖息地</a></li>
+                                    <li><a href="#" title="">国家濒管办2010年1号公告</a></li>
+                                    <li><a href="#" title="">公约暂停禁贸国家物种名录（2010年7月1日发布）</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="deskPanelDiv" style="width: 36%">
+                <div class="deskPanel">
+                    <div class="panelHead dlfl">
+                        林业一张图
+                    </div>
+                    <div class="panelBody">
+                        <img src="~/Images/img/map.png" style="width:375px;height:250px" />
+                    </div>
+                </div>
+            </div>
+            <div class="deskPanelDiv" style="width: 28%">
+                <div class="deskPanel">
+                    <div class="panelHead zfgg">
+                        ”云平台“ 简介
+                    </div>
+                    <div class="panelBody">
+                        @*<marquee direction=up>*@
+                        <div style="margin-top:5px;padding:10px;text-indent:25px">
+                            @*根据《中华人民共和国行政许可法》、《中华人民共和国种子法》、《林木种子生产、经营许可证管理办法》和《国家林业局林木种子经营行政许可监督检查办法》规定，我局决定对有效期届满未延续的广西凭祥光发贸易有限公司等14家公司的林木种子经营许可证予以注销。从即日起，被注销的林木种子经营许可证（正本、副本）和许可证编号停止使用，由省级林木种苗管理机构将被注销的许可证（正本、副本）予以收回。
+                                特此公告。*@
+                            Teleware智慧林业云平台依托特力惠成熟稳定的电子政务平台和工作引擎，以国家林业局《"互联网+" 林业移动计划———全国林业信息化 "十三五" 发展规划》中明确的8大行动48项工程为依据，利用云计算
+                            、物联网、移动互联网、大数据等新一代信息技术与林业业务的深度整合，建设以灾害应急平台、林业资源监管平台、林业政务服务平台为核心的智慧林业云平台，为林业工作规划、管理和决策提供科学合理的
+                            依据，实现林业事业健康持续发展，推动我国林业信息化进程。
+                        </div>
+                        @*</marquee>*@
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="">
+            <div class="deskPanelDiv" style="width: 36%">
+                <div class="deskPanel">
+                    <div class="panelHead qwbh" title="未来一周气温变化">
+                        未来一周气温变化
+                        @*<div class="tools">
+                                <a href="#" class="zoom" title="xxx"></a>
+                                <a href="#" class="back"></a>
+                                <a href="#" class="view"></a>
+                                <a href="#" class="line"></a>
+                                <a href="#" class="chart"></a>
+                                <a href="#" class="refresh"></a>
+                            </div>*@
+                    </div>
+                    <div class="panelBody" id="temprature">
+
+                    </div>
+                </div>
+            </div>
+            <div class="deskPanelDiv" style="width: 36%">
+                <div class="deskPanel">
+                    <div class="panelHead hlytj">
+                        护林员人数统计
+                    </div>
+                    <div class="panelBody" id="hly">
+
+                    </div>
+                </div>
+            </div>
+            <div class="deskPanelDiv" style="width: 28%">
+                <div class="deskPanel">
+                    <div class="panelHead jksp">
+                        监控视频
+                    </div>
+                    <div class="panelBody" style="height:280px;display:block">
+                        <div style="width:47%;float:left">
+                            <ul class="monitorList" style="margin-top:20px;">
+                                @*<li><div class="ico_mornitor"></div>个旧市锡城镇视频监控</li>
+                                    <li><div class="ico_mornitor"></div>个旧市锡城镇可见光</li>
+                                    <li><div class="ico_mornitor"></div>个旧市白云山林场视频监控</li>
+                                    <li><div class="ico_mornitor close"></div>蒙自市草坝镇视频监控</li>
+                                    <li><div class="ico_mornitor close"></div>红河县宝华镇视频监控</li>*@
+                                <li><div class="ico_mornitor"></div>锡城镇监控</li>
+                                <li><div class="ico_mornitor"></div>羊街乡监控</li>
+                                <li><div class="ico_mornitor"></div>鸡街镇监控</li>
+                                <li><div class="ico_mornitor close"></div>草坝镇监控</li>
+                                <li><div class="ico_mornitor close"></div>宝华镇监控</li>
+                            </ul>
+                        </div>
+                        <div style="width:53%;float:right">
+                            <ul class="monitorList" style="margin-top:20px;">
+                                <li><div class="ico_mornitor"></div>锡城镇可见光</li>
+                                <li><div class="ico_mornitor"></div>羊街乡可见光</li>
+                                <li><div class="ico_mornitor"></div>鸡街镇可见光</li>
+                                <li><div class="ico_mornitor close"></div>草坝镇可见光</li>
+                                <li><div class="ico_mornitor close"></div>宝华镇可见光</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+<script>
+    var myChart = echarts.init(document.getElementById('hly'));
+
+    var myChart1 = echarts.init(document.getElementById('temprature'));
+
+    // 指定图表的配置项和数据
+    var option = {
+        //title: {
+        //    text: '护林员人数统计',
+        //    textStyle: {
+        //        fontSize: 16
+        //    }
+        //},
+        itemStyle: {
+            normal: {
+                color: '#45b97c',
+                shadowBlur: 200,
+                shadowColor: 'rgba(0, 0, 0, 0.5)'
+            }
+        },
+        tooltip: {},
+        legend: {
+            data: ['人数']
+        },
+        xAxis: {
+            data: ["蒙自", "河口", "弥勒", "红河", "屏边", "石屏", "元阳", "个旧", "建水", "泸西", "金平"]
+        },
+        yAxis: {},
+        series: [{
+            name: '人数',
+            type: 'bar',
+            data: [10, 20, 36, 10, 10, 20, 18, 15, 11, 12, 16]
+        }]
+    };
+
+    var option1 = {
+        //title: {
+        //    text: '未来一周气温变化',
+        //    textStyle: {
+        //        fontSize: 16
+        //    }
+        //},
+        tooltip: {
+            trigger: 'axis'
+        },
+        legend: {
+            data: ['最高气温', '最低气温']
+        },
+        //toolbox: {
+        //    show: true,
+        //    feature: {
+        //        dataZoom: {
+        //            yAxisIndex: 'none'
+        //        },
+        //        dataView: { readOnly: false },
+        //        magicType: { type: ['line', 'bar'] },
+        //        restore: {},
+        //        saveAsImage: {}
+        //    }
+        //},
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+        },
+        yAxis: {
+            type: 'value',
+            axisLabel: {
+                formatter: '{value} °C'
+            }
+        },
+        itemStyle: {
+            normal: {
+                // 设置扇形的颜色
+                //color: 'green,red'
+                //shadowBlur: 200,
+                //shadowColor: 'rgba(0, 0, 0, 0.5)'
+            }
+        },
+        series: [
+            {
+                name: '最高气温',
+                type: 'line',
+                data: [11, 11, 15, 13, 12, 13, 10],
+                markPoint: {
+                    data: [
+                        { type: 'max', name: '最大值' },
+                        { type: 'min', name: '最小值' }
+                    ]
+                },
+                markLine: {
+                    data: [
+                        { type: 'average', name: '平均值' }
+                    ]
+                },
+                itemStyle: {
+                    normal: {
+                        color: '#65c294',
+                        shadowBlur: 200,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                }
+
+            },
+            {
+                name: '最低气温',
+                type: 'line',
+                data: [1, -2, 2, 5, 3, 2, 0],
+                markPoint: {
+                    data: [
+                        { name: '周最低', value: -2, xAxis: 1, yAxis: -1.5 }
+                    ]
+                },
+                markLine: {
+                    data: [
+                        { type: 'average', name: '平均值' },
+                        [{
+                            symbol: 'none',
+                            x: '90%',
+                            yAxis: 'max'
+                        }, {
+                            symbol: 'circle',
+                            label: {
+                                normal: {
+                                    position: 'start',
+                                    formatter: '最大值'
+                                }
+                            },
+                            type: 'max',
+                            name: '最高点'
+                        }]
+                    ]
+                },
+                itemStyle: {
+                    normal: {
+                        color: '#33a3dc',
+                        shadowBlur: 200,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                }
+            }
+        ]
+    };
+
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+    myChart1.setOption(option1);
+
+
+
+
+    $(function () {
+        $(".jsTabs").each(function () {
+            var $head = $(this).children(".panelHead"), $body = $(this).children(".panelBody");
+            $head.on("click", "li", function () {
+                var index = $head.children().index($(this));
+                $(this).siblings().removeClass("sel");
+                $(this).addClass("sel");
+                $body.children().hide().eq(index).show();
+            })
+            $head.children().first().click();
+        })
+    })
+</script>

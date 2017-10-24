@@ -49,6 +49,7 @@
 
         throw;
     }
+    String Rightstr = T_SYSSEC_RIGHTCls.getRightStrByUID(new T_SYSSEC_IPSUSER_SW { USERID = SystemCls.getUserID() });
 }
 @section Header{
     <link href="~/Content/MapStyle.css" rel="stylesheet" />
@@ -150,22 +151,25 @@
                 </div>
             }
         }
-        <div class="DefaultDivTitle" onclick="Swithch('hly_id')" style="cursor:pointer;">
-            <h1><span>护林员监督</span></h1>
-        </div>
-        <div class="warnPanel" id="hly_id">
-            <dl class="hlyjd">
-                <dt class="center">
-                    <input type="text" class="textBox_01 border_ty5">
-                    <input type="button" class="searchBox_01 border_ty1" value="查询" onclick="urlHYL()" />
-                </dt>
-                <dd>
-                    <div class="left" id="divGetLineInfo">
-                    </div>
-                </dd>
-            </dl>
-            <div class="clear"></div>
-        </div>
+        @if (Rightstr.Contains(",020003,"))
+        {
+            <div class="DefaultDivTitle" onclick="Swithch('hly_id')" style="cursor:pointer;">
+                <h1><span>护林员监督</span></h1>
+            </div>
+            <div class="warnPanel" id="hly_id">
+                <dl class="hlyjd">
+                    <dt class="center">
+                        <input type="text" class="textBox_01 border_ty5">
+                        <input type="button" class="searchBox_01 border_ty1" value="查询" onclick="urlHYL()" />
+                    </dt>
+                    <dd>
+                        <div class="left" id="divGetLineInfo">
+                        </div>
+                    </dd>
+                </dl>
+                <div class="clear"></div>
+            </div>
+        }
     </div>
 </div>
 <object id="SGWorld" classid="CLSID:3a4f91b1-65a8-11d5-85c1-0001023952c1" style="visibility:hidden;height:0 "></object>
@@ -382,11 +386,13 @@
             var password = _npc.connParams.password || "";
             var epId = _npc.connParams.epId || "system";//登陆参数：企业id
             var bfix = _npc.connParams.bfix || 0;
+            //alert("path=" + path + "username=" + username + "password==" + password + "epId=" + epId + "bfix=" + bfix);
             var param = new NPPIF.Struct.ConnParamStruct(path, username, epId, password, bfix);
             var conn = NPPILY.Connect(param);
             if (conn.rv == NrcapError.NRCAP_SUCCESS) {
                 WebClient.connectId = conn.response;//NPPILY.Connect接口返回的连接ID(string)
             } else {
+                //alert("==MSG==" + NrcapError.Detail(conn.rv));
                 if ($("#loginMsg")[0])
                     $("#loginMsg")[0].innerHTML += NrcapError.Detail(conn.rv) + "</br>";
             }

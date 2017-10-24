@@ -13,5 +13,11 @@ namespace ManagerSystem.MVC.CloudPlatForm.Controllers
             ViewBag.title = "智慧林业云平台";
             return View();
         }
+
+        public ActionResult NewIndex()
+        {
+            ViewBag.title = "智慧林业云平台";
+            return View();
+        }
     }
 }

@@ -110,8 +110,8 @@
                 </div>
 
                 @*<div id="persontree" style="display:none">
-                    <div id="tt" style="width:240px" class="easyui-tree" data-options="checkbox:true"></div>
-                </div>*@<div id="persontree" style="display:none">
+                        <div id="tt" style="width:240px" class="easyui-tree" data-options="checkbox:true"></div>
+                    </div>*@<div id="persontree" style="display:none">
                     <div id="tt" style="width:240px" class="easyui-tree" data-options="checkbox:true"></div>
                 </div>
                 @*人工派发核查*@
@@ -203,6 +203,15 @@
         });
     }
 
+    function See(ID) {
+        layer.open({
+            type: 2,
+            title: '查看',
+            area: ['51.5%', '80%'],
+            content: '/MainYJJC/See?ID=' + ID,
+        });
+    }
+
     //全选 反选
     function checkfun() {
         if ($("#CHK_ALL").attr("checked")) {
@@ -290,31 +299,20 @@
     //地图查看定位三维
     function Show3DMapLoc(id) {
         var chk_value = [];
-        if (id == "3d") {//三维护林员按钮
-            $('input[name="chk_list"]:checked').each(function () {
-                chk_value.push($(this).val());
-            });
-            if (chk_value.length == 0) {
-                layer.alert("请选择火点", { icon: 5 });
-                return false;
-            }
+
+        $('input[name="chk_list"]:checked').each(function () {
+            chk_value.push($(this).val());
+        });
+
+        var strjcfid = '';
+        if (id == "3d" && chk_value.length == 0) {
+            layer.alert("请选择火点", { icon: 5 });
+            return false;
+        } else if (chk_value.length == 0) {
+            strjcfid = id;
         } else {
-            var bb = $('#CHK_' + id).is(':checked');
-            if (bb == false) {
-                layer.alert("该火点未选择", { icon: 5 });
-                return false;
-            }
-
-            $('input[name="chk_list"]:checked').each(function () {
-                chk_value.push($(this).val());
-            });
-            if (chk_value.length == 0) {
-                layer.alert("请选择火点", { icon: 5 });
-                return false;
-            }
+            strjcfid = chk_value.join(",");
         }
-
-        var strjcfid = chk_value.join(",");
         //iframe层-父子操作
         var index = layer.open({
             type: 2,

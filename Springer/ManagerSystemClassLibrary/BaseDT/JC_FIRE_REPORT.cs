@@ -18,6 +18,7 @@ namespace ManagerSystemClassLibrary.BaseDT
     public class JC_FIRE_REPORT
     {
         private static ILog logs = LogHelper.GetInstance();
+
         #region 添加
         /// <summary>
         /// 添加
@@ -39,14 +40,15 @@ namespace ManagerSystemClassLibrary.BaseDT
             sb.AppendFormat(")");
             bool bln = DataBaseClass.ExeSql(sb.ToString());
             if (bln == true)
-                return new Message(true, "添加成功！", "");
+                return new Message(true, "添加成功!", "");
             else
             {
                 logs.Error(sb.ToString());
-                return new Message(false, "添加失败！", "");
+                return new Message(false, "添加失败!", "");
             }
         }
         #endregion
+
         #region 获取数据
         /// <summary>
         /// 获取数据

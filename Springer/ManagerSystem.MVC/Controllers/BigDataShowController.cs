@@ -17,20 +17,14 @@ namespace ManagerSystem.MVC.Controllers
 {
     public class BigDataShowController : BaseController
     {
-        //
-        // GET: /BigDataShow/
-
         public ActionResult Index()
         {
             Task.Factory.StartNew(() =>
             {
                 VoiceCom.ReadVoice();
             });
-
             return View();
         }
-
-
 
         /// <summary>
         /// 测试地图
@@ -38,14 +32,11 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult TestIndex()
         {
-
             return View();
         }
 
-
         public ActionResult TestIndex2()
         {
-
             return View();
         }
 
@@ -66,7 +57,6 @@ namespace ManagerSystem.MVC.Controllers
                 var bo = PublicCls.OrgIsShi(curogr);
                 var bb = PublicCls.OrgIsXian(curogr);
                 var bx = PublicCls.OrgIsZhen(curogr);
-
                 if (!bo)
                 {
                     sw.BYORGNO = curogr;
@@ -94,9 +84,7 @@ namespace ManagerSystem.MVC.Controllers
                 ms = new MessageListObject(true, result);
             }
             return Json(ms);
-
         }
-
 
         /// <summary>
         /// 获取火险等级数据
@@ -123,7 +111,6 @@ namespace ManagerSystem.MVC.Controllers
                 ms = new MessageListObject(true, result);
             }
             return Json(ms);
-
         }
 
         /// <summary>
@@ -142,7 +129,6 @@ namespace ManagerSystem.MVC.Controllers
             {
                 var dataList = JC_FIRECls.GetListModel(new JC_FIRE_SW() { BYORGNO = curogr, BeginTime = DateTime.Now.AddMonths(-6).ToShortDateString(), EndTime = DateTime.Now.ToShortDateString() });
                 ms = new MessageListObject(true, dataList);
-
             }
             return Json(ms);
         }

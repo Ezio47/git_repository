@@ -41,6 +41,7 @@ namespace ManagerSystemClassLibrary.BaseDT
                 return new Message(false, "", "");
         }
         #endregion
+
         #region 修改
         /// <summary>
         /// 修改
@@ -56,7 +57,7 @@ namespace ManagerSystemClassLibrary.BaseDT
                 sb.AppendFormat(",EMAILRECEIVETIME='{0}'", ClsSql.EncodeSql(m.EMAILRECEIVETIME));
             sb.AppendFormat(" where 1=1");
             if (string.IsNullOrEmpty(m.ERID))
-                return new Message(false, "操作失败！", "");
+                return new Message(false, "操作失败!", "");
             string[] arr = m.ERID.Split(',');
             if (arr.Length == 1)
                 sb.AppendFormat(" and ERID= '{0}'", ClsSql.EncodeSql(m.ERID));
@@ -66,7 +67,7 @@ namespace ManagerSystemClassLibrary.BaseDT
             if (bln == true)
                 return new Message(true, "", "");
             else
-                return new Message(false, "操作失败！", "");
+                return new Message(false, "操作失败!", "");
         }
         #endregion
 
@@ -84,9 +85,9 @@ namespace ManagerSystemClassLibrary.BaseDT
             sb.AppendFormat(" where ERID in({0})", ClsSql.EncodeSql(m.ERID));
             bool bln = DataBaseClass.ExeSql(sb.ToString());
             if (bln == true)
-                return new Message(true, "操作成功！", "");
+                return new Message(true, "操作成功!", "");
             else
-                return new Message(false, "操作失败！", "");
+                return new Message(false, "操作失败!", "");
         }
         #endregion
 
@@ -99,7 +100,7 @@ namespace ManagerSystemClassLibrary.BaseDT
         public static Message Del(E_RECEIVE_Model m)
         {
             if (string.IsNullOrEmpty(m.ERID))
-                return new Message(false, "删除失败！", "");
+                return new Message(false, "删除失败!", "");
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("delete E_RECEIVE");
             sb.AppendFormat(" where 1=1");
@@ -110,9 +111,9 @@ namespace ManagerSystemClassLibrary.BaseDT
                 sb.AppendFormat(" and ERID in({0})", ClsSql.EncodeSql(m.ERID));
             bool bln = DataBaseClass.ExeSql(sb.ToString());
             if (bln == true)
-                return new Message(true, "删除成功！", "");
+                return new Message(true, "删除成功!", "");
             else
-                return new Message(false, "删除失败！", "");
+                return new Message(false, "删除失败!", "");
         }
         #endregion
 
@@ -125,7 +126,7 @@ namespace ManagerSystemClassLibrary.BaseDT
         public static DataTable getDT(E_RECEIVE_SW sw)
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("FROM      E_RECEIVE b left join E_SUBJECT a");
+            sb.Append("FROM  E_RECEIVE b left join E_SUBJECT a");
             sb.AppendFormat("  on b.BYEMAILID=a.EMAILID");
             sb.AppendFormat(" WHERE   1=1");
             if (string.IsNullOrEmpty(sw.ERID) == false)
@@ -140,9 +141,7 @@ namespace ManagerSystemClassLibrary.BaseDT
                 sb.AppendFormat(" AND b.EMAILRECEIVESTATUS in({0})", ClsSql.EncodeSql(sw.EMAILRECEIVESTATUS));
             if (string.IsNullOrEmpty(sw.EMAILTITLE) == false)//接收状态 用于收件箱[已读、未读]\已删除 收件箱传 0,1 已删除 -1
                 sb.AppendFormat(" AND a.EMAILTITLE like '%{0}%'", ClsSql.EncodeSql(sw.EMAILTITLE));
-            string sql = "select a.*,b.*"
-               + sb.ToString()
-               + " order by b.EMAILSENDTIME DESC";
+            string sql = "select a.*,b.*" + sb.ToString() + " order by b.EMAILSENDTIME DESC";
             string sqlC = "select count(1) " + sb.ToString();
             DataSet ds = DataBaseClass.FullDataSet(sql);
             return ds.Tables[0];
@@ -190,21 +189,15 @@ namespace ManagerSystemClassLibrary.BaseDT
             if (string.IsNullOrEmpty(sw.RECEIVEUSERID) == false)//接收人序号 用于收件箱
                 sb.AppendFormat(" AND b.RECEIVEUSERID ='{0}'", ClsSql.EncodeSql(sw.RECEIVEUSERID));
             if (sw.EMAILRECEIVESTATUS != null && sw.EMAILRECEIVESTATUS.Trim() != "")//接收状态 用于收件箱[已读、未读]\已删除 收件箱传 0,1 已删除 -1
-            {
                 sb.AppendFormat(" AND b.EMAILRECEIVESTATUS in({0})", ClsSql.EncodeSql(sw.EMAILRECEIVESTATUS));
-            }
-
             if (!string.IsNullOrEmpty(sw.EMAILTITLE))//主题
                 sb.AppendFormat(" AND a.EMAILTITLE like '%{0}%'", ClsSql.EncodeSql(sw.EMAILTITLE));
-            string sql = "select a.*,b.*"
-               + sb.ToString()
-               + " order by b.EMAILSENDTIME DESC";
+            string sql = "select a.*,b.*" + sb.ToString() + " order by b.EMAILSENDTIME DESC";
             string sqlC = "select count(1) " + sb.ToString();
             total = int.Parse(DataBaseClass.ReturnSqlField(sqlC));
             sw.curPage = PagerCls.getCurPage(new PagerSW { curPage = sw.curPage, pageSize = sw.pageSize, rowCount = total });
             DataSet ds = DataBaseClass.FullDataSet(sql, (sw.curPage - 1) * sw.pageSize, sw.pageSize, "a");
             return ds.Tables[0];
-
         }
         #endregion
 
@@ -214,7 +207,7 @@ namespace ManagerSystemClassLibrary.BaseDT
         /// </summary>
         /// <param name="sw"></param>
         /// <returns></returns>
-        public static string getNum(E_RECEIVE_SW sw) 
+        public static string getNum(E_RECEIVE_SW sw)
         {
             string total = "";
             StringBuilder sb = new StringBuilder();
@@ -223,9 +216,7 @@ namespace ManagerSystemClassLibrary.BaseDT
             if (string.IsNullOrEmpty(sw.RECEIVEUSERID) == false)//接收人序号 用于收件箱
                 sb.AppendFormat(" AND RECEIVEUSERID ='{0}'", ClsSql.EncodeSql(sw.RECEIVEUSERID));
             if (sw.EMAILRECEIVESTATUS != null && sw.EMAILRECEIVESTATUS.Trim() != "")//接收状态 用于收件箱[已读、未读]\已删除 收件箱传 0,1 已删除 -1
-            {
                 sb.AppendFormat(" AND EMAILRECEIVESTATUS in({0})", ClsSql.EncodeSql(sw.EMAILRECEIVESTATUS));
-            }
             string sqlC = "select count(1) " + sb.ToString();
             total = (DataBaseClass.ReturnSqlField(sqlC)).ToString();
             return total;

@@ -161,8 +161,13 @@
     <Compile Include="BaseDT\PEST_COLLECT_DATAUPLOAD.cs" />
     <Compile Include="BaseDT\PEST_CONSULREPLY.cs" />
     <Compile Include="BaseDT\PEST_CONSULTATION.cs" />
+    <Compile Include="BaseDT\PEST_HARMCLASS.cs" />
+    <Compile Include="BaseDT\PEST_LOCALPESTJOIN.cs" />
     <Compile Include="BaseDT\PEST_LOCALTREESPECIES.cs" />
     <Compile Include="BaseDT\PEST_MONITORINGSTATION.cs" />
+    <Compile Include="BaseDT\PEST_PESTDYNAMICPROP.cs" />
+    <Compile Include="BaseDT\PEST_PESTINFOFILE.cs" />
+    <Compile Include="BaseDT\PEST_PESTPROP.cs" />
     <Compile Include="BaseDT\PEST_PHOTO.cs" />
     <Compile Include="BaseDT\PEST_REMOTEDIAGN.cs" />
     <Compile Include="BaseDT\PEST_REPORT_ASSESSINGTARGET.cs" />
@@ -198,7 +203,10 @@
     <Compile Include="BaseDT\SDE\TD_REPOSITORY.cs" />
     <Compile Include="BaseDT\SDE\TD_RESOURCE.cs" />
     <Compile Include="BaseDT\SDE\TD_DUTYROUTE.cs" />
+    <Compile Include="BaseDT\SDE\TD_WILD_ANIMALDISTRIBUTE.cs" />
+    <Compile Include="BaseDT\SDE\TD_WILD_BOTANYDISTRIBUTE.cs" />
     <Compile Include="BaseDT\SDE\YHSWJCD.cs" />
+    <Compile Include="BaseDT\SYS_Config.cs" />
     <Compile Include="BaseDT\TASK_FEEDBACK.cs" />
     <Compile Include="BaseDT\TASK_INFO.cs" />
     <Compile Include="BaseDT\TASK_TURNOVER.cs" />
@@ -220,7 +228,8 @@
     <Compile Include="BaseDT\T_IPS_HOTS.cs" />
     <Compile Include="BaseDT\T_IPS_REALDATA.cs" />
     <Compile Include="BaseDT\T_RDXXZL.cs" />
-    <Compile Include="BaseDT\T_SysDept_OADept.cs" />
+    <Compile Include="BaseDT\T_SYSSEC_USER_DEFINPROP.cs" />
+    <Compile Include="BaseDT\T_SYS_Dept_OADept.cs" />
     <Compile Include="BaseDT\T_SYSSEC_IPSUSER.cs" />
     <Compile Include="BaseDT\T_SYSSEC_ROLE.cs" />
     <Compile Include="BaseDT\T_SYSSEC_ROLE_RIGHT.cs" />
@@ -229,6 +238,7 @@
     <Compile Include="BaseDT\T_SYSSEC_RIGHT.cs" />
     <Compile Include="BaseDT\T_SYS_ADDREDDBOOK.cs" />
     <Compile Include="BaseDT\T_SYS_ADDREDDTYPE.cs" />
+    <Compile Include="BaseDT\T_SYS_BIOLOGICALTYPE.cs" />
     <Compile Include="BaseDT\T_SYS_DICT.cs" />
     <Compile Include="BaseDT\T_SYS_LAYER.cs">
       <SubType>Code</SubType>
@@ -242,10 +252,16 @@
     <Compile Include="BaseDT\T_SYS_ORG_EXTENDID.cs" />
     <Compile Include="BaseDT\T_SYS_ORG_LINK.cs" />
     <Compile Include="BaseDT\T_SYS_PARAMETER.cs" />
-    <Compile Include="BaseDT\T_SYS_PEST.cs" />
-    <Compile Include="BaseDT\T_SYS_PEST_OBSERVEAREA.cs" />
-    <Compile Include="BaseDT\T_SYS_TREESPECIES.cs" />
-    <Compile Include="BaseDT\T_SYS_TREESPECIES_PEST.cs" />
+    <Compile Include="BaseDT\PEST_OBSERVEAREA.cs" />
+    <Compile Include="BaseDT\PEST_TREESPECIES_PEST.cs" />
+    <Compile Include="BaseDT\WILD_ANIMALDISTRIBUTE.cs" />
+    <Compile Include="BaseDT\WILD_ANIMALFILE.cs" />
+    <Compile Include="BaseDT\WILD_ANIMALPROP.cs" />
+    <Compile Include="BaseDT\WILD_BOTANYDISTRIBUTE.cs" />
+    <Compile Include="BaseDT\WILD_BOTANYDYNAMICPROP.cs" />
+    <Compile Include="BaseDT\WILD_BOTANYFILE.cs" />
+    <Compile Include="BaseDT\WILD_LOCALANIMAL.cs" />
+    <Compile Include="BaseDT\WILD_LOCALBOTANY.cs" />
     <Compile Include="BaseDT\YJ_DANGERCLASS.cs" />
     <Compile Include="BaseDT\YJ_DCSMS_SEND.cs" />
     <Compile Include="BaseDT\YJ_DCSMS_TMP.cs" />
@@ -342,8 +358,13 @@
     <Compile Include="PEST_COLLECT_DATAUPLOADCls.cs" />
     <Compile Include="PEST_CONSULREPLYCls.cs" />
     <Compile Include="PEST_CONSULTATIONCls.cs" />
+    <Compile Include="PEST_HARMCLASSCls.cs" />
+    <Compile Include="PEST_LOCALPESTJOINCls.cs" />
     <Compile Include="PEST_LOCALTREESPECIESCls.cs" />
     <Compile Include="PEST_MONITORINGSTATIONCls.cs" />
+    <Compile Include="PEST_PESTDYNAMICPROPCls.cs" />
+    <Compile Include="PEST_PESTINFOFILECls.cs" />
+    <Compile Include="PEST_PESTPROPCls.cs" />
     <Compile Include="PEST_PHOTOCls.cs" />
     <Compile Include="PEST_REMOTEDIAGNCls.cs" />
     <Compile Include="PEST_REPORT_ASSESSINGTARGETCls.cs" />
@@ -375,6 +396,7 @@
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
     <Compile Include="SmsHelp\SmsCom.cs" />
+    <Compile Include="SYS_ConfigCls.cs" />
     <Compile Include="TASK_FEEDBACKCls.cs" />
     <Compile Include="TASK_INFOCls.cs" />
     <Compile Include="TASK_TURNOVERCls.cs" />
@@ -395,6 +417,8 @@
     <Compile Include="TD_RELAYCls.cs" />
     <Compile Include="TD_REPOSITORYCls.cs" />
     <Compile Include="TD_RESOURCECLS.cs" />
+    <Compile Include="TD_WILD_ANIMALDISTRIBUTECls.cs" />
+    <Compile Include="TD_WILD_BOTANYDISTRIBUTECls.cs" />
     <Compile Include="TREES_TREEGROUPINFOCls.cs" />
     <Compile Include="TREES_TREEGROUPINFO_DATAUPLOADCls.cs" />
     <Compile Include="TREES_TREESINFOCls.cs" />
@@ -416,8 +440,10 @@
     <Compile Include="T_SYSSEC_IPSUSERCls.cs" />
     <Compile Include="T_SYSSEC_ROLECls.cs" />
     <Compile Include="T_SYSSEC_RIGHTCls.cs" />
+    <Compile Include="T_SYSSEC_USER_DEFINPROPCls.cs" />
     <Compile Include="T_SYS_ADDREDDBOOKCls.cs" />
     <Compile Include="T_SYS_ADDREDDTYPECls.cs" />
+    <Compile Include="T_SYS_BIOLOGICALTYPECls.cs" />
     <Compile Include="T_SYS_DICTCls.cs" />
     <Compile Include="T_SYS_LAYERCls.cs">
       <SubType>Code</SubType>
@@ -430,11 +456,21 @@
     <Compile Include="T_SYS_ORG_EXTENDIDCls.cs" />
     <Compile Include="T_SYS_ORG_LINKCls.cs" />
     <Compile Include="T_SYS_PARAMETERCls.cs" />
-    <Compile Include="T_SYS_PESTCls.cs" />
-    <Compile Include="T_SYS_PEST_OBSERVEAREACls.cs" />
-    <Compile Include="T_SYS_TREESPECIESCls.cs" />
-    <Compile Include="T_SYS_TREESPECIES_PESTCls.cs" />
+    <Compile Include="PEST_OBSERVEAREACls.cs" />
+    <Compile Include="PEST_TREESPECIES_PESTCls.cs" />
     <Compile Include="WeatherCls.cs" />
+    <Compile Include="WILD_ANIMALDISTRIBUTECls.cs" />
+    <Compile Include="BaseDT\WILD_ANIMALDYNAMICPROP.cs" />
+    <Compile Include="WILD_ANIMALDYNAMICPROPCls.cs" />
+    <Compile Include="WILD_ANIMALFILECls.cs" />
+    <Compile Include="WILD_ANIMALPROPCls.cs" />
+    <Compile Include="BaseDT\WILD_BOTANYPROP.cs" />
+    <Compile Include="WILD_BOTANYDISTRIBUTECls.cs" />
+    <Compile Include="WILD_BOTANYDYNAMICPROPCls.cs" />
+    <Compile Include="WILD_BOTANYFILECls.cs" />
+    <Compile Include="WILD_BOTANYPROPCls.cs" />
+    <Compile Include="WILD_LOCALANIMALCls.cs" />
+    <Compile Include="WILD_LOCALBOTANYCls.cs" />
     <Compile Include="YJ_DANGERCLASSCls.cs" />
     <Compile Include="YJ_DCSMS_SENDCls.cs" />
     <Compile Include="YJ_DCSMS_TMPCls.cs" />
