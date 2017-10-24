@@ -18,10 +18,9 @@
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
                 <div class="divOP">
                     <div class="home ">
-                        @*填报单位：<select id="tbxBYORGNO" onchange="Query()">@Html.Raw(@ViewBag.vdOrg)</select>&nbsp;&nbsp;&nbsp;*@
                         日期：<input id="tbxTime" type="text" class="Wdate" style="width:100px" value="@ViewBag.Time" onclick="WdatePicker({ dateFmt: 'yyyy-MM'})" />
-                        <input type="button" value="查询" onclick="Query()" class="btnSearchCss" />
-                        <input type="button" value="导出" onclick="Export()" id="btnExport" class="btnOutputCss" >
+                        <input type="button" value="查 询" onclick="Query()" class="btnSearchCss" />
+                        <input type="button" value="导 出" onclick="Export()"  class="btnOutputCss">
                     </div>
                 </div>
             </div>
@@ -37,11 +36,16 @@
 <script type="text/javascript">
     Query();
     function Query() {
+        var time = $('#tbxTime').val();
+        if (time == "") {
+            layer.msg("请选择查询日期!", { icon: 5 });
+            return;
+        }
         $.ajax({
             type: 'get',
             url: '/FIRERECORD/SECONDMONTHLYREPORTQuery',
             dataType: 'json',
-            data: {  Time: $('#tbxTime').val() },
+            data: { Time: time },
             success: function (data, ioArgs) {
                 if (data.Success) {
                     $('#divTable').html("");

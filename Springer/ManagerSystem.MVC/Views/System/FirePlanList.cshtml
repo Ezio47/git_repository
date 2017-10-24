@@ -14,7 +14,7 @@
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
                 <div class="divOP">
                     <div class="home ">
-                        单位：<select id="tbxBYORGNO"> @Html.Raw(@ViewBag.vdOrg) </select>
+                        单位：<select id="tbxBYORGNO" onchange="query('1')"> @Html.Raw(@ViewBag.vdOrg) </select>
                         火灾等级：<select id="tbxFIRELEVEL">@Html.Raw(@ViewBag.vdFireLevel) </select>
                         <input type="button" value="查询" onclick="query(1)" class="btnSearchCss" />
                         <input type="button" value="添加" onclick="Add()" class="btnAddCss" />
@@ -42,60 +42,6 @@
     $(function () {
         query('1');
     });
-
-    function Manager(id) {
-        if (confirm('确实要删除该内容吗?')) {
-            $.ajax({
-                url: '/System/FirePlanManager',
-                cache: false,
-                data: { id: id, Method: 'Del', returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)' },
-                type: 'post',
-                error: function () {
-                    layer.msg('错误:异常!', { icon: 5 });
-                },
-                success: function (re) {
-                    var ar = eval('(' + re + ')');
-                    if (ar.Success) {
-                        layer.confirm(ar.Msg + ' 请返回?', { icon: 3, title: '提示' }, function (index) {
-                            layer.close(index);
-                            query(1);
-                        });
-                    }
-                    else {
-                        layer.msg(ar.Msg, { icon: 5 });
-                    }
-                }
-            });
-        }
-    }
-
-    function Add() {
-        layer.open({
-            type: 2,
-            title: '添加',
-            fix: false, //不固定
-            area: ['56%', '90%'],
-            maxmin: true,
-            content: '/System/FirePlanMan',
-            end: function () {
-                query(1);
-            }
-        });
-    }
-
-    function Mdy(id, Method) {
-        layer.open({
-            type: 2,
-            title: '修改',
-            fix: false, //不固定
-            area: ['56%', '90%'],
-            maxmin: true,
-            content: '/System/FirePlanMan?id=' + id + "&Method=" + Method,
-            end: function () {
-                query(page);
-            }
-        });
-    }
 
     var page = 1;//当前默认页面为1
     query("1")
@@ -128,6 +74,58 @@
             },
             error: function (err, ioArgs) {
                 layer.msg('登录异常!', { icon: 5 });
+            }
+        });
+    }
+
+    function Manager(id) {
+        layer.confirm('确实要删除吗?', { icon: 3, title: '提示' }, function (index) {
+            $.ajax({
+                url: '/System/FirePlanManager',
+                cache: false,
+                data: { id: id, Method: 'Del', returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)' },
+                type: 'post',
+                error: function () {
+                    layer.msg('错误:异常!', { icon: 5 });
+                },
+                success: function (re) {
+                    var ar = eval('(' + re + ')');
+                    if (ar.Success) {
+                        layer.msg(ar.Msg, { icon: 6 });
+                        query(1);
+                    }
+                    else {
+                        layer.msg(ar.Msg, { icon: 5 });
+                    }
+                }
+            });
+        });
+    }
+
+    function Add() {
+        layer.open({
+            type: 2,
+            title: '添加',
+            fix: false, //不固定
+            area: ['800px', '520px'],
+            maxmin: true,
+            content: '/System/FirePlanMan',
+            end: function () {
+                query(1);
+            }
+        });
+    }
+
+    function Mdy(id, Method) {
+        layer.open({
+            type: 2,
+            title: '修改',
+            fix: false, //不固定
+            area: ['800px', '520px'],
+            maxmin: true,
+            content: '/System/FirePlanMan?id=' + id + "&Method=" + Method,
+            end: function () {
+                query(page);
             }
         });
     }

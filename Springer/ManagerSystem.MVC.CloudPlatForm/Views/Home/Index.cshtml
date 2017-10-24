@@ -265,7 +265,7 @@
                                 <li><a href="#" class="sel_10" target="_blank" datap='24'><div class="icon-sty_08"></div><div class="systemName">古树名木信息管理系统</div></a></li>*@
                         </ul>
                         <ul>
-                            <li><a class="sel_13" target="_blank" datap='15'><div class="selectindex_icon21"></div><div class="systemName">林业一张图系统</div></a></li>
+                            <li><a href="http://36.7.68.79:8081" class="sel_04" target="_blank" datap='15'><div class="selectindex_icon21"></div><div class="systemName">林业一张图系统</div></a></li>
                             <li><a href="http://220.160.59.10:7003/tlwFrmis/login_indo.do?username=zyjg_admin&userpw=000000" class="sel_06" target="_blank" datap='19'><div class="selectindex_icon13"></div><div class="systemName">林业资源监管系统</div></a></li>
                             <li><a href="http://220.160.59.10:7003/tlwFrmis/login_indo.do?username=gyl_admin&userpw=000000" class="sel_08" target="_blank" datap='30'><div class="selectindex_icon01"></div><div class="systemName">公益林管理系统</div></a></li>
                             <li><a href="http://220.160.59.10:7003/tlwFrmis/login_indo.do?username=yzl_admin&userpw=000000" class="sel_03" target="_blank" datap='31'><div class="selectindex_icon14"></div><div class="systemName">营造林管理系统</div></a></li>
@@ -288,11 +288,11 @@
                             <li><a class="sel_13" target="_blank" datap='22'><div class="selectindex_icon22"></div><div class="systemName">森林公安刑事案件管理系统</div></a></li>
                         </ul>
                         <ul>
-                            <li><a onclick="login('4495')" class="sel_08" target="_blank" datap='7'><div class="selectindex_icon19"></div><div class="systemName">无人机监测</div></a></li>
-                            <li><a onclick="login('4496')" class="sel_06" target="_blank" datap='26'><div class="selectindex_icon20"></div><div class="systemName">林业视频监控 </div></a></li>
+                            <li><a onclick="login('4495')" class="sel_08" target="_blank" datap='7'><div class="selectindex_icon19"></div><div class="systemName">无人机监测管理系统</div></a></li>
+                            <li><a onclick="login('4496')" class="sel_06" target="_blank" datap='26'><div class="selectindex_icon20"></div><div class="systemName">林业视频监控管理系统 </div></a></li>
                             <li><a class="sel_13" target="_blank" datap='28'><div class="selectindex_icon01"></div><div class="systemName">北斗/GPS卫星导航</div></a></li>
-                            <li><a onclick="login('4494')" class="sel_04" target="_blank" datap='29'><div class="selectindex_icon21"></div><div class="systemName">有害生物监测</div></a></li>
-                            <li><a class="sel_13" target="_blank" datap='100'><div class="selectindex_icon22"></div><div class="systemName">野生动植物监测</div></a></li>
+                            <li><a onclick="login('4501')" class="sel_02" target="_blank" datap='100'><div class="selectindex_icon22"></div><div class="systemName">野生动物监测管理系统</div></a></li>
+                            <li><a onclick="login('4502')" class="sel_11" target="_blank" datap='100'><div class="selectindex_icon22"></div><div class="systemName">野生植物监测管理系统</div></a></li>
                             @*
                                 <li><a href="#" class="sel_03" target="_blank" datap='302'><div class="icon-sty_05"></div><div class="systemName">湿地公园三维展示系统</div></a></li>
                                 <li><a href="#" class="sel_08" target="_blank" datap='303'><div class="icon-sty_06"></div><div class="systemName">森林公园三维展示系统</div></a></li>
@@ -303,7 +303,7 @@
                         <ul>
                             <li><a onclick="login('4497')" class="sel_08" target="_blank" datap='7'><div class="selectindex_icon13"></div><div class="systemName">林业数据中心平台</div></a></li>
                             <li><a class="sel_13" target="_blank" datap='26'><div class="selectindex_icon19"></div><div class="systemName">业务流程管理平台 </div></a></li>
-                            <li><a class="sel_13" target="_blank" datap='28'><div class="selectindex_icon01"></div><div class="systemName">林业大数据支撑平台</div></a></li>
+                            <li><a onclick="login('4500')" class="sel_06" target="_blank" datap='28'><div class="selectindex_icon01"></div><div class="systemName">林业大数据支撑平台</div></a></li>
                             <li><a class="sel_13" target="_blank" datap='29'><div class="selectindex_icon20"></div><div class="systemName">林业共享服务平台</div></a></li>
                             <li><a class="sel_13" target="_blank" datap='100'><div class="selectindex_icon22"></div><div class="systemName">林业三维电子沙盘展示平台</div></a></li>
                         </ul>
@@ -331,6 +331,14 @@
             text: '护林员人数统计',
             textStyle: {
                 fontSize: 16
+            }
+        },
+        itemStyle: {
+            normal: {
+                // 设置扇形的颜色
+                color: 'green',
+                shadowBlur: 200,
+                shadowColor: 'rgba(0, 0, 0, 0.5)'
             }
         },
         tooltip: {},
@@ -382,6 +390,14 @@
             type: 'value',
             axisLabel: {
                 formatter: '{value} °C'
+            }
+        },
+        itemStyle: {
+            normal: {
+                // 设置扇形的颜色
+                color: 'green',
+                shadowBlur: 200,
+                shadowColor: 'rgba(0, 0, 0, 0.5)'
             }
         },
         series: [

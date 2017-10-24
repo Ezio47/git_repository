@@ -46,36 +46,72 @@
                         <tbody>
                             @if (Model.Any())
                             {
+                                int i = 0;
                                 foreach (var item in Model)
                                 {
-                                    <tr>
-                                        <td>@item.OWnAreaName</td>
-                                        <td style="width:20%;">@item.AreaName</td>
-                                        <td class='center'>@item.JD</td>
-                                        <td class='center'>@item.WD</td>
-                                        <td class='center'>@item.LevelDate</td>
-                                        @if (@item.FireLevel == "1")
-                                        {
-                                            strcolor = "green";
-                                        }
-                                        @if (@item.FireLevel == "2")
-                                        {
-                                            strcolor = "blue";
-                                        }
-                                        @if (@item.FireLevel == "3")
-                                        {
-                                            strcolor = "yellow";
-                                        }
-                                        @if (@item.FireLevel == "4")
-                                        {
-                                            strcolor = "orange";
-                                        }
-                                        @if (@item.FireLevel == "5")
-                                        {
-                                            strcolor = "red";
-                                        }
-                                        <td style="background-color:@strcolor" class='center'>@item.FireLevel</td>
-                                    </tr>
+                                    i++;
+                                    if (i % 2 == 0)
+                                    {
+                                        <tr>
+                                            <td>@item.OWnAreaName</td>
+                                            <td style="width:20%;">@item.AreaName</td>
+                                            <td class='center'>@item.JD</td>
+                                            <td class='center'>@item.WD</td>
+                                            <td class='center'>@item.LevelDate</td>
+                                            @if (@item.FireLevel == "1")
+                                            {
+                                                strcolor = "green";
+                                            }
+                                            @if (@item.FireLevel == "2")
+                                            {
+                                                strcolor = "blue";
+                                            }
+                                            @if (@item.FireLevel == "3")
+                                            {
+                                                strcolor = "yellow";
+                                            }
+                                            @if (@item.FireLevel == "4")
+                                            {
+                                                strcolor = "orange";
+                                            }
+                                            @if (@item.FireLevel == "5")
+                                            {
+                                                strcolor = "red";
+                                            }
+                                            <td style="background-color:@strcolor" class='center'>@item.FireLevel</td>
+                                        </tr>
+                                    }
+                                    else
+                                    {
+                                        <tr class="row1">
+                                            <td>@item.OWnAreaName</td>
+                                            <td style="width:20%;">@item.AreaName</td>
+                                            <td class='center'>@item.JD</td>
+                                            <td class='center'>@item.WD</td>
+                                            <td class='center'>@item.LevelDate</td>
+                                            @if (@item.FireLevel == "1")
+                                            {
+                                                strcolor = "green";
+                                            }
+                                            @if (@item.FireLevel == "2")
+                                            {
+                                                strcolor = "blue";
+                                            }
+                                            @if (@item.FireLevel == "3")
+                                            {
+                                                strcolor = "yellow";
+                                            }
+                                            @if (@item.FireLevel == "4")
+                                            {
+                                                strcolor = "orange";
+                                            }
+                                            @if (@item.FireLevel == "5")
+                                            {
+                                                strcolor = "red";
+                                            }
+                                            <td style="background-color:@strcolor" class='center'>@item.FireLevel</td>
+                                        </tr>
+                                    }
                                 }
                             }
                             else

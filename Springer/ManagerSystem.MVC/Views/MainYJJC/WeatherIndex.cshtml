@@ -28,8 +28,12 @@
                         <tbody>
                             @if (Model.Any())
                             {
+                                int i=0;
                                 foreach (WeatherInfoModel item in Model)
                                 {
+                                    i++;
+                                    if (i % 2 == 0)
+                                    {
                                     <tr>
                                         <td>@item.AreaName</td>
                                         <td>@item.Hum</td>
@@ -37,6 +41,17 @@
                                         <td>@item.HighAndLow</td>
                                         <td>@item.WeatherDate</td>
                                     </tr>
+                                    }
+                                    else
+                                    {
+                                        <tr class="row1">
+                                            <td>@item.AreaName</td>
+                                            <td>@item.Hum</td>
+                                            <td>@item.TCur</td>
+                                            <td>@item.HighAndLow</td>
+                                            <td>@item.WeatherDate</td>
+                                        </tr>
+                                    }
                                 }
                             }
                         </tbody>

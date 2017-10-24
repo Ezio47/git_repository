@@ -1,6 +1,15 @@
 ﻿@using ManagerSystemClassLibrary;
 @{
     Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+    var curorgno = SystemCls.getCurUserOrgNo();
+    if (curorgno.Substring(6, 9) == "000000000" && curorgno.Substring(4, 2) != "00")
+    {
+        curorgno = curorgno.Substring(0, 6) + "xxxxxxxxx";
+    }
+    else
+    {
+        curorgno = SystemCls.getCurUserOrgNo();
+    }
     var curorgno1 = SystemCls.getCurUserOrgNo();//添加的时候组织机判断
 }
 <div class="easyui-layout" data-options="fit:true" style=" border:0;">
@@ -18,16 +27,13 @@
                 <div class="divMan">
                     <table cellpadding="0" cellspacing="0">
                         <tr>
-                            <td style="width:80px;">
+                            <td style="width:80px;" class="tdField">
                                 单位名称：
                             </td>
                             <td>
                                 <select id="BYORGNO" class="easyui-combotree" style="width:180px;"></select>
-                                @*<select id="BYORGNO">
-                                    @Html.Raw(@ViewBag.vdOrg)
-                                </select>*@
                             </td>
-                            <td style="width:80px;">
+                            <td style="width:80px;" class="tdField">
                                 队伍类型：
                             </td>
                             <td>
@@ -38,46 +44,48 @@
                         </tr>
 
                         <tr>
-                            <td style="width:80px;">
-                                <span style="color:red;">*</span>
+                            <td style="width:80px;" class="tdField">
                                 名称：
                             </td>
                             <td>
                                 <input type="text" id="NAME" class="input-small" value="" />
-
+                                <span class="spanRequiredField">*</span>
                             </td>
-                            <td style="width:80px;">
-                                <span style="color:red;">*</span>
+                            <td style="width:80px;" class="tdField">
+                                @*<span style="color:red;">*</span>*@
                                 编号：
                             </td>
                             <td>
                                 <input id="NUMBER" type="text" class="input-small" value="" />
+                                <span class="spanRequiredField">*</span>
                             </td>
                         </tr>
                         <tr>
-                            <td style="width:80px;">
+                            <td style="width:80px;" class="tdField">
                                 人数：
                             </td>
                             <td>
                                 <input id="ARMYMEMBERCOUNT" type="text" class="input-small" value="" />
                             </td>
-                            <td style="width:80px;">
-                                <span style="color:red;">*</span>
+                            <td style="width:80px;" class="tdField">
+                                @*<span style="color:red;">*</span>*@
                                 队长：
                             </td>
                             <td>
                                 <input id="ARMYLEADER" type="text" class="input-small" value="" />
+                                <span class="spanRequiredField">*</span>
                             </td>
                         </tr>
                         <tr>
-                            <td style="width:80px;">
-                                <span style="color:red;">*</span>
+                            <td style="width:80px;" class="tdField">
+                                @*<span style="color:red;">*</span>*@
                                 联系方式：
                             </td>
                             <td>
                                 <input id="CONTACTS" type="text" class="input-small" value="" />
+                                <span class="spanRequiredField">*</span>
                             </td>
-                            <td style="width:80px;">
+                            <td style="width:80px;" class="tdField">
                                 队伍特点：
                             </td>
                             <td>
@@ -85,13 +93,13 @@
                             </td>
                         </tr>
                         <tr>
-                            <td style="width:100px;">
+                            <td style="width:100px;" class="tdField">
                                 经度：
                             </td>
                             <td>
                                 <input id="JD" type="text" class="input-small" value="" />
                             </td>
-                            <td style="width:100px;">
+                            <td style="width:100px;" class="tdField">
                                 纬度：
                             </td>
                             <td>
@@ -100,11 +108,11 @@
                             </td>
                         </tr>
                         <tr>
-                            <td style="width:80px;">
+                            <td style="width:80px;" class="tdField">
                                 备注：
                             </td>
                             <td colspan="3">
-                                <input id="MARK" type="text" class="input-small" value="" />
+                                <input id="MARK" style="width:97%" type="text" class="input-small" value="" />
                             </td>
                         </tr>
 
@@ -166,18 +174,18 @@
         var name = document.getElementById("NAME").value;
         var jd = document.getElementById("JD").value;
         var wd = document.getElementById("WD").value;
-        layer.open({
+        parent.layer.open({
             type: 2,
             title: name + '地图位置设置',
             btn: ['保存', '关闭'],
-            area: ['100%', '100%'],
+            area: ['1000px', '600px'],
             fix: true, //不固定
             maxmin: true,
             content: '/MapCommon/GetMapPontIndex?jd=' + jd + "&wd=" + wd,
             shade: 0,
             yes: function (index, layero) { //或者使用btn1
                 //按钮【按钮一】的回调
-                var ptxt = layer.getChildFrame("p", index);
+                var ptxt = parent.layer.getChildFrame("p", index);
                 var arr = ptxt.html().split(',');
                 if ($.trim(arr) != "") {
                     var jd = parseFloat(arr[0]).toFixed(6);
@@ -185,9 +193,9 @@
                     $('#JD').val(jd);
                     $('#WD').val(wd);
                 }
-                layer.close(index);
+                parent.layer.close(index);
             }, cancel: function (index) {
-                layer.close(index);
+                parent.layer.close(index);
             }
         });
     }
@@ -240,7 +248,7 @@
             return;
         }
         if ($.trim(t6) == "") {
-            layer.msg('请队伍队长！', { icon: 5 });
+            layer.msg('请填写队伍队长！', { icon: 5 });
             $('#ARMYLEADER').focus();
             return;
         }
@@ -282,7 +290,7 @@
                 }
             },
             error: function (err, ioArgs) {
-                layer.msg('保存异常!');
+                layer.msg('保存异常!', { icon: 5 });
             }
         });
     }

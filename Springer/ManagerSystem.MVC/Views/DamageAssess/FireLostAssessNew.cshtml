@@ -1,0 +1,679 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+}
+@using ManagerSystemModel;
+@model ManagerSystemModel.FIRELOST_FIREINFO_Model
+
+@section Header{
+    <style type="text/css">
+        .divTable table tr td h1 {
+            width: 80px;
+            height: 28px;
+            line-height: 28px;
+            color: #22a306;
+            border: 1px solid #35b719;
+            font-size: 15px;
+            border-radius: 12px;
+            background: url(../images/ico/firereport_icon.png) 7px 6px no-repeat;
+            padding-left: 28px;
+        }
+
+        .divTable tbody td span {
+            color: #cccccc;
+        }
+    </style>
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'center'" title="" style=" border: none; " class="LayoutCenterBG">
+        <input id="JCFID" name="JCFID" type="hidden" value="@ViewBag.JCFID" />
+        <input id="FIREINFOID" name="FIREINFOID" type="hidden" value="@Model.FIRELOST_FIREINFOID" />
+        <input id="dicCount" name="dicCount" type="hidden" value="@ViewBag.dicCount" />
+        <div class="divTable" style="margin-left:5px;margin-top:8px">
+            <table cellpadding="0" cellspacing="0" style="text-align: left;">
+                <tr style="width:95%;">
+                    <td colspan="10" style="height:40px"><h1>基本信息</h1></td>
+                </tr>
+                <tr>
+                    <td style="width:115px;" class="tdField">森林火灾编号：</td>
+                    <td style="width:80px;">@ViewBag.FIRECODE</td>
+                    <td style="width:80px;" class="tdField">起火单位：</td>
+                    <td style="width:80px;">@ViewBag.ORGNAME</td>
+                    <td style="width:90px;" class="tdField">起火时间：</td>
+                    <td style="width:145px;">@ViewBag.FIRETIME</td>
+                    <td style="width:75px;" class="tdField">森林总面积：</td>
+                    <td style="width:145px;">
+                        <input id="TOTALAREA" type="text" value="@Model.TOTALAREA" style="width:50px;" />
+                        <span class="spanMark">hm²</span>
+                        <input id="TOTALAREAJWDLIST" type="hidden" value="@Model.TOTALAREAJWDLIST" />
+                        <input type="button" value="定 位" onclick="setLine('TOTAL')" class="btnMapLoaclCss" />
+                    </td>
+
+                </tr>
+                <tr>
+                    <td class="tdField">灾区森林总蓄积量：</td>
+                    <td>
+                        <input id="TOTALXJL" type="text" value="@Model.TOTALXJL" style="width:50px;" />
+                        <span class="spanMark">m³</span>
+                    </td>
+                    <td class="tdField">森林蓄积损失量：</td>
+                    <td>
+                        <input id="XJLLOSE" type="text" value="@Model.XJLLOSE" style="width:50px;" />
+                        <span class="spanMark">m³</span>
+                    </td>
+                    <td class="tdField">灾区总人数：</td>
+                    <td>
+                        <input id="TOTALPERSON" type="text" value="@Model.TOTALPERSON" style="width:50px;" />
+                        <span class="spanMark">人</span>
+                    </td>
+                    <td class="tdField">伤(亡)人数：</td>
+                    <td>
+                        <input id="CASUALTYCOUNT" type="text" value="@Model.CASUALTYCOUNT" style="width:50px;" />
+                        <span class="spanMark">人</span>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td class="tdField">建筑物(或构建物)损失量：</td>
+                    <td>
+                        <input id="BUILDINGLOSECOUNT" type="text" value="@Model.BUILDINGLOSECOUNT" style="width:50px;" />
+                        <span class="spanMark">m²</span>
+                    </td>
+                    <td class="tdField">机械设备损失量：</td>
+                    <td>
+                        <input id="MACHINERYLOSECOUNT" type="text" value="@Model.MACHINERYLOSECOUNT" style="width:50px;" />
+                        <span class="spanMark">台、件</span>
+                    </td>
+                    <td class="tdField">火场面积：</td>
+                    <td style="width:120px;">
+                        <input id="FIREAREA" type="text" value="@Model.FIREAREA" style="width:50px;" />
+                        <span class="spanMark">hm²</span>
+                        <input id="FIREAREAJWDLIST" type="hidden" value="@Model.FIREAREAJWDLIST" />
+                        <input type="button" value="定 位" onclick="setLine('FIRE')" class="btnMapLoaclCss" />
+                    </td>
+                    <td class="tdField">火灾受害面积：</td>
+                    <td>
+                        <input id="FIRELOSEAREA" type="text" value="@Model.FIRELOSEAREA" style="width:50px;" />
+                        <span class="spanMark">hm²</span>
+                        <input id="FIRELOSEAREAJWDLIST" type="hidden" value="@Model.FIRELOSEAREAJWDLIST" />
+                        <input type="button" value="定 位" onclick="setLine('FIRELOSE')" class="btnMapLoaclCss" />
+                    </td>
+                </tr>
+                @if (ViewBag.dicType501 != null)
+                {
+                    T_SYS_DICTTYPE_Model dicType501 = (T_SYS_DICTTYPE_Model)ViewBag.dicType501;
+                    if (dicType501.DICTTYPEListModel.Count > 0)
+                    {
+                        for (int i = 0; i < dicType501.DICTTYPEListModel.Count; i++)
+                        {
+                            string title = dicType501.DICTTYPEListModel[i].DICTTYPENAME;
+                            <tr style="width:95%;">
+                                <td colspan="8" style="height:40px"><h1>@title</h1></td>
+                            </tr>
+                            int dicCount = dicType501.DICTTYPEListModel[i].DICTListModel.Count;
+                            if (dicCount > 0)
+                            {
+                                for (int j = 0; j < dicCount; j++)
+                                {
+                                    string sName = dicType501.DICTTYPEListModel[i].DICTListModel[j].DICTNAME; ;
+                                    string sMoney = "tbxMoney" + dicType501.DICTTYPEListModel[i].DICTListModel[j].DICTVALUE;
+                                    string sMark = "tbxMark" + dicType501.DICTTYPEListModel[i].DICTListModel[j].DICTVALUE;
+                                    string sId = "a" + dicType501.DICTTYPEListModel[i].DICTListModel[j].DICTVALUE;
+                                    <tr style="width:95%;">
+                                        <td class="tdField">@sName ：</td>
+                                        <td class="tdField">损失金额：</td>
+                                        <td>
+                                            <input id="@sMoney" type="text" value="" style="width:65%;" />
+                                            <span class="spanMark">元</span>
+                                        </td>
+                                        <td class="tdField">备注：</td>
+                                        <td colspan="3"><input id="@sMark" type="text" value="" style="width:96%;" /></td>
+                                        <td><a id="@sId" href="#" onclick="managerLostType('@dicType501.DICTTYPEListModel[i].DICTListModel[j].DICTNAME','@dicType501.DICTTYPEListModel[i].DICTListModel[j].DICTVALUE')" title='管理' class="searchBox_01 LinkDel">管 理</a></td>
+                                    </tr>
+                                }
+                            }
+                        }
+                    }
+                }
+                <tr style="width:95%;">
+                    <td colspan="10" style="height:40px"><h1>评估指标</h1></td>
+                </tr>
+                <tr>
+                    <td class="tdField">损失总计:<input id="HidLOSSCOUNT" name="HidLOSSCOUNT" type="hidden" value="" /></td>
+                    <td id="LOSSCOUNT" colspan="3">@Model.LOSSCOUNT 元</td>
+                    <td class="tdField">森林资源损失率:<input id="HidFORESTRESOURCELOSSRATIO" name="HidFORESTRESOURCELOSSRATIO" type="hidden" value="" /></td>
+                    <td id="FORESTRESOURCELOSSRATIO" colspan="3">@Model.FORESTRESOURCELOSSRATIO</td>
+                </tr>
+                <tr>
+                    <td class="tdField">人均损失价值:<input id="HidAVGLOSSPERCATITAVALUE" name="HidAVGLOSSPERCATITAVALUE" type="hidden" value="" /></td>
+                    <td id="AVGLOSSPERCATITAVALUE" colspan="3">@Model.AVGLOSSPERCATITAVALUE 元/人</td>
+                    <td class="tdField">林地损失平均价值量:<input id="HidWOODLANDLOSSAVGVALUE" name="HidWOODLANDLOSSAVGVALUE" type="hidden" value="" /></td>
+                    <td id="WOODLANDLOSSAVGVALUE" colspan="3">@Model.WOODLANDLOSSAVGVALUE 元/hm² </td>
+                </tr>
+                <tr>
+                    <td class="tdField">扑火成效比:<input id="HidFIRESUPPEFFECTTHAN" name="HidFIRESUPPEFFECTTHAN" type="hidden" value="" /></td>
+                    <td id="FIRESUPPEFFECTTHAN" colspan="3">@Model.FIRESUPPEFFECTTHAN</td>
+                    <td colspan="4"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div data-options="region:'south'" title="" style=" height:35px; border: none; overflow:hidden; text-align:center;">
+        <div class="divOP">
+            <input type="button" value="保 存" onclick="saveLostInfo('Save')" class="btnSaveCss" />&nbsp;&nbsp;&nbsp;
+            <input type="button" value="报 表" onclick="lostInfoReport()" class="btnDefaultValueCss" />&nbsp;&nbsp;&nbsp;
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $('#a001').hide();
+        $('#a103').hide();
+        query();
+    });
+
+    //异步加载损失明细
+    function query() {
+        var arrDicCount = $('#dicCount').val().split(';');
+        var FIREINFOID = $('#FIREINFOID').val();
+        for (var i = 0; i < arrDicCount.length; i++) {
+            var arrDic = arrDicCount[i].split(',');
+            for (var j = 0; j < arrDic.length; j++) {
+                $.ajax({
+                    type: "get",
+                    url: "/DamageAssess/GetSSMX",
+                    data: { FIREINFOID: FIREINFOID, Dic: arrDic[j], TYPE: '1' },
+                    dataType: "json",
+                    async: false,
+                    success: function (result) {
+                        if (result.Success) {
+                            var arrUrl = result.Url.split(',');
+                            $('#tbxMoney' + arrDic[j] + '').val(arrUrl[0]);
+                            $('#tbxMark' + arrDic[j] + '').val(arrUrl[1]);
+                        }
+                        else {
+                            $('#tbxMoney' + arrDic[j] + '').val('');
+                            $('#tbxMark' + arrDic[j] + '').val('');
+                        }
+                    },
+                    error: function () {
+                        layer.msg('系统异常!', { icon: 5 });
+                    }
+                });
+            }
+        }
+        calLossCount();
+    }
+
+    //异步刷新某项损失
+    function queryMX(FIREINFOID, DICTVALUE) {
+        $.ajax({
+            type: "get",
+            url: "/DamageAssess/GetSSMX",
+            data: { FIREINFOID: FIREINFOID, Dic: DICTVALUE, TYPE: '2' },
+            dataType: "json",
+            async: false,
+            success: function (result) {
+                if (result.Success) {
+                    var arrUrl = result.Url.split(',');
+                    $('#tbxMoney' + DICTVALUE + '').val(arrUrl[0]);
+                    $('#tbxMark' + DICTVALUE + '').val(arrUrl[1]);
+                }
+                else {
+                    $('#tbxMoney' + DICTVALUE + '').val('');
+                    $('#tbxMark' + DICTVALUE + '').val('');
+                }
+            },
+            error: function () {
+                layer.msg('系统异常!', { icon: 5 });
+            }
+        });
+        calLossCount()
+    }
+
+    //地图定位
+    function setLine(type) {
+        var name = "";
+        var jwdlist = "";
+        if (type == 'TOTAL') {
+            name = "森林总面积";
+            jwdlist = $('#TOTALAREAJWDLIST').val();
+        }
+        if (type == 'FIRE') {
+            name = "火场面积";
+            jwdlist = $('#FIREAREAJWDLIST').val();
+        }
+        if (type == 'FIRELOSE') {
+            name = "火灾受害面积";
+            jwdlist = $('#FIRELOSEAREAJWDLIST').val();
+        }
+        layer.open({
+            type: 2,
+            title: name + '地图位置设置',
+            btn: ['保存', '关闭'],
+            area: ['80%', '90%'],
+            fix: false, //不固定
+            maxmin: true,
+            content: '/MapCommon/GetMapPontIndex?LINE=2',
+            success: function (layero, index) {
+                var body = layer.getChildFrame('body', index);
+                body.find('#editcollecttxt').text(jwdlist);
+                window["layui-layer-iframe" + index].getLocaCollectPolygon();//面
+            },
+            yes: function (index, layero) {
+                var ptxt = layer.getChildFrame("#editcollecttxt", index);
+                var lm = layer.getChildFrame("#MjACdtxt", index)
+                if (type == 'TOTAL') {
+                    $('#TOTALAREA').val(lm.html());//面积
+                    $('#TOTALAREAJWDLIST').val(ptxt.html());//经纬度
+                }
+                if (type == 'FIRE') {
+                    $('#FIREAREA').val(lm.html());//面积
+                    $('#FIREAREAJWDLIST').val(ptxt.html());//经纬度
+                }
+                if (type == 'FIRELOSE') {
+                    $('#FIRELOSEAREA').val(lm.html());//面积
+                    $('#FIRELOSEAREAJWDLIST').val(ptxt.html());//经纬度
+                }
+                layer.close(index);
+            },
+            cancel: function (index) {
+                layer.close(index);
+            }
+        });
+    }
+
+    //计算损失总计
+    function calLossCount() {
+        var arrDicCount = $('#dicCount').val().split(';');
+        var sCount = 0;
+        for (var i = 0; i < arrDicCount.length; i++) {
+            var arrDic = arrDicCount[i].split(',');
+            for (var j = 0; j < arrDic.length; j++) {
+                var s = $('#tbxMoney' + arrDic[j] + '').val();
+                if (s != "") {
+                    sCount = sCount + parseFloat(s);
+                }
+            }
+        }
+        if (sCount > 0) {
+            var str = sCount.toFixed(2).toString();
+            $('#HidLOSSCOUNT').val(str)
+            str = str + "元"
+            $('#LOSSCOUNT').html(str);
+        }
+        else {
+            $('#HidLOSSCOUNT').val('0')
+            $('#LOSSCOUNT').html('元');
+        }
+    }
+
+    //计算评估指标
+    function calEvalStandard() {
+        var xjlLose = $('#XJLLOSE').val();
+        var totalXjl = $('#TOTALXJL').val();
+        var totalAttack = $('#tbxMoney007').val();
+        var totalLossCount = $('#HidLOSSCOUNT').val();
+        var totolPerson = $('#TOTALPERSON').val();
+        var totalArea = $('#TOTALAREA').val();
+        var FORESTRESOURCELOSSRATIO = "";
+        var AVGLOSSPERCATITAVALUE = "";
+        var WOODLANDLOSSAVGVALUE = "";
+        var FIRESUPPEFFECTTHAN = "";
+
+        FORESTRESOURCELOSSRATIO = parseFloat(xjlLose) / parseFloat(totalXjl);
+        if (FORESTRESOURCELOSSRATIO > 0) {
+            var s1 = FORESTRESOURCELOSSRATIO.toFixed(2).toString();
+            $('#HidFORESTRESOURCELOSSRATIO').val(s1)
+            var s2 = (parseFloat(s1) * 100).toString();
+            s2 = s2 + "%";
+            $('#FORESTRESOURCELOSSRATIO').html(s2);
+        }
+        else {
+            $('#HidFORESTRESOURCELOSSRATIO').val('0')
+            $('#FORESTRESOURCELOSSRATIO').html('%');
+        }
+
+        if (totalLossCount != "") {
+            if (totolPerson != "") {
+                AVGLOSSPERCATITAVALUE = parseFloat(totalLossCount) / parseFloat(totolPerson);
+            }
+            if (totalArea != "") {
+                WOODLANDLOSSAVGVALUE = parseFloat(totalLossCount) / parseFloat(totalArea);
+            }
+            if (totalAttack == "") {
+                totalAttack = 0;
+            }
+            FIRESUPPEFFECTTHAN = parseFloat(totalAttack) / parseFloat(totalLossCount);
+        }
+        if (AVGLOSSPERCATITAVALUE >= 0) {
+            var s3 = AVGLOSSPERCATITAVALUE.toFixed(2).toString();
+            $('#HidAVGLOSSPERCATITAVALUE').val(s3)
+            s3 = s3 + "元/人";
+            $('#AVGLOSSPERCATITAVALUE').html(s3);
+        }
+        else {
+            $('#HidAVGLOSSPERCATITAVALUE').val('0')
+            $('#AVGLOSSPERCATITAVALUE').html('元/人');
+        }
+
+        if (WOODLANDLOSSAVGVALUE >= 0) {
+            var s4 = WOODLANDLOSSAVGVALUE.toFixed(2).toString();
+            $('#HidWOODLANDLOSSAVGVALUE').val(s4)
+            s4 = s4 + "元/hm²";
+            $('#WOODLANDLOSSAVGVALUE').html(s4);
+        }
+        else {
+            $('#HidWOODLANDLOSSAVGVALUE').val('0')
+            $('#WOODLANDLOSSAVGVALUE').html('元/hm²');
+        }
+
+        if (FIRESUPPEFFECTTHAN >= 0) {
+            var s5 = FIRESUPPEFFECTTHAN.toFixed(2).toString();
+            $('#HidFIRESUPPEFFECTTHAN').val(s5)
+            var s6 = (parseFloat(s5) * 100).toString();
+            s6 = s6 + "%";
+            $('#FIRESUPPEFFECTTHAN').html(s6);
+        }
+        else {
+            $('#HidFIRESUPPEFFECTTHAN').val('0')
+            $('#FIRESUPPEFFECTTHAN').html('%');
+        }
+    }
+
+    //灾损分类管理
+    function managerLostType(DICTNAME, DICTVALUE) {
+        var str = DICTNAME + "管理";
+        var firInfoId = $('#FIREINFOID').val();
+        var url = "";
+        var area = ['750px', '450px'];
+        if (DICTVALUE == '001') {
+
+        }
+        if (DICTVALUE == '002') {
+            url = '/DamageAssess/WOOD?FIREINFOID=' + firInfoId
+        }
+        if (DICTVALUE == '003') {
+            url = '/DamageAssess/FIXEDASSETS?FIREINFOID=' + firInfoId
+        }
+        if (DICTVALUE == '004') {
+            url = '/DamageAssess/CURRENTASSETS?FIREINFOID=' + firInfoId
+        }
+        if (DICTVALUE == '005') {
+            url = '/DamageAssess/NTFP?FIREINFOID=' + firInfoId
+        }
+        if (DICTVALUE == '006') {
+            url = '/DamageAssess/FARMPASTUREPRODUCT?FIREINFOID=' + firInfoId
+        }
+        if (DICTVALUE == '007') {
+            url = '/DamageAssess/ATTACK?FIREINFOID=' + firInfoId
+        }
+        if (DICTVALUE == '008') {
+            url = '/DamageAssess/CASUALTY?FIREINFOID=' + firInfoId
+            area = ['800px', '490px'];
+        }
+        if (DICTVALUE == '009') {
+            url = '/DamageAssess/RESIDENTPROPERTY?FIREINFOID=' + firInfoId
+        }
+        if (DICTVALUE == '010') {
+            url = '/DamageAssess/WILDANIMAL?FIREINFOID=' + firInfoId
+        }
+        if (DICTVALUE == '101') {
+            url = '/DamageAssess/STOPREDUCTION?FIREINFOID=' + firInfoId
+        }
+        if (DICTVALUE == '102') {
+            url = '/DamageAssess/LOSTPROCESS?FIREINFOID=' + firInfoId
+        }
+        if (DICTVALUE == '103') {
+
+        }
+        layer.open({
+            type: 2,
+            title: str,
+            area: area,
+            fix: true,
+            maxmin: true,
+            content: url,
+            end: function () {
+                queryMX(firInfoId, DICTVALUE);
+                calEvalStandard();
+                saveLostType();
+            }
+        })
+    }
+
+    //保存损失分类统计
+    function saveLostType() {
+        var typeCode = "";
+        var loseMoney = "";
+        var mark = "";
+        var arrDicCount = $('#dicCount').val().split(';');
+        for (var i = 0; i < arrDicCount.length; i++) {
+            var arrDic = arrDicCount[i].split(',');
+            for (var j = 0; j < arrDic.length; j++) {
+                var s1 = $('#tbxMoney' + arrDic[j] + '').val();
+                var s2 = $('#tbxMark' + arrDic[j] + '').val();
+                if (s1 != "") {
+                    typeCode += arrDic[j] + ",";
+                    loseMoney += s1 + ',';
+                    mark += s2 + ',';
+                }
+            }
+        }
+        if (typeCode.length > 1) {
+            typeCode = typeCode.substring(0, typeCode.length - 1);
+            loseMoney = loseMoney.substring(0, loseMoney.length - 1);
+            mark = mark.substring(0, mark.length - 1);
+        }
+        $.ajax({
+            type: "post",
+            url: "/DamageAssess/FIRELOSTTYPEManager",
+            data: { FIREINFOID: $('#FIREINFOID').val(), TYPECODE: typeCode, LOSEMONEY: loseMoney, Mark: mark },
+            dataType: "json",
+            success: function (re) {
+                if (re.Success) {
+                }
+                else {
+                    layer.msg(re.Msg, { icon: 5 });
+                }
+            },
+            error: function (re) {
+                layer.msg(re.Msg, { icon: 5 });
+            }
+        });
+    }
+
+    //保存火情基本信息
+    function saveLostInfo(type) {
+        var TOTALAREA = $('#TOTALAREA').val();
+        if ($.trim(TOTALAREA) == "") {
+            layer.msg('请输入森林总面积!', { icon: 5 });
+            $('#TOTALAREA').focus();
+            return;
+        }
+        else {
+            if (!CheckNUM2(TOTALAREA)) {
+                layer.msg('森林总面积请输入数字,且最多保留2位有效数字!', { icon: 5 });
+                $('#TOTALAREA').focus();
+                return;
+            }
+        }
+        var FIREAREA = $('#FIREAREA').val();
+        if ($.trim(FIREAREA) == "") {
+            layer.msg('请输入火场面积!', { icon: 5 });
+            $('#FIREAREA').focus();
+            return;
+        }
+        else {
+            if (!CheckNUM2(FIREAREA)) {
+                layer.msg('火场面积请输入数字,且最多保留2位有效数字!', { icon: 5 });
+                $('#FIREAREA').focus();
+                return;
+            }
+        }
+
+        var FIRELOSEAREA = $('#FIRELOSEAREA').val();
+        if ($.trim(FIRELOSEAREA) == "") {
+            layer.msg('请输入火灾受害面积!', { icon: 5 });
+            $('#FIRELOSEAREA').focus();
+            return;
+        }
+        else {
+            if (!CheckNUM2(FIRELOSEAREA)) {
+                layer.msg('火灾受害面积请输入数字,且最多保留2位有效数字!', { icon: 5 });
+                $('#FIRELOSEAREA').focus();
+                return;
+            }
+        }
+
+        var TOTALXJL = $('#TOTALXJL').val();
+        if ($.trim(TOTALXJL) == "") {
+            layer.msg('请输入灾区森林总蓄积量!', { icon: 5 });
+            $('#TOTALXJL').focus();
+            return;
+        }
+        else {
+            if (!CheckNUM2(TOTALXJL)) {
+                layer.msg('灾区森林总蓄积量请输入数字,且最多保留2位有效数字!', { icon: 5 });
+                $('#TOTALXJL').focus();
+                return;
+            }
+        }
+        var XJLLOSE = $('#XJLLOSE').val();
+        if ($.trim(XJLLOSE) == "") {
+            layer.msg('请输入森林蓄积损失量!', { icon: 5 });
+            $('#XJLLOSE').focus();
+            return;
+        }
+        else {
+            if (!CheckNUM2(XJLLOSE)) {
+                layer.msg('森林蓄积损失量请输入数字,且最多保留2位有效数字!', { icon: 5 });
+                $('#XJLLOSE').focus();
+                return;
+            }
+        }
+        if (parseFloat(XJLLOSE) > parseFloat(TOTALXJL)) {
+            layer.msg('森林蓄积损失量>灾区森林总蓄积量!', { icon: 5 });
+            $('#XJLLOSE').focus();
+            return;
+        }
+
+        var TOTALPERSON = $('#TOTALPERSON').val();
+        if ($.trim(TOTALPERSON) == "") {
+            layer.msg('请输入灾区总人数!', { icon: 5 });
+            $('#TOTALPERSON').focus();
+            return;
+        }
+        else {
+            if (!CheckINT(TOTALPERSON)) {
+                layer.msg('灾区总人数请输入正整数!', { icon: 5 });
+                $('#TOTALPERSON').focus();
+                return;
+            }
+        }
+        var CASUALTYCOUNT = $('#CASUALTYCOUNT').val();
+        if ($.trim(CASUALTYCOUNT) == "") {
+            layer.msg('请输入伤(亡)人数!', { icon: 5 });
+            $('#CASUALTYCOUNT').focus();
+            return;
+        }
+        else {
+            if (!CheckINT(CASUALTYCOUNT)) {
+                layer.msg('伤(亡)人数请输入正整数!', { icon: 5 });
+                $('#CASUALTYCOUNT').focus();
+                return;
+            }
+        }
+        if (parseInt(CASUALTYCOUNT) > parseInt(TOTALPERSON)) {
+            layer.msg('伤(亡)人数>灾区总人数!', { icon: 5 });
+            $('#CASUALTYCOUNT').focus();
+            return;
+        }
+
+        var BUILDINGLOSECOUNT = $('#BUILDINGLOSECOUNT').val();
+        if ($.trim(BUILDINGLOSECOUNT) == "") {
+            layer.msg('请输入建筑物(或构建物)损失量!', { icon: 5 });
+            $('#BUILDINGLOSECOUNT').focus();
+            return;
+        }
+        else {
+            if (!CheckNUM2(BUILDINGLOSECOUNT)) {
+                layer.msg('建筑物(或构建物)损失量请输入数字,且最多保留2位有效数字!', { icon: 5 });
+                $('#BUILDINGLOSECOUNT').focus();
+                return;
+            }
+        }
+
+        var MACHINERYLOSECOUNT = $('#MACHINERYLOSECOUNT').val();
+        if ($.trim(MACHINERYLOSECOUNT) == "") {
+            layer.msg('请输入机械设备损失量!', { icon: 5 });
+            $('#MACHINERYLOSECOUNT').focus();
+            return;
+        }
+        else {
+            if (!CheckINT(MACHINERYLOSECOUNT)) {
+                layer.msg('机械设备损失量请输入正整数!', { icon: 5 });
+                $('#MACHINERYLOSECOUNT').focus();
+                return;
+            }
+        }
+        calEvalStandard();
+        saveLostType();
+        $.ajax({
+            type: "post",
+            url: "/DamageAssess/FIRELOSTINFManager",
+            data: {
+                FIRELOST_FIREINFOID: $('#FIREINFOID').val(),
+                JCFID: $('#JCFID').val(),
+                TOTALXJL: TOTALXJL,
+                XJLLOSE: XJLLOSE,
+                TOTALPERSON: TOTALPERSON,
+                CASUALTYCOUNT: CASUALTYCOUNT,
+                TOTALAREA: TOTALAREA,
+                TOTALAREAJWDLIST: $('#TOTALAREAJWDLIST').val(),
+                FIREAREA: FIREAREA,
+                FIREAREAJWDLIST: $('#FIREAREAJWDLIST').val(),
+                FIRELOSEAREA: FIRELOSEAREA,
+                FIRELOSEAREAJWDLIST: $('#FIRELOSEAREAJWDLIST').val(),
+                BUILDINGLOSECOUNT: BUILDINGLOSECOUNT,
+                MACHINERYLOSECOUNT: MACHINERYLOSECOUNT,
+                LOSSCOUNT: $('#HidLOSSCOUNT').val(),
+                FORESTRESOURCELOSSRATIO: $('#HidFORESTRESOURCELOSSRATIO').val(),
+                AVGLOSSPERCATITAVALUE: $('#HidAVGLOSSPERCATITAVALUE').val(),
+                WOODLANDLOSSAVGVALUE: $('#HidWOODLANDLOSSAVGVALUE').val(),
+                FIRESUPPEFFECTTHAN: $('#HidFIRESUPPEFFECTTHAN').val(),
+                Method: 'Save'
+            },
+            dataType: "json",
+            success: function (re) {
+                if (re.Success) {
+                    $('#FIREINFOID').val(re.Url);
+                    if (type == 'Save') {
+                        layer.msg(re.Msg, { icon: 6 });
+                    }
+                }
+                else {
+                    layer.msg(re.Msg, { icon: 5 });
+                }
+            },
+            error: function () {
+                layer.msg('系统异常!', { icon: 5 });
+            }
+        });
+    }
+
+    //灾损评估报表
+    function lostInfoReport() {
+        saveLostInfo('Report')
+        parent.layer.open({
+            type: 2,
+            title: '灾损评估报表',
+            area: ['720px', '550px'],
+            fix: true,
+            maxmin: true,
+            content: '/DamageAssess/FireLostReport?JCFID=' + $('#JCFID').val(),
+        })
+    }
+</script>

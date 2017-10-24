@@ -1,0 +1,124 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        树种：<select id="tbxTREESPECIES" onchange="query2()">@Html.Raw(@ViewBag.vdTREESPECIES)</select>&nbsp;&nbsp;&nbsp;
+                        <input type="button" value="查 询" onclick="query2()" class="btnSearchCss" />
+                    </div>
+                </div>
+            </div>
+
+            <div data-options="region:'center'" title="" >
+                <div class="divMan" style="height:96%;">
+                    <table cellpadding="0" cellspacing="0" border="1" style="height:99%;">
+                        <tr><th style="width: 42%;">有害生物列表</th><th style="width: 10%;"></th><th style="width: 42%;">已关联有害生物列表</th></tr>
+                        <tr style="height:99%;">
+                            <td id="td1" style="text-align: left;" valign="top" class="left"></td>
+                            <td>
+                                <input type="button" value="添 加" onclick="manager('Add')" class="btnAddCss" />
+                                <br /><br />
+                                <input type="button" value="删 除" onclick="manager('Del')" class="btnDelCss" />
+                            </td>
+                            <td id="td2" style="text-align: left;" valign="top" class="left"></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    query1();
+    query2();
+
+    //查询有害生物列表
+    function query1() {
+        $.ajax({
+            type: 'get',
+            url: '/System/GetPestTreeList',
+            dataType: 'json',
+            success: function (data, ioArgs) {
+                if (data.Success) {
+                    $('#td1').html("");
+                    $('#td1').html(data.Msg);
+                }
+                else {
+                    $('#td1').html("");
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("查询异常!", { icon: 5 });
+            }
+        });
+    }
+
+    //查询已关联的有害生物列表
+    function query2() {
+        $.ajax({
+            type: 'get',
+            url: '/System/GetPestTreeJoinList',
+            data: { TreeSpecies: $('#tbxTREESPECIES').val() },
+            dataType: 'json',
+            success: function (data, ioArgs) {
+                if (data.Success) {
+                    $('#td2').html("");
+                    $('#td2').html(data.Msg);
+                }
+                else {
+                    $('#td2').html("");
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("查询异常!", { icon: 5 });
+            }
+        });
+    }
+
+    function manager(method) {
+        var pestCode = "";
+        var str = "";
+        if (method == "Add") {
+            pestCode = $("input:checkbox[name='tbxBioCode']:checked").map(function (index, elem) { return $(elem).val(); }).get().join(',');
+            str = "添加";
+        }
+        if (method == "Del") {
+            pestCode = $("input:checkbox[name='tbxJoinBioCode']:checked").map(function (index, elem) { return $(elem).val(); }).get().join(',');
+            str = "删除";
+        }
+        if (pestCode.length <= 0) {
+            layer.msg("请选择要" + str + "的有害生物!", { icon: 5 });
+            return;
+        }
+        $.ajax({
+            type: 'get',
+            url: '/System/PestTreeJoinManager',
+            data: {
+                TreeSpeciesCode: $('#tbxTREESPECIES').val(),
+                PestCode: pestCode,
+                Method: method
+            },
+            dataType: 'json',
+            success: function (data, ioArgs) {
+                if (data.Success) {
+                    layer.msg(data.Msg, { icon: 6 });
+                    query1();
+                    query2();
+                }
+                else {
+                    layer.msg(data.Msg, { icon: 5 });
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("系统异常!", { icon: 5 });
+            }
+        });
+    }
+</script>
+

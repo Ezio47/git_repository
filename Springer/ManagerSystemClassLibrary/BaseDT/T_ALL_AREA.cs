@@ -216,7 +216,6 @@ namespace ManagerSystemClassLibrary.BaseDT
             DataSet ds = DataBaseClass.FullDataSet(sb.ToString());
             return ds.Tables[0];
         }
-
         #endregion
 
     }

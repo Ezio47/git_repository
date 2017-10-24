@@ -20,7 +20,7 @@
             </div>
             <div data-options="region:'center'" title="" style=" border: none; ">
                 <div class="divTable" id="divTable">
-                    @*@Html.Raw(ViewBag.RoleList)*@
+
                 </div>
             </div>
 
@@ -56,7 +56,7 @@
     }
 
     function Manager(id) {
-        if (confirm('确实要删除该内容吗?')) {
+        layer.confirm('确实要删除吗?', { icon: 3, title: '提示' }, function (index) {
             $.ajax({
                 url: '/System/RoleManager',
                 data: { ID: id, Method: 'Del', returnUrl: '' },
@@ -75,7 +75,7 @@
                     }
                 }
             });
-        }
+        });
     }
 
     function Add() {
@@ -101,7 +101,7 @@
             maxmin: true,
             content: '/System/RoleMan?Method=' + Method + "&ID=" + ID,
             end: function () {
-                query(); //window.location.reload();
+                query(); 
             }
         });
     }

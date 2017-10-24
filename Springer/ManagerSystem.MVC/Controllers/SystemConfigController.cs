@@ -26,7 +26,6 @@ namespace ManagerSystem.MVC.Controllers
         /// 行政区划管理－增、删、改
         /// </summary>
         /// <returns>参见模型</returns>
-        /// 
         public ActionResult AREAManager()
         {
             T_ALL_AREA_Model m = new T_ALL_AREA_Model();
@@ -49,19 +48,19 @@ namespace ManagerSystem.MVC.Controllers
                 if (string.IsNullOrEmpty(m.JD) == false)
                 {
                     if (float.Parse(m.JD) >= 180 || float.Parse(m.JD) <= -180)
-                        return Content(JsonConvert.SerializeObject(new Message(false, "经度范围在-180~180之间，请重新输入!", "")), "text/html;charset=UTF-8");
+                        return Content(JsonConvert.SerializeObject(new Message(false, "经度范围在-180~180之间,请重新输入!", "")), "text/html;charset=UTF-8");
                 }
                 if (string.IsNullOrEmpty(m.WD) == false)
                 {
                     if (float.Parse(m.WD) >= 90 || float.Parse(m.WD) <= -90)
-                        return Content(JsonConvert.SerializeObject(new Message(false, "纬度范围在-90~90之间，请重新输入!", "")), "text/html;charset=UTF-8");
+                        return Content(JsonConvert.SerializeObject(new Message(false, "纬度范围在-90~90之间,请重新输入!", "")), "text/html;charset=UTF-8");
                 }
                 if (string.IsNullOrEmpty(m.AREACODE))
                     return Content(JsonConvert.SerializeObject(new Message(false, "请输入或选择区划编码!", "")), "text/html;charset=UTF-8");
                 if (string.IsNullOrEmpty(m.AREANAME))
                     return Content(JsonConvert.SerializeObject(new Message(false, "请输入或选择区划名!", "")), "text/html;charset=UTF-8");
                 if (m.AREACODE.Length != 15)
-                    return Content(JsonConvert.SerializeObject(new Message(false, "区划编码错误，请重新输入!", "")), "text/html;charset=UTF-8");
+                    return Content(JsonConvert.SerializeObject(new Message(false, "区划编码错误,请重新输入!", "")), "text/html;charset=UTF-8");
             }
             return Content(JsonConvert.SerializeObject(T_ALL_AREACls.Manager(m)), "text/html;charset=UTF-8");
         }
@@ -135,39 +134,26 @@ namespace ManagerSystem.MVC.Controllers
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
             sb.AppendFormat("<thead>");
-            sb.AppendFormat("<tr>");
-            sb.AppendFormat("<th>序号</th>");
-            sb.AppendFormat("<th>区划编码</th>");
-            sb.AppendFormat("<th>区划名称</th>");
-            sb.AppendFormat("<th>简称</th>");
-            sb.AppendFormat("<th>经度</th>");
-            sb.AppendFormat("<th>纬度</th>");
-            sb.AppendFormat("<th></th>");
-            sb.AppendFormat("</tr>");
+            sb.AppendFormat("<tr><th>序号</th><th>区划编码</th><th>区划名称</th><th>简称</th><th>经度</th><th>纬度</th><th></th></tr>");
             sb.AppendFormat("</thead>");
             sb.AppendFormat("<tbody>");
             var result = T_ALL_AREACls.getListModel(sw);
             int i = 0;
             foreach (var v in result)
             {
-                if (i % 2 == 0)
-                    sb.AppendFormat("<tr onclick=\"showValue('{0}')\">", v.AREAID);
-                else
-                    sb.AppendFormat("<tr class='row1' onclick=\"showValue('{0}')\">", v.AREAID);
+                sb.AppendFormat("<tr class=\"{1}\" onclick=\"showValue('{0}')\">", v.AREAID, (i % 2 == 0) ? "" : "row1");
                 sb.AppendFormat("<td class=\"center\">{0}</td>", (i + 1).ToString());
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.AREACODE);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.AREANAME);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.AREAJC);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.JD);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.WD);
-                sb.AppendFormat("    <td class=\" \">");
+                sb.AppendFormat("<td class=\" \">");
                 if (v.AREACODE.Substring(6, 9) == "000000000")//只有省/市/县才有下属区域
                 {
-                    sb.AppendFormat("            <a href=\"/SystemConfig/AREAList?ID={0}\">", v.AREACODE);
-                    sb.AppendFormat("                下属区划");
-                    sb.AppendFormat("            </a>");
+                    sb.AppendFormat("<a href=\"/SystemConfig/AREAList?ID={0}\">下属区划</a>", v.AREACODE);
                 }
-                sb.AppendFormat("    </td>");
+                sb.AppendFormat("</td>");
                 sb.AppendFormat("</tr>");
                 i++;
             }
@@ -214,21 +200,21 @@ namespace ManagerSystem.MVC.Controllers
                 if (string.IsNullOrEmpty(m.JD) == false)
                 {
                     if (float.Parse(m.JD) >= 180 || float.Parse(m.JD) <= -180)
-                        return Content(JsonConvert.SerializeObject(new Message(false, "经度范围在-180~180之间，请重新输入！", "")), "text/html;charset=UTF-8");
+                        return Content(JsonConvert.SerializeObject(new Message(false, "经度范围在-180~180之间,请重新输入!", "")), "text/html;charset=UTF-8");
                 }
                 if (string.IsNullOrEmpty(m.WD) == false)
                 {
                     if (float.Parse(m.WD) >= 90 || float.Parse(m.WD) <= -90)
-                        return Content(JsonConvert.SerializeObject(new Message(false, "纬度范围在-90~90之间，请重新输入！", "")), "text/html;charset=UTF-8");
+                        return Content(JsonConvert.SerializeObject(new Message(false, "纬度范围在-90~90之间,请重新输入!", "")), "text/html;charset=UTF-8");
                 }
                 if (string.IsNullOrEmpty(m.ORGNO))
-                    return Content(JsonConvert.SerializeObject(new Message(false, "请输入单位编码！", "")), "text/html;charset=UTF-8");
+                    return Content(JsonConvert.SerializeObject(new Message(false, "请输入单位编码!", "")), "text/html;charset=UTF-8");
                 if (string.IsNullOrEmpty(m.ORGNAME))
-                    return Content(JsonConvert.SerializeObject(new Message(false, "请输入单位名称！", "")), "text/html;charset=UTF-8");
+                    return Content(JsonConvert.SerializeObject(new Message(false, "请输入单位名称!", "")), "text/html;charset=UTF-8");
                 if (m.ORGNO.Length != 15)
-                    return Content(JsonConvert.SerializeObject(new Message(false, "单位编码，请重新输入！", "")), "text/html;charset=UTF-8");
+                    return Content(JsonConvert.SerializeObject(new Message(false, "单位编码,请重新输入!", "")), "text/html;charset=UTF-8");
                 if (m.AREACODE.Length != 15)
-                    return Content(JsonConvert.SerializeObject(new Message(false, "所属行政区划码错误，请重新输入！", "")), "text/html;charset=UTF-8");
+                    return Content(JsonConvert.SerializeObject(new Message(false, "所属行政区划码错误,请重新输入!", "")), "text/html;charset=UTF-8");
             }
             return Content(JsonConvert.SerializeObject(T_SYS_ORGCls.Manager(m)), "text/html;charset=UTF-8");
         }
@@ -251,10 +237,9 @@ namespace ManagerSystem.MVC.Controllers
                     return Redirect("/System/Error?ID=4");//参数错误 
             }
             ViewBag.T_Method = Request.Params["Method"];
-            //如果未传参数，默认为添加
+            //如果未传参数,默认为添加
             if (string.IsNullOrEmpty(ViewBag.T_Method))
                 ViewBag.T_Method = "Add";
-
             //ViewBag.RoleChk = T_SYSSEC_ROLECls.getRoleAndUid(new T_SYSSEC_ROLE_SW { USERID = ViewBag.T_USERID });
             ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag() });
             ViewBag.vdAREANAME = T_ALL_AREACls.getAREANAMESelectOption(new T_ALL_AREA_SW { });
@@ -268,19 +253,6 @@ namespace ManagerSystem.MVC.Controllers
                 ID = "0";
             return Content(JsonConvert.SerializeObject(T_SYS_ORGCls.getModel(new T_SYS_ORGSW { ORGNO = ID })), "text/html;charset=UTF-8");
         }
-
-        ///// <summary>
-        ///// 查询时，跳转页面
-        ///// </summary>
-        ///// <returns>参见模型</returns>
-        //public ActionResult ORGListQuery()
-        //{
-        //    string ORGNO = Request.Params["ORGNO"];
-        //    string ORGNAME = Request.Params["ORGNAME"];
-        //    string AREACODE = Request.Params["AREACODE"];
-        //    string str = ClsStr.EncryptA01(AREACODE + "|" + ORGNAME + "|" + ORGNO, "kkkkkkkk");
-        //    return Content(JsonConvert.SerializeObject(new Message(true, "", "/Systemconfig/ORGList?trans=" + str + "&ORGNO=" + ORGNO)), "text/html;charset=UTF-8");
-        //}
 
         public ActionResult ORGList()
         {
@@ -304,38 +276,20 @@ namespace ManagerSystem.MVC.Controllers
 
         public ActionResult getORGListAjax()
         {
-
             string ORGNO = Request.Params["ORGNO"];
             string ORGNAME = Request.Params["ORGNAME"];
             string AREACODE = Request.Params["AREACODE"];
-
             T_SYS_ORGSW sw = new T_SYS_ORGSW { TopORGNO = ORGNO, ORGNAME = ORGNAME, SYSFLAG = ConfigCls.getSystemFlag() };
-            //JC_FIRE_PLAN_SW sw = new JC_FIRE_PLAN_SW { curPage = int.Parse(Page), pageSize = int.Parse(PageSize), BYORGNO = BYORGNO, FIRELEVEL = FIRELEVEL };
-            // T_SYSSEC_IPSUSER_SW sw1 = new T_SYSSEC_IPSUSER_SW { curPage = int.Parse(Page), pageSize = int.Parse(PageSize), LOGINUSERNAME = LoginUserName, USERNAME = UserName, DEPARTMENT = DEPARTMENT, ORGNO = ORGNO };
-
             var result = T_SYS_ORGCls.getListModel(sw);
-            //var result = JC_FIRE_PLANCls.getModelList(sw, out total);
-
-
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
             sb.AppendFormat("<thead>");
-            sb.AppendFormat("    <tr>");
-            sb.AppendFormat("        <th>序号</th>");
-            sb.AppendFormat("        <th>行政区划</th>");
-            sb.AppendFormat("        <th>单位编码</th>");
-            sb.AppendFormat("        <th>单位名称</th>");
-            //sb.AppendFormat("        <th>简称</th>");
-            sb.AppendFormat("        <th>单位职责</th>");
-            sb.AppendFormat("        <th>负责人</th>");
-            sb.AppendFormat("        <th></th>");
-            sb.AppendFormat("    </tr>");
+            sb.AppendFormat("<tr><th>序号</th><th>行政区划</th><th>单位编码</th><th>单位名称</th><th>单位职责</th><th>负责人</th><th></th></tr>");
             sb.AppendFormat("</thead>");
             sb.AppendFormat("<tbody>");
             int i = 0;
             foreach (var v in result)
             {
-
                 string orgName = v.ORGNAME;
                 if (PublicCls.OrgIsShi(v.ORGNO))//统计市，即所有县的
                 {
@@ -352,10 +306,7 @@ namespace ManagerSystem.MVC.Controllers
                 {
                     orgName = "　　　　　　　　" + orgName;
                 }
-                if (i % 2 == 0)
-                    sb.AppendFormat("<tr>");
-                else
-                    sb.AppendFormat("<tr class='row1'>");
+                sb.AppendFormat("<tr class='{0}'>", (i % 2 == 0) ? "" : "row1");
                 sb.AppendFormat("<td class=\"center\">{0}</td>", ((sw.curPage - 1) * sw.pageSize + i + 1).ToString());
                 string tNo = ClsStr.EncryptA01(v.ORGNO, "kdiekdfd");
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.AreaNAME);
@@ -365,21 +316,15 @@ namespace ManagerSystem.MVC.Controllers
                 //sb.AppendFormat("<td class=\"center\">{0}</td>", v.ORGJC);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.ORGDUTY);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.LEADER);
-                sb.AppendFormat("    <td class=\"center\">");
-                //sb.AppendFormat("            <a href=\"/SystemConfig/ORGMan?Method=Mdy&ID={0}&tNo={1}\" title='编辑' class=\"searchBox_01 LinkMdy\">", v.ORGNO, tNo);
-                sb.AppendFormat("            <a href='#' onclick=\"Mdy('Mdy','{0}','{1}')\" title='编辑' class=\"searchBox_01 LinkMdy\">", v.ORGNO, tNo);
-                sb.AppendFormat("                修改");
-                sb.AppendFormat("            </a>");
-                sb.AppendFormat("&nbsp;<a href='#' class=\"searchBox_01 LinkDel\" onclick='Manager(\"{0}\")'>删除</a>", v.ORGNO);
-
-                sb.AppendFormat("    </td>");
+                sb.AppendFormat("<td class=\"center\">");
+                sb.AppendFormat("<a href='#' onclick=\"Mdy('Mdy','{0}','{1}')\" title='编辑' class=\"searchBox_01 LinkMdy\">修改</a>", v.ORGNO, tNo);
+                sb.AppendFormat("&nbsp;<a href='#' onclick='Manager(\"{0}\")' title='删除'  class=\"searchBox_01 LinkDel\" >删除</a>", v.ORGNO);
+                sb.AppendFormat("</td>");
                 sb.AppendFormat("</tr>");
                 i++;
             }
             sb.AppendFormat("</tbody>");
             sb.AppendFormat("</table>");
-
-
             return Content(JsonConvert.SerializeObject(new MessagePagerAjax(true, sb.ToString(), "")), "text/html;charset=UTF-8"); ;
         }
 
@@ -394,25 +339,15 @@ namespace ManagerSystem.MVC.Controllers
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
             sb.AppendFormat("<thead>");
-            sb.AppendFormat("    <tr>");
-            sb.AppendFormat("        <th>序号</th>");
-            sb.AppendFormat("        <th>行政区划</th>");
-            sb.AppendFormat("        <th>单位编码</th>");
-            sb.AppendFormat("        <th>单位名称</th>");
-            //sb.AppendFormat("        <th>简称</th>");
-            sb.AppendFormat("        <th>单位职责</th>");
-            sb.AppendFormat("        <th>负责人</th>");
-            sb.AppendFormat("        <th></th>");
-            sb.AppendFormat("    </tr>");
+            sb.AppendFormat("<tr><th>序号</th><th>行政区划</th><th>单位编码</th><th>单位名称</th><th>单位职责</th><th>负责人</th><th></th></tr>");
             sb.AppendFormat("</thead>");
             sb.AppendFormat("<tbody>");
             var result = T_SYS_ORGCls.getListModel(sw);
             int i = 0;
             foreach (var v in result)
             {
-
                 string orgName = v.ORGNAME;
-                if (PublicCls.OrgIsShi(v.ORGNO))//统计市，即所有县的
+                if (PublicCls.OrgIsShi(v.ORGNO))//统计市,即所有县的
                 {
                 }
                 else if (PublicCls.OrgIsXian(v.ORGNO))//县
@@ -423,11 +358,7 @@ namespace ManagerSystem.MVC.Controllers
                 {
                     orgName = "　　　　" + orgName;
                 }
-
-                if (i % 2 == 0)
-                    sb.AppendFormat("<tr>");
-                else
-                    sb.AppendFormat("<tr class='row1'>");
+                sb.AppendFormat("<tr class='{0}'>", (i % 2 == 0) ? "" : "row1");
                 sb.AppendFormat("<td class=\"center\">{0}</td>", ((sw.curPage - 1) * sw.pageSize + i + 1).ToString());
                 string tNo = ClsStr.EncryptA01(v.ORGNO, "kdiekdfd");
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.AreaNAME);
@@ -437,14 +368,10 @@ namespace ManagerSystem.MVC.Controllers
                 //sb.AppendFormat("<td class=\"center\">{0}</td>", v.ORGJC);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.ORGDUTY);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.LEADER);
-                sb.AppendFormat("    <td class=\"center\">");
-                //sb.AppendFormat("            <a href=\"/SystemConfig/ORGMan?Method=Mdy&ID={0}&tNo={1}\" title='编辑' class=\"searchBox_01 LinkMdy\">", v.ORGNO, tNo);
-                sb.AppendFormat("            <a href='#' onclick=\"Mdy('Mdy','{0}','{1}')\" title='编辑' class=\"searchBox_01 LinkMdy\">", v.ORGNO, tNo);
-                sb.AppendFormat("                修改");
-                sb.AppendFormat("            </a>");
-                sb.AppendFormat("&nbsp;<a href='#' class=\"searchBox_01 LinkDel\" onclick='Manager(\"{0}\")'>删除</a>", v.ORGNO);
-
-                sb.AppendFormat("    </td>");
+                sb.AppendFormat("<td class=\"center\">");
+                sb.AppendFormat("<a href='#' onclick=\"Mdy('Mdy','{0}','{1}')\" title='编辑' class=\"searchBox_01 LinkMdy\">修改</a>", v.ORGNO, tNo);
+                sb.AppendFormat("&nbsp;<a href='#' onclick='Manager(\"{0}\")' title='删除' class=\"searchBox_01 LinkDel\">删除</a>", v.ORGNO);
+                sb.AppendFormat("</td>");
                 sb.AppendFormat("</tr>");
                 i++;
             }
@@ -478,7 +405,7 @@ namespace ManagerSystem.MVC.Controllers
             if (string.IsNullOrEmpty(m.returnUrl))
                 m.returnUrl = "/SystemConfig/PARAMETERlist";
             if (string.IsNullOrEmpty(m.PARAMVALUE))
-                return Content(JsonConvert.SerializeObject(new Message(false, "请输入参数值！", "")), "text/html;charset=UTF-8");
+                return Content(JsonConvert.SerializeObject(new Message(false, "请输入参数值!", "")), "text/html;charset=UTF-8");
             m.opMETHOD = Method;
             ms = T_SYS_PARAMETERCls.Manager(m);
             if (ms.Success && Method == "Mdy")
@@ -491,11 +418,10 @@ namespace ManagerSystem.MVC.Controllers
                         try
                         {
                             new TaskUtil().NotifyRefreshData(PARAMFLAG, m.PARAMVALUE);//服务==》通知手机端修改参数
-
                         }
                         catch (Exception ex)
                         {
-                            logs.Error("调用参数修改通知手机服务错误", ex);
+                            logs.Error("调用参数修改通知手机服务错误!", ex);
                         }
                     }
                 }
@@ -510,6 +436,7 @@ namespace ManagerSystem.MVC.Controllers
                 ID = "0";
             return Content(JsonConvert.SerializeObject(T_SYS_PARAMETERCls.getModel(new T_SYS_PARAMETER_SW { PARAMID = ID })), "text/html;charset=UTF-8");
         }
+
         public ActionResult PARAMETERlist()
         {
             pubViewBag("007003", "007003", "");
@@ -518,29 +445,20 @@ namespace ManagerSystem.MVC.Controllers
             ViewBag.PARAMETERlist = getParamStr(new T_SYS_PARAMETER_SW { SYSFLAG = ConfigCls.getSystemFlag() });
             return View();
         }
+
         private string getParamStr(T_SYS_PARAMETER_SW sw)
         {
-
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
             sb.AppendFormat("<thead>");
-            sb.AppendFormat("    <tr>");
-            sb.AppendFormat("        <th>参数名称</th>");
-            sb.AppendFormat("        <th>KEY</th>");
-            sb.AppendFormat("        <th>参数值</th>");
-            sb.AppendFormat("        <th>说明</th>");
-            sb.AppendFormat("    </tr>");
+            sb.AppendFormat("<tr><th>参数名称</th><th>KEY</th><th>参数值</th><th>说明</th></tr>");
             sb.AppendFormat("</thead>");
             sb.AppendFormat("<tbody>");
             var result = T_SYS_PARAMETERCls.getListModel(sw);
             int i = 0;
             foreach (var v in result)
             {
-                if (i % 2 == 0)
-                    sb.AppendFormat("<tr onclick=\"showValue('{0}')\">", v.PARAMID);
-                else
-                    sb.AppendFormat("<tr class='row1'\" onclick=\"showValue('{0}')\">", v.PARAMID);
-
+                sb.AppendFormat("<tr class='{1}'\" onclick=\"showValue('{0}')\">", v.PARAMID, (i % 2 == 0) ? "" : "row1");
                 sb.AppendFormat("<td class=\"left\" style=\"padding-left:10px;\">{0}</td>", v.PARAMNAME);
                 sb.AppendFormat("<td class=\"left\" style=\"padding-left:10px;\">{0}</td>", v.PARAMFLAG);
                 sb.AppendFormat("<td class=\"left\" style=\"padding-left:10px;\">{0}</td>", v.PARAMVALUE);
@@ -707,7 +625,6 @@ namespace ManagerSystem.MVC.Controllers
             T_SYS_DICTTYPE_SW sw = new T_SYS_DICTTYPE_SW();
             if (SystemCls.isRight("007004001") == false)
                 sw.ISMAN = "1";
-            //DICTID, DICTTYPEID, DICTNAME, DICTVALUE, ORDERBY, STANDBY1, STANDBY2, STANDBY3,STANDBY4
             string result = T_SYS_DICTCls.getTypeTree(sw);
             return Content(result, "application/json");
         }
@@ -733,7 +650,7 @@ namespace ManagerSystem.MVC.Controllers
             {
                 string orgName = item.ORGNAME;
                 var str = item.MOBILEPARAMLIST;
-                if (PublicCls.OrgIsShi(item.ORGNO))//统计市，即所有县的
+                if (PublicCls.OrgIsShi(item.ORGNO))//统计市,即所有县的
                 {
                     sb.AppendFormat("<tr class='danger'  onclick=\"showValue('{0}','{1}')\">", item.ORGNO, item.ORGNAME);
                 }
@@ -830,7 +747,6 @@ namespace ManagerSystem.MVC.Controllers
             var EndTime = Request.Params["tbxEndTime"];
             var Addr = Request.Params["tbxAddr"];
             var Date = Request.Params["tbxDate"];
-
             var result = T_SYS_PARAMETERCls.getListModel(sw);
             var SOS_TEL = result.Where(p => p.PARAMFLAG == "SOS_TEL").FirstOrDefault().PARAMVALUE;
             var FQCY = result.Where(p => p.PARAMFLAG == "FQCY").FirstOrDefault().PARAMVALUE;
@@ -887,7 +803,7 @@ namespace ManagerSystem.MVC.Controllers
                         }
                         catch (Exception ex)
                         {
-                            logs.Error("调用参数修改通知手机服务错误", ex);
+                            logs.Error("调用参数修改通知手机服务错误!", ex);
                         }
                     }
                 }
@@ -925,7 +841,7 @@ namespace ManagerSystem.MVC.Controllers
                         }
                         catch (Exception ex)
                         {
-                            logs.Error("调用参数修改通知手机服务错误", ex);
+                            logs.Error("调用参数修改通知手机服务错误!", ex);
                         }
                     }
                 }
@@ -989,7 +905,7 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult DataBaseManager()
         {
-            string sql = Request.Params["Sql"]; ;
+            string sql = Request.Params["Sql"].Replace('\r', ' ');
             return Content(JsonConvert.SerializeObject(SYS_ConfigCls.UpdateDataBase(sql)), "text/html;charset=UTF-8");
         }
         #endregion
@@ -1037,7 +953,7 @@ namespace ManagerSystem.MVC.Controllers
                 sb.AppendFormat("<td class=\"center\">{0}</td>", !string.IsNullOrEmpty(v.ISFUROUNDDEFAULT) ? (v.ISFUROUNDDEFAULT == "1" ? "是" : "否") : v.ISFUROUNDDEFAULT);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.ORDERBY);
                 sb.AppendFormat("<td class\"center\">");
-                sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}')\" title='编辑' class=\"searchBox_01 LinkMdy\">编辑</a>", v.LAYERCODE);
+                sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}')\" title='修改' class=\"searchBox_01 LinkMdy\">修改</a>", v.LAYERCODE);
                 sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Del','{0}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", v.LAYERCODE);
                 sb.AppendFormat("</td>");
                 sb.AppendFormat("</tr>");
@@ -1115,7 +1031,7 @@ namespace ManagerSystem.MVC.Controllers
             var sfrUserList = T_IPSFR_USERCls.getListModel(new T_IPSFR_USER_SW { BYORGNO = orgNo, PATROLLENGTH = type, });
             foreach (var r in sfrUserList)
             {
-                var count = T_IPSFR_ROUTERAILCls.GetRouteCount(new T_IPSFR_ROUTERAIL_SW { HID = r.HID,ROADTYPE="0" });
+                var count = T_IPSFR_ROUTERAILCls.GetRouteCount(new T_IPSFR_ROUTERAIL_SW { HID = r.HID, ROADTYPE = "0" });
                 if (count > 0)
                     hidlist += r.HID + ",";
             }

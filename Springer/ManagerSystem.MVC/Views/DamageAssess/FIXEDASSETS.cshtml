@@ -28,34 +28,34 @@
     <input id="HidID" name="HidID" type="hidden" value="" />
     <table cellpadding="0" cellspacing="0">
         <tr>
-            <td style="width:100px;">资产名称: </td>
-            <td><input id="tbxDASSETSNAME" type="text" value="" style="width:99%;" /></td>
-            <td style="width:100px;">重置价值: </td>
+            <td class="tdField" style="width:100px;">资产名称: </td>
+            <td><input id="tbxDASSETSNAME" type="text" value="" style="width:95%;" /></td>
+            <td class="tdField" style="width:100px;">重置价值: </td>
             <td>
-                <input id="tbxRESETVALUE" type="text" value="" style="width:85%;" />
-                <span style="color: gray;">元</span>
+                <input id="tbxRESETVALUE" type="text" value="" style="width:80%;" />
+                <span class="spanMark">元</span>
             </td>
         </tr>
         <tr>
-            <td>年平均折旧率:</td>
+            <td class="tdField">年平均折旧率:</td>
             <td>
-                <input id="tbxDEPRECIATIONRATE" type="text" value="" style="width:85%;" />
-                <span style="color: gray;">%</span>
+                <input id="tbxDEPRECIATIONRATE" type="text" value="" style="width:80%;" />
+                <span class="spanMark">%</span>
             </td>
-            <td>已使用年限:</td>
-            <td><input id="tbxHAVEUSEYEAR" type="text" value="" style="width:99%;" /></td>
+            <td class="tdField">已使用年限:</td>
+            <td><input id="tbxHAVEUSEYEAR" type="text" value="" style="width:95%;" /></td>
         </tr>
         <tr>
-            <td>烧毁率:</td>
+            <td class="tdField">烧毁率:</td>
             <td>
-                <input id="tbxBURNRATE" type="text" value="" style="width:85%;" />
-                <span style="color: gray;">%</span>
+                <input id="tbxBURNRATE" type="text" value="" style="width:80%;" />
+                <span class="spanMark">%</span>
             </td>
             <td colspan="2"></td>
         </tr>
         <tr>
-            <td>备注:</td>
-            <td colspan="3"><input id="tbxMARK" type="text" value="" style="width:99%;" /></td>
+            <td class="tdField">备注:</td>
+            <td colspan="3"><input id="tbxMARK" type="text" value="" style="width:96%;" /></td>
         </tr>
     </table>
 </div>
@@ -121,7 +121,7 @@
             layer.open({
                 type: 2,
                 title: '查看固定资产损失',
-                area: ['70%', '70%'],
+                area: ['600px', '240px'],
                 fix: true,
                 maxmin: true,
                 content: '/DamageAssess/FIXEDASSETSDataSee?FIXEDASSETSID=' + ID,
@@ -167,7 +167,7 @@
             layer.open({
                 type: 1,
                 title: str,
-                area: ['70%', '72%'],
+                area: ['600px', '280px'],
                 btn: btnInfo,
                 shade: 0,
                 maxmin: true,

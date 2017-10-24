@@ -29,29 +29,29 @@
     <input id="HidID" name="HidID" type="hidden" value="" />
     <table cellpadding="0" cellspacing="0">
         <tr>
-            <td style="width:100px;">木材名称: </td>
-            <td><input id="tbxWOODNAME" type="text" value="" style="width:99%;" /></td>
-            <td style="width:100px;">过火木材材积: </td>
+            <td class="tdField" style="width:100px;">木材名称: </td>
+            <td><input id="tbxWOODNAME" type="text" value="" style="width:95%;" /></td>
+            <td class="tdField" style="width:100px;">过火木材材积: </td>
             <td>
                 <input id="tbxLOSEVOLUME" type="text" value="" style="width:80%;" />
-                <span style="color: gray;">m³</span>
+                <span class="spanMark">m³</span>
             </td>
         </tr>
         <tr>
-            <td>市场价格:</td>
+            <td class="tdField">市场价格:</td>
             <td>
-                <input id="tbxMARKETPRICE" type="text" value="" style="width:75%;" />
-                <span style="color: gray;">元/m³</span>
+                <input id="tbxMARKETPRICE" type="text" value="" style="width:70%;" />
+                <span class="spanMark">元/m³</span>
             </td>
-            <td>残值:</td>
+            <td class="tdField">残值:</td>
             <td>
                 <input id="tbxRESIDUALVALUE" type="text" value="" style="width:80%;" />
-                <span style="color: gray;">元</span>
+                <span class="spanMark">元</span>
             </td>
         </tr>
         <tr>
-            <td>备注:</td>
-            <td colspan="3"><input id="tbxMARK" type="text" value="" style="width:99%;" /></td>
+            <td class="tdField">备注:</td>
+            <td colspan="3"><input id="tbxMARK" type="text" value="" style="width:95%;" /></td>
         </tr>
     </table>
 </div>
@@ -117,7 +117,7 @@
             layer.open({
                 type: 2,
                 title: '查看木材损失',
-                area: ['70%', '70%'],
+                area: ['600px', '240px'],
                 fix: true,
                 maxmin: true,
                 content: '/DamageAssess/WOODDataSee?WOODID=' + ID,
@@ -161,7 +161,7 @@
             layer.open({
                 type: 1,
                 title: str,
-                area: ['70%', '60%'],
+                area: ['600px', '240px'],
                 btn: btnInfo,
                 shade: 0,
                 maxmin: true,

@@ -143,7 +143,9 @@ namespace ManagerSystemClassLibrary.BaseDT
                 + sb.ToString() + " order by EGROUPID";
             string sqlC = "select count(1) " + sb.ToString();
             total = int.Parse(DataBaseClass.ReturnSqlField(sqlC));
-            DataSet ds = DataBaseClass.FullDataSet(sql);
+            sw.curPage = PagerCls.getCurPage(new PagerSW { curPage = sw.curPage, pageSize = sw.pageSize, rowCount = total });
+            DataSet ds = DataBaseClass.FullDataSet(sql, (sw.curPage - 1) * sw.pageSize, sw.pageSize, "a");
+            //DataSet ds = DataBaseClass.FullDataSet(sql);
             return ds.Tables[0];
         }
         #endregion

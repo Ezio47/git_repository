@@ -12,9 +12,6 @@ using PublicClassLibrary;
 
 namespace ManagerSystem.MVC.Controllers
 {
-    /// <summary>
-    /// 首页
-    /// </summary>
     public class HomeController : BaseController
     {
         /// <summary>
@@ -211,8 +208,6 @@ namespace ManagerSystem.MVC.Controllers
             }
             else
             {
-                //CenterX = "103.354065";
-                //CenterY = "23.367718";
                 CenterX = ConfigCls.getConfigValue("Longitude");
                 CenterY = ConfigCls.getConfigValue("Latitude");
             }
@@ -323,9 +318,20 @@ namespace ManagerSystem.MVC.Controllers
             }
             else if (type == "3")
             {
-                pubViewBag("017001", "017001", "");
+                pubViewBag("017001", "017001", "公益林");
             }
-            
+            else if (type == "4")
+            {
+                pubViewBag("044001", "044001", "动物三维");
+            }
+            else if (type == "5")
+            {
+                pubViewBag("045001", "045001", "植物三维");
+            }
+            else if (type == "6")
+            {
+                pubViewBag("046001", "046001", "生物三维");
+            }
             CookieModel cookieInfo1 = SystemCls.getCookieInfo();
             ViewBag.LAYERNAME = T_SYS_LAYERCls.getLayerNameStr(new T_SYS_LAYER_SW { USERID = cookieInfo1.UID });
             ViewBag.DEFAULTCH = T_SYS_LAYERCls.getLayerDEFAULTCHStr(new T_SYS_LAYER_SW { USERID = cookieInfo1.UID });
@@ -400,7 +406,7 @@ namespace ManagerSystem.MVC.Controllers
             ViewBag.ycenter = ycenter;
             ViewBag.scale = scale;
             string strmenue = ViewBag.getPageMenuStr;
-            ViewBag.getPageMenuStr = strmenue.Replace("window.location.href='/Home/Total3Dindex?type=0'", "showHlyFun()").Replace("window.location.href='/Home/Total3Dindex?type=1'", "showYjczFun()").Replace("window.location.href='/Home/Total3Dindex?type=2';", "showSyzrFun()").Replace("window.location.href='/Home/Total3Dindex?type=3';", "showGylFun()");
+            ViewBag.getPageMenuStr = strmenue.Replace("window.location.href='/Home/Total3DIndex?type=0'", "showHlyFun()").Replace("window.location.href='/Home/Total3DIndex?type=1'", "showYjczFun()").Replace("window.location.href='/Home/Total3DIndex?type=2';", "showSyzrFun()").Replace("window.location.href='/Home/Total3DIndex?type=3';", "showGylFun()").Replace("window.location.href='/Home/Total3DIndex?type=4';", "showYsdwFun()").Replace("window.location.href='/Home/Total3DIndex?type=5';", "showYszwFun()").Replace("window.location.href='/Home/Total3DIndex?type=6';", "showYhswFun()");
             var reportMenuList = new List<MenuTypeModel>();//数据上报菜单
             var reportList = T_SYS_MENUCls.getT_SYS_MENUModel(new T_SYS_MENU_SW { MENUCODE = "002", SYSFLAG = ConfigCls.getSystemFlag() }).FirstOrDefault();//数据上报
             if (reportList != null)
@@ -432,6 +438,118 @@ namespace ManagerSystem.MVC.Controllers
             }
             ViewBag.collectList = collectMenuList;//数据采集项目获取
             //var modelfirelist = GetCUrFireList();//当前火情
+            return View();
+        }
+
+        /// <summary>
+        /// Total3D页面分开-护林员页面
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult HLY3D()
+        {
+            var reportMenuList = new List<MenuTypeModel>();//数据上报菜单
+            var reportList = T_SYS_MENUCls.getT_SYS_MENUModel(new T_SYS_MENU_SW { MENUCODE = "002", SYSFLAG = ConfigCls.getSystemFlag() }).FirstOrDefault();//数据上报
+            if (reportList != null)
+            {
+                foreach (var item in reportList.subMenuModel)
+                {
+                    var reportmodel = new MenuTypeModel();
+                    reportmodel.DICTTYPEID = "5";
+                    reportmodel.LICLASS = item.LICLASS;
+                    reportmodel.MENUNAME = item.MENUNAME;
+                    reportmodel.DICTVALUE = item.MENUURL.Substring(item.MENUURL.Length - 1, 1);
+                    reportMenuList.Add(reportmodel);
+                }
+            }
+            ViewBag.reportlist = reportMenuList;//数据上报项目获取
+            var collectList = T_SYS_MENUCls.getT_SYS_MENUModel(new T_SYS_MENU_SW { MENUCODE = "003", SYSFLAG = ConfigCls.getSystemFlag() }).FirstOrDefault();//数据采集
+            var collectMenuList = new List<MenuTypeModel>();//数据采集
+            if (collectList != null)
+            {
+                foreach (var item in collectList.subMenuModel)
+                {
+                    var collectmodel = new MenuTypeModel();
+                    collectmodel.DICTTYPEID = "4";
+                    collectmodel.LICLASS = item.LICLASS;
+                    collectmodel.MENUNAME = item.MENUNAME;
+                    collectmodel.DICTVALUE = item.MENUURL.Substring(item.MENUURL.Length - 1, 1);
+                    collectMenuList.Add(collectmodel);
+                }
+            }
+            ViewBag.collectList = collectMenuList;//数据采集项目获取
+            return View();
+        }
+
+        /// <summary>
+        /// Total3D页面分开-预警监测页面
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult YJJC3D()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// Total3D页面分开-应急指挥页面
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult YJZH3D()
+        {
+            string userid = SystemCls.getUserID();
+            ViewBag.Fire = T_SYS_LAYERCls.getTreeFireQuery(new T_SYS_LAYER_SW { USERID = userid });
+            ViewBag.LAYERID = T_SYS_LAYERCls.getLayerFireLAYERID(new T_SYS_LAYER_SW { USERID = userid });
+            var modelfirelist = GetCUrFireListYH();//当前火情
+            return View(modelfirelist);
+        }
+
+        /// <summary>
+        /// Total3D页面分开-公益林页面
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult GYL3D()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 野生动物页面-三维
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult WILD_ANIMAL_3D()
+        {
+            ViewBag.POPULATIONTYPE = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "55", isShowAll = "1" });
+            ViewBag.ANIMAL = WILD_ANIMALDISTRIBUTECls.getSelectOption(new WILD_LOCALANIMAL_SW { isShowAll = "1", BYORGNO = SystemCls.getCurUserOrgNo() });
+          
+            return View();
+        }
+
+        /// <summary>
+        /// 野生植物页面-三维
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult WILD_BOTANY_3D()
+        {
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { TopORGNO = SystemCls.getCurUserOrgNo(), SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = SystemCls.getCurUserOrgNo() });
+            ViewBag.POPULATIONTYPE = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "55", isShowAll = "1" });
+            ViewBag.BOTANY = WILD_BOTANYDISTRIBUTECls.getSelectOption(new WILD_LOCALBOTANY_SW { isShowAll = "1" });
+            return View();
+        }
+
+        /// <summary>
+        /// 有害生物页面-三维
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult PEST_3D()
+        {
+            ViewBag.StartTime = DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd");
+            ViewBag.EndTime = DateTime.Now.ToString("yyyy-MM-dd");
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { TopORGNO = SystemCls.getCurUserOrgNo(), SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = SystemCls.getCurUserOrgNo() });
+            ViewBag.SEARCHTYPE = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "123", isShowAll = "1" });
+            ViewBag.SEARCHTYPEAdd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "123" });
+            ViewBag.HARMPOSITIONAdd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "102" });
+            ViewBag.HARMLEVELAdd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "103" });
+            ViewBag.MANSTATEAdd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "104" });
+            ViewBag.OrgNo = SystemCls.getCurUserOrgNo();
             return View();
         }
 
@@ -524,71 +642,5 @@ namespace ManagerSystem.MVC.Controllers
             return result;
         }
         #endregion
-        /// <summary>
-        /// Total3D页面分开-护林员页面
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult HLY3D()
-        {
-            var reportMenuList = new List<MenuTypeModel>();//数据上报菜单
-            var reportList = T_SYS_MENUCls.getT_SYS_MENUModel(new T_SYS_MENU_SW { MENUCODE = "002", SYSFLAG = ConfigCls.getSystemFlag() }).FirstOrDefault();//数据上报
-            if (reportList != null)
-            {
-                foreach (var item in reportList.subMenuModel)
-                {
-                    var reportmodel = new MenuTypeModel();
-                    reportmodel.DICTTYPEID = "5";
-                    reportmodel.LICLASS = item.LICLASS;
-                    reportmodel.MENUNAME = item.MENUNAME;
-                    reportmodel.DICTVALUE = item.MENUURL.Substring(item.MENUURL.Length - 1, 1);
-                    reportMenuList.Add(reportmodel);
-                }
-            }
-            ViewBag.reportlist = reportMenuList;//数据上报项目获取
-            var collectList = T_SYS_MENUCls.getT_SYS_MENUModel(new T_SYS_MENU_SW { MENUCODE = "003", SYSFLAG = ConfigCls.getSystemFlag() }).FirstOrDefault();//数据采集
-            var collectMenuList = new List<MenuTypeModel>();//数据采集
-            if (collectList != null)
-            {
-                foreach (var item in collectList.subMenuModel)
-                {
-                    var collectmodel = new MenuTypeModel();
-                    collectmodel.DICTTYPEID = "4";
-                    collectmodel.LICLASS = item.LICLASS;
-                    collectmodel.MENUNAME = item.MENUNAME;
-                    collectmodel.DICTVALUE = item.MENUURL.Substring(item.MENUURL.Length - 1, 1);
-                    collectMenuList.Add(collectmodel);
-                }
-            }
-            ViewBag.collectList = collectMenuList;//数据采集项目获取
-            return View();
-        }
-        /// <summary>
-        /// Total3D页面分开-预警监测页面
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult YJJC3D()
-        {
-            return View();
-        }
-        /// <summary>
-        /// Total3D页面分开-应急指挥页面
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult YJZH3D()
-        {
-            string userid = SystemCls.getUserID();
-            ViewBag.Fire = T_SYS_LAYERCls.getTreeFireQuery(new T_SYS_LAYER_SW { USERID = userid });
-            ViewBag.LAYERID = T_SYS_LAYERCls.getLayerFireLAYERID(new T_SYS_LAYER_SW { USERID = userid });
-            var modelfirelist = GetCUrFireListYH();//当前火情
-            return View(modelfirelist);
-        }
-        /// <summary>
-        /// Total3D页面分开-公益林页面
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult GYL3D()
-        {
-            return View();
-        }
     }
 }

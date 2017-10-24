@@ -22,50 +22,15 @@ namespace ManagerSystemClassLibrary.BaseDT
         /// </summary>
         /// <param name="m">参见模型</param>
         /// <returns>参见模型</returns>
-        //public static Message Add(FIRERECORD_REPORT10_Model m)
-        //{
-
-        //    List<string> sqllist = new List<string>();
-        //    string[] arrREPORTCODE = m.REPORTCODE.Split(',');
-        //    string[] arrREPORTVALUE = m.REPORTVALUE.Split(',');
-        //    for (int i = 0; i < arrREPORTVALUE.Length - 1; i++)
-        //    {
-        //        StringBuilder sb = new StringBuilder();
-        //        sb.AppendFormat("INSERT  INTO  FIRERECORD_REPORT10(BYORGNO,REPORTYEAR,REPORTCODE,REPORTVALUE)");
-        //        sb.AppendFormat("VALUES(");
-        //        sb.AppendFormat("{0}", ClsSql.saveNullField(m.BYORGNO));
-        //        sb.AppendFormat(",{0}", ClsSql.saveNullField(m.REPORTYEAR));
-        //        sb.AppendFormat(",{0}", ClsSql.saveNullField(arrREPORTCODE[i]));
-        //        sb.AppendFormat(",{0}", ClsSql.saveNullField(arrREPORTVALUE[i]));
-        //        sb.AppendFormat(")");
-        //        sqllist.Add(sb.ToString());
-        //    }
-        //    var j = DataBaseClass.ExecuteSqlTran(sqllist);
-        //    if (j > 0)
-        //    {
-        //        return new Message(true, "保存成功！", "");
-        //    }
-        //    else
-        //    {
-        //        return new Message(false, "保存失败，事物回滚机制！", "");
-        //    }
-
-        //}
-
-
         public static Message Add(FIRERECORD_REPORT10_Model m)
         {
             List<string> sqllist = new List<string>();
             string[] arrREPORTCODE = m.REPORTCODE.Split(',');
             string[] arrREPORTVALUE = m.REPORTVALUE.Split(',');
-            #region 保存
-
             for (int i = 0; i < arrREPORTVALUE.Length - 1; i++)
             {
-                StringBuilder sbInsert = new StringBuilder();
-                sbInsert.AppendFormat("INSERT  INTO  FIRERECORD_REPORT10(BYORGNO,REPORTYEAR,REPORTCODE,REPORTVALUE)");
                 #region 更新
-                if (isExists(new FIRERECORD_REPORT10_SW { BYORGNO = m.BYORGNO, REPORTYEAR = m.REPORTYEAR, REPORTCODE = arrREPORTCODE[i],}))
+                if (isExists(new FIRERECORD_REPORT10_SW { BYORGNO = m.BYORGNO, REPORTYEAR = m.REPORTYEAR, REPORTCODE = arrREPORTCODE[i], }))
                 {
                     StringBuilder sbUpdate = new StringBuilder();
                     sbUpdate.AppendFormat("UPDATE FIRERECORD_REPORT10 SET ");
@@ -81,7 +46,9 @@ namespace ManagerSystemClassLibrary.BaseDT
                 #region 添加
                 else
                 {
-                    sbInsert.AppendFormat("VALUES(");
+                    StringBuilder sbInsert = new StringBuilder();
+                    sbInsert.AppendFormat("INSERT  INTO  FIRERECORD_REPORT10(BYORGNO,REPORTYEAR,REPORTCODE,REPORTVALUE)");
+                    sbInsert.AppendFormat(" VALUES(");
                     sbInsert.AppendFormat(" {0}", ClsSql.saveNullField(m.BYORGNO));
                     sbInsert.AppendFormat(",{0}", ClsSql.saveNullField(m.REPORTYEAR));
                     sbInsert.AppendFormat(",{0}", ClsSql.saveNullField(arrREPORTCODE[i]));
@@ -91,15 +58,14 @@ namespace ManagerSystemClassLibrary.BaseDT
                 }
                 #endregion
             }
-            #endregion
             var j = DataBaseClass.ExecuteSqlTran(sqllist);
-            if (j > 0)
+            if (j >= 0)
             {
-                return new Message(true, "保存成功！", "");
+                return new Message(true, "保存成功!", "");
             }
             else
             {
-                return new Message(false, "保存失败，事物回滚机制！", "");
+                return new Message(false, "保存失败,事物回滚机制!", "");
             }
         }
         #endregion
@@ -117,7 +83,16 @@ namespace ManagerSystemClassLibrary.BaseDT
             if (!string.IsNullOrEmpty(sw.FIRERECORD_REPORT10ID))
                 sb.AppendFormat(" AND FIRERECORD_REPORT10ID = '{0}'", sw.FIRERECORD_REPORT10ID);
             if (!string.IsNullOrEmpty(sw.BYORGNO))
-                sb.AppendFormat(" AND BYORGNO = '{0}'", sw.BYORGNO);
+            {
+                if (sw.BYORGNO.Substring(4, 11) == "00000000000")//获取所有市的
+                    sb.AppendFormat(" AND SUBSTRING(BYORGNO,1,4) = '{0}'", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 4)));
+                else if (sw.BYORGNO.Substring(6, 9) == "000000000")//获取所有县的
+                    sb.AppendFormat(" AND SUBSTRING(BYORGNO,1,6) = '{0}'", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 6)));
+                else if (sw.BYORGNO.Substring(9, 6) == "000000")//获取所有乡镇的
+                    sb.AppendFormat(" AND SUBSTRING(BYORGNO,1,9) = '{0}'", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 9)));
+                else
+                    sb.AppendFormat(" AND BYORGNO = '{0}'", ClsSql.EncodeSql(sw.BYORGNO));
+            }
             if (!string.IsNullOrEmpty(sw.REPORTYEAR))
                 sb.AppendFormat(" AND REPORTYEAR <='{0}'", sw.REPORTYEAR);
             if (!string.IsNullOrEmpty(sw.REPORTCODE))
@@ -148,9 +123,6 @@ namespace ManagerSystemClassLibrary.BaseDT
                 sb.AppendFormat(" and REPORTYEAR='{0}'", ClsSql.EncodeSql(sw.REPORTYEAR));
             if (string.IsNullOrEmpty(sw.REPORTCODE) == false)
                 sb.AppendFormat(" and REPORTCODE='{0}'", ClsSql.EncodeSql(sw.REPORTCODE));
-            //if (string.IsNullOrEmpty(sw.REPORTVALUE) == false)
-            //    sb.AppendFormat(" and REPORTVALUE='{0}'", ClsSql.EncodeSql(sw.REPORTVALUE));
-
             return DataBaseClass.JudgeRecordExists(sb.ToString());
         }
         #endregion

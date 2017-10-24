@@ -16,6 +16,7 @@ namespace ManagerSystemClassLibrary.BaseDT
     /// </summary>
    public class T_SYSSEC_USER
    {
+       #region 增、删、改
        /// <summary>
        /// 添加
        /// </summary>
@@ -24,25 +25,24 @@ namespace ManagerSystemClassLibrary.BaseDT
        public static Message Add(T_SYSSEC_IPSUSER_Model m)
        {
            if (isExists(new T_SYSSEC_IPSUSER_SW { LOGINUSERNAME = m.LOGINUSERNAME }) == true)
-               return new Message(false, "添加失败，登陆名重复请重新输入！", "");
-
+               return new Message(false, "添加失败，登陆名重复请重新输入!", "");
            StringBuilder sb = new StringBuilder();
            sb.AppendFormat("INSERT INTO T_SYSSEC_USER(ORGNO,LOGINUSERNAME,USERNAME,USERPWD,REGISTERTIME,LOGINNUM,NOTE,DEPARTMENT)");
            sb.AppendFormat("VALUES(");
-           sb.AppendFormat("'{0}'",ClsSql.EncodeSql( m.ORGNO));
+           sb.AppendFormat("'{0}'", ClsSql.EncodeSql(m.ORGNO));
            sb.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.LOGINUSERNAME));
            sb.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.USERNAME));
            sb.AppendFormat(",'{0}'", ClsStr.getSystemManMd5(ClsSql.EncodeSql(m.USERPWD)));
            sb.AppendFormat(",'{0}'", PublicClassLibrary.ClsSwitch.SwitTM(DateTime.Now));
-           sb.AppendFormat(",'{0}'","0");
+           sb.AppendFormat(",'{0}'", "0");
            sb.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.NOTE));
            sb.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.DEPARTMENT));
            sb.AppendFormat(")");
            bool bln = DataBaseClass.ExeSql(sb.ToString());
            if (bln == true)
-               return new Message(true, "添加成功！", "");
+               return new Message(true, "添加成功!", "");
            else
-               return new Message(false, "添加失败，请检查各输入框是否正确！", "");
+               return new Message(false, "添加失败，请检查各输入框是否正确!", "");
        }
 
        /// <summary>
@@ -53,28 +53,55 @@ namespace ManagerSystemClassLibrary.BaseDT
        public static Message Mdy(T_SYSSEC_IPSUSER_Model m)
        {
            if (string.IsNullOrEmpty(m.USERID))
-               return new Message(false, "修改失败，无效的用户序号！", "");
+               return new Message(false, "修改失败，无效的用户序号!", "");
            if (isExists(new T_SYSSEC_IPSUSER_SW { USERID = m.USERID }) == false)
-               return new Message(false, "修改失败，用户名不存在！", "");
-
+               return new Message(false, "修改失败，用户名不存在!", "");
            StringBuilder sb = new StringBuilder();
-           //(ORGNO,LOGINUSERNAME,USERNAME,USERPWD,REGISTERTIME,LOGINNUM,NOTE)
            sb.AppendFormat("UPDATE T_SYSSEC_USER");
            sb.AppendFormat(" set ");
            sb.AppendFormat("ORGNO='{0}'", ClsSql.EncodeSql(m.ORGNO));
            sb.AppendFormat(",LOGINUSERNAME='{0}'", ClsSql.EncodeSql(m.LOGINUSERNAME));
            sb.AppendFormat(",USERNAME='{0}'", ClsSql.EncodeSql(m.USERNAME));
-           if (string.IsNullOrEmpty(m.USERPWD)==false)
-               sb.AppendFormat(",USERPWD='{0}'", ClsStr.getSystemManMd5(ClsSql.EncodeSql(m.USERPWD))); 
+           if (string.IsNullOrEmpty(m.USERPWD) == false)
+               sb.AppendFormat(",USERPWD='{0}'", ClsStr.getSystemManMd5(ClsSql.EncodeSql(m.USERPWD)));
            sb.AppendFormat(" ,NOTE= '{0}'", ClsSql.EncodeSql(m.NOTE));
            sb.AppendFormat(" ,DEPARTMENT= '{0}'", ClsSql.EncodeSql(m.DEPARTMENT));
            sb.AppendFormat(" where USERID= '{0}'", ClsSql.EncodeSql(m.USERID));
-           
+
            bool bln = DataBaseClass.ExeSql(sb.ToString());
            if (bln == true)
-               return new Message(true, "修改成功！", "");
+               return new Message(true, "修改成功!", "");
            else
-               return new Message(false, "修改失败，请检查各输入框是否正确！", "");
+               return new Message(false, "修改失败，请检查各输入框是否正确!", "");
+       }
+
+       /// <summary>
+       /// 更新OA账号状态
+       /// </summary>
+       /// <param name="userIdList">英文逗号分割的用户ID</param>
+       /// <param name="value"></param>
+       /// <returns></returns>
+       public static Message MdyIsOpenOA(string userIdList, string value)
+       {
+           List<string> sqllist = new List<string>();
+           string[] userIdArray = userIdList.Split(',');
+           foreach (string id in userIdArray)
+           {
+               StringBuilder sb = new StringBuilder();
+               sb.AppendFormat("update T_SYSSEC_USER SET");
+               sb.AppendFormat(" IsOpenOA='{0}'", ClsSql.EncodeSql(value));
+               sb.AppendFormat(" where USERID= '{0}'", ClsSql.EncodeSql(id));
+               sqllist.Add(sb.ToString());
+           }
+           var y = DataBaseClass.ExecuteSqlTran(sqllist);
+           if (y > 0)
+           {
+               return new Message(true, "更新成功!", "");
+           }
+           else
+           {
+               return new Message(false, "更新失败，事物回滚机制!", "");
+           }
        }
 
        /// <summary>
@@ -89,11 +116,13 @@ namespace ManagerSystemClassLibrary.BaseDT
            sb.AppendFormat(" where USERID= '{0}'", ClsSql.EncodeSql(m.USERID));
            bool bln = DataBaseClass.ExeSql(sb.ToString());
            if (bln == true)
-               return new Message(true, "删除成功！", "");
+               return new Message(true, "删除成功!", "");
            else
-               return new Message(false, "删除失败，请检查各输入框是否正确！", "");
-       }
+               return new Message(false, "删除失败，请检查各输入框是否正确!", "");
+       } 
+       #endregion
 
+       #region 判断记录是否存在
        /// <summary>
        /// 判断记录是否存在
        /// </summary>
@@ -104,18 +133,20 @@ namespace ManagerSystemClassLibrary.BaseDT
            StringBuilder sb = new StringBuilder();
            sb.AppendFormat("select 1 from T_SYSSEC_USER where 1=1");
            if (string.IsNullOrEmpty(sw.USERID) == false)
-               sb.AppendFormat(" and USERID={0}",ClsSql.EncodeSql(sw.USERID));
+               sb.AppendFormat(" and USERID={0}", ClsSql.EncodeSql(sw.USERID));
            if (string.IsNullOrEmpty(sw.LOGINUSERNAME) == false)
                sb.AppendFormat(" and LOGINUSERNAME='{0}'", ClsSql.EncodeSql(sw.LOGINUSERNAME));
            return DataBaseClass.JudgeRecordExists(sb.ToString());
-       }
+       } 
+       #endregion
 
+       #region 获取数据
        /// <summary>
        /// 获取数据
        /// </summary>
        /// <returns>参见模型</returns>
        public static DataTable getDT(T_SYSSEC_IPSUSER_SW sw)
-       {         
+       {
            StringBuilder sb = new StringBuilder();
            sb.AppendFormat("SELECT    USERID, ORGNO, LOGINUSERNAME, USERNAME, USERPWD, REGISTERTIME, LOGINNUM, LOGINIP,LASTTIME, NOTE, DEPARTMENT");
            sb.AppendFormat(" FROM      T_SYSSEC_USER a");
@@ -127,7 +158,7 @@ namespace ManagerSystemClassLibrary.BaseDT
                else
                    sb.AppendFormat(" AND a.USERID ='{0}'", ClsSql.EncodeSql(sw.USERID));
            }
-            //sb.AppendFormat(" AND USERID in( {0})",ClsSql.EncodeSql( sw.USERID));
+           //sb.AppendFormat(" AND USERID in( {0})",ClsSql.EncodeSql( sw.USERID));
            if (string.IsNullOrEmpty(sw.LOGINUSERNAME) == false)
                sb.AppendFormat(" AND LOGINUSERNAME = '{0}'", ClsSql.EncodeSql(sw.LOGINUSERNAME));
            if (string.IsNullOrEmpty(sw.DEPARTMENT) == false)
@@ -140,7 +171,7 @@ namespace ManagerSystemClassLibrary.BaseDT
                    sb.AppendFormat(" AND (SUBSTRING(ORGNO,1,4) = '{0}' or ORGNO is null or ORGNO='')", ClsSql.EncodeSql(sw.ORGNO.Substring(0, 4)));
                else if (sw.ORGNO.Substring(6, 9) == "000000000")//获取所有县的
                    sb.AppendFormat(" AND (SUBSTRING(ORGNO,1,6) = '{0}' or ORGNO is null or ORGNO='')", ClsSql.EncodeSql(sw.ORGNO.Substring(0, 6)));
-               else if (sw.ORGNO.Substring(9,6)=="000000")//获取所有镇的
+               else if (sw.ORGNO.Substring(9, 6) == "000000")//获取所有镇的
                    sb.AppendFormat(" AND (SUBSTRING(ORGNO,1,9)", ClsSql.EncodeSql(sw.ORGNO.Substring(0, 9)));
                else
                    sb.AppendFormat(" AND ORGNO = '{0}'", ClsSql.EncodeSql(sw.ORGNO));
@@ -148,8 +179,10 @@ namespace ManagerSystemClassLibrary.BaseDT
            sb.AppendFormat(" ORDER BY USERID DESC");
            DataSet ds = DataBaseClass.FullDataSet(sb.ToString());
            return ds.Tables[0];
-       }
+       } 
+       #endregion
 
+       #region 根据编号获取用户登录名
        /// <summary>
        /// 根据编号获取用户登录名
        /// </summary>
@@ -167,8 +200,10 @@ namespace ManagerSystemClassLibrary.BaseDT
            if (dr.Length > 0)
                str = dr[0]["LOGINUSERNAME"].ToString();
            return str;
-       }
+       } 
+       #endregion
 
+       #region 根据用户序号列表获取中文姓名列表
        /// <summary>
        /// 根据用户序号列表获取中文姓名列表
        /// </summary>
@@ -195,35 +230,7 @@ namespace ManagerSystemClassLibrary.BaseDT
                }
            }
            return str;
-       }
-
-       /// <summary>
-       /// 更新OA账号状态
-       /// </summary>
-       /// <param name="userIdList"></param>
-       /// <param name="value"></param>
-       /// <returns></returns>
-       public static Message MdyIsOpenOA(string userIdList, string value)
-       {
-           List<string> sqllist = new List<string>();
-           string[] userIdArray = userIdList.Split(',');
-           foreach (string id in userIdArray)
-           {
-               StringBuilder sb = new StringBuilder();
-               sb.AppendFormat("update T_SYSSEC_USER SET");
-               sb.AppendFormat(" IsOpenOA='{0}'", ClsSql.EncodeSql(value));
-               sb.AppendFormat(" where USERID= '{0}'", ClsSql.EncodeSql(id));
-               sqllist.Add(sb.ToString());
-           }
-           var y = DataBaseClass.ExecuteSqlTran(sqllist);
-           if (y > 0)
-           {
-               return new Message(true, "更新成功!", "");
-           }
-           else
-           {
-               return new Message(false, "更新失败，事物回滚机制!", "");
-           }
-       }
+       }     
+       #endregion
     }
 }

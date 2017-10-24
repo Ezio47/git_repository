@@ -102,7 +102,7 @@ namespace ManagerSystemClassLibrary
         public static string[] GetDeptInfo(string sysORGNO, string sysDeptId)
         {
             string[] info = new string[3];
-            string OADeptID = BaseDT.T_SysDept_OADept.GetDeptID(sysORGNO, sysDeptId);
+            string OADeptID = BaseDT.T_SYS_Dept_OADept.GetDeptID(sysORGNO, sysDeptId);
             if (OADeptID != "")
             {
                 info = client.FindDeptInfo(OADeptID).ToArray();
@@ -136,9 +136,9 @@ namespace ManagerSystemClassLibrary
         /// </summary>
         /// <param name="m">m</param>
         /// <returns></returns>
-        public static Message DeptMap(T_SysDept_OADept_Model m)
+        public static Message DeptMap(T_SYS_Dept_OADept_Model m)
         {
-            return BaseDT.T_SysDept_OADept.DeptMap(m);           
+            return BaseDT.T_SYS_Dept_OADept.DeptMap(m);           
         }
 
         /// <summary>
@@ -149,7 +149,7 @@ namespace ManagerSystemClassLibrary
         /// <returns>以英文逗号分隔的OA部门编码,若没有则用'无'代替</returns>
         public static string FindOADeptBySysDept(string sysORGNO, string sysDeptIdList)
         {
-            return BaseDT.T_SysDept_OADept.FindOADeptBySysDept(sysORGNO, sysDeptIdList);
+            return BaseDT.T_SYS_Dept_OADept.FindOADeptBySysDept(sysORGNO, sysDeptIdList);
         }
     }
 }

@@ -26,13 +26,12 @@ namespace ManagerSystemClassLibrary
         {
             if (m.opMethod == "Add")
             {
-                Message msgMENU = BaseDT.FIRERECORD_ARMY.Add(m);
+                Message msgMENU = BaseDT.FIRERECORD_ARMY.Save(m);
                 if (msgMENU.Success == false)
                     return new Message(msgMENU.Success, msgMENU.Msg, "");
                 return new Message(msgMENU.Success, msgMENU.Msg, m.returnUrl);
-            }
-          
-            return new Message(false, "无效操作", m.returnUrl);
+            }         
+            return new Message(false, "无效操作!", m.returnUrl);
         }
 
         #endregion

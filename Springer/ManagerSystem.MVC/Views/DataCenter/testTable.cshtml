@@ -149,24 +149,17 @@
 </div>
 <script type="text/javascript">
     showalert();
-    //window.setInterval(showalert, @ViewBag.noticeRefreshTimeInterval*1000*60);
-
     function showalert() {
         $.ajax({
             url: '/Base/getPageLeftMenuStr',
-
-            data: {
-                PageCode: '@ViewBag.PageCode'
-            },
+            data: { PageCode: '@ViewBag.PageCode' },
             type: 'post',
             error: function () {
                 //alert('错误', '删除失败!', 'error');
             },
             success: function (data) {
-
                 var ar = eval('(' + data + ')');
                 if (ar.Success == true) {
-                    //alert(ar.Msg);
                     document.getElementById("divLeftMenu").innerHTML = ar.Msg;
                 }
                 else {

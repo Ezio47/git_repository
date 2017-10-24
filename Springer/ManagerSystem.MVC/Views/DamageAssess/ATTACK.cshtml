@@ -32,34 +32,34 @@
     <table cellpadding="0" cellspacing="0">
         <tbody>
             <tr>
-                <td style="width:100px;">名称: </td>
-                <td><input id="tbxPNAME" type="text" value="" style="width:98%;" /></td>
-                <td style="width:100px;">费用类别: </td>
-                <td><select id="tbxAttackType" style="width: 99%;" onchange="loadAttackType()">@Html.Raw(@ViewBag.ATTACKTYPEAdd)</select></td>
+                <td class="tdField" style="width:100px;">名称: </td>
+                <td><input id="tbxPNAME" type="text" value="" style="width:95%;" /></td>
+                <td class="tdField" style="width:100px;">费用类别: </td>
+                <td><select id="tbxAttackType" style="width: 95%;" onchange="loadAttackType()">@Html.Raw(@ViewBag.ATTACKTYPEAdd)</select></td>
             </tr>
         </tbody>
         <tbody id="attackType">
             <tr>
-                <td>交通工具:</td>
-                <td><select id="tbxP1CODE" style="width: 98%;" onchange="p1codeChange()">@Html.Raw(@ViewBag.P1CodeAdd)</select></td>
-                <td>单位:</td>
-                <td><input id="P1UNIT" type="text" value="架" style="width:99%;" /></td>
+                <td class="tdField">交通工具:</td>
+                <td><select id="tbxP1CODE" style="width: 95%;" onchange="p1codeChange()">@Html.Raw(@ViewBag.P1CodeAdd)</select></td>
+                <td class="tdField">单位:</td>
+                <td><input id="P1UNIT" type="text" value="架" style="width:95%;" /></td>
             </tr>
             <tr>
-                <td id="td1">飞行时间:</td>
+                <td class="tdField" id="td1">飞行时间:</td>
                 <td>
                     <input id="tbxP1COUNT" type="text" value="" style="width:80%;" />
-                    <span style="color: gray;" id="span1">h</span>
+                    <span class="spanMark" id="span1">h</span>
                 </td>
-                <td id="td2">飞行费:</td>
+                <td class="tdField" id="td2">飞行费:</td>
                 <td>
                     <input id="tbxP1PRICE" type="text" value="" style="width:80%;" />
-                    <span style="color: gray;" id="span2">元/h</span>
+                    <span class="spanMark" id="span2">元/h</span>
                 </td>
             </tr>
             <tr>
-                <td>备注:</td>
-                <td colspan="3"><input id="tbxMARK" type="text" value="" style="width:99%;" /></td>
+                <td class="tdField">备注:</td>
+                <td colspan="3"><input id="tbxMARK" type="text" value="" style="width:96%;" /></td>
             </tr>
         </tbody>
     </table>
@@ -248,7 +248,7 @@
             layer.open({
                 type: 2,
                 title: '查看火灾扑救费用',
-                area: ['80%', '75%'],
+                area: ['600px', '280px'],
                 fix: true,
                 maxmin: true,
                 content: '/DamageAssess/ATTACKDataSee?PID=' + ID + '&ATTACKTYPE=' + AttackType,
@@ -283,7 +283,7 @@
             layer.open({
                 type: 1,
                 title: str,
-                area: ['80%', '75%'],
+                area: ['600px', '300px'],
                 btn: btnInfo,
                 shade: 0,
                 maxmin: true,

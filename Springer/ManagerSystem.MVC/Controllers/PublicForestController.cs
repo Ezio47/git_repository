@@ -24,7 +24,6 @@ namespace ManagerSystem.MVC.Controllers
         public ActionResult Index()
         {
             pubViewBag("017001", "017001", "");
-
             return View();
         }
 

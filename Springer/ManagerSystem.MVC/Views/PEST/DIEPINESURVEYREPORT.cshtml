@@ -15,24 +15,25 @@
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
                 <div class="divOP">
                     <div class="home ">
-                        单位：<select id="tbxORGNO" onchange="Query()">@Html.Raw(@ViewBag.vdOrg)</select>&nbsp;&nbsp;&nbsp;
-                        发现人：<input id="tbxFINDER" name="tbxFINDER" type="text" value="@ViewBag.FINDER" />&nbsp;&nbsp;&nbsp;
-                        开始日期：<input id="tbxStartDate" type="text" class="Wdate" style="width:100px;" value="@ViewBag.STARTDATE" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd'})" />&nbsp;&nbsp;&nbsp;
-                        结束日期：<input id="tbxEndDate" type="text" class="Wdate" style="width:100px;" value="@ViewBag.ENDDATE" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd'})" />
-                        <input type="button" value="查询" onclick="Query()" class="btnSearchCss" />
-                        <input type="button" value="添加" onclick="Manager('Add','')" id="btnAdd" class="btnAddCss" style="display:none;" />
-                        <input type="button" value="删除" onclick="Manager('Del','')" id="btnDel" class="btnDelCss" style="display:none;" />
-                        <input type="button" value="导出" onclick="Export()" id="btnExport" class="btnOutputCss" style="display:none;">
+                        单位：<select id="tbxORGNO" onchange="query('1')">@Html.Raw(@ViewBag.vdOrg)</select>&nbsp;&nbsp;&nbsp;
+                        发现日期：<input id="tbxStartDate" type="text" class="Wdate" style="width:100px;" value="@ViewBag.STARTDATE" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd'})" />&nbsp;&nbsp;
+                        至&nbsp;&nbsp;<input id="tbxEndDate" type="text" class="Wdate" style="width:100px;" value="@ViewBag.ENDDATE" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd'})" />&nbsp;&nbsp;
+                        发现人：<input id="tbxFINDER" name="tbxFINDER" type="text" value="" />&nbsp;&nbsp;&nbsp;
+                        <input type="button" value="查 询" onclick="query('1')" class="btnSearchCss" />
+                        <input type="button" value="添 加" onclick="Manager('Add','','')" id="btnAdd" class="btnAddCss" style="display:none;" />
+                        <input type="button" value="导 出" onclick="Export()" id="btnExport" class="btnOutputCss" style="display:none;">
                     </div>
                 </div>
             </div>
             <div data-options="region:'center'" title="" style=" border: none; ">
-                <div class="divTable">
-                    @Html.Raw(@ViewBag.TableInfo)
+                <div class="divTable" id="divTable">
+
                 </div>
             </div>
             <div data-options="region:'south'" title="" style=" height:40px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
-                @Html.Raw(@ViewBag.PageInfo)
+                <div class="divPager" id="divPager">
+
+                </div>
             </div>
         </div>
     </div>
@@ -40,28 +41,35 @@
 
 <div id="tableAdd" class="divMan" style="display:none;margin-left:5px;margin-top:8px">
     <input id="DIEPINESURVEYID" name="DIEPINESURVEYID" type="hidden" value="" />
+    <input id="OrgNo" name="OrgNo" type="hidden" value="@ViewBag.OrgNo" />
     <table cellpadding="0" cellspacing="0">
         <tr>
-            <td style="width:100px;">单位：</td>
-            <td><select id="BYORGNO" style="width:96%;">@Html.Raw(@ViewBag.vdOrg)</select></td>
-            <td style="width:100px;">发现日期：</td>
-            <td><input id="FINDDATE" type="text" class="Wdate" value="@ViewBag.FINDDATE" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd'})" style="width: 99%;" /></td>
+            <td class="tdField" style="width:100px;">单位：</td>
+            <td><select id="BYORGNO" style="width:94%;">@Html.Raw(@ViewBag.vdOrg)</select></td>
+            <td class="tdField" style="width:100px;">发现人： </td>
+            <td><input id="FINDER" type="text" value="" style="width:94%;" /><span class="spanRequiredField">*</span></td>
+            
         </tr>
         <tr>
-            <td>发现人： </td>
-            <td><input id="FINDER" type="text" class="input-small" value="" style="width:94%;" /><span style="color:red;">*</span></td>
-            <td>联系电话：</td>
-            <td><input id="LINKTELL" type="text" class="input-small" value="" style="width:94%;" /><span style="color:red;">*</span></td>
+            <td class ="tdField">发现日期：</td>
+            <td><input id="FINDDATE" type="text" class="Wdate" value="@ViewBag.FINDDATE" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd'})" style="width: 94%;" /></td>
+            <td class="tdField">报告日期：</td>
+            <td><input id="REPORTDATE" type="text" class="Wdate" value="@ViewBag.REPORTDATE" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd'})" style="width: 94%;" /></td>           
         </tr>
         <tr>
-            <td>取样株数： </td>
-            <td><input id="SAMPLINGCOUNT" type="text" class="input-small" value="" style="width:94%;" /><span style="color:red;">*</span></td>
-            <td>死亡株数：</td>
-            <td><input id="DIEPINECOUNT" type="text" class="input-small" value="" style="width:99%;" /></td>
+            <td class="tdField">取样株数： </td>
+            <td><input id="SAMPLINGCOUNT" type="text" value="" style="width:94%;" /><span class="spanRequiredField">*</span></td>
+            <td class="tdField">死亡株数：</td>
+            <td><input id="DIEPINECOUNT" type="text" value="" style="width:94%;" /></td>
         </tr>
         <tr>
-            <td>鉴定结果：</td>
-            <td colspan="3"><input id="AUTHENTICATERESULT" type="text" class="input-small" value="" style="width:99%" /></td>
+            <td class="tdField">联系电话：</td>
+            <td><input id="LINKTELL" type="text" value="" style="width:94%;" /><span class="spanRequiredField">*</span></td>
+            <td colspan="2"></td>
+        </tr>
+        <tr>
+            <td class="tdField">鉴定结果：</td>
+            <td colspan="3"><textarea id="AUTHENTICATERESULT" style="width: 99%; height: 100px"></textarea></td>
         </tr>
     </table>
 </div>
@@ -80,85 +88,84 @@
         document.getElementById('btnExport').style.display = "";
     }
 
-    function Query() {
+    $(function () {
+        query('1');
+    });
+
+    var page = 1;//当前默认页面为1
+    function query(Page) {
+        if (Page != "") {
+            page = Page;
+        }
+        var pagesize = '0';
+        if (document.getElementById("selPageSize") != null) {
+            pagesize = document.getElementById("selPageSize").value;
+        }
         var startDate = $('#tbxStartDate').val();
         var endDate = $('#tbxEndDate').val();
-        if (!checkEndTime(startDate, endDate)) {
-            layer.msg("开始日期不能大于结束日期!", { icon: 5 });
-            return;
+        if (startDate != "" && endDate != "") {
+            if (!checkEndTime(startDate, endDate)) {
+                layer.msg("开始日期不能大于结束日期!", { icon: 5 });
+                return;
+            }
         }
         $.ajax({
             url: '/PEST/DIEPINESURVEYREPORTQuery',
-            type: 'get',
             timeout: 10000, //10秒后超时，如果为0则永不超时
             data: {
-                Page: $('#selPage').val(),
-                PageSize: $('#selPageSize').val(),
+                PageSize: pagesize,
                 BYORGNO: $('#tbxORGNO').val(),
-                FINDER: $('#tbxFINDER').val(),
                 STARTDATE: startDate,
-                ENDDATE: endDate
+                ENDDATE: endDate,
+                FINDER: $('#tbxFINDER').val(),
+                Page: page
             },
             dataType: 'json',
             success: function (data, ioArgs) {
                 if (data.Success) {
-                    window.location.assign(data.Url);
+                    $('#divTable').html(data.tableInfo);
+                    $('#divPager').html(data.pagerInfo);
                 }
                 else {
-                    layer.msg(data.Msg, { icon: 5 });
+                    $('#divTable').html('');
+                    $('#divPager').html('');
                 }
             },
-            error: function () {
-                layer.msg("查询异常!", { icon: 5 });
+            error: function (err, ioArgs) {
+                layer.msg('系统异常!', { icon: 5 });
             }
         });
     }
-    //勾选
-    function SelectAll(v, c) {
-        var _len = $("#DIEPINESURVEYTable tr").length - 1;//行数
-        if (_len > 0) {
-            if (v == "ALL") {
-                for (var i = 0; i < _len; i++) {
-                    document.getElementById('tbxDIEPINE' + i).checked = c;
-                }
-            }
-        }
-    }
+
     //增、删、改
-    function Manager(Method, DataId) {
+    function Manager(Method, DataId, Page) {
         if (Method == 'Del') {
-            var DIEPINESURVEYID = $("input:checkbox[name='tbxDIEPINE']:checked").map(function (index, elem) { return $(elem).val(); }).get().join(',');
-            if (DIEPINESURVEYID.length > 0) {
-                layer.confirm('确实要删除吗?', { icon: 3, title: '提示' }, function (index) {
-                    $.ajax({
-                        type: "Post",
-                        url: "/PEST/DIEPINESURVEYREPORTManager",
-                        data: { DIEPINESURVEYID: DIEPINESURVEYID, Method: Method },
-                        dataType: "json",
-                        success: function (data) {
-                            if (data.Success) {
-                                layer.msg(data.Msg, { icon: 6 });
-                                Query();
-                            }
-                            else {
-                                layer.msg(data.Msg, { icon: 5 });
-                            }
-                        },
-                        error: function () {
-                            layer.msg('系统异常!', { icon: 5 });
+            layer.confirm('确实要删除吗?', { icon: 3, title: '提示' }, function (index) {
+                $.ajax({
+                    type: "Post",
+                    url: "/PEST/DIEPINESURVEYREPORTManager",
+                    data: { DIEPINESURVEYID: DataId, Method: Method },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.Success) {
+                            layer.msg(data.Msg, { icon: 6 });
+                            query(Page);
                         }
-                    });
+                        else {
+                            layer.msg(data.Msg, { icon: 5 });
+                        }
+                    },
+                    error: function () {
+                        layer.msg('系统异常!', { icon: 5 });
+                    }
                 });
-            }
-            else {
-                layer.msg('请选择要删除的数据!', { icon: 5 });
-            }
+            });
         }
         else if (Method == 'See') {
             layer.open({
                 type: 2,
                 title: '查看枯死松树数据',
-                area: ['55%', '45%'],
+                area: ['750px', '300px'],
                 fix: true,
                 maxmin: true,
                 content: '/PEST/DIEPINESURVEYREPORTDataSee?DIEPINESURVEYID=' + DataId,
@@ -170,6 +177,7 @@
             if (Method == "Mdy")
                 str = "修改枯死松树";
             if (Method == 'Add') {
+                $('#BYORGNO').val($('#OrgNo').val());
                 $('#DIEPINESURVEYID').val('');
                 $('#FINDER').val('');
                 $('#LINKTELL').val('');
@@ -183,25 +191,28 @@
                     url: "/PEST/GetDIEPINESURVEYREPORTDataJson",
                     data: { DIEPINESURVEYID: DataId },
                     dataType: "json",
+                    success: function (data) {
+                        if (data.PEST_REPORT_DIEPINESURVEYID != null) {
+                            $('#DIEPINESURVEYID').val(data.PEST_REPORT_DIEPINESURVEYID);
+                            $('#BYORGNO').val(data.BYORGNO);
+                            $('#FINDER').val(data.FINDER);
+                            $('#FINDDATE').val(data.FINDDATE);
+                            $('#REPORTDATE').val(data.REPORTDATE);                          
+                            $('#SAMPLINGCOUNT').val(data.SAMPLINGCOUNT);
+                            $('#DIEPINECOUNT').val(data.DIEPINECOUNT);
+                            $('#LINKTELL').val(data.LINKTELL);
+                            $('#AUTHENTICATERESULT').val(data.AUTHENTICATERESULT);
+                        }
+                    },
                     error: function () {
                         layer.msg('系统异常!', { icon: 5 });
-                    },
-                    success: function (data) {
-                        $('#DIEPINESURVEYID').val(data.PEST_REPORT_DIEPINESURVEYID);
-                        $('#BYORGNO').val(data.BYORGNO);
-                        $('#FINDER').val(data.FINDER);
-                        $('#FINDDATE').val(data.FINDDATE);
-                        $('#LINKTELL').val(data.LINKTELL);
-                        $('#SAMPLINGCOUNT').val(data.SAMPLINGCOUNT);
-                        $('#DIEPINECOUNT').val(data.DIEPINECOUNT);
-                        $('#AUTHENTICATERESULT').val(data.AUTHENTICATERESULT);
                     }
                 });
             }
             layer.open({
                 type: 1,
                 title: str,
-                area: ['55%', '45%'],
+                area: ['750px', '380px'],
                 btn: btnInfo,
                 shade: 0,
                 maxmin: true,
@@ -253,12 +264,13 @@
                         data: {
                             DIEPINESURVEYID: DIEPINESURVEYID,
                             BYORGNO: $('#BYORGNO').val(),
-                            FINDDATE: $('#FINDDATE').val(),
                             FINDER: FINDER,
-                            LINKTELL: LINKTELL,
+                            FINDDATE: $('#FINDDATE').val(),
+                            REPORTDATE: $('#REPORTDATE').val(),                                                      
                             SAMPLINGCOUNT: SAMPLINGCOUNT,
                             DIEPINECOUNT: $('#DIEPINECOUNT').val(),
-                            AUTHENTICATERESULT: $('#AUTHENTICATERESULT').val(),
+                            LINKTELL: LINKTELL,
+                            AUTHENTICATERESULT: $('#AUTHENTICATERESULT').val(),                          
                             Method: Method
                         },
                         dataType: "json",
@@ -266,9 +278,10 @@
                             if (data.Success) {
                                 var arrMsg = data.Msg.split(',');
                                 $('#DIEPINESURVEYID').val(arrMsg[1]);
-                                layer.confirm(arrMsg[0] + ' 请返回?', { icon: 3, title: '提示' }, function (index) {
+                                layer.confirm(arrMsg[0] + ' 请返回?', { icon: 3, title: '提示' }, function (index2) {
+                                    layer.close(index2);
                                     layer.close(index);
-                                    Query();
+                                    query(Page);
                                 });
                             }
                             else {

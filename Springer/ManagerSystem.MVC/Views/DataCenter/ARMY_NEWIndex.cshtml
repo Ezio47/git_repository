@@ -42,8 +42,9 @@
                                 <input type="hidden" id="armyid" value="">
                                 <input type="hidden" id="DCARMYID" value="">
                                 <input type="button" value="添 加" id="btnAdd" onclick="Add()" style="display:none;" class="btnAddCss" />
+                                <input type="button" value="导入" onclick="Upload()" class="btnUnEnableCss" />
                             </li>
-                            <li class="active">
+                            @*<li class="active">
                                 @using (@Html.BeginForm("ARMYList", "DataCenter", FormMethod.Post, new { enctype = "multipart/form-data" }))
                                 {
                                     <input name="file" style="width:90px;" type="file" id="file" class="btn btn-info btn-sm" />
@@ -54,7 +55,7 @@
                                 }
                             <li class="active">
                                 <a href="~/UploadFile/DataCenterExcel/队伍模板.xls" target="_blank" title="右键，另存为">下载模板</a>
-                            </li>
+                            </li>*@
                         </ul>
                     </div>
             </div>
@@ -126,7 +127,7 @@
                     $('#divPager').html(ar.pagerInfo);
                 }
                 else {
-                    layer.msg('登录异常');
+                    layer.msg('登录异常', { icon: 5 });
                 }
             },
             error: function (err, ioArgs) {
@@ -162,7 +163,7 @@
             type: 2,
             title: '添加',
             fix: false, //不固定
-            area: ['80%', '80%'],
+            area: ['700px', '350px'],
             maxmin: true,
             content: '/DataCenter/ARMY_NEWManIndex',
             end: function () {
@@ -170,11 +171,11 @@
             }
         });
     }
-    function Mdy(Method, ID, page) {
+    function Mdy(Method, ID, page, NAME) {
         layer.open({
             type: 2,
-            title: "修改",
-            area: ['80%', '80%'],
+            title:NAME+ "修改",
+            area: ['700px', '350px'],
             //shade: 0,
             fix: false,
             maxmin: true,
@@ -345,6 +346,22 @@
             });
         }
     }
+
+    ///上传弹出上传界面
+    function Upload() {
+        layer.open({
+            type: 2,
+            title: '队伍上传',
+            area: ['1000px', '500px'],
+            //shade: 0,
+            fix: true,
+            maxmin: true,
+            content: '/DataCenter/ARMYList',
+            end: function () {
+                query(1);
+            }
+        })
+    }
     //地图定位展示
     function Position(tablename, id,name) {
         layer.open({
@@ -357,14 +374,15 @@
             content: '/MapCommon/MapPostionCommonIndex?tablename=' + tablename + "&id=" + id
         })
     }
-    function See(ID, tablename) {
+    //将查看，人员,装备,照片合并到同一个页面
+    function SwichIframeUrl(ID, tablename) {
         layer.open({
             type: 2,
-            title: '队伍查看',
-            area: ['500px', '300px'],
+            title: '基本信息',
+            area: ['700px', '350px'],
             fix: true,
             maxmin: true,
-            content: '/DataCenter/SeeIndex?tablename=' + tablename + "&ID=" + ID
+            content: '/DataCenter/ARMY_NEWTotalIndex?tablename=' + tablename + "&ID=" + ID
         })
     }
     function Photo(PRID, PHOTOTYPE) {

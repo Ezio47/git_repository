@@ -33,7 +33,7 @@ namespace ManagerSystemClassLibrary.BaseDT
                 //一次性插入该用户对应的角色
                 DataBaseClass.ExeSql("INSERT INTO T_SYSSEC_USER_ROLE (USERID, ROLEID) SELECT   " + m.USERID + " , ROLEID FROM      T_SYSSEC_ROLE WHERE   ROLEID IN (" + m.ROLEID + ")");
             }
-            return new Message(true, "添加成功！", "");
+            return new Message(true, "添加成功!", "");
         }
 
         /// <summary>

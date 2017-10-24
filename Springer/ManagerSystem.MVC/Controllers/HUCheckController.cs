@@ -129,11 +129,21 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("    </tr>");
             sb.AppendFormat("</thead>");
             sb.AppendFormat("<tbody>");
+            int i = 0;
             foreach (var v in list)
             {
+                i++;
                 string orgName = v.ORGName;
                 string orgNo = v.ORGNo;
-                sb.AppendFormat("<tr>");
+                if (i % 2 == 0)
+                {
+                    sb.AppendFormat("<tr>");
+                }
+                else
+                {
+                    sb.AppendFormat("<tr class='row1'>");
+                }
+             
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.ORGName + "");//
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.PointCount + "");//总
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.PointCount0 + "");//完成
@@ -270,11 +280,20 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("</thead>");
             sb.AppendFormat("<tbody>");
             //var list = HUCheckCls.getCheckInModel(new HUCheckINCount_SW { DateBegin = arr[1], DateEnd = arr[2], ORGNO = arr[0], HUNM = arr[3] });
+            int j = 0;
             foreach (var v in list)
             {
+                j++;
                 string orgName = v.ORGName;
                 string orgNo = v.ORGNo;
-                sb.AppendFormat("<tr>");
+                if (j % 2 == 0)
+                {
+                    sb.AppendFormat("<tr>");
+                }
+                else
+                {
+                    sb.AppendFormat("<tr class='row1'>");
+                }
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.ORGName);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.HUCount);//总
                 string[] arr1 = v.DayCountList.Split(',');
@@ -454,6 +473,7 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("</thead>");
             sb.AppendFormat("<tbody>");
             var list = HUCheckCls.getSabotageCountModel(sw);
+            int j = 0;
             foreach (var v in list)
             {
                 string orgName = v.ORGName;
@@ -463,7 +483,15 @@ namespace ManagerSystem.MVC.Controllers
                 //{
                 //    isHU = true;
                 //}
-                sb.AppendFormat("<tr>");
+                j++;
+                if (j % 2 == 0)
+                {
+                    sb.AppendFormat("<tr>");
+                }
+                else
+                {
+                    sb.AppendFormat("<tr class='row1'>");
+                }
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.ORGName + "");//
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.Count + "");//总
                 string[] arr1 = v.DayCountList.Split(',');
@@ -613,11 +641,20 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("</thead>");
             sb.AppendFormat("<tbody>");
             //var list = HUCheckCls.getCheckInModel(new HUCheckINCount_SW { DateBegin = arr[1], DateEnd = arr[2], ORGNO = arr[0], HUNM = arr[3] });
+            int j = 0;
             foreach (var v in list)
             {
                 string orgName = v.ORGName;
                 string orgNo = v.ORGNo;
-                sb.AppendFormat("<tr>");
+                j++;
+                if (j % 2 == 0)
+                {
+                    sb.AppendFormat("<tr>");
+                }
+                else
+                {
+                    sb.AppendFormat("<tr class='row1'>");
+                }
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.ORGName);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.Count);//总
                 string[] arr1 = v.DayCountList.Split(',');

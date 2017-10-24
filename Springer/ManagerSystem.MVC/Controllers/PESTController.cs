@@ -25,140 +25,17 @@ namespace ManagerSystem.MVC.Controllers
         private static string dic113Name = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "113" }).ToList()[0].DICTNAME;
         #endregion
 
-        #region 有害生物管理
+        #region 有害生物下拉框
         /// <summary>
-        /// 有害生物列表
+        /// 有害生物下拉框
         /// </summary>
         /// <returns></returns>
-        public ActionResult PESTList()
+        public ActionResult LoadPestSelectOption()
         {
-            pubViewBag("006021", "006021", "有害生物管理");
-            if (ViewBag.isPageRight == false)
-                return View();
-            string PESTCODE = Request.Params["PESTCODE"];//当前页面传递编号
-            //导航条
-            string navStr = "";
-            if (string.IsNullOrEmpty(PESTCODE))
-                ViewBag.PESTList = GetPESTStr(new T_SYS_PEST_SW { IsGetTopCode = true });
-            else
-            {
-                if (PESTCODE.Length > 1)
-                {
-                    ViewBag.PESTList = GetPESTStr(new T_SYS_PEST_SW { PESTCODE = PESTCODE, ChildCODELength = PESTCODE.Length + 2 });
-                    for (int i = 0; i < PESTCODE.Length / 2; i++)
-                    {
-                        if (i != PESTCODE.Length / 2 - 1)
-                            navStr += "<li class=\"active\"><a href=\"/PEST/PESTList?PESTCODE=" + PESTCODE.Substring(0, (i + 1) * 2) + "\" >" + T_SYS_PESTCls.getName(PESTCODE.Substring(0, (i + 1) * 2)) + "</a></li>";
-
-                        else
-                            navStr += "<li class=\"active\">" + T_SYS_PESTCls.getName(PESTCODE) + "</li>";
-                    }
-                }
-            }
-            ViewBag.navList = navStr;
-            ViewBag.PESTCODE = PESTCODE;
-            ViewBag.CODELength = !string.IsNullOrEmpty(PESTCODE) ? PESTCODE.Length + 2 : 2;
-            ViewBag.Add = (SystemCls.isRight("006021001")) ? 1 : 0;
-            ViewBag.Del = (SystemCls.isRight("006021003")) ? 1 : 0;
-            return View();
-        }
-
-        /// <summary>
-        /// 有害生物列表--异步查询
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult PESTListQuery()
-        {
-            string PESTCODE = Request.Params["PESTCODE"];//当前页面传递编号
+            string orgNo = Request.Params["ORGNO"];
             StringBuilder sb = new StringBuilder();
-            if (string.IsNullOrEmpty(PESTCODE))
-                sb.AppendFormat(GetPESTStr(new T_SYS_PEST_SW { IsGetTopCode = true }));
-            else
-                sb.AppendFormat(GetPESTStr(new T_SYS_PEST_SW { PESTCODE = PESTCODE, ChildCODELength = PESTCODE.Length + 2 }));
+            sb.AppendFormat(PEST_LOCALPESTJOINCls.GetPestSelectOption(new PEST_LOCALPESTJOIN_SW { BYORGNO = orgNo, IsOnlyGetORGNO = true, IsDistinctByPestCode = true }));
             return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), "")), "text/html;charset=UTF-8");
-        }
-
-        /// <summary>
-        /// 获取有害生物列表
-        /// </summary>
-        /// <param name="sw"></param>
-        /// <returns></returns>
-        private string GetPESTStr(T_SYS_PEST_SW sw)
-        {
-            StringBuilder sb = new StringBuilder();
-            bool IsMdy = SystemCls.isRight("006021002") ? true : false;
-            List<T_SYS_PEST_Model> result = T_SYS_PESTCls.getListModel(sw).ToList();
-
-            #region 数据表
-            sb.AppendFormat("<table id=\"PestTable\" cellpadding=\"0\" cellspacing=\"0\">");
-
-            #region 表头
-            sb.AppendFormat("<thead>");
-            sb.AppendFormat("<tr>");
-            string dis = result.Count <= 0 ? "disabled=\"disabled\"" : "";
-            sb.AppendFormat("<th style=\"width:5%\"><input id=\"tbxPESTCODEALL\" name=\"tbxPESTCODEALL\" type=\"checkbox\" class=\"ace\" value=\"ALL\" onclick=\"SelectAll(this.value,this.checked)\" {0} /></th>", dis);
-            sb.AppendFormat("<th>序号</th><th style=\"width:20%;\">编码</th><th style=\"width:20%;\">名称</th><th style=\"width:20%;\">拉丁名称</th><th>排序号</th>");
-            if (IsMdy)
-                sb.AppendFormat("<th>操作</th>");
-            sb.AppendFormat("<th style=\"width:10%;\"></th>");
-            sb.AppendFormat("</tr>");
-            sb.AppendFormat("</thead>");
-            #endregion
-
-            #region 表身
-            sb.AppendFormat("<tbody>");
-            int i = 0;
-            foreach (var v in result)
-            {
-                sb.AppendFormat("<tr class=\"{0}\" onclick=\"SetColor(this)\" >", i % 2 == 0 ? "" : "row1");
-                sb.AppendFormat("<td class=\"center\">{0}</td>", "<input id=\"tbxPESTCODE" + i + "\" name=\"tbxPESTCODE\"  type=\"checkbox\" class=\"ace\" value=\"" + v.PESTCODE + "\" onclick=\"SelectAll(this.value,this.checked)\" />");
-                sb.AppendFormat("<td class=\"center\">{0}</td>", (i + 1).ToString());
-                sb.AppendFormat("<td class=\"center\">{0}</td>", v.PESTCODE);
-                sb.AppendFormat("<td class=\"center\">{0}</td>", v.PESTNAME);
-                sb.AppendFormat("<td class=\"center\">{0}</td>", v.LATINNAME);
-                sb.AppendFormat("<td class=\"center\">{0}</td>", v.ORDERBY);
-                if (IsMdy)
-                    sb.AppendFormat("<td class=\"center\"><input type=\"button\" value=\"修改\" onclick=\"Manager('Mdy','{0}')\" class=\"btnMdyCss\" /></td>", v.PESTCODE);
-                sb.AppendFormat("<td class=\"center\">");
-                if (v.PESTCODE.Length < 20)
-                    sb.AppendFormat("<a href=\"/PEST/PESTList?PESTCODE={0}\" >下属有害生物</a>", v.PESTCODE);
-                sb.AppendFormat("</td>");
-                sb.AppendFormat("</tr>");
-                i++;
-            }
-            sb.AppendFormat("</tbody>");
-            #endregion
-
-            sb.AppendFormat("</table>");
-            #endregion
-
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// 获取有害生物单条数据
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult GetPESTDataJson()
-        {
-            string PESTCODE = Request.Params["PESTCODE"];
-            T_SYS_PEST_Model m = T_SYS_PESTCls.getModel(new T_SYS_PEST_SW { PESTCODE = PESTCODE });
-            return Content(JsonConvert.SerializeObject(m), "text/html;charset=UTF-8");
-        }
-
-        /// <summary>
-        /// 病虫害管理-增、删、改
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult PESTManager()
-        {
-            T_SYS_PEST_Model m = new T_SYS_PEST_Model();
-            m.PESTCODE = Request.Params["PESTCODE"];
-            m.PESTNAME = Request.Params["PESTNAME"];
-            m.LATINNAME = Request.Params["LATINNAME"];
-            m.ORDERBY = Request.Params["ORDERBY"];
-            m.opMethod = Request.Params["Method"];
-            return Content(JsonConvert.SerializeObject(T_SYS_PESTCls.Manager(m)), "text/html;charset=UTF-8");
         }
         #endregion
 
@@ -169,50 +46,103 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult PESTCollectList()
         {
-            pubViewBag("023001", "023001", "有害生物采集");
+            pubViewBag("023001", "023001", "");
             if (ViewBag.isPageRight == false)
                 return View();
-            string Page = string.IsNullOrEmpty(Request.Params["Page"]) ? "1" : Request.Params["Page"];//当前页数
-            string trans = Request.Params["trans"];//传递网页参数 
-            string[] arr = new string[6];//存放查询条件的数组 根据实际存放的数据
-            if (!string.IsNullOrEmpty(trans))
-                arr = ClsStr.DecryptA01(trans, "kkkkkkkk").Split('|');
-            if (string.IsNullOrEmpty(arr[0]))
-                arr[0] = PagerCls.getDefaultPageSize().ToString();
-            if (string.IsNullOrEmpty(arr[1]))
-                arr[1] = DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd");
-            if (string.IsNullOrEmpty(arr[2]))
-                arr[2] = DateTime.Now.ToString("yyyy-MM-dd");
-            if (string.IsNullOrEmpty(arr[5]))
-                arr[5] = SystemCls.getCurUserOrgNo();
-            ViewBag.StartTime = arr[1];
-            ViewBag.EndTime = arr[2];
-            ViewBag.VILLAGENAME = arr[3];
-            ViewBag.SMALLADDRESS = arr[4];
-            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { TopORGNO = SystemCls.getCurUserOrgNo(), SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = arr[5] });
-            ViewBag.TREES = T_SYS_TREESPECIESCls.getSelectOption(new T_SYS_TREESPECIES_SW());
-            ViewBag.PESTTYPE = T_SYS_PESTCls.getSelectOption(new T_SYS_PEST_SW { IsGetTopCode = true });
-            ViewBag.HARMPOSITION = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "102" });
-            ViewBag.HARMLEVEL = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "103" });
-            ViewBag.MANSTATE = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "104" });
-            int total = 0;
-            ViewBag.TableInfo = GetPESTCollectStr(new PEST_COLLECTDATA_SW { CurPage = int.Parse(Page), PageSize = int.Parse(arr[0]), StartTime = arr[1], EndTime = arr[2], VILLAGENAME = arr[3], SMALLADDRESS = arr[4], BYORGNO = arr[5] }, out total);
-            ViewBag.PageInfo = PagerCls.getPagerInfo_New(new PagerSW { curPage = int.Parse(Page), pageSize = int.Parse(arr[0]), rowCount = total, url = "/PEST/PESTCollectList?trans=" + trans });
+            ViewBag.StartTime = DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd");
+            ViewBag.EndTime = DateTime.Now.ToString("yyyy-MM-dd");
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { TopORGNO = SystemCls.getCurUserOrgNo(), SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = SystemCls.getCurUserOrgNo() });
+            ViewBag.SEARCHTYPE = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "123", isShowAll = "1" });
+            ViewBag.SEARCHTYPEAdd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "123" });
+            ViewBag.HARMPOSITIONAdd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "102" });
+            ViewBag.HARMLEVELAdd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "103" });
+            ViewBag.MANSTATEAdd = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "104" });
+            ViewBag.OrgNo = SystemCls.getCurUserOrgNo();
             ViewBag.Add = (SystemCls.isRight("023001001")) ? 1 : 0;
-            ViewBag.Del = (SystemCls.isRight("023001004")) ? 1 : 0;
             return View();
         }
 
         /// <summary>
-        /// 加载病虫名称
+        /// 有害生物三维Json
         /// </summary>
         /// <returns></returns>
-        public ActionResult LoadCOLLECTPEST()
+        public JsonResult GetYHSWAjax()
         {
-            string PESTCODE = Request.Params["PESTCODE"];
+            int total = 0;//记录总数
+            string BYORGNO = Request.Params["BYORGNO"];
+            string StartTime = Request.Params["StartTime"];
+            string EndTime = Request.Params["EndTime"];
+            string SEARCHTYPE = Request.Params["SEARCHTYPE"];
+            string VILLAGENAME = Request.Params["VILLAGENAME"];
+            string PageSize = Request.Params["PageSize"];//记录个数
+            string page = Request.Params["page"];//页数
+            PEST_COLLECTDATA_SW sw = new PEST_COLLECTDATA_SW { CurPage = int.Parse(page), PageSize = int.Parse(PageSize), BYORGNO = BYORGNO, StartTime = StartTime, EndTime = EndTime, VILLAGENAME = VILLAGENAME, SEARCHTYPE = SEARCHTYPE };
+            var result = PEST_COLLECTDATACls.getModeList(sw, out total);
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormat(T_SYS_PESTCls.getSelectOption(new T_SYS_PEST_SW { GetAllChileCode = true, PESTCODE = PESTCODE }));
-            return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), "")), "text/html;charset=UTF-8");
+            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
+            sb.AppendFormat("<thead>");
+            sb.AppendFormat("<tr>");
+            sb.AppendFormat("<th >序号</th>");
+            sb.AppendFormat("<th >单位</th>");
+            sb.AppendFormat("<th >村名</th>");
+            //sb.AppendFormat("<th >小地名</th>");
+            //sb.AppendFormat("<th >小班号</th>");
+            //sb.AppendFormat("<th >小班面积(公顷)</th>");
+            sb.AppendFormat("<th >寄主树种</th>");
+            sb.AppendFormat("<th >病虫名称</th>");
+            sb.AppendFormat("<th >上传时间</th>");
+            sb.AppendFormat("</tr>");
+            sb.AppendFormat("</thead>");
+            sb.AppendFormat("<tbody>");
+            if (result.Any())
+            {
+                int i = 0;
+                int rowB = (int.Parse(page) - 1) * int.Parse(PageSize);
+                foreach (var s in result)
+                {
+                    string[] arr = s.JWDLIST.Split('|');
+                    string JWDLIST;
+                    string[] arr1;
+                    string JD;
+                    string WD;
+                    if (arr != null)
+                    {
+                        JWDLIST = arr[0];
+                        if (JWDLIST != null)
+                        {
+                            arr1 = JWDLIST.Split(',');
+                            JD = arr1[0].ToString();
+                            WD = arr1[1].ToString();
+
+                            if (i % 2 == 0)
+                                sb.AppendFormat("<tr onClick='onClickYHSW(" + s.PESTCOLLDATAID + "," + JD + "," + WD + ")'>");
+                            else
+                                sb.AppendFormat("<tr class='row1'  onClick='onClickYHSW(" + s.PESTCOLLDATAID + "," + JD + "," + WD + ")'>");
+                            sb.AppendFormat("<td>{0}</td>", ++rowB);
+                            sb.AppendFormat("<td>{0}</td>", s.BYORGNONAME);
+                            sb.AppendFormat("<td>{0}</td>", s.VILLAGENAME);
+                            //sb.AppendFormat("<td>{0}</td>", s.SMALLADDRESS);
+                            //sb.AppendFormat("<td>{0}</td>", s.SMALLCLASSCODE);
+                            //sb.AppendFormat("<td>{0}</td>", s.SMALLCLASSAREA);
+                            sb.AppendFormat("<td>{0}</td>", s.HOSTTREESPECIESNAME);
+                            sb.AppendFormat("<td>{0}</td>", s.COLLECTPESTNAME);
+                            sb.AppendFormat("<td>{0}</td>", s.UPLOADTIME);
+                            sb.AppendFormat("</tr>");
+                            ++i;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                sb.AppendFormat("<tr>");
+                sb.AppendFormat("<td colspan='9'>未查询出结果</td>");
+                sb.AppendFormat("</tr>");
+            }
+            sb.AppendFormat("</tbody>");
+            sb.AppendFormat("</table>");
+            string pageInfo = PagerCls.getPagerInfoAjax(new PagerSW { curPage = int.Parse(page), pageSize = int.Parse(PageSize), rowCount = total, hidePageList = true, hidePageSize = true });
+            return Json(new MessagePagerAjax(true, sb.ToString(), pageInfo));
         }
 
         /// <summary>
@@ -221,45 +151,38 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult PESTCollectListQuery()
         {
+            string PageSize = Request.Params["PageSize"];
+            if (PageSize == "0")
+                PageSize = ConfigCls.getTableDefaultPageSize();
             string Page = Request.Params["Page"];
-            string PageSize = string.IsNullOrEmpty(Request.Params["PageSize"]) ? PagerCls.getDefaultPageSize().ToString() : Request.Params["PageSize"];
+            string BYORGNO = Request.Params["BYORGNO"];
             string StartTime = Request.Params["StartTime"];
             string EndTime = Request.Params["EndTime"];
+            string SEARCHTYPE = Request.Params["SEARCHTYPE"];
             string VILLAGENAME = Request.Params["VILLAGENAME"];
-            string SMALLADDRESS = Request.Params["SMALLADDRESS"];
-            string BYORGNO = Request.Params["BYORGNO"];
-            string str = ClsStr.EncryptA01(PageSize + "|" + StartTime + "|" + EndTime + "|" + VILLAGENAME + "|" + SMALLADDRESS + "|" + BYORGNO, "kkkkkkkk");
-            return Content(JsonConvert.SerializeObject(new Message(true, "", "/PEST/PESTCollectList?trans=" + str + "&Page=" + Page)), "text/html;charset=UTF-8");
-        }
-
-        /// <summary>
-        /// 获取有害生物采集列表
-        /// </summary>
-        /// <returns></returns>
-        private string GetPESTCollectStr(PEST_COLLECTDATA_SW sw, out int total)
-        {
+            int total = 0;
+            PEST_COLLECTDATA_SW sw = new PEST_COLLECTDATA_SW { CurPage = int.Parse(Page), PageSize = int.Parse(PageSize), BYORGNO = BYORGNO, StartTime = StartTime, EndTime = EndTime, VILLAGENAME = VILLAGENAME, SEARCHTYPE = SEARCHTYPE };
+            var result = PEST_COLLECTDATACls.getModeList(sw, out total);
+            bool IsMdy = SystemCls.isRight("023001002") ? true : false;
+            bool IsSee = SystemCls.isRight("023001003") ? true : false;
+            bool IsDel = SystemCls.isRight("023001004") ? true : false;
+            bool IsLocate = SystemCls.isRight("023001005") ? true : false;
+            bool IsPhoto = SystemCls.isRight("023001006") ? true : false;
             StringBuilder sb = new StringBuilder();
-            List<PEST_COLLECTDATA_Page_Model> result = PEST_COLLECTDATACls.getModeList(sw, out total).ToList();
-
-            #region 数据表
             sb.AppendFormat("<table id=\"CollectTable\" cellpadding=\"0\" cellspacing=\"0\">");
-
-            #region 表头
             sb.AppendFormat("<thead>");
             sb.AppendFormat("<tr>");
-            string dis = result.Count <= 0 ? "disabled=\"disabled\"" : "";
-            sb.AppendFormat("<th style=\"width:5%\"><input id=\"tbxCollectALL\" name=\"tbxCollectALL\" type=\"checkbox\" class=\"ace\" value=\"ALL\" onclick=\"SelectAll(this.value,this.checked)\" {0} /></th>", dis);
-            sb.AppendFormat("<th>序号</th><th>单位</th><th>村名</th><th>小地名</th><th>小班号</th><th>小班面积</th><th>寄主树种</th><th>病虫名称</th><th>上传时间</th><th>处理状态</th><th>操作</th></tr>");
+            //string dis = result.Count() <= 0 ? "disabled=\"disabled\"" : "";
+            //sb.AppendFormat("<th style=\"width:5%\"><input id=\"tbxCollectALL\" name=\"tbxCollectALL\" type=\"checkbox\" class=\"ace\" value=\"ALL\" onclick=\"SelectAll(this.value,this.checked)\" {0} /></th>", dis);
+            sb.AppendFormat("<th>序号</th><th>单位</th><th>村名</th><th>小地名</th><th>小班号</th><th>小班面积(公顷)</th><th>寄主树种</th><th>病虫名称</th><th>上传时间</th><th>处理状态</th><th>操作</th>");
+            sb.AppendFormat("</tr>");
             sb.AppendFormat("</thead>");
-            #endregion
-
-            #region 表身
             sb.AppendFormat("<tbody>");
             int i = 0;
             foreach (var v in result)
             {
                 sb.AppendFormat("<tr class=\"{0}\" onclick=\"SetColor(this)\" >", (i % 2 == 0) ? "" : "row1");
-                sb.AppendFormat("<td class=\"center\">{0}</td>", "<input id=\"tbxCollect" + i + "\" name=\"tbxCollect\"  type=\"checkbox\" class=\"ace\" value=\"" + v.PESTCOLLDATAID + "\" onclick=\"SelectAll(this.value,this.checked)\" />");
+                //sb.AppendFormat("<td class=\"center\">{0}</td>", "<input id=\"tbxCollect" + i + "\" name=\"tbxCollect\"  type=\"checkbox\" class=\"ace\" value=\"" + v.PESTCOLLDATAID + "\" onclick=\"SelectAll(this.value,this.checked)\" />");
                 sb.AppendFormat("<td class=\"center\">{0}</td>", (i + 1).ToString());
                 sb.AppendFormat("<td class=\"center\" style=\"{1}\">{0}</td>", v.BYORGNONAME, PublicCls.getOrgTDNameClass(sw.BYORGNO, v.BYORGNO));
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.VILLAGENAME);
@@ -269,32 +192,56 @@ namespace ManagerSystem.MVC.Controllers
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.HOSTTREESPECIESNAME);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.COLLECTPESTNAME);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.UPLOADTIME);
-                sb.AppendFormat("<td class=\"center\">{0}</td>", v.MANSTATE);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.MANSTATENAME);
                 sb.AppendFormat("<td>");
-                if (SystemCls.isRight("023001005"))
+                if (IsLocate)
                 {
                     if (string.IsNullOrEmpty(v.JWDLIST))
-                        sb.AppendFormat("<a  href=\"javascript:void(0);\"title='定位' style=\"background-color:gray;\" class=\"searchBox_01 LinkLocation\">定位</a>");
+                        sb.AppendFormat("<a href=\"javascript:void(0);\"title='定位' style=\"background-color:gray;\" class=\"searchBox_01 LinkLocation\">定位</a>");
                     else
                         sb.AppendFormat("<a href=\"#\" onclick=\"PositionLine('PEST_COLLECTDATA','{0}','{1}',2)\" title='定位' class=\"searchBox_01 LinkLocation\">定位</a>", v.PESTCOLLDATAID, v.COLLECTPESTNAME);
                 }
-                if (SystemCls.isRight("023001003"))
-                    sb.AppendFormat("<a href=\"#\" onclick=\"See('{0}')\" title='查看' class=\"searchBox_01 LinkSee\">查看</a>", v.PESTCOLLDATAID);
-                if (SystemCls.isRight("023001006"))
-                    sb.AppendFormat("<a href=\"#\" onclick=\"Photo('{0}')\" title='图片' class=\"searchBox_01 LinkPhoto\">图片</a>", v.PESTCOLLDATAID);
-                if (SystemCls.isRight("023001002"))
-                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}')\" title='修改' class=\"searchBox_01 LinkMdy\">修改</a>", v.PESTCOLLDATAID);
+                if (IsPhoto)
+                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Photo','{0}','{1}','')\" title='图片' class=\"searchBox_01 LinkPhoto\">图片</a>", v.PESTCOLLDATAID, Page);
+                if (IsSee)
+                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('See','{0}','{1}','{2}')\" title='查看' class=\"searchBox_01 LinkSee\">查看</a>", v.PESTCOLLDATAID, Page, v.COLLECTPESTCODE);
+                if (IsMdy)
+                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}','{1}','')\" title='修改' class=\"searchBox_01 LinkMdy\">修改</a>", v.PESTCOLLDATAID, Page);
+                if (IsDel)
+                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Del','{0}','{1}','')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", v.PESTCOLLDATAID, Page);
                 sb.AppendFormat("</td>");
                 sb.AppendFormat("</tr>");
                 i++;
             }
             sb.AppendFormat("</tbody>");
-            #endregion
-
             sb.AppendFormat("</table>");
-            #endregion
+            string pageInfo = PagerCls.getPagerInfoAjax(new PagerSW { curPage = sw.CurPage, pageSize = sw.PageSize, rowCount = total });
+            return Content(JsonConvert.SerializeObject(new MessagePagerAjax(true, sb.ToString(), pageInfo)), "text/html;charset=UTF-8");
+        }
 
-            return sb.ToString();
+        /// <summary>
+        /// 加载寄主树种
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult LoadTreeSpecies()
+        {
+            string OrgNo = Request.Params["OrgNo"];
+            string SearchType = Request.Params["SearchType"];
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat(PEST_LOCALPESTJOINCls.GetTreeSelectOption(new PEST_LOCALPESTJOIN_SW { BYORGNO = OrgNo, SEARCHTYPE = SearchType }));
+            return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), "")), "text/html;charset=UTF-8");
+        }
+
+        /// <summary>
+        /// 加载病虫名称
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult LoadCollectPest()
+        {
+            string TreeSpecies = Request.Params["TreeSpecies"];
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat(PEST_TREESPECIES_PESTCls.getSelectOption(new PEST_TREESPECIES_PEST_SW { TREESPECIESCODE = TreeSpecies }));
+            return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), "")), "text/html;charset=UTF-8");
         }
 
         /// <summary>
@@ -313,65 +260,175 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult PESTCollectDataSee()
         {
-            string PESTCOLLDATAID = Request.Params["DataId"];
-            PEST_COLLECTDATA_Model m = PEST_COLLECTDATACls.getModel(new PEST_COLLECTDATA_SW { PESTCOLLDATAID = PESTCOLLDATAID });
+            return View();
+        }
+
+        /// <summary>
+        /// 获取有害生物采集数据
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult GetCollectData()
+        {
+            string DataId = Request.Params["DataId"];
+            PEST_COLLECTDATA_Model m = PEST_COLLECTDATACls.getModel(new PEST_COLLECTDATA_SW { PESTCOLLDATAID = DataId });
+            var result = PEST_COLLECT_DATAUPLOADCls.getModelList(new PEST_COLLECT_DATAUPLOAD_SW { PESTCOLLDATAID = DataId });
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("<div class=\"divMan\" style=\"margin-left:5px;margin-top:8px\">");
-            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
+            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\" style=\"text-align:left;\">");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td style=\"width:15%\">单位:</td>");
+            sb.AppendFormat("<td class=\"tdField\" style=\"width:15%\">单位:</td>");
             sb.AppendFormat("<td style=\"width:35%\">{0}</td>", m.BYORGNONAME);
-            sb.AppendFormat("<td style=\"width:15%\">寄主树种</td>");
-            sb.AppendFormat("<td style=\"width:35%\">{0}</td>", m.HOSTTREESPECIESNAME);
+            sb.AppendFormat("<td class=\"tdField\" style=\"width:15%\">调查类型:</td>");
+            sb.AppendFormat("<td style=\"width:35%\">{0}</td>", m.SEARCHTYPENAME);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td >调查类型:</td>");
-            sb.AppendFormat("<td >{0}</td>", m.SEARCHTYPENAME);
-            sb.AppendFormat("<td >病虫名称:</td>");
-            sb.AppendFormat("<td >{0}</td>", m.COLLECTPESTNAME);
+            sb.AppendFormat("<td class=\"tdField\">寄主树种</td>");
+            sb.AppendFormat("<td>{0}</td>", m.HOSTTREESPECIESNAME);
+            sb.AppendFormat("<td class=\"tdField\">病虫名称:</td>");
+            sb.AppendFormat("<td>{0}</td>", m.COLLECTPESTNAME);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>村名:</td>");
+            sb.AppendFormat("<td class=\"tdField\">村名:</td>");
             sb.AppendFormat("<td>{0}</td>", m.VILLAGENAME);
-            sb.AppendFormat("<td>小地名:</td>");
+            sb.AppendFormat("<td class=\"tdField\">小地名:</td>");
             sb.AppendFormat("<td>{0}</td>", m.SMALLADDRESS);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>小班号:</td>");
+            sb.AppendFormat("<td class=\"tdField\">小班号:</td>");
             sb.AppendFormat("<td>{0}</td>", m.SMALLCLASSCODE);
-            sb.AppendFormat("<td>小班面积:</td>");
+            sb.AppendFormat("<td class=\"tdField\">小班面积:</td>");
             sb.AppendFormat("<td>{0}</td>", !string.IsNullOrEmpty(m.SMALLCLASSAREA) ? m.SMALLCLASSAREA + "公顷" : m.SMALLCLASSAREA);
             sb.AppendFormat("</tr>");
+            //sb.AppendFormat("<tr>");
+            //sb.AppendFormat("<td class=\"tdField\">经纬度集合:</td>");
+            //sb.AppendFormat("<td colspan=\"3\" ><input type=\"text\" style=\"width:98%\" value=\"{0}\"  /></td>", !string.IsNullOrEmpty(m.JWDLIST) ? m.JWDLIST : m.JWDLIST);
+            //sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>经纬度集合:</td>");
-            sb.AppendFormat("<td colspan=\"3\" ><input type=\"text\" style=\"width:98%\" value=\"{0}\"  /></td>", !string.IsNullOrEmpty(m.JWDLIST)?m.JWDLIST:m.JWDLIST);
-            sb.AppendFormat("</tr>");
-            sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>疑似病死:</td>");
+            sb.AppendFormat("<td class=\"tdField\">疑似病死:</td>");
             sb.AppendFormat("<td>{0}</td>", !string.IsNullOrEmpty(m.DEADCOUNT) ? m.DEADCOUNT + "株" : m.DEADCOUNT);
-            sb.AppendFormat("<td>不明枯死:</td>");
+            sb.AppendFormat("<td class=\"tdField\">不明枯死:</td>");
             sb.AppendFormat("<td>{0}</td>", !string.IsNullOrEmpty(m.UNKNOWNDIEOFFCOUNT) ? m.UNKNOWNDIEOFFCOUNT + "株" : m.UNKNOWNDIEOFFCOUNT);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>其他枯死:</td>");
+            sb.AppendFormat("<td class=\"tdField\">其他枯死:</td>");
             sb.AppendFormat("<td>{0}</td>", !string.IsNullOrEmpty(m.ELSEDIEOFFCOUNT) ? m.ELSEDIEOFFCOUNT + "株" : m.ELSEDIEOFFCOUNT);
-            sb.AppendFormat("<td>取&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;样:</td>");
+            sb.AppendFormat("<td class=\"tdField\">取&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;样:</td>");
             sb.AppendFormat("<td>{0}</td>", !string.IsNullOrEmpty(m.SAMPLECOUNT) ? m.SAMPLECOUNT + "株" : m.SAMPLECOUNT);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>处理状态:</td>");
+            sb.AppendFormat("<td class=\"tdField\">处理状态:</td>");
             sb.AppendFormat("<td >{0}</td>", m.MANSTATENAME);
-            sb.AppendFormat("<td>反馈结果:</td>");
+            sb.AppendFormat("<td class=\"tdField\">反馈结果:</td>");
             sb.AppendFormat("<td >{0}</td>", m.MANRESULT);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>备注:</td>");
-            sb.AppendFormat("<td colspan=\"3\">{0}</td>", m.MARK); ;
+            sb.AppendFormat("<td class=\"tdField\">备注:</td>");
+            sb.AppendFormat("<td class=\"left\" colspan=\"3\">{0}</td>", m.MARK); ;
             sb.AppendFormat("</tr>");
-            sb.AppendFormat("<tbody>");
+            sb.AppendFormat("<table>");
+            sb.AppendFormat("<div>");
+            foreach (var s in result)
+            {
+                sb.AppendFormat("<div style=\"float:left;margin:5px\">");
+                sb.AppendFormat("<a href=\"{0}\" target=\"_blank\"><img src=\"{0}\" alt=\"alttext\" title=\"{1}\" height =\"160px\" width=\"165px\"/></a>", s.UPLOADURL, s.UPLOADNAME);
+                sb.AppendFormat("<p align=\"center\">{0}</p>", s.UPLOADNAME);
+                sb.AppendFormat("</div>");
+            }
             sb.AppendFormat("</div>");
-            ViewBag.SeeData = sb.ToString();
-            return View();
+            return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), "")), "text/html;charset=UTF-8");
+        }
+
+        /// <summary>
+        /// 获取有害生物属性数据
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult GetPESTPropData()
+        {
+            StringBuilder sb = new StringBuilder();
+            string bioCode = Request.Params["BioCode"];
+            string bioName = T_SYS_BIOLOGICALTYPECls.getName(bioCode);
+            PEST_PESTPROP_Model m = PEST_PESTPROPCls.getModel(new PEST_PESTPROP_SW { BIOLOGICALTYPECODE = bioCode });
+            List<PEST_PESTDYNAMICPROP_Model> _templist = PEST_PESTDYNAMICPROPCls.getListModel(new PEST_PESTDYNAMICPROP_SW { BIOLOGICALTYPECODE = bioCode }).ToList();
+            List<T_SYS_DICTModel> _dic124List = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "124" }).ToList();
+            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\" style=\"text-align:left;\">");
+            sb.AppendFormat("<tr style=\"width:98%;\">");
+            sb.AppendFormat("<td colspan=\"4\" style=\"height:40px\"><h1>基本属性</h1></td>");
+            sb.AppendFormat("</tr>");
+            sb.AppendFormat("<tr>");
+            sb.AppendFormat("<td class=\"tdField\">生物名称：</td>");
+            sb.AppendFormat("<td colspan=\"3\" style=\"text-align:left;\">{0}</td>", bioName);
+            sb.AppendFormat("</tr>");
+            sb.AppendFormat("<tr>");
+            sb.AppendFormat("<td class=\"tdField\" style=\"width:80px;\">检疫性：</td>");
+            sb.AppendFormat("<td style=\"text-align:left;\">{0}</td>", m.QUARANTINENAME != null ? m.QUARANTINENAME : "");
+            sb.AppendFormat("<td class=\"tdField\" style=\"width:80px;\">危险性：</td>");
+            sb.AppendFormat("<td >{0}</td>", m.RISKNAME != null ? m.RISKNAME : "");
+            sb.AppendFormat("</tr>");
+            sb.AppendFormat("<tr style=\"width:98%;\">");
+            sb.AppendFormat("<td colspan=\"4\" style=\"height:40px\"><h1>动态属性</h1></td>");
+            sb.AppendFormat("</tr>");
+            for (int i = 0; i < _dic124List.Count; i++)
+            {
+                string content = "";
+                PEST_PESTDYNAMICPROP_Model dm = _templist.Find(a => a.DYNAMICPROPCODE == _dic124List[i].DICTVALUE);
+                if (dm != null && dm.DYNAMICPROPCONTENT != null)
+                    content = dm.DYNAMICPROPCONTENT;
+                sb.AppendFormat("<tr>");
+                sb.AppendFormat("<td class=\"tdField\">{0}：</td>", _dic124List[i].DICTNAME);
+                sb.AppendFormat("<td colspan=\"3\" style=\"text-align:left;\">{0}</td>", content); ;
+                sb.AppendFormat("</tr>");
+            }
+            sb.AppendFormat("</table>");
+            return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), "")), "text/html;charset=UTF-8");
+        }
+
+        /// <summary>
+        /// 获取有害生物照片
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult GetGetPESTPhotoData()
+        {
+            string bioCode = Request.Params["BioCode"];
+            var result = PEST_PESTINFOFILECls.getModelList(new PEST_PESTINFOFILE_SW { BIOLOGICALTYPECODE = bioCode });
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("<div>");
+            foreach (var s in result)
+            {
+                sb.AppendFormat("<div style=\"float:left;margin:5px\">");
+                sb.AppendFormat("<a href=\"{0}\" target=\"_blank\"><img src=\"{0}\" alt=\"alttext\" title=\"{1}\" height =\"160px\" width=\"165px\"/></a>", s.PESTFILENAME, s.PESTFILETITLE);
+                sb.AppendFormat("<p align=\"center\">{0}</p>", s.PESTFILETITLE);
+                sb.AppendFormat("</div>");
+            }
+            sb.AppendFormat("</div>");
+            return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), "")), "text/html;charset=UTF-8");
+        }
+
+        /// <summary>
+        /// 获取有害生物照片数据
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult GetPhotoData()
+        {
+            string DataId = Request.Params["DataId"];
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
+            sb.AppendFormat("<thead><tr><th>序号</th><th>照片标题</th><th>照片说明</th><th>缩略图</th></tr></thead>");
+            sb.AppendFormat("<tbody>");
+            int i = 0;
+            var result = PEST_COLLECT_DATAUPLOADCls.getModelList(new PEST_COLLECT_DATAUPLOAD_SW { PESTCOLLDATAID = DataId });
+            foreach (var s in result)
+            {
+                sb.AppendFormat("<tr class=\"{0}\" >", (i % 2 == 0) ? "" : "row1");
+                sb.AppendFormat("<td class=\"center\">{0}</td>", (i + 1).ToString());
+                sb.AppendFormat("<td class=\"center\">{0}</td>", s.UPLOADNAME, s.UPLOADURL);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", s.UPLOADDESCRIBE);
+                sb.AppendFormat("<td class=\"center\"><a href=\"{0}\" target=\"_blank\"><img src=\"{0}\" alt=\"alttext\" title=\"{1}\" height =\"35px\" width=\"35px\"/></a></td>", s.UPLOADURL, s.UPLOADNAME);
+                sb.AppendFormat("<td class=\"center\"></td>");
+                sb.AppendFormat("</tr>");
+                i++;
+            }
+            sb.AppendFormat("</tbody>");
+            sb.AppendFormat("</table>");
+            return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), "")), "text/html;charset=UTF-8");
         }
 
         /// <summary>
@@ -413,8 +470,8 @@ namespace ManagerSystem.MVC.Controllers
 
             #region 三维-病虫害
             BINGCHONGHAI_Model bm = new BINGCHONGHAI_Model();
-            bm.NAME = m.COLLECTPESTCODE;
-            bm.category = m.SEARCHTYPE;
+            bm.NAME = T_SYS_BIOLOGICALTYPECls.getName(m.COLLECTPESTCODE);
+            bm.CATEGORY = m.SEARCHTYPE;
             bm.opMethod = m.opMethod;
             string polygon = "";
             string polygon1 = "";
@@ -511,9 +568,9 @@ namespace ManagerSystem.MVC.Controllers
             {
                 sb.AppendFormat("<tr class=\"{6}\" onclick=\"PHOnclik('{0}','{1}','{2}','{3}','{4}','{5}')\">", s.PESTCOLLDATAUPLOADID, s.PESTCOLLDATAID, s.UPLOADNAME, s.UPLOADDESCRIBE, s.UPLOADURL, s.UPLOADTYPE, (i % 2 == 0) ? "" : "row1");
                 sb.AppendFormat("<td class=\"center\">{0}</td>", (i + 1).ToString());
-                sb.AppendFormat("<td class=\"center\">{0}</td>", s.UPLOADNAME, s.UPLOADURL);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", s.UPLOADNAME);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", s.UPLOADDESCRIBE);
-                sb.AppendFormat("<td class=\"center\"><a href=\"{0}\" target=\"_blank\"><img src=\"{0}\" alt=\"alttext\" title=\"{1}\" height =\"35px\" wideth=\"35px\"/></a></td>", s.UPLOADURL, s.UPLOADNAME);
+                sb.AppendFormat("<td class=\"center\"><a href=\"{0}\" target=\"_blank\"><img src=\"{0}\" alt=\"alttext\" title=\"{1}\" height =\"35px\" width=\"35px\"/></a></td>", s.UPLOADURL, s.UPLOADNAME);
                 sb.AppendFormat("<td class=\"center\"></td>");
                 sb.AppendFormat("</tr>");
                 i++;
@@ -573,7 +630,7 @@ namespace ManagerSystem.MVC.Controllers
             else
             {
                 if (string.IsNullOrEmpty(UPLOADNAME))
-                    return Json(new Message(false, "请输入上传文件名!", ""));
+                    return Json(new Message(false, "请输入照片名称!", ""));
                 if (string.IsNullOrEmpty(hfc[0].FileName))
                     return Json(new Message(false, "请选择上传图片!", ""));
                 if (type != "jpg" && type != "jpeg" && type != "bmp" && type != "gif" && type != "png")
@@ -636,78 +693,6 @@ namespace ManagerSystem.MVC.Controllers
 
         #endregion
 
-        #region 有害生物树种关联
-        /// <summary>
-        /// 树种有害生物关联
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult SZYHSWGL()
-        {
-            pubViewBag("006022", "006022", "有害生物树种关联");
-            if (ViewBag.isPageRight == false)
-                return View();
-            ViewBag.PEST = T_SYS_PESTCls.getSelectOption(new T_SYS_PEST_SW());
-            ViewBag.Save = (SystemCls.isRight("006022001")) ? 1 : 0;
-            return View();
-        }
-
-        /// <summary>
-        /// 有害生物树种关联--异步查询
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult SZYHSWGLQuery()
-        {
-            StringBuilder sb = new StringBuilder();
-
-            #region 数据查询条件
-            string PESTCODE = Request.Params["PESTCODE"];
-            #endregion
-
-            #region 数据准备
-            string PESTNAME = T_SYS_PESTCls.getName(PESTCODE);
-            List<T_SYS_TREESPECIES_Model> _list = T_SYS_TREESPECIESCls.getListModel(new T_SYS_TREESPECIES_SW { }).ToList();
-            List<T_SYS_TREESPECIES_PEST_Model> _templist = T_SYS_TREESPECIES_PESTCls.getListModel(new T_SYS_TREESPECIES_PEST_SW { PESTCODE = PESTCODE }).ToList();
-            #endregion
-
-            #region 数据表
-            sb.AppendFormat("<table id=\"SZYHSWGLTable\"  cellpadding=\"0\" cellspacing=\"0\">");
-            sb.AppendFormat("<thead><tr>");
-            if (_list.Count <= 0)
-                sb.AppendFormat("<th style=\"width:5%\"><input id=\"tbxPESTALL\" name=\"tbxPESTALL\" type=\"checkbox\" class=\"ace\" value=\"ALL\" onclick=\"SelectAll(this.value,this.checked)\" disabled=\"disabled\" /></th>");
-            else
-                sb.AppendFormat("<th style=\"width:5%\"><input id=\"tbxPESTALL\" name=\"tbxPESTALL\" type=\"checkbox\" class=\"ace\" value=\"ALL\" onclick=\"SelectAll(this.value,this.checked)\" /></th>");
-            sb.AppendFormat("<th style=\"width:15%;\">序号</th><th style=\"width:40%;\">有害生物</th><th style=\"width:40%;\">树种名称</th></tr></thead>");
-            sb.AppendFormat("<tbody>");
-            for (int i = 0; i < _list.Count; i++)
-            {
-                string chk = _templist.Find(a => a.TSPCODE == _list[i].TSPCODE) != null ? "checked" : "";
-                sb.AppendFormat("<tr class=\"{0}\">", (i % 2 == 0) ? "" : "row1");
-                sb.AppendFormat("<td><input id=\"tbxPEST" + i + "\" name=\"tbxPEST\"  type=\"checkbox\" class=\"ace\" value=\"" + _list[i].TSPCODE + "\" onclick=\"SelectAll(this.value,this.checked)\" {0} /></td>", chk);
-                sb.AppendFormat("<td class=\"center\">{0}</td>", (i + 1).ToString());
-                sb.AppendFormat("<td class=\"center\">{0}</td>", PESTNAME);
-                sb.AppendFormat("<td class=\"left\" style=\"{1}\">{0}</td>", _list[i].TSPNAME, PublicCls.getTSPNameClass(_list[i].TSPCODE));
-                sb.AppendFormat("</tr>");
-            }
-            sb.AppendFormat("</tbody>");
-            sb.AppendFormat("</table>");
-            #endregion
-
-            return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), "")), "text/html;charset=UTF-8");
-        }
-
-        /// <summary>
-        /// 有害生物树种关联--数据增、删、改
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult SZYHSWGLManager()
-        {
-            T_SYS_TREESPECIES_PEST_Model m = new T_SYS_TREESPECIES_PEST_Model();
-            m.PESTCODE = Request.Params["PESTCODE"];
-            m.TSPCODE = Request.Params["TSPCODE"];
-            return Content(JsonConvert.SerializeObject(T_SYS_TREESPECIES_PESTCls.Manager(m)), "text/html;charset=UTF-8");
-        }
-        #endregion
-
         #region 应施面积
         /// <summary>
         /// 应施面积
@@ -715,7 +700,7 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult PESTOBSERVEAREAList()
         {
-            pubViewBag("006023", "006023", "应施面积");
+            pubViewBag("006023", "006023", "");
             if (ViewBag.isPageRight == false)
                 return View();
             ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { TopORGNO = SystemCls.getCurUserOrgNo(), SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = SystemCls.getCurUserOrgNo() });
@@ -739,7 +724,7 @@ namespace ManagerSystem.MVC.Controllers
 
             #region 数据准备
             List<T_SYS_ORGModel> result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { TopORGNO = ORGNO }).ToList();
-            List<T_SYS_PEST_OBSERVEAREA_Model> templist = T_SYS_PEST_OBSERVEAREACls.getListModel(new T_SYS_PEST_OBSERVEAREA_SW()).ToList();
+            List<PEST_OBSERVEAREA_Model> templist = PEST_OBSERVEAREACls.getListModel(new PEST_OBSERVEAREA_SW { OBSERVEYEAR = YEAR }).ToList();
             #endregion
 
             #region 数据表
@@ -748,12 +733,12 @@ namespace ManagerSystem.MVC.Controllers
             int i = 0;
             foreach (var v in result)
             {
-                T_SYS_PEST_OBSERVEAREA_Model m = templist.Find(a => a.BYORGNO == v.ORGNO && a.OBSERVEYEAR == YEAR);
+                PEST_OBSERVEAREA_Model m = templist.Find(a => a.BYORGNO == v.ORGNO);
                 sb.AppendFormat("<tr class=\"{0}\">", (i % 2 == 0) ? "" : "row1");
                 sb.AppendFormat("<td class=\"center\">{0}</td>", (i + 1).ToString());
                 sb.AppendFormat("<td class=\"center\">{0}</td>", YEAR);
                 sb.AppendFormat("<td class=\"left\" style=\"{2}\" >{0}{1}</td>", v.ORGNAME, "<input id=\"txtORGNO" + i + "\" type=\"hidden\" value=\"" + v.ORGNO + "\" />", PublicCls.getOrgTDNameClass(ORGNO, v.ORGNO));
-                sb.AppendFormat("<td><input id=\"txtAREA" + i + "\" type=\"text\" value=\"{0}\" class=\"center\" style=\"width:99%;\" /></td>", (m != null && !string.IsNullOrEmpty(m.OBSERVEAREA)) ? string.Format("{0:0.00}", float.Parse(m.OBSERVEAREA)) : "");
+                sb.AppendFormat("<td><input id=\"txtAREA" + i + "\" type=\"text\" value=\"{0}\" class=\"center\" style=\"width:60%;\" /></td>", (m != null && !string.IsNullOrEmpty(m.OBSERVEAREA)) ? string.Format("{0:0.00}", float.Parse(m.OBSERVEAREA)) : "");
                 sb.AppendFormat("</tr>");
                 i++;
             }
@@ -769,12 +754,12 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult PESTOBSERVEAREAManager()
         {
-            T_SYS_PEST_OBSERVEAREA_Model m = new T_SYS_PEST_OBSERVEAREA_Model();
+            PEST_OBSERVEAREA_Model m = new PEST_OBSERVEAREA_Model();
             m.TopORGNO = Request.Params["TopORGNO"];
             m.BYORGNO = Request.Params["BYORGNO"];
             m.OBSERVEAREA = Request.Params["OBSERVEAREA"];
             m.OBSERVEYEAR = Request.Params["OBSERVEYEAR"];
-            return Content(JsonConvert.SerializeObject(T_SYS_PEST_OBSERVEAREACls.Manager(m)), "text/html;charset=UTF-8");
+            return Content(JsonConvert.SerializeObject(PEST_OBSERVEAREACls.Manager(m)), "text/html;charset=UTF-8");
         }
         #endregion
 
@@ -785,11 +770,10 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult HAPPENREPORT()
         {
-            pubViewBag("024005", "024005", "发生报表");
+            pubViewBag("024005", "024005", "");
             if (ViewBag.isPageRight == false)
                 return View();
             ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { TopORGNO = SystemCls.getCurUserOrgNo(), SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = SystemCls.getCurUserOrgNo() });
-            ViewBag.PEST = T_SYS_PESTCls.getSelectOption(new T_SYS_PEST_SW());
             ViewBag.Time = DateTime.Now.ToString("yyyy-MM");
             List<T_SYS_DICTModel> dic105list = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "105" }).ToList();
             List<T_SYS_DICTModel> dic106List = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "106" }).ToList();
@@ -818,16 +802,17 @@ namespace ManagerSystem.MVC.Controllers
             List<T_SYS_ORGModel> result;
             List<T_SYS_DICTModel> dic105;
             List<T_SYS_DICTModel> dic106;
-            List<T_SYS_PEST_OBSERVEAREA_Model> templist;
+            List<PEST_OBSERVEAREA_Model> templist;
             List<PEST_REPORT_HAPPEN_Model> list;
-            HAPPENREPORTData(BYORGNO, PESTBYCODE, Time, out sTime, out result, out dic105, out dic106, out templist, out list);
+            string pestName;
+            HAPPENREPORTData(BYORGNO, PESTBYCODE, Time, out sTime, out result, out dic105, out dic106, out templist, out list, out pestName);
             #endregion
 
             #region 数据表
             sb.AppendFormat("<table id=\"HappenTable\"  cellpadding=\"0\" cellspacing=\"0\">");
             sb.AppendFormat("<thead>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<th rowspan=\"2\" style=\"width:4%;\" >序号</th><th rowspan=\"2\" style=\"width:14%;\" >单位名称</th><th rowspan=\"2\" style=\"width:10%;\">应施面积</br>(" + dic113Name + ")</th>");
+            sb.AppendFormat("<th rowspan=\"2\" style=\"width:4%;\" >序号</th><th rowspan=\"2\" style=\"width:14%;\" >单位名称</th><th style=\"width:10%;\">应施面积</br>(" + dic113Name + ")</th>");
             foreach (var d1 in dic105)
             {
                 string title = d1.DICTNAME;
@@ -838,6 +823,7 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("<th rowspan=\"2\" style=\"width:8%;\">无</br>(" + dic113Name + ")</th>");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
+            sb.AppendFormat("<th>{0}</th>", pestName);
             foreach (var d2 in dic105)
             {
                 sb.AppendFormat("<th style=\"width:40px;\">合计</th>");
@@ -855,11 +841,11 @@ namespace ManagerSystem.MVC.Controllers
             int i = 0;
             foreach (var v in result)
             {
-                T_SYS_PEST_OBSERVEAREA_Model m = templist.Find(a => a.BYORGNO == v.ORGNO && a.OBSERVEYEAR == sTime[0]);
+                PEST_OBSERVEAREA_Model m = templist.Find(a => a.BYORGNO == v.ORGNO);
                 sb.AppendFormat("<tr class=\"{0}\">", (i % 2 == 0) ? "" : "row1");
                 sb.AppendFormat("<td class=\"center\">{0}</td>", (i + 1).ToString());
                 sb.AppendFormat("<td class=\"left\" style=\"{2}\" >{0}{1}</td>", v.ORGNAME, "<input id=\"txtORGNO" + i + "\" type=\"hidden\" value=\"" + v.ORGNO + "\" />", PublicCls.getOrgTDNameClass(BYORGNO, v.ORGNO));
-                sb.AppendFormat("<td class=\"center\" >{0}</td>", (m != null && !string.IsNullOrEmpty(m.OBSERVEAREA)) ? string.Format("{0:0.00}", float.Parse(m.OBSERVEAREA)) : "");
+                sb.AppendFormat("<td class=\"center\">{0}</td>", (m != null && !string.IsNullOrEmpty(m.OBSERVEAREA)) ? string.Format("{0:0.00}", float.Parse(m.OBSERVEAREA)) : "");
                 for (int d2 = 0; d2 < dic105.Count; d2++)
                 {
                     List<string> area = PEST_REPORT_HAPPENCls.GetDetailArea(v.ORGNO, PESTBYCODE, dic105[d2].DICTVALUE, dic106, list);
@@ -918,12 +904,12 @@ namespace ManagerSystem.MVC.Controllers
             List<T_SYS_ORGModel> result;
             List<T_SYS_DICTModel> dic105;
             List<T_SYS_DICTModel> dic106;
-            List<T_SYS_PEST_OBSERVEAREA_Model> templist;
+            List<PEST_OBSERVEAREA_Model> templist;
             List<PEST_REPORT_HAPPEN_Model> list;
-            HAPPENREPORTData(BYORGNO, PESTBYCODE, Time, out sTime, out result, out dic105, out dic106, out templist, out list);
+            string pestName;
+            HAPPENREPORTData(BYORGNO, PESTBYCODE, Time, out sTime, out result, out dic105, out dic106, out templist, out list, out pestName);
             int colsCount = (dic106.Count + 1) * dic105.Count + 3;
             string orgName = T_SYS_ORGCls.getorgname(BYORGNO);
-            string pestName = T_SYS_PESTCls.getName(PESTBYCODE);
             string menuName = T_SYS_MENUCls.getMenuNameByCode(new T_SYS_MENU_SW { MENUCODE = "024005", SYSFLAG = ConfigCls.getSystemFlag() });
             string title = orgName + "-" + pestName + "-" + Time + "-" + menuName;
             #endregion
@@ -964,6 +950,8 @@ namespace ManagerSystem.MVC.Controllers
             rowHead1.CreateCell(x).SetCellValue("无\n(" + dic113Name + ")");
             rowHead1.GetCell(x).CellStyle = getCellStyleHead(book);
             IRow rowHead2 = sheet1.CreateRow(2);
+            rowHead2.CreateCell(1).SetCellValue(pestName);
+            rowHead2.GetCell(1).CellStyle = getCellStyleHead(book);
             int y = 2;
             foreach (var d1 in dic105)
             {
@@ -983,7 +971,6 @@ namespace ManagerSystem.MVC.Controllers
             //CellRangeAddress四个参数为：起始行，结束行，起始列，结束列
             sheet1.AddMergedRegion(new CellRangeAddress(0, 0, 0, colsCount - 1));
             sheet1.AddMergedRegion(new CellRangeAddress(1, 2, 0, 0));
-            sheet1.AddMergedRegion(new CellRangeAddress(1, 2, 1, 1));
             for (int i = 0; i < dic105.Count; i++)
             {
                 int index = 0;
@@ -1000,7 +987,7 @@ namespace ManagerSystem.MVC.Controllers
             int rowIndex = 0;
             foreach (var v in result)
             {
-                T_SYS_PEST_OBSERVEAREA_Model m = templist.Find(a => a.BYORGNO == v.ORGNO && a.OBSERVEYEAR == sTime[0]);
+                PEST_OBSERVEAREA_Model m = templist.Find(a => a.BYORGNO == v.ORGNO && a.OBSERVEYEAR == sTime[0]);
                 string OBSERVEAREA = (m != null && !string.IsNullOrEmpty(m.OBSERVEAREA)) ? string.Format("{0:0.00}", float.Parse(m.OBSERVEAREA)) : "";
                 if (PublicCls.OrgIsShi(v.ORGNO)) { }
                 else if (PublicCls.OrgIsXian(v.ORGNO)) { v.ORGNAME = "　　" + v.ORGNAME; }
@@ -1060,11 +1047,10 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult CONTROLREPORT()
         {
-            pubViewBag("024006", "024006", "防治报表");
+            pubViewBag("024006", "024006", "");
             if (ViewBag.isPageRight == false)
                 return View();
             ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { TopORGNO = SystemCls.getCurUserOrgNo(), SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = SystemCls.getCurUserOrgNo() });
-            ViewBag.PEST = T_SYS_PESTCls.getSelectOption(new T_SYS_PEST_SW());
             ViewBag.Time = DateTime.Now.ToString("yyyy-MM");
             List<T_SYS_DICTModel> dic107List = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "107" }).ToList();
             ViewBag.dic107Value = T_SYS_DICTCls.getDicValueStr(dic107List);
@@ -1354,11 +1340,10 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult HARMREPORT()
         {
-            pubViewBag("024007", "024007", "成灾报表");
+            pubViewBag("024007", "024007", "");
             if (ViewBag.isPageRight == false)
                 return View();
             ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { TopORGNO = SystemCls.getCurUserOrgNo(), SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = SystemCls.getCurUserOrgNo() });
-            ViewBag.PEST = T_SYS_PESTCls.getSelectOption(new T_SYS_PEST_SW());
             ViewBag.Time = DateTime.Now.ToString("yyyy-MM");
             ViewBag.Save = (SystemCls.isRight("024007001")) ? 1 : 0;
             ViewBag.Export = (SystemCls.isRight("024007002")) ? 1 : 0;
@@ -1457,7 +1442,7 @@ namespace ManagerSystem.MVC.Controllers
             List<PEST_REPORT_HARM_Model> _harmList;
             HARMREPORTData(BYORGNO, PESTBYCODE, Time, out result, out _harmList);
             string orgName = T_SYS_ORGCls.getorgname(BYORGNO);
-            string pestName = T_SYS_PESTCls.getName(PESTBYCODE);
+            string pestName = T_SYS_BIOLOGICALTYPECls.getName(PESTBYCODE);
             string menuName = T_SYS_MENUCls.getMenuNameByCode(new T_SYS_MENU_SW { MENUCODE = "024007", SYSFLAG = ConfigCls.getSystemFlag() });
             string title = orgName + "-" + pestName + "-" + Time + "-" + menuName;
             #endregion
@@ -1541,7 +1526,7 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult QUARANTINEREPORT()
         {
-            pubViewBag("024008", "024008", "检疫报表");
+            pubViewBag("024008", "024008", "");
             if (ViewBag.isPageRight == false)
                 return View();
             ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { TopORGNO = SystemCls.getCurUserOrgNo(), SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = SystemCls.getCurUserOrgNo() });
@@ -1728,7 +1713,7 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult RCWREPORT()
         {
-            pubViewBag("024009", "024009", "人财物报表");
+            pubViewBag("024009", "024009", "");
             if (ViewBag.isPageRight == false)
                 return View();
             ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { TopORGNO = SystemCls.getCurUserOrgNo(), SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = SystemCls.getCurUserOrgNo() });
@@ -1896,7 +1881,7 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult ASSESSINGTARGETREPORT()
         {
-            pubViewBag("024010", "024010", "目标报表");
+            pubViewBag("024010", "024010", "");
             if (ViewBag.isPageRight == false)
                 return View();
             ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { TopORGNO = SystemCls.getCurUserOrgNo(), SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = SystemCls.getCurUserOrgNo() });
@@ -2066,11 +2051,10 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult FORECASTREPORT()
         {
-            pubViewBag("024011", "024011", "预测报表");
+            pubViewBag("024011", "024011", "");
             if (ViewBag.isPageRight == false)
                 return View();
             ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { TopORGNO = SystemCls.getCurUserOrgNo(), SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = SystemCls.getCurUserOrgNo() });
-            ViewBag.PEST = T_SYS_PESTCls.getSelectOption(new T_SYS_PEST_SW());
             ViewBag.YEAR = DateTime.Now.ToString("yyyy");
             List<T_SYS_DICTModel> dic110List = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "110" }).ToList();
             ViewBag.dic110Value = T_SYS_DICTCls.getDicValueStr(dic110List);
@@ -2199,7 +2183,7 @@ namespace ManagerSystem.MVC.Controllers
             List<PEST_REPORT_FORECAST_Model> _list2;
             FORECASTREPORTData(BYORGNO, PESTCODE, YEAR, out result, out _dic110List, out _AREAList, out _list1, out _list2); int colsCount = (_dic110List.Count + 1) * 2 + 2;
             string orgName = T_SYS_ORGCls.getorgname(BYORGNO);
-            string pestName = T_SYS_PESTCls.getName(PESTCODE);
+            string pestName = T_SYS_BIOLOGICALTYPECls.getName(PESTCODE);
             string menuName = T_SYS_MENUCls.getMenuNameByCode(new T_SYS_MENU_SW { MENUCODE = "024011", SYSFLAG = ConfigCls.getSystemFlag() });
             string title = orgName + "-" + pestName + "-" + YEAR + "-" + menuName;
             #endregion
@@ -2311,7 +2295,7 @@ namespace ManagerSystem.MVC.Controllers
             System.IO.MemoryStream ms = new System.IO.MemoryStream();
             book.Write(ms);
             ms.Seek(0, SeekOrigin.Begin);
-            string fileName = T_SYS_ORGCls.getorgname(BYORGNO) + "-" + T_SYS_PESTCls.getName(PESTCODE) + "-" + YEAR + "-" + T_SYS_MENUCls.getMenuNameByCode(new T_SYS_MENU_SW { MENUCODE = "024011", SYSFLAG = ConfigCls.getSystemFlag() }) + ".xls";
+            string fileName = T_SYS_ORGCls.getorgname(BYORGNO) + "-" + T_SYS_BIOLOGICALTYPECls.getName(PESTCODE) + "-" + YEAR + "-" + T_SYS_MENUCls.getMenuNameByCode(new T_SYS_MENU_SW { MENUCODE = "024011", SYSFLAG = ConfigCls.getSystemFlag() }) + ".xls";
             return File(ms, "application/vnd.ms-excel", fileName);
             #endregion
         }
@@ -2324,32 +2308,16 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult DIEPINESURVEYREPORT()
         {
-            pubViewBag("024012", "024012", "枯死松树调查表");
+            pubViewBag("024012", "024012", "");
             if (ViewBag.isPageRight == false)
                 return View();
-            string Page = string.IsNullOrEmpty(Request.Params["Page"]) ? "1" : Request.Params["Page"];//当前页数
-            string trans = Request.Params["trans"];//传递网页参数 
-            string[] arr = new string[5];//存放查询条件的数组 根据实际存放的数据
-            if (!string.IsNullOrEmpty(trans))
-                arr = ClsStr.DecryptA01(trans, "kkkkkkkk").Split('|');
-            if (string.IsNullOrEmpty(arr[0]))
-                arr[0] = PagerCls.getDefaultPageSize().ToString();
-            if (string.IsNullOrEmpty(arr[1]))
-                arr[1] = SystemCls.getCurUserOrgNo();
-            if (string.IsNullOrEmpty(arr[3]))
-                arr[3] = DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd");
-            if (string.IsNullOrEmpty(arr[4]))
-                arr[4] = DateTime.Now.ToString("yyyy-MM-dd");
-            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { TopORGNO = SystemCls.getCurUserOrgNo(), SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = arr[1] });
-            ViewBag.FINDER = arr[2];
-            ViewBag.STARTDATE = arr[3];
-            ViewBag.ENDDATE = arr[4];
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { TopORGNO = SystemCls.getCurUserOrgNo(), SYSFLAG = ConfigCls.getSystemFlag() });
+            ViewBag.OrgNo = SystemCls.getCurUserOrgNo();
+            ViewBag.STARTDATE = DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd");
+            ViewBag.ENDDATE = DateTime.Now.ToString("yyyy-MM-dd");
             ViewBag.FINDDATE = DateTime.Now.ToString("yyyy-MM-dd");
-            int total = 0;
-            ViewBag.TableInfo = GetDIEPINESURVEYREPORTStr(new PEST_REPORT_DIEPINESURVEY_SW { CurPage = int.Parse(Page), PageSize = int.Parse(arr[0]), BYORGNO = arr[1], FINDER = arr[2], STARTDATE = arr[3], ENDDATE = arr[4] }, out total);
-            ViewBag.PageInfo = PagerCls.getPagerInfo_New(new PagerSW { curPage = int.Parse(Page), pageSize = int.Parse(arr[0]), rowCount = total, url = "/PEST/DIEPINESURVEYREPORT?trans=" + trans });
+            ViewBag.REPORTDATE = DateTime.Now.ToString("yyyy-MM-dd");
             ViewBag.Add = (SystemCls.isRight("024012001")) ? 1 : 0;
-            ViewBag.Del = (SystemCls.isRight("024012004")) ? 1 : 0;
             ViewBag.Export = (SystemCls.isRight("024012005")) ? 1 : 0;
             return View();
         }
@@ -2360,66 +2328,55 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult DIEPINESURVEYREPORTQuery()
         {
+            string PageSize = Request.Params["PageSize"];
+            if (PageSize == "0")
+                PageSize = ConfigCls.getTableDefaultPageSize();
             string Page = Request.Params["Page"];
-            string PageSize = string.IsNullOrEmpty(Request.Params["PageSize"]) ? PagerCls.getDefaultPageSize().ToString() : Request.Params["PageSize"];
             string BYORGNO = Request.Params["BYORGNO"];
             string FINDER = Request.Params["FINDER"];
             string STARTDATE = Request.Params["STARTDATE"];
             string ENDDATE = Request.Params["ENDDATE"];
-            string str = ClsStr.EncryptA01(PageSize + "|" + BYORGNO + "|" + FINDER + "|" + STARTDATE + "|" + ENDDATE, "kkkkkkkk");
-            return Content(JsonConvert.SerializeObject(new Message(true, "", "/PEST/DIEPINESURVEYREPORT?trans=" + str + "&Page=" + Page)), "text/html;charset=UTF-8");
-        }
-
-        /// <summary>
-        ///枯死松树调查报表数据列表--异步查询
-        /// </summary>
-        /// <returns></returns>
-        private string GetDIEPINESURVEYREPORTStr(PEST_REPORT_DIEPINESURVEY_SW sw, out int total)
-        {
+            int total = 0;
+            PEST_REPORT_DIEPINESURVEY_SW sw = new PEST_REPORT_DIEPINESURVEY_SW { CurPage = int.Parse(Page), PageSize = int.Parse(PageSize), BYORGNO = BYORGNO, FINDER = FINDER, STARTDATE = STARTDATE, ENDDATE = ENDDATE };
+            var result = PEST_REPORT_DIEPINESURVEYCls.getListModel(sw, out total);
             bool IsView = (SystemCls.isRight("024012002")) ? true : false;
             bool IsMDy = (SystemCls.isRight("024012003")) ? true : false;
+            bool IsDel = (SystemCls.isRight("024012004")) ? true : false;
             StringBuilder sb = new StringBuilder();
-
-            #region 数据准备
-            List<PEST_REPORT_DIEPINESURVEY_Model> _list = PEST_REPORT_DIEPINESURVEYCls.getListModel(sw, out total);
-            string dis = _list.Count <= 0 ? "disabled=\"disabled\"" : "";
-            #endregion
-
-            #region 数据表
             sb.AppendFormat("<table id=\"DIEPINESURVEYTable\" cellpadding=\"0\" cellspacing=\"0\">");
             sb.AppendFormat("<thead>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<th style=\"width:5%\"><input id=\"tbxDIEPINEALL\" name=\"tbxDIEPINEALL\" type=\"checkbox\" class=\"ace\" value=\"ALL\" onclick=\"SelectAll(this.value,this.checked)\" {0} /></th>", dis);
-            sb.AppendFormat("<th style=\"width:5%;\">序号</th><th style=\"width:15%;\">单位名称</th>");
-            sb.AppendFormat("<th>发现日期</th><th>发现人</th><th>联系电话</th><th>取样株数</th><th>死亡株数</th><th>报告日期</th><th>操作</th>");
+            sb.AppendFormat("<th>序号</th><th>单位名称</th><th>发现日期</th><th>发现人</th><th>联系电话</th><th>取样株数</th><th>死亡株数</th><th>报告日期</th><th>操作</th>");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("</thead>");
             sb.AppendFormat("<tbody>");
-            for (int i = 0; i < _list.Count; i++)
+            int i = 0;
+            foreach (var v in result)
             {
                 sb.AppendFormat("<tr class=\"{0}\">", (i % 2 == 0) ? "" : "row1");
-                sb.AppendFormat("<td class=\"center\"><input id=\"tbxDIEPINE" + i + "\" name=\"tbxDIEPINE\"  type=\"checkbox\" class=\"ace\"  value=\"" + _list[i].PEST_REPORT_DIEPINESURVEYID + "\" onclick=\"SelectAll(this.value,this.checked)\"  /></td>");
                 sb.AppendFormat("<td class=\"center\">{0}</td>", (i + 1).ToString());
-                sb.AppendFormat("<td class=\"center\">{0}</td>", _list[i].BYORGNONAME);
-                sb.AppendFormat("<td class=\"center\">{0}</td>", _list[i].FINDDATE);
-                sb.AppendFormat("<td class=\"center\">{0}</td>", _list[i].FINDER);
-                sb.AppendFormat("<td class=\"center\">{0}</td>", _list[i].LINKTELL);
-                sb.AppendFormat("<td class=\"center\">{0}</td>", _list[i].SAMPLINGCOUNT);
-                sb.AppendFormat("<td class=\"center\">{0}</td>", _list[i].DIEPINECOUNT);
-                sb.AppendFormat("<td class=\"center\">{0}</td>", _list[i].REPORTDATE);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.BYORGNONAME);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.FINDDATE);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.FINDER);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.LINKTELL);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.SAMPLINGCOUNT);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.DIEPINECOUNT);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.REPORTDATE);
                 sb.AppendFormat("<td class=\"center\">");
                 if (IsView)
-                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('See','{0}')\" title='查看' class=\"searchBox_01 LinkSee\">查看</a>", _list[i].PEST_REPORT_DIEPINESURVEYID);
+                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('See','{0}','{1}')\" title='查看' class=\"searchBox_01 LinkSee\">查看</a>", v.PEST_REPORT_DIEPINESURVEYID, Page);
                 if (IsMDy)
-                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}')\" title='修改' class=\"searchBox_01 LinkMdy\">修改</a>", _list[i].PEST_REPORT_DIEPINESURVEYID);
+                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}','{1}')\" title='修改' class=\"searchBox_01 LinkMdy\">修改</a>", v.PEST_REPORT_DIEPINESURVEYID, Page);
+                if (IsMDy)
+                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Del','{0}','{1}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", v.PEST_REPORT_DIEPINESURVEYID, Page);
                 sb.AppendFormat("</td>");
                 sb.AppendFormat("</tr>");
+                i++;
             }
             sb.AppendFormat("</tbody>");
             sb.AppendFormat("</table>");
-            #endregion
-
-            return sb.ToString();
+            string pageInfo = PagerCls.getPagerInfoAjax(new PagerSW { curPage = sw.CurPage, pageSize = sw.PageSize, rowCount = total });
+            return Content(JsonConvert.SerializeObject(new MessagePagerAjax(true, sb.ToString(), pageInfo)), "text/html;charset=UTF-8");
         }
 
         /// <summary>
@@ -2443,33 +2400,33 @@ namespace ManagerSystem.MVC.Controllers
             PEST_REPORT_DIEPINESURVEY_Model m = PEST_REPORT_DIEPINESURVEYCls.getModel(new PEST_REPORT_DIEPINESURVEY_SW { PEST_REPORT_DIEPINESURVEYID = DIEPINESURVEYID });
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<div class=\"divMan\" style=\"margin-left:5px;margin-top:8px\">");
-            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
+            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\" style=\"text-align:left;\">");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td style=\"width:15%\">单位:</td>");
+            sb.AppendFormat("<td class=\"tdField\" style=\"width:15%\">单位:</td>");
             sb.AppendFormat("<td style=\"width:35%\">{0}</td>", m.BYORGNONAME);
-            sb.AppendFormat("<td style=\"width:15%\">发现日期</td>");
-            sb.AppendFormat("<td style=\"width:35%\">{0}</td>", m.FINDDATE);
+            sb.AppendFormat("<td class=\"tdField\" style=\"width:15%\">发现人:</td>");
+            sb.AppendFormat("<td style=\"width:35%\">{0}</td>", m.FINDER);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td >发现人:</td>");
-            sb.AppendFormat("<td >{0}</td>", m.FINDER);
-            sb.AppendFormat("<td >联系电话:</td>");
-            sb.AppendFormat("<td >{0}</td>", m.LINKTELL);
+            sb.AppendFormat("<td class=\"tdField\">发现日期</td>");
+            sb.AppendFormat("<td>{0}</td>", m.FINDDATE);
+            sb.AppendFormat("<td class=\"tdField\">报告日期:</td>");
+            sb.AppendFormat("<td>{0}</td>", m.REPORTDATE);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>取样株数:</td>");
+            sb.AppendFormat("<td class=\"tdField\">取样株数:</td>");
             sb.AppendFormat("<td>{0}</td>", m.SAMPLINGCOUNT);
-            sb.AppendFormat("<td>死亡株数:</td>");
+            sb.AppendFormat("<td class=\"tdField\">死亡株数:</td>");
             sb.AppendFormat("<td>{0}</td>", m.DIEPINECOUNT);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>报告日期:</td>");
-            sb.AppendFormat("<td>{0}</td>", m.REPORTDATE);
+            sb.AppendFormat("<td class=\"tdField\">联系电话:</td>");
+            sb.AppendFormat("<td>{0}</td>", m.LINKTELL);
             sb.AppendFormat("<td colspan=\"2\"></td>");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>鉴定结果:</td>");
-            sb.AppendFormat("<td colspan=\"3\">{0}</td>", m.AUTHENTICATERESULT);
+            sb.AppendFormat("<td class=\"tdField\">鉴定结果:</td>");
+            sb.AppendFormat("<td class=\"left\" colspan=\"3\">{0}</td>", m.AUTHENTICATERESULT);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tbody>");
             sb.AppendFormat("</div>");
@@ -2488,9 +2445,9 @@ namespace ManagerSystem.MVC.Controllers
             m.BYORGNO = Request.Params["BYORGNO"];
             m.FINDER = Request.Params["FINDER"];
             m.FINDDATE = Request.Params["FINDDATE"];
+            m.REPORTDATE = Request.Params["REPORTDATE"];
             m.LINKTELL = Request.Params["LINKTELL"];
             m.DIEPINECOUNT = Request.Params["DIEPINECOUNT"];
-            m.REPORTDATE = DateTime.Now.ToString();
             m.SAMPLINGCOUNT = Request.Params["SAMPLINGCOUNT"];
             m.AUTHENTICATERESULT = Request.Params["AUTHENTICATERESULT"];
             m.opMethod = Request.Params["Method"];
@@ -2505,7 +2462,7 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult SCXCBPCREPORT()
         {
-            pubViewBag("024013", "024013", "松材线虫病普查表");
+            pubViewBag("024013", "024013", "");
             if (ViewBag.isPageRight == false)
                 return View();
             ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { TopORGNO = SystemCls.getCurUserOrgNo(), SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = SystemCls.getCurUserOrgNo() });
@@ -2684,7 +2641,7 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult SCXCBFZREPORT()
         {
-            pubViewBag("024014", "024014", "松材线虫病防治表");
+            pubViewBag("024014", "024014", "");
             if (ViewBag.isPageRight == false)
                 return View();
             ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { TopORGNO = SystemCls.getCurUserOrgNo(), SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = SystemCls.getCurUserOrgNo() });
@@ -3043,7 +3000,7 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult MonitoringStation()
         {
-            pubViewBag("023002", "023002", "监测点");
+            pubViewBag("023002", "023002", "");
             if (ViewBag.isPageRight == false)
                 return View();
             ViewBag.TransfermodeType = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "119", isShowAll = "1" });
@@ -3077,7 +3034,7 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
             sb.AppendFormat("<thead>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<th>序号</th><th>所属市县</th><th>所属乡镇</th><th>编号</th><th>名称</th><th>型号</th><th>监测内容</th>");
+            sb.AppendFormat("<th>序号</th><th>所属市县</th><th>所属乡镇</th><th>编号</th><th>名称</th><th>型号</th>");
             sb.AppendFormat("<th>传输方式</th><th>使用现状</th><th>维护类型</th><th>建成日期</th><th>总价(万元)</th><th>操作</th>");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("</thead>");
@@ -3102,7 +3059,7 @@ namespace ManagerSystem.MVC.Controllers
                 sb.AppendFormat("<td class=\"center\">{0}</td>", s.NUMBER);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", s.NAME);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", s.MODEL);
-                sb.AppendFormat("<td class=\"center\">{0}</td>", s.MONICONTENT);
+                //sb.AppendFormat("<td class=\"center\">{0}</td>", s.MONICONTENT);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", s.TRANSFERMODETYPEName);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", s.USESTATEName);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", s.MANAGERSTATEName);
@@ -3119,7 +3076,7 @@ namespace ManagerSystem.MVC.Controllers
                 if (IsView)
                     sb.AppendFormat("<a href=\"#\" onclick=\"Manager('See','{0}','{1}')\" title='查看' class=\"searchBox_01 LinkSee\">查看</a>", s.PEST_MONITORINGSTATIONID, "");
                 if (IsMdy)
-                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}','{1}')\" title='编辑' class=\"searchBox_01 LinkMdy\">编辑</a>", s.PEST_MONITORINGSTATIONID, Page);
+                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}','{1}')\" title='修改' class=\"searchBox_01 LinkMdy\">修改</a>", s.PEST_MONITORINGSTATIONID, Page);
                 if (IsDel)
                     sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Del','{0}','{1}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", s.PEST_MONITORINGSTATIONID, Page);
                 sb.AppendFormat(" </td>");
@@ -3152,49 +3109,49 @@ namespace ManagerSystem.MVC.Controllers
             PEST_MONITORINGSTATION_Model m = PEST_MONITORINGSTATIONCls.getModel(new PEST_MONITORINGSTATION_SW { PEST_MONITORINGSTATIONID = PEST_MONITORINGSTATIONID });
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<div class=\"divMan\" style=\"margin-left:5px;margin-top:8px\">");
-            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
+            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\" style=\"text-align:left;\">");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td style=\"width:15%\">单位:</td>");
+            sb.AppendFormat("<td class=\"tdField\" style=\"width:15%\">单位:</td>");
             sb.AppendFormat("<td style=\"width:35%\">{0}</td>", m.ORGXSName != "--" ? m.ORGName + "--" + m.ORGXSName : m.ORGName);
-            sb.AppendFormat("<td style=\"width:15%\">无线电传输方式:</td>");
+            sb.AppendFormat("<td class=\"tdField\" style=\"width:15%\">无线电传输方式:</td>");
             sb.AppendFormat("<td style=\"width:35%\">{0}</td>", m.TRANSFERMODETYPEName);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>编号:</td>");
+            sb.AppendFormat("<td class=\"tdField\">编号:</td>");
             sb.AppendFormat("<td>{0}</td>", m.NUMBER);
-            sb.AppendFormat("<td>名称:</td>");
+            sb.AppendFormat("<td class=\"tdField\">名称:</td>");
             sb.AppendFormat("<td>{0}</td>", m.NAME);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>型号:</td>");
+            sb.AppendFormat("<td class=\"tdField\">型号:</td>");
             sb.AppendFormat("<td>{0}</td>", m.MODEL);
-            sb.AppendFormat("<td>监测内容:</td>");
+            sb.AppendFormat("<td class=\"tdField\">监测内容:</td>");
             sb.AppendFormat("<td>{0}</td>", m.MONICONTENT);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>使用现状:</td>");
+            sb.AppendFormat("<td class=\"tdField\">使用现状:</td>");
             sb.AppendFormat("<td>{0}</td>", m.USESTATEName);
-            sb.AppendFormat("<td>维护管理:</td>");
+            sb.AppendFormat("<td class=\"tdField\">维护管理:</td>");
             sb.AppendFormat("<td>{0}</td>", m.MANAGERSTATEName);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>经度:</td>");
+            sb.AppendFormat("<td class=\"tdField\">经度:</td>");
             sb.AppendFormat("<td >{0}</td>", m.JD);
-            sb.AppendFormat("<td>经度:</td>");
+            sb.AppendFormat("<td class=\"tdField\">经度:</td>");
             sb.AppendFormat("<td >{0}</td>", m.JD);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>建设日期:</td>");
+            sb.AppendFormat("<td class=\"tdField\">建设日期:</td>");
             sb.AppendFormat("<td>{0}</td>", m.BUILDDATE);
-            sb.AppendFormat("<td>总价:</td>");
+            sb.AppendFormat("<td class=\"tdField\">总价:</td>");
             sb.AppendFormat("<td>{0}</td>", !string.IsNullOrEmpty(m.WORTH) ? m.WORTH + "万元" : m.WORTH);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>地址:</td>");
+            sb.AppendFormat("<td class=\"tdField\">地址:</td>");
             sb.AppendFormat("<td colspan=\"3\">{0}</td>", m.ADDRESS);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>备注:</td>");
+            sb.AppendFormat("<td class=\"tdField\">备注:</td>");
             sb.AppendFormat("<td colspan=\"3\">{0}</td>", m.MARK);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<table>");
@@ -3279,7 +3236,7 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult Consul()
         {
-            pubViewBag("023003", "023003", "专家会诊");
+            pubViewBag("023003", "023003", "");
             if (ViewBag.isPageRight == false)
                 return View();
             ViewBag.StartTime = DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd");
@@ -3329,16 +3286,16 @@ namespace ManagerSystem.MVC.Controllers
                 sb.AppendFormat("<td class=\"center\">{0}</td>", s.CONSULTITLE);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", s.CONSULPHONE);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", s.CONSULTIME);
-                sb.AppendFormat("<td class=\"left\">{0}</td>", !string.IsNullOrEmpty(s.CONSULCONTENT) && s.CONSULCONTENT.Length > 10 ? s.CONSULCONTENT.Substring(0, 10) + "......" : s.CONSULCONTENT);
+                sb.AppendFormat("<td class=\"left\">{0}</td>", !string.IsNullOrEmpty(s.CONSULCONTENT) && s.CONSULCONTENT.Length > 20 ? s.CONSULCONTENT.Substring(0, 20) + "......" : s.CONSULCONTENT);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", ReplyList.Count());
                 sb.AppendFormat("<td class=\" \">");
                 sb.AppendFormat("<a href=\"#\" onclick=\"Photo('{0}','{1}')\" title='图片' class=\"searchBox_01 LinkPhoto\">图片</a>", "PEST_CONSULTATION", s.PEST_CONSULTATIONID);
-                if (IsReply)
-                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Relay','{0}','{1}')\" title='回复' class=\"searchBox_01 LinkMdy\">回复</a>", s.PEST_CONSULTATIONID, Page);
                 if (IsView)
                     sb.AppendFormat("<a href=\"#\" onclick=\"Manager('See','{0}','{1}')\"  title='查看' class=\"searchBox_01 LinkSee\">查看</a>", s.PEST_CONSULTATIONID, "");
+                if (IsReply)
+                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Relay','{0}','{1}')\" title='回复' class=\"searchBox_01 LinkMdy\">回复</a>", s.PEST_CONSULTATIONID, Page);
                 if (IsMdy)
-                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}','{1}')\" title='编辑' class=\"searchBox_01 LinkMdy\">编辑</a>", s.PEST_CONSULTATIONID, Page);
+                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}','{1}')\" title='修改' class=\"searchBox_01 LinkMdy\">修改</a>", s.PEST_CONSULTATIONID, Page);
                 if (IsDel)
                     sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Del','{0}','{1}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", s.PEST_CONSULTATIONID, Page);
                 sb.AppendFormat("</td>");
@@ -3362,37 +3319,37 @@ namespace ManagerSystem.MVC.Controllers
             var _list = PEST_CONSULREPLYCls.getListModel(new PEST_CONSULREPLY_SW { PEST_CONSULTATIONID = PEST_CONSULTATIONID });
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<div class=\"divMan\" style=\"margin-left:5px;margin-top:8px\">");
-            sb.AppendFormat("<table id=\"TationTable\" cellpadding=\"0\" cellspacing=\"0\" style=\"height:280px\">");
+            sb.AppendFormat("<table id=\"TationTable\" cellpadding=\"0\" cellspacing=\"0\" style=\"height:300px\" >");
             sb.AppendFormat("<thead><tr><th colspan=\"4\">会诊信息</th></tr></thead>");
             sb.AppendFormat("<tbody>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td style=\"width:20%;\">主题: </td>");
-            sb.AppendFormat("<td class=\"left\" style=\"width:40%;\">{0}</td>", model.CONSULTITLE);
+            sb.AppendFormat("<td class=\"tdField left\" style=\"width:100px;\">主题:</td>");
+            sb.AppendFormat("<td class=\"left\">{0}</td>", model.CONSULTITLE);
             sb.AppendFormat("<td colspan=\"2\" rowspan=\"4\">");
             sb.AppendFormat("<div class=\"easyui-layout\" data-options=\"fit:true\" style=\"border:0;\">");
             sb.AppendFormat("<div id=\"divImg\" data-options=\"region:'center'\" title=\"\" class=\"LayoutCenterBG\">");
             sb.AppendFormat("</div>");
             sb.AppendFormat("<div data-options=\"region:'south'\" title=\"\" style=\"height:35px; border: none; overflow:hidden; text-align:center;\">");
             sb.AppendFormat("<div class=\"divOP\">");
-            sb.AppendFormat("<input type=\"button\" value=\"上一张\" onclick=\"ManagerPhoto('Up')\" id=\"btnUp\" style=\"display:none;\" class=\"btnLastsealCss\" />");
+            sb.AppendFormat("<input type=\"button\" value=\"上一张\" onclick=\"ManagerPhoto('Up')\" id=\"btnUp\"  class=\"btnLastsealCss\" />");
             sb.AppendFormat("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-            sb.AppendFormat("<input type=\"button\" value=\"下一张\" onclick=\"ManagerPhoto('Down')\" id=\"btnDown\" style=\"display:none;\" class=\"btnNextsealCss\" />");
+            sb.AppendFormat("<input type=\"button\" value=\"下一张\" onclick=\"ManagerPhoto('Down')\" id=\"btnDown\"  class=\"btnNextsealCss\" />");
             sb.AppendFormat("</div>");
             sb.AppendFormat("</div>");
             sb.AppendFormat("</div>");
             sb.AppendFormat("</td>");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>内容:</td>");
-            sb.AppendFormat("<td class=\"left\">{0}</td>", model.CONSULCONTENT);
+            sb.AppendFormat("<td class=\"tdField left\">内容:</td>");
+            sb.AppendFormat("<td class=\"left\"  style=\"height:120px;width:350px;\"><textarea style=\"width:99%; height: 100%;color:#156c02;font-size: 10pt;\" readonly >{0}</textarea></td>", model.CONSULCONTENT);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>提问人手机号码:</td>");
-            sb.AppendFormat("<td>{0}</td>", model.CONSULPHONE);
+            sb.AppendFormat("<td class=\"tdField left\">提问人手机号码:</td>");
+            sb.AppendFormat("<td class=\"left\">{0}</td>", model.CONSULPHONE);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>提问时间:</td>");
-            sb.AppendFormat("<td>{0}</td>", model.CONSULTIME);
+            sb.AppendFormat("<td class=\"tdField left\">提问时间:</td>");
+            sb.AppendFormat("<td class=\"left\">{0}</td>", model.CONSULTIME);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("</tbody>");
             sb.AppendFormat("</table>");
@@ -3442,12 +3399,15 @@ namespace ManagerSystem.MVC.Controllers
             PEST_CONSULTATION_Model m = new PEST_CONSULTATION_Model();
             m.PEST_CONSULTATIONID = Request.Params["PEST_CONSULTATIONID"];
             m.CONSULTITLE = Request.Params["CONSULTITLE"];
-            m.CONSULPHONE = Request.Params["CONSULPHONE"];
-            m.CONSULCONTENT = Request.Params["CONSULCONTENT"];
+            m.CONSULPHONE = Request.Params["CONSULPHONE"];           
             m.opMethod = Request.Params["Method"];
             if (m.opMethod == "Add")
             {
                 m.CONSULTIME = DateTime.Now.ToString();
+            }
+            if (m.opMethod != "Del")
+            {
+                m.CONSULCONTENT = Request.Params["CONSULCONTENT"].Replace('\r', ' ').Replace('\n', ' ').Trim();
             }
             return Content(JsonConvert.SerializeObject(PEST_CONSULTATIONCls.Manager(m)), "text/html;charset=UTF-8");
         }
@@ -3503,15 +3463,15 @@ namespace ManagerSystem.MVC.Controllers
                 int index = modelList.FindIndex(a => a.PEST_PHOTOID == PEST_PHOTOID);
                 if (Method == "Up")
                 {
-                    index++;
-                    if (index >= modelList.Count)
-                        index = 0;
-                }
-                if (Method == "Down")
-                {
                     index--;
                     if (index < 0)
                         index = modelList.Count - 1;
+                }
+                if (Method == "Down")
+                {
+                    index++;
+                    if (index >= modelList.Count)
+                        index = 0;
                 }
                 PEST_PHOTO_Model m = modelList[index];
                 sb.AppendFormat("<a href=\"{0}\" target=\"_blank\">", m.PHOTOFILENAME);
@@ -3570,7 +3530,7 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult RemoteDiagn()
         {
-            pubViewBag("023004", "023004", "远程诊断");
+            pubViewBag("023004", "023004", "");
             if (ViewBag.isPageRight == false)
                 return View();
             ViewBag.DIAGNSTATUS = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "122", isShowAll = "1" });
@@ -3622,18 +3582,18 @@ namespace ManagerSystem.MVC.Controllers
                 sb.AppendFormat("<td class=\"center\">{0}</td>", (i + 1).ToString());
                 sb.AppendFormat("<td class=\"center\">{0}</td>", s.DIAGNTITLE);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", s.DIAGNTIME);
-                sb.AppendFormat("<td class=\"left\">{0}</td>", (!string.IsNullOrEmpty(s.DIAGNCONTENT) && s.DIAGNCONTENT.Length > 10) ? s.DIAGNCONTENT.Substring(0, 10) + "......" : s.DIAGNCONTENT);
+                sb.AppendFormat("<td class=\"left\">{0}</td>", (!string.IsNullOrEmpty(s.DIAGNCONTENT) && s.DIAGNCONTENT.Length > 20) ? s.DIAGNCONTENT.Substring(0, 20) + "......" : s.DIAGNCONTENT);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", s.DIAGNSTATUSName);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", s.DIAGNSPONSERNAME);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", s.DIAGNSPONSERTIME);
-                sb.AppendFormat("<td class=\"center\">{0}</td>", (!string.IsNullOrEmpty(s.DIAGNRESULT) && s.DIAGNRESULT.Length > 10) ? s.DIAGNRESULT.Substring(0, 10) + "......" : s.DIAGNRESULT);
+                sb.AppendFormat("<td class=\"left\">{0}</td>", (!string.IsNullOrEmpty(s.DIAGNRESULT) && s.DIAGNRESULT.Length > 20) ? s.DIAGNRESULT.Substring(0, 20) + "......" : s.DIAGNRESULT);
                 sb.AppendFormat("<td class=\" \">");
                 if (IsDign)
                     sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Dign','{0}','{1}')\" title='诊断' class=\"searchBox_01 LinkMdy\">诊断</a>", s.PEST_REMOTEDIAGNID, Page);
                 if (IsView)
                     sb.AppendFormat("<a href=\"#\" onclick=\"Manager('See','{0}','{1}')\"  title='查看' class=\"searchBox_01 LinkSee\">查看</a>", s.PEST_REMOTEDIAGNID, "");
                 if (IsMdy)
-                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}','{1}')\" title='编辑' class=\"searchBox_01 LinkMdy\">编辑</a>", s.PEST_REMOTEDIAGNID, Page);
+                    sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Mdy','{0}','{1}')\" title='修改' class=\"searchBox_01 LinkMdy\">修改</a>", s.PEST_REMOTEDIAGNID, Page);
                 if (IsDel)
                     sb.AppendFormat("<a href=\"#\" onclick=\"Manager('Del','{0}','{1}')\" title='删除' class=\"searchBox_01 LinkDel\">删除</a>", s.PEST_REMOTEDIAGNID, Page);
                 sb.AppendFormat(" </td>");
@@ -3656,29 +3616,29 @@ namespace ManagerSystem.MVC.Controllers
             PEST_REMOTEDIAGN_Model model = PEST_REMOTEDIAGNCls.getModel(new PEST_REMOTEDIAGN_SW { PEST_REMOTEDIAGNID = PEST_REMOTEDIAGNID });
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<div class=\"divMan\" style=\"margin-left:5px;margin-top:8px\">");
-            sb.AppendFormat("<table id=\"TationTable\" cellpadding=\"0\" cellspacing=\"0\">");
+            sb.AppendFormat("<table id=\"TationTable\" cellpadding=\"0\" cellspacing=\"0\" style=\"text-align:left;\">");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td style=\"width:15%;\">主题: </td>");
-            sb.AppendFormat("<td style=\"width:35%;\" class=\"left\">{0}</td>", model.DIAGNTITLE);
-            sb.AppendFormat("<td style=\"width:15%;\">诊断状态: </td>");
-            sb.AppendFormat("<td style=\"width:35%;\" class=\"center\">{0}</td>", model.DIAGNSTATUSName);
+            sb.AppendFormat("<td class=\"tdField\" style=\"width:15%;\">主题: </td>");
+            sb.AppendFormat("<td style=\"width:35%;\">{0}</td>", model.DIAGNTITLE);
+            sb.AppendFormat("<td class=\"tdField\" style=\"width:15%;\">诊断状态: </td>");
+            sb.AppendFormat("<td style=\"width:35%;\">{0}</td>", model.DIAGNSTATUSName);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>参与专家:</td>");
+            sb.AppendFormat("<td class=\"tdField\">参与专家:</td>");
             sb.AppendFormat("<td colspan=\"3\" class=\"left\">{0}</td>", model.DIAGNEXPERTS);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>内容:</td>");
+            sb.AppendFormat("<td class=\"tdField\">内容:</td>");
             sb.AppendFormat("<td colspan=\"3\" class=\"left\">{0}</td>", model.DIAGNCONTENT);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>诊断发起人: </td>");
+            sb.AppendFormat("<td class=\"tdField\">诊断发起人: </td>");
             sb.AppendFormat("<td>{0}</td>", model.DIAGNSPONSERNAME);
-            sb.AppendFormat("<td>诊断时间: </td>");
+            sb.AppendFormat("<td class=\"tdField\">诊断时间: </td>");
             sb.AppendFormat("<td>{0}</td>", model.DIAGNSPONSERTIME);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>诊断结论:</td>");
+            sb.AppendFormat("<td class=\"tdField\">诊断结论:</td>");
             sb.AppendFormat("<td colspan=\"3\" class=\"left\">{0}</td>", model.DIAGNRESULT);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("</table>");
@@ -3886,14 +3846,15 @@ namespace ManagerSystem.MVC.Controllers
         /// <param name="dic106"></param>
         /// <param name="templist"></param>
         /// <param name="list"></param>
-        private static void HAPPENREPORTData(string BYORGNO, string PESTBYCODE, string Time, out string[] sTime, out List<T_SYS_ORGModel> result, out List<T_SYS_DICTModel> dic105, out List<T_SYS_DICTModel> dic106, out List<T_SYS_PEST_OBSERVEAREA_Model> templist, out List<PEST_REPORT_HAPPEN_Model> list)
+        private static void HAPPENREPORTData(string BYORGNO, string PESTBYCODE, string Time, out string[] sTime, out List<T_SYS_ORGModel> result, out List<T_SYS_DICTModel> dic105, out List<T_SYS_DICTModel> dic106, out List<PEST_OBSERVEAREA_Model> templist, out List<PEST_REPORT_HAPPEN_Model> list, out string pestName)
         {
             sTime = Time.Split('-');
             result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { TopORGNO = BYORGNO }).ToList();
             dic105 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "105" }).ToList();
             dic106 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "106" }).ToList();
-            templist = T_SYS_PEST_OBSERVEAREACls.getListModel(new T_SYS_PEST_OBSERVEAREA_SW { BYORGNO = BYORGNO }).ToList();
+            templist = PEST_OBSERVEAREACls.getListModel(new PEST_OBSERVEAREA_SW { BYORGNO = BYORGNO, OBSERVEYEAR = sTime[0] }).ToList();
             list = PEST_REPORT_HAPPENCls.getListModel(new PEST_REPORT_HAPPEN_SW { BYORGNO = BYORGNO, PESTBYCODE = PESTBYCODE, HAPPENYEAR = sTime[0], HAPPENMONTH = sTime[1] }).ToList();
+            pestName = T_SYS_BIOLOGICALTYPECls.getName(PESTBYCODE);
         }
 
         /// <summary>
@@ -3918,7 +3879,7 @@ namespace ManagerSystem.MVC.Controllers
             _dic107WGHList = _dic107List.FindAll(a => a.DICTVALUE.Length < 3);
             _dic107YGHList = _dic107List.FindAll(a => a.DICTVALUE.Length >= 3);
             _controlList = PEST_REPORT_CONTROLCls.getListModel(new PEST_REPORT_CONTROL_SW { BYORGNO = BYORGNO, PESTBYCODE = PESTBYCODE, HAPPENYEAR = sTime[0], HAPPENMONTH = sTime[1] }).ToList();
-            pestName = T_SYS_PESTCls.getName(PESTBYCODE);
+            pestName = T_SYS_BIOLOGICALTYPECls.getName(PESTBYCODE);
         }
 
         /// <summary>

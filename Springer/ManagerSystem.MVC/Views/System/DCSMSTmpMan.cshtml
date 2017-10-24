@@ -5,9 +5,6 @@
 }
 
 <div class="easyui-layout" data-options="fit:true" style=" border:0;">
-    @*<div data-options="region:'west'" title="" style=" width:220px; border: none;">
-        @Html.Raw(@ViewBag.PageLeftMenu)
-    </div>*@
     <div data-options="region:'center'" title="" style=" border: none; ">
         <div class="easyui-layout" data-options="fit:true" style=" border:0;">
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
@@ -18,19 +15,20 @@
                     </div>
                 </div>
             </div>
+
             <div data-options="region:'center'" title="" style=" border: none; ">
                 <div class="divMan">
                     <table cellpadding="0" cellspacing="0">
                         <tr>
-                            <td>标题:</td>
+                            <td class="tdField">标题:</td>
                             <td><input type="text" id="tbxSMSGROUPNAME" value="" style="width:90%;" /></td>
                         </tr>
                         <tr>
-                            <td>火灾等级:</td>
+                            <td class="tdField">火灾等级:</td>
                             <td><select id="tbxDANGERCLASS">@Html.Raw(@ViewBag.vdDANGERCLASS) </select></td>
                         </tr>
                         <tr>
-                            <td>号码来源:</td>
+                            <td class="tdField">号码来源:</td>
                             <td>
                                 <select id="tbxSMSGROUPTYPE">
                                     <option value="0">通讯录</option>
@@ -40,7 +38,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td>是否启用:</td>
+                            <td class="tdField">是否启用:</td>
                             <td>
                                 <select id="tbxISENABLE">
                                     <option value="0">未启用</option>
@@ -49,20 +47,21 @@
                             </td>
                         </tr>
                         <tr>
-                            <td>排序号:</td>
+                            <td class="tdField">排序号:</td>
                             <td><input type="text" id="tbxORDERBY" value="" style="width:90%;" /></td>
                         </tr>
                         <tr>
-                            <td>模板内容:</td>
+                            <td class="tdField">模板内容:</td>
                             <td><textarea id="tbxTMPCONTENT" style="width: 95%; height: 90px; resize: none;"></textarea></td>
                         </tr>
                         <tr>
-                            <td>参数说明：</td>
+                            <td class="tdField">参数说明：</td>
                             <td>[num]为个数；[cityconty]为市县</td>
                         </tr>
                     </table>
                 </div>
             </div>
+
             <div data-options="region:'east'" title="" style=" width:220px; border: none;">
                 <div class="divMan">
                     <div id="tt" style="overflow-y:hidden;padding-left:0px;" class="easyui-tree">
@@ -75,70 +74,6 @@
 </div>
 
 <script type="text/javascript">
-    //获取选中
-    function getChecked() {
-        var nodes = $('#tt').tree('getChecked');
-        //var s = '';//name
-        var d = '';//phone
-        if (nodes.length != 0) {
-            for (var i = 0; i < nodes.length; i++) {
-              //  console.info(nodes[i]);
-                if (nodes[i].phone == '') {
-                    continue;
-                }
-                //if (s != '') s += ',';
-                if (d != '') d += ',';
-                // s += nodes[i].text;
-                d += nodes[i].phone;
-            }
-            // return s + "|" + d;
-            return d;
-        }
-        else {
-            return "";
-        }
-    }
-    function Manager() {
-        $.ajax({
-            url: '/System/DCSMSManager',
-            cache: false,
-            data: {
-                YJ_DCSMS_TMPID: '@ViewBag.YJ_DCSMS_TMPID',
-                SMSGROUPNAME: document.getElementById("tbxSMSGROUPNAME").value,
-                SMSGROUPTYPE: document.getElementById("tbxSMSGROUPTYPE").value,
-                DANGERCLASS: document.getElementById("tbxDANGERCLASS").value,
-                TMPCONTENT: document.getElementById("tbxTMPCONTENT").value,
-                SMSSENDUSERLIST: getChecked(),
-                ORDERBY: document.getElementById("tbxORDERBY").value,
-                ISENABLE: document.getElementById("tbxISENABLE").value,
-
-                Method: '@ViewBag.T_Method',
-                returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)'
-            },
-            type: 'post',
-            success: function (data, ioArgs) {
-                var ar = eval('(' + data + ')');
-                if (ar.Success) {
-                    if (confirm(ar.Msg + ' 请返回！')) {
-                       // layer.msg('保存成功');
-                        var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
-                        parent.layer.close(index);
-                    }
-                  
-                    //loadClass();
-                }
-                else {
-                    //alert(ar.Msg);
-                    layer.msg(ar.Msg);
-                    //loadClass();
-                }
-            },
-            error: function (err, ioArgs) {
-                layer.msg('系统错误，请重试');
-                //loadClass();
-            }
-        });
-    }
     $(function () {
         $('#tt').tree({
             url: '/Email/MessageTreeGet?type=1',
@@ -163,15 +98,73 @@
             //    }
             //}
         });
-    })
+    });
+
+    //获取选中
+    function getChecked() {
+        var nodes = $('#tt').tree('getChecked');
+        //var s = '';//name
+        var d = '';//phone
+        if (nodes.length != 0) {
+            for (var i = 0; i < nodes.length; i++) {
+                //  console.info(nodes[i]);
+                if (nodes[i].phone == '') {
+                    continue;
+                }
+                //if (s != '') s += ',';
+                if (d != '') d += ',';
+                // s += nodes[i].text;
+                d += nodes[i].phone;
+            }
+            // return s + "|" + d;
+            return d;
+        }
+        else {
+            return "";
+        }
+    }
+
+    function Manager() {
+        $.ajax({
+            url: '/System/DCSMSManager',
+            cache: false,
+            data: {
+                YJ_DCSMS_TMPID: '@ViewBag.YJ_DCSMS_TMPID',
+                SMSGROUPNAME: document.getElementById("tbxSMSGROUPNAME").value,
+                SMSGROUPTYPE: document.getElementById("tbxSMSGROUPTYPE").value,
+                DANGERCLASS: document.getElementById("tbxDANGERCLASS").value,
+                TMPCONTENT: document.getElementById("tbxTMPCONTENT").value,
+                SMSSENDUSERLIST: getChecked(),
+                ORDERBY: document.getElementById("tbxORDERBY").value,
+                ISENABLE: document.getElementById("tbxISENABLE").value,
+                Method: '@ViewBag.T_Method',
+                returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)'
+            },
+            type: 'post',
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    layer.confirm(ar.Msg + ' 请返回?', { icon: 3, title: '提示' }, function (index2) {
+                        layer.close(index2);
+                        var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                        parent.layer.close(index);
+                    });
+                }
+                else {
+                    layer.msg(ar.Msg, { icon: 5 });
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('系统错误!', { icon: 5 });
+            }
+        });
+    }
+    
     //初始化人员
     function onloadData() {
-        //var userList = '';
         $.ajax({
             url: '/System/getDCSMSJson',
-            data: {
-                YJ_DCSMS_TMPID: '@ViewBag.YJ_DCSMS_TMPID'
-            },
+            data: { YJ_DCSMS_TMPID: '@ViewBag.YJ_DCSMS_TMPID' },
             type: 'post',
             success: function (data) {
                 var ar = eval('(' + data + ')');
@@ -190,9 +183,7 @@
                     var str = ar.SMSSENDUSERLIST.split(',');
                     for (var i = 0; i < str.length ; i++) {
                         if (str[i] != '') {
-                            //alert(str[i]);
                             var node = $('#tt').tree('find', str[i]);
-
                             if (node != null) {
                                 $('#tt').tree('check', node.target);
                             }
@@ -200,13 +191,12 @@
                     }
                     document.getElementById("tbxORDERBY").value = ar.ORDERBY;
                     document.getElementById("tbxISENABLE").value = ar.ISENABLE;
-
                 }
                 else {
                 }
             },
             error: function (err, ioArgs) {
-                alert('登录异常');
+                layer.msg('登录异常!', { icon: 5 });
             }
         });
     }

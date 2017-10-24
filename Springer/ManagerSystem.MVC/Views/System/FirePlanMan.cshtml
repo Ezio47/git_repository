@@ -24,33 +24,32 @@
                 <div class="divMan">
                     <table cellpadding="0" cellspacing="0">
                         <tr>
-                            <td style="width:80px;">单位:</td>
+                            <td style="width:80px;" class="tdField">单位:</td>
                             <td><select id="tbxBYORGNO"> @Html.Raw(@ViewBag.vdOrg)</select> </td>
-                            <td style="width:80px;">火灾等级:</td>
+                            <td style="width:80px;" class="tdField">火灾等级:</td>
                             <td><select id="tbxFIRELEVEL"> @Html.Raw(@ViewBag.vdFireLevel) </select></td>
                         </tr>
                         <tr>
-                            <td>预案标题:</td>
+                            <td class="tdField">预案标题:</td>
                             <td colspan="3"><input type="text" id="tbxPLANTITLE" value="" style="width:650px" /> </td>
                         </tr>
                         <tr>
-                            <td>预案附件:</td>
+                            <td class="tdField">预案附件:</td>
                             <td colspan="3">
                                 <input type="hidden" id="tbxPLANFILENAME" value="" style="width:650px" />
                                 <form id="uploadForm" enctype="multipart/form-data">
                                     <input type="file" name="uploadify" id="attachment" style="width:500px;" />
-
                                     <input type="button" value="上传" onclick="upload()" class="btnUploadCss" />
                                     <label id="lblInfo" style="color:red;"></label>
-
                                 </form>
                             </td>
                         </tr>
                         <tr class="row1">
-                            <td>内容:</td>
+                            <td class="tdField">内容:</td>
                             <td colspan="3">
-                            <script type="text/plain" id="myEditor" style="width:650px;height:240px;">
-                            </script></td>
+                                <script type="text/plain" id="myEditor" style="width:650px;height:240px;">
+                                </script>
+                            </td>
                         </tr>
                     </table>
                 </div>
@@ -97,28 +96,28 @@
             url: '/System/FirePlanManager',
             cache: false,
             data: {
-                BYORGNO: document.getElementById("tbxBYORGNO").value
-                , FIRELEVEL: document.getElementById("tbxFIRELEVEL").value
-                , PLANTITLE: document.getElementById("tbxPLANTITLE").value
-                , PLANFILENAME: document.getElementById("tbxPLANFILENAME").value
-                , PLANCONTENT: UM.getEditor('myEditor').getContent()
-                , id: '@ViewBag.id'
-                , Method: '@ViewBag.T_Method'
-                , returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)'
+                BYORGNO: document.getElementById("tbxBYORGNO").value,
+                FIRELEVEL: document.getElementById("tbxFIRELEVEL").value,
+                PLANTITLE: document.getElementById("tbxPLANTITLE").value,
+                PLANFILENAME: document.getElementById("tbxPLANFILENAME").value,
+                PLANCONTENT: UM.getEditor('myEditor').getContent(),
+                id: '@ViewBag.id',
+                Method: '@ViewBag.T_Method',
+                returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)'
             },
             type: 'post',
             error: function () {
                 layer.msg('错误:异常!', { icon: 5 });
             },
             success: function (re) {
-
                 var ar = eval('(' + re + ')');
                 if (ar.Success) {
-                    if (confirm(ar.Msg + ' 请返回?')) {
+                    layer.confirm(ar.Msg + ' 请返回?', { icon: 3, title: '提示' }, function (index2) {
+                        layer.close(index2);
                         var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
                         parent.layer.close(index);
                         window.location.assign(ar.Url);
-                    }
+                    });
                 }
                 else {
                     layer.msg(ar.Msg, { icon: 5 });

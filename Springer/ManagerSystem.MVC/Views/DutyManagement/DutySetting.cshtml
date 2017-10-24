@@ -26,7 +26,7 @@
                 <div class="divMan">
                     <table cellpadding="0" cellspacing="0">
                         <tr>
-                            <td>值班名称： </td>
+                            <td class="tdField">值班名称： </td>
                             <td>
                                 <select id="tbxDUTYNAME" style="width:90%;">
                                     <option value="1">早班</option>
@@ -34,12 +34,18 @@
                                     <option value="3">晚班</option>
                                 </select>
                             </td>
-                            <td><span style="color:red">*</span>值班开始时间：</td>
-                            <td><input class="Wdate" onclick="WdatePicker({ dateFmt: 'HH:mm' })" id="tbxSTARTTIME" type="text" value="" style="width:90%;" /></td>
+                            <td class="tdField">值班开始时间：</td>
+                            <td>
+                                <input class="Wdate" onclick="WdatePicker({ dateFmt: 'HH:mm' })" id="tbxSTARTTIME" type="text" value="" style="width:90%;" />
+                                <span class="spanRequiredField">*</span>
+                            </td>
                         </tr>
                         <tr>
-                            <td><span style="color:red">*</span>值班结束时间：</td>
-                            <td><input class="Wdate" onclick="WdatePicker({ dateFmt: 'HH:mm'})" id="tbxENDTIME" type="text" value="" style="width:90%;" /></td>
+                            <td class="tdField">值班结束时间：</td>
+                            <td>
+                                <input class="Wdate" onclick="WdatePicker({ dateFmt: 'HH:mm'})" id="tbxENDTIME" type="text" value="" style="width:90%;" />
+                                <span class="spanRequiredField">*</span>
+                            </td>
                             <td style="display:none"></td>
                             <td style="display:none"></td>
                         </tr>

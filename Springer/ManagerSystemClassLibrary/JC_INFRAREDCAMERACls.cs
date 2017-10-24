@@ -148,9 +148,9 @@ namespace ManagerSystemClassLibrary
         /// <summary>
         /// 获取列表
         /// </summary>
-        /// <param name="sw">参见模型</param>
-        /// <returns>参见模型</returns>
-
+        /// <param name="sw"></param>
+        /// <param name="total"></param>
+        /// <returns></returns>
         public static IEnumerable<JC_INFRAREDCAMERA_BASICINFO_Model> getListModel(JC_INFRAREDCAMERA_BASICINFO_SW sw, out int total)
         {
             DataTable dtORG = BaseDT.T_SYS_ORG.getDT(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag() });//获取单位
@@ -588,13 +588,13 @@ namespace ManagerSystemClassLibrary
                 JObject root = new JObject();
                 if (PublicCls.OrgIsShi(curUserOrg))
                 {
-                     root = new JObject
+                    root = new JObject
                      {
                          {"id","1111"},//ORGNO
                          {"text",str}  
                      };
                 }
-                
+
                 var resultlist = JC_MONITORCls.getListModel(new JC_MONITOR_BASICINFO_SW { BYORGNO = curUserOrg }); //获取所有有权限的监控摄像
                 if (resultlist.Any())
                 {
@@ -661,7 +661,7 @@ namespace ManagerSystemClassLibrary
                     }
                     if (PublicCls.OrgIsShi(curUserOrg))
                         jObjects.Add(root);
-                }               
+                }
             }
             else
             {

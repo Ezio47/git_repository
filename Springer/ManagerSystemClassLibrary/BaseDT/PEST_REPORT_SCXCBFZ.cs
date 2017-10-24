@@ -40,12 +40,16 @@ namespace ManagerSystemClassLibrary.BaseDT
                 sbDeleteFZMX.AppendFormat(" AND PEST_REPORT_SCXCBFZID IN (");
                 sbDeleteFZMX.AppendFormat(" Select PEST_REPORT_SCXCBFZID From PEST_REPORT_SCXCBFZ WHERE 1=1 ");
                 sbDeleteFZMX.AppendFormat(" AND SCXCBFZYEAR='{0}' ", ClsSql.EncodeSql(m.SCXCBFZYEAR));
-                if (m.TopORGNO.Substring(4, 5) == "00000")
-                    sbDeleteFZMX.AppendFormat(" AND SUBSTRING(BYORGNO,1,4)='{0}'", m.TopORGNO.Substring(0, 4));
-                else if (m.TopORGNO.Substring(6, 3) == "000" && m.TopORGNO.Substring(4, 5) != "00000")
-                    sbDeleteFZMX.AppendFormat(" AND SUBSTRING(BYORGNO,1,6)='{0}'", m.TopORGNO.Substring(0, 6));
+                if (m.TopORGNO.Substring(4, 11) == "00000000000") //所有市
+                    sbDeleteFZMX.AppendFormat(" and SUBSTRING(BYORGNO,1,4)='{0}'", m.TopORGNO.Substring(0, 4));
+                else if (m.TopORGNO.Substring(6, 9) == "000000000" && m.TopORGNO.Substring(4, 11) != "00000000000") //所有县
+                    sbDeleteFZMX.AppendFormat(" and SUBSTRING(BYORGNO,1,6)='{0}'", m.TopORGNO.Substring(0, 6));
+                else if (m.TopORGNO.Substring(9, 6) == "000000" && m.TopORGNO.Substring(6, 9) != "000000000") //所有乡镇
+                    sbDeleteFZMX.AppendFormat(" and SUBSTRING(BYORGNO,1,9)='{0}'", m.TopORGNO.Substring(0, 9));
+                else if (m.TopORGNO.Substring(9, 6) != "000000") //所有村
+                    sbDeleteFZMX.AppendFormat(" and SUBSTRING(BYORGNO,1,12)='{0}'", m.TopORGNO.Substring(0, 12));
                 else
-                    sbDeleteFZMX.AppendFormat(" AND BYORGNO='{0}'", m.TopORGNO);
+                    sbDeleteFZMX.AppendFormat(" and BYORGNO='{0}'", m.TopORGNO);
                 sbDeleteFZMX.AppendFormat(")");
                 sqldeletelist.Add(sbDeleteFZMX.ToString());
                 #endregion
@@ -54,12 +58,16 @@ namespace ManagerSystemClassLibrary.BaseDT
                 StringBuilder sbDeleteFZ = new StringBuilder();
                 sbDeleteFZ.AppendFormat("Delete From PEST_REPORT_SCXCBFZ where 1=1");
                 sbDeleteFZ.AppendFormat(" AND SCXCBFZYEAR='{0}'", m.SCXCBFZYEAR);
-                if (m.TopORGNO.Substring(4, 5) == "00000")
-                    sbDeleteFZ.AppendFormat(" AND SUBSTRING(BYORGNO,1,4)='{0}'", m.TopORGNO.Substring(0, 4));
-                else if (m.TopORGNO.Substring(6, 3) == "000" && m.TopORGNO.Substring(4, 5) != "00000")
-                    sbDeleteFZ.AppendFormat(" AND SUBSTRING(BYORGNO,1,6)='{0}'", m.TopORGNO.Substring(0, 6));
+                if (m.TopORGNO.Substring(4, 11) == "00000000000") //所有市
+                    sbDeleteFZMX.AppendFormat(" AND SUBSTRING(BYORGNO,1,4)='{0}'", m.TopORGNO.Substring(0, 4));
+                else if (m.TopORGNO.Substring(6, 9) == "000000000" && m.TopORGNO.Substring(4, 11) != "00000000000") //所有县
+                    sbDeleteFZMX.AppendFormat(" AND SUBSTRING(BYORGNO,1,6)='{0}'", m.TopORGNO.Substring(0, 6));
+                else if (m.TopORGNO.Substring(9, 6) == "000000" && m.TopORGNO.Substring(6, 9) != "000000000") //所有乡镇
+                    sbDeleteFZMX.AppendFormat(" AND SUBSTRING(BYORGNO,1,9)='{0}'", m.TopORGNO.Substring(0, 9));
+                else if (m.TopORGNO.Substring(9, 6) != "000000") //所有村
+                    sbDeleteFZMX.AppendFormat(" AND SUBSTRING(BYORGNO,1,12)='{0}'", m.TopORGNO.Substring(0, 12));
                 else
-                    sbDeleteFZ.AppendFormat(" AND BYORGNO='{0}'", m.TopORGNO);
+                    sbDeleteFZMX.AppendFormat(" AND BYORGNO='{0}'", m.TopORGNO);
                 sqldeletelist.Add(sbDeleteFZ.ToString());
                 #endregion
 

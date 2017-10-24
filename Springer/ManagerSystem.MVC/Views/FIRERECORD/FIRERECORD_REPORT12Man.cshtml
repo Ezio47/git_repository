@@ -6,101 +6,86 @@
 @section Header{
     <script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
 }
-<style>
-    table tr td {
-        color: #3c7915;
-        padding-left: 10px;
-    }
-</style>
-<div class="easyui-layout" data-options="fit:true" style=" border:0;">
 
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
     <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
         <div class="divOP">
-            <div style=" color: #3c7915;">
-                年份：<input id="tbxREPORTYEAR" type="text" class="Wdate" style="width:100px;" value="@ViewBag.REPORTYEAR" onfocus="Query()" onclick="WdatePicker({ dateFmt: 'yyyy'})" />
+            <div>
                 单位：<select id="tbxBYORGNO" onchange="Query()">@Html.Raw(@ViewBag.vdOrg)</select>&nbsp;&nbsp;&nbsp;
-                <input type="button" class="btnSaveCss" value="保存" onclick="Manager()" id="Save" />
+                年份：<input id="tbxREPORTYEAR" type="text" class="Wdate" style="width:100px;" value="@ViewBag.REPORTYEAR" onfocus="Query()" onclick="WdatePicker({ dateFmt: 'yyyy'})" />
+                <input type="button" class="btnSaveCss" value="保 存" onclick="Manager()" id="Save" />
             </div>
         </div>
     </div>
-    <div data-options="region:'center'" title="" style=" border: none; ">
+    <div data-options="region:'center'" title="">
         <input id="dic314Value" type="hidden" value="@ViewBag.dic314Value" />
         <input id="dic314Count" type="hidden" value="@ViewBag.dic314Count" />
-        <div class="divTable">
+        <div class="divMan">
             <input id="tbxFIRERECORD_REPORT12" name="tbxFIRERECORD_REPORT12" type="hidden" value="@ViewBag.FIRERECORD_REPORT12" style="width:95%;" />
             <table cellpadding="0" cellspacing="0" style="text-align :left;">
-                @*<tr style="width:95%;">
-                        <td style="width:150px;"> 年份：</td>
-                        <td><input id="tbxREPORTYEAR" type="text" class="Wdate" value="@ViewBag.REPORTYEAR" onclick="WdatePicker({ dateFmt: 'yyyy'})" /></td>
-                        <td style="width:150px;"> 单位：</td>
-                        <td><select id="tbxBYORGNO">@Html.Raw(@ViewBag.vdOrg)</select>&nbsp;&nbsp;&nbsp;</td>
-                    </tr>*@
                 <tr>
-                    <td colspan="4">森林防火建设资金（万元）</td>
+                    <td class="tdField" colspan="4">森林防火建设资金</td>
                 </tr>
                 <tr style="width:95%;">
-                    <td>瞭望系统：</td>
-                    <td><input id="tbx0" type="text" value="0" style="width: 70%;" />(万元)</td>
-                    <td>通信系统：</td>
-                    <td><input id="tbx1" type="text" value="0" style="width: 70%;" />(万元)</td>
+                    <td class="tdField">瞭望系统：</td>
+                    <td><input id="tbx0" type="text" value="0" style="width: 70%;" /><span class="spanMark">万元</span></td>
+                    <td class="tdField">通信系统：</td>
+                    <td><input id="tbx1" type="text" value="0" style="width: 70%;" /><span class="spanMark">万元</span></td>
                 </tr>
                 <tr style="width:95%;">
-                    <td> 阻隔系统：</td>
-                    <td><input id="tbx2" type="text" value="0" style="width: 70%;" />(万元)</td>
-                    <td> 交通工具：</td>
-                    <td><input id="tbx3" type="text" value="0" style="width: 70%;" />(万元)</td>
+                    <td class="tdField">阻隔系统：</td>
+                    <td><input id="tbx2" type="text" value="0" style="width: 70%;" /><span class="spanMark">万元</span></td>
+                    <td class="tdField">交通工具：</td>
+                    <td><input id="tbx3" type="text" value="0" style="width: 70%;" /><span class="spanMark">万元</span></td>
                 </tr>
                 <tr style="width:95%;">
-                    <td> 扑火机具 ：</td>
-                    <td><input id="tbx4" type="text" value="0" style="width: 70%;" />(万元)</td>
-                    <td> 其他项目：</td>
-                    <td><input id="tbx5" type="text" value="0" style="width: 70%;" />(万元)</td>
+                    <td class="tdField">扑火机具 ：</td>
+                    <td><input id="tbx4" type="text" value="0" style="width: 70%;" /><span class="spanMark">万元</span></td>
+                    <td class="tdField">其他项目：</td>
+                    <td><input id="tbx5" type="text" value="0" style="width: 70%;" /><span class="spanMark">万元</span></td>
                 </tr>
                 <tr>
-                    <td colspan="4">其中国家专项补助 （万元）</td>
+                    <td class="tdField" colspan="4">其中国家专项补助</td>
                 </tr>
                 <tr style="width:95%;">
-                    <td>瞭望系统：</td>
-                    <td><input id="tbx6" type="text" value="0" style="width: 70%;" />(万元)</td>
-                    <td>通信系统：</td>
-                    <td><input id="tbx7" type="text" value="0" style="width: 70%;" />(万元)</td>
+                    <td class="tdField">瞭望系统：</td>
+                    <td><input id="tbx6" type="text" value="0" style="width: 70%;" /><span class="spanMark">万元</span></td>
+                    <td class="tdField">通信系统：</td>
+                    <td><input id="tbx7" type="text" value="0" style="width: 70%;" /><span class="spanMark">万元</span></td>
                 </tr>
                 <tr style="width:95%;">
-                    <td> 阻隔系统：</td>
-                    <td><input id="tbx8" type="text" value="0" style="width: 70%;" />(万元)</td>
-                    <td> 交通工具：</td>
-                    <td><input id="tbx9" type="text" value="0" style="width: 70%;" />(万元)</td>
+                    <td class="tdField">阻隔系统：</td>
+                    <td><input id="tbx8" type="text" value="0" style="width: 70%;" /><span class="spanMark">万元</span></td>
+                    <td class="tdField">交通工具：</td>
+                    <td><input id="tbx9" type="text" value="0" style="width: 70%;" /><span class="spanMark">万元</span></td>
                 </tr>
                 <tr style="width:95%;">
-                    <td> 扑火机具 ：</td>
-                    <td><input id="tbx10" type="text" value="0" style="width: 70%;" />(万元)</td>
-                    <td> 其他项目：</td>
-                    <td><input id="tbx11" type="text" value="0" style="width: 70%;" />(万元)</td>
+                    <td class="tdField">扑火机具 ：</td>
+                    <td><input id="tbx10" type="text" value="0" style="width: 70%;" /><span class="spanMark">万元</span></td>
+                    <td class="tdField">其他项目：</td>
+                    <td><input id="tbx11" type="text" value="0" style="width: 70%;" /><span class="spanMark">万元</span></td>
                 </tr>
                 <tr>
-                    <td colspan="4">地方配套 （万元）</td>
+                    <td class="tdField" colspan="4">地方配套</td>
                 </tr>
                 <tr style="width:95%;">
-                    <td> 省级：</td>
-                    <td><input id="tbx12" type="text" value="0" style="width: 70%;" />(万元)</td>
-                    <td> 州级：</td>
-                    <td><input id="tbx13" type="text" value="0" style="width: 70%;" />(万元)</td>
+                    <td class="tdField">省级：</td>
+                    <td><input id="tbx12" type="text" value="0" style="width: 70%;" /><span class="spanMark">万元</span></td>
+                    <td class="tdField">州级：</td>
+                    <td><input id="tbx13" type="text" value="0" style="width: 70%;" /><span class="spanMark">万元</span></td>
                 </tr>
                 <tr style="width:95%;">
-                    <td>县级：</td>
-                    <td><input id="tbx14" type="text" value="0" style="width: 70%;" />(万元)</td>
-                    <td>林业：</td>
-                    <td><input id="tbx15" type="text" value="0" style="width: 70%;" />(万元)</td>
+                    <td class="tdField">县级：</td>
+                    <td><input id="tbx14" type="text" value="0" style="width: 70%;" /><span class="spanMark">万元</span></td>
+                    <td class="tdField">林业：</td>
+                    <td><input id="tbx15" type="text" value="0" style="width: 70%;" /><span class="spanMark">万元</span></td>
                 </tr>
                 <tr style="width:95%;">
-                    <td>备注：</td>
+                    <td class="tdField">备注：</td>
                     <td colspan="3"><input id="tbx16" name="" type="text" style="width: 95%;" /></td>
                 </tr>
             </table>
         </div>
-        @*<p style="text-align:center;margin-bottom:10px;">
-                <input type="button" class="btnSaveCss" value="保存" onclick="Manager()" id="Save" />
-            </p>*@
     </div>
 </div>
 
@@ -110,7 +95,7 @@
     if (dic314Count != "") {
         dic314Count = parseInt(dic314Count);
     }
-    if ('@ViewBag.Method' == 'Add') { 
+    if ('@ViewBag.Method' == 'Add') {
         var REPORTYEAR = $("#tbxREPORTYEAR").val();
         var BYORGNO = $("#tbxBYORGNO").val();
         $.ajax({
@@ -187,6 +172,7 @@
             }
         });
     }
+
     function Manager() {
         var strREPORTCODE = "";
         var strREPORTVALUE = "";
@@ -201,13 +187,8 @@
                         return;
                     }
                     else {
-                        if (s == "0") {
-                            continue;
-                        }
-                        else {
-                            strREPORTCODE = strREPORTCODE + dic314Value[x] + ",";
-                            strREPORTVALUE = strREPORTVALUE + $('#tbx' + temp + '').val() + ",";
-                        }
+                        strREPORTCODE = strREPORTCODE + dic314Value[x] + ",";
+                        strREPORTVALUE = strREPORTVALUE + $('#tbx' + temp + '').val() + ",";
                     }
                 }
                 else {
@@ -231,10 +212,6 @@
             success: function (data, ioArgs) {
                 var ar = eval('(' + data + ')');
                 if (ar.Success) {
-                    //if (confirm(ar.Msg + ' 请返回?')) {
-                    //    var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
-                    //    parent.layer.close(index);
-                    //}
                     layer.confirm(ar.Msg + ' 请返回?', { icon: 3, title: '提示' }, function (index2) {
                         layer.close(index2);
                         var index = parent.layer.getFrameIndex(window.name); //获取窗口索引

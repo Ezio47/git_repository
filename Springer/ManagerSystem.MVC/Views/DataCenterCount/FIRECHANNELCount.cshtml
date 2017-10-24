@@ -42,10 +42,10 @@
     </div>
 
 </div>
+<div class="divMan" id="BYORGNOadd" style="display:none;margin-left:5px;margin-top:8px">
+
+</div>
 <script type="text/javascript">
-    //$(document).ready(function () {
-    //    $("#tableContainer").FixedHead({ tableLayout: "fixed" });
-    //});
     function exportExcel() {
         var url = '/DataCenterCount/FIRECHANNELCountExportExcel?BYORGNO=' + document.getElementById("tbxBYORGNO").value;
         window.location = url;
@@ -83,7 +83,7 @@
     }
     function Layer(BYORGNO, ORGNAME) {
         $.ajax({
-            url: '/DataCenterCount/getFIRECHANNELCountStr',
+            url: '/DataCenterCount/getFIRECHANNELidDetailStr',
             timeout: 10000, //10秒后超时，如果为0则永不超时
             data: {
                 BYORGNO: BYORGNO,

@@ -1017,7 +1017,7 @@ namespace ManagerSystemClassLibrary
                 m.FIREFROMCount4 = BaseDT.JC_FIRE.getCountFIREByOrgNo(dtArchival, m.BYORGNO, "4", "1");//电子报警统计
                 m.FIREFROMCount5 = BaseDT.JC_FIRE.getCountFIREByOrgNo(dtArchival, m.BYORGNO, "5", "1");//护林员火情统计
                 m.FIREFROMCount6 = BaseDT.JC_FIRE.getCountFIREByOrgNo(dtArchival, m.BYORGNO, "6", "1");//飞机巡护统计
-                m.FIREFROMCount7 = BaseDT.JC_FIRE.getCountFIREByOrgNo(dtArchival, m.BYORGNO, "7", "1");//历史补录
+                m.FIREFROMCount7 = BaseDT.JC_FIRE.getCountFIREByOrgNo(dtArchival, m.BYORGNO, "50", "1");//历史补录
 
                 var typeResult = new List<HOTTYPECountModel>();
                 for (int j = 0; j < dt10.Rows.Count; j++)

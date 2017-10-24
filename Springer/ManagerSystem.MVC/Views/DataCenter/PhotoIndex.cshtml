@@ -23,7 +23,7 @@
     function ManagerPhoto(Method) {
         var bln = false;
         if (Method == 'Del') {
-            if (confirm('确实要删除该内容吗?')) {
+            if (layer.confirm('确实要删除该内容吗?')) {
                 bln = true;
             }
         }
@@ -46,11 +46,11 @@
                 success: function (data) {
                     var ar = eval('(' + data + ')');
                     if (ar.Success) {
-                        layer.msg(ar.Msg);
+                        layer.msg(ar.Msg, { icon: 6 });
                         window.location.reload();
                     }
                     else {
-                        layer.msg(ar.Msg);
+                        layer.msg(ar.Msg, { icon: 5 });
                     }
                 },
                 error: function (err, ioArgs) {
@@ -61,6 +61,11 @@
     }
     //图片上传
     function UploadPhoto(Method) {
+        var name = $('#PHOTOTITLE').val();
+        if (name=="") {
+            layer.msg("请输入照片主题", { icon: 5 });
+            return;
+        }
         var formData = new FormData($("#uploadForm")[0]);
         formData.append("PHOTO_ID", $('#PHOTO_ID').val());
         formData.append("PRID", $('#PRID').val());

@@ -1,6 +1,6 @@
 ﻿/// <reference path="../_references.js" />
 //定位
-function getLocal(id) {
+function getLocal(id) { 
     map.graphics.clear();
     graphicLayer.clear();
     $.ajax({
@@ -25,6 +25,7 @@ function getLocal(id) {
 
 //地图展示MapShowinfowindows
 function showMapInfoWindows(obj) {
+    map.infoWindow.resize(720, 400);
     map.infoWindow.hide();
     var attributes = {
         "火情来源": obj.FIRESOURCENAME,
@@ -38,13 +39,16 @@ function showMapInfoWindows(obj) {
         "纬度": parseFloat(obj.JC_FireFKData.WD).toFixed(3)
     };
 
+    var id = obj.JC_FireData.JCFID;
     var point = new esri.geometry.Point(parseFloat(obj.JC_FireFKData.JD), parseFloat(obj.JC_FireFKData.WD));
 
     var url = "../Images/Report/mapshow.ico";
     var symbol = new esri.symbol.PictureMarkerSymbol(url, 16, 19);
 
-    var html = "<p>火情来源：${火情来源}<br/>发生区域：${发生区域}<br/>反馈情况：${反馈情况}<br/>经度:${经度}&nbsp;&nbsp;&nbsp;&nbsp;纬度:${纬度}<br/>接收时间:${接收时间}<br/>热点类别：${热点类别}" +
-        "<br/>是否连续：${是否连续}<br/>情况简报：${情况简报}</p>";
+  //  var html = "<p>火情来源：${火情来源}<br/>发生区域：${发生区域}<br/>反馈情况：${反馈情况}<br/>经度:${经度}&nbsp;&nbsp;&nbsp;&nbsp;纬度:${纬度}<br/>接收时间:${接收时间}<br/>热点类别：${热点类别}" +
+   //     "<br/>是否连续：${是否连续}<br/>情况简报：${情况简报}</p>";
+    var src = "/MainYJJC/See/?ID=" + id;
+    var html = "<iframe style=\"width:100%;height:100%;\" scrolling=\"no\" src=\""+ src +"\" frameborder=\"0\" id=\"ifame1\"></iframe>";
     var infoTemplate = new esri.InfoTemplate();
     infoTemplate.setTitle("火情反馈信息");
     infoTemplate.setContent(html);

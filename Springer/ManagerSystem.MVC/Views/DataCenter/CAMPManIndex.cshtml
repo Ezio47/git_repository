@@ -18,50 +18,52 @@
                 <div class="divMan">
                     <table cellpadding="0" cellspacing="0">
                         <tr>
-                            <td style="width:80px;">单位：</td>
+                            <td style="width:80px;" class="tdField">单位：</td>
                             <td><select id="BYORGNO" class="easyui-combotree" style="width:200px;"></select></td>
-                            <td style="width:80px;">结构类型：</td>
+                            <td style="width:80px;" class="tdField">结构类型：</td>
                             <td><select id="STRUCTURETYPE">@Html.Raw(@ViewBag.structureadd)</select></td>
                         </tr>
                         <tr>
-                            <td style="width:80px;"><span style="color:red;">*</span>名称：</td>
-                            <td><input type="text" id="NAME" class="input-small" value="" /></td>
-                            <td style="width:80px;"><span style="color:red;">*</span>编号：</td>
-                            <td><input id="NUMBER" type="text" class="input-small" value="" /></td>
+                            <td style="width:80px;" class="tdField">名称：</td>
+                            <td><input type="text" id="NAME" class="input-small" value="" /><span class="spanRequiredField">*</span></td>
+                            <td style="width:80px;" class="tdField">编号：</td>
+                            <td><input id="NUMBER" type="text" class="input-small" value="" /><span class="spanRequiredField">*</span></td>
                         </tr>
                         <tr>
-                            <td style="width:80px;"> 经度： </td>
+                            <td style="width:80px;" class="tdField"> 经度： </td>
                             <td><input id="JD" type="text" class="input-small" value="" /></td>
-                            <td style="width:80px;"> 纬度：</td>
+                            <td style="width:60px;" class="tdField"> 纬度：</td>
                             <td>
                                 <input id="WD" type="text" class="input-small" value="" />
                                 <input type="button" value="地图定位" onclick="setPoint()" class="btnMapLoaclCss" />
                             </td>
                         </tr>
                         <tr>
-                            <td style="width:80px;">建筑面积：</td>
-                            <td><input id="AREA" type="text" class="input-small" value="" />平方米 </td>
-                            <td style="width:80px;"> 楼层： </td>
+                            <td style="width:80px;" class="tdField">建筑面积：</td>
+                            <td><input id="AREA" type="text" class="input-small" value="" /><span class="spanMark">平方米</span></td>
+                            <td style="width:80px;" class="tdField"> 楼层： </td>
                             <td><input id="FLOOR" type="text" class="input-small" value="" /></td>
                         </tr>
                         <tr>
-                            <td style="width:80px;">附属设施：</td>
-                            <td colspan="3"><input id="SUBFACILITIES" type="text" class="input-small" value="" /></td>
-                        </tr>
-                        <tr>
-                            <td style="width:100px;">规划建设日期：</td>
-                            <td>
-                                开始时间:<input class="easyui-datebox" id="BUILDDATEBEGIN" type="text" style="width:90px;height:28px;" value="" />&nbsp;&nbsp;
-                                结束时间:<input class="easyui-datebox" id="BUILDDATEEND" type="text" style="width:90px;height:28px;" value="" />
+                            <td style="width:100px;" class="tdField">规划建设日期：</td>
+                            <td colspan="3">
+                               开始时间:<input class="easyui-datebox" id="BUILDDATEBEGIN" type="text" style="width:120px;height:28px;" value="" />&nbsp;&nbsp;
+                                &nbsp;&nbsp;结束时间:<input class="easyui-datebox" id="BUILDDATEEND" type="text" style="width:120px;height:28px;" value="" />
                             </td>
-                            <td style="width:80px;">建成日期：</td>
-                            <td><input class="easyui-datebox" id="BUILDDATE" type="text" style="width:90px;height:28px;" value="" /></td>
                         </tr>
                         <tr>
-                            <td style="width:80px;">总价：</td>
-                            <td><input id="WORTH" type="text" class="input-small" value="" />元</td>
-                            <td style="width:80px;">备注：</td>
-                            <td><input id="MARK" type="text" class="input-small" value="" /></td>
+                            <td style="width:80px;" class="tdField">建成日期：</td>
+                            <td><input class="easyui-datebox" id="BUILDDATE" type="text" style="width:120px;height:28px;" value="" /></td>
+                            <td style="width:80px;" class="tdField">总价：</td>
+                            <td><input id="WORTH" type="text" class="input-small" value="" /><span class="spanMark">元</span></td>
+                        </tr>
+                        <tr>
+                            <td style="width:80px;" class="tdField">备注：</td>
+                            <td colspan="3"><input id="MARK" style="width:97%" type="text" class="input-small" value="" /></td>
+                        </tr>
+                        <tr>
+                            <td style="width:80px;" class="tdField">附属设施：</td>
+                            <td colspan="3"><input style="width:97%" id="SUBFACILITIES" type="text" class="input-small" value="" /></td>
                         </tr>
                     </table>
                 </div>
@@ -124,18 +126,18 @@
         var name = document.getElementById("NAME").value;
         var jd = document.getElementById("JD").value;
         var wd = document.getElementById("WD").value;
-        layer.open({
+        parent.layer.open({
             type: 2,
             title: name + '地图位置设置',
             btn: ['保存', '关闭'],
-            area: ['100%', '100%'],
+            area: ['1000px', '600px'],
             fix: true, //不固定
             maxmin: true,
             content: '/MapCommon/GetMapPontIndex?jd=' + jd + "&wd=" + wd,
             shade: 0,
             yes: function (index, layero) { //或者使用btn1
                 //按钮【按钮一】的回调
-                var ptxt = layer.getChildFrame("p", index);
+                var ptxt = parent.layer.getChildFrame("p", index);
                 var arr = ptxt.html().split(',');
                 if ($.trim(arr) != "") {
                     var jd = parseFloat(arr[0]).toFixed(6);
@@ -143,9 +145,9 @@
                     $('#JD').val(jd);
                     $('#WD').val(wd);
                 }
-                layer.close(index);
+                parent.layer.close(index);
             }, cancel: function (index) {
-                layer.close(index);
+                parent.layer.close(index);
             }
         });
     }
@@ -221,7 +223,7 @@
             dataType: "json",
             success: function (data) {
                 if (data.Success) {
-                    parent.layer.msg(data.Msg,{ icon: 6 });
+                    parent.layer.msg(data.Msg, { icon: 6 });
                     var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
                     parent.layer.close(index);
                 }

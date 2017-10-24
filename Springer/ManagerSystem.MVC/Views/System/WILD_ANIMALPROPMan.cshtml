@@ -1,0 +1,146 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+}
+
+@section Header{
+    <style type="text/css">
+        td {
+            padding-left: 2px;
+        }
+
+        .divTable table tr td h1 {
+            width: 80px;
+            height: 28px;
+            line-height: 28px;
+            color: #22a306;
+            border: 1px solid #35b719;
+            font-size: 15px;
+            border-radius: 12px;
+            background: url(../images/ico/firereport_icon.png) 7px 6px no-repeat;
+            padding-left: 28px;
+        }
+    </style>
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'center'" title="" style=" border: none; " class="LayoutCenterBG">
+        <input id="hidBioCode" name="hidBioCode" type="hidden" value="@ViewBag.BioCode" />
+        <input id="dic124Value" name="dic124Value" type="hidden" value="@ViewBag.dic124Value" />
+        <input id="dic124Count" name="dic124Count" type="hidden" value="@ViewBag.dic124Count" />
+        <div class="divTable" style="margin-left:5px;margin-top:8px">
+            <table cellpadding="0" cellspacing="0" style="text-align: left; ">
+                <tr style="width:98%;">
+                    <td colspan="4" style="height:40px"><h1>基本属性</h1></td>
+                </tr>
+                <tr>
+                    <td class="tdField" style="width:80px;">植物名称：</td>
+                    <td colspan="3">@ViewBag.BioName</td>
+                </tr>
+                <tr>
+                    <td class="tdField">保护级别：</td>
+                    <td><select id="tbxPROTECTIONLEVELCODE" style="width:95%;">@Html.Raw(ViewBag.PROTECTIONLEVEL)</select></td>
+                    <td class="tdField">生存现状：</td>
+                    <td><select id="tbxLIVINGSTATUSCODE" style="width: 95%;">@Html.Raw(ViewBag.LIVINGSTATUS)</select></td>
+                </tr>
+                <tr style="width:98%;">
+                    <td colspan="4" style="height:40px"><h1>动态属性</h1></td>
+                </tr>
+                <tbody id="tt"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div data-options="region:'south'" title="" style=" height:40px; border: none; overflow:hidden; text-align:center;">
+        <div class="divOP">
+            <input type="button" value="保 存" onclick="manager()" class="btnSaveCss" />
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    loadProp();
+    loadDyProp();
+
+    function loadProp() {
+        $.ajax({
+            type: 'get',
+            url: '/System/GetWILD_ANIMALProp',
+            data: { Biocode: $('#hidBioCode').val() },
+            dataType: 'json',
+            success: function (data, ioArgs) {
+                if (data.WILD_ANIMALPROPID != null) {
+                    $('#tbxPROTECTIONLEVELCODE').val(data.PROTECTIONLEVELCODE);
+                    $('#tbxLIVINGSTATUSCODE').val(data.LIVINGSTATUSCODE);
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("系统异常!", { icon: 5 });
+            }
+        });
+    }
+
+    function loadDyProp() {
+        $.ajax({
+            type: 'get',
+            url: '/System/GetDyWILD_ANIMALProp',
+            data: { Biocode: $('#hidBioCode').val() },
+            dataType: 'json',
+            success: function (data, ioArgs) {
+                if (data.Success) {
+                    $('#tt').html("");
+                    $('#tt').html(data.Msg);
+                }
+                else {
+                    $('#tt').html("");
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("系统异常!", { icon: 5 });
+            }
+        });
+    }
+
+    function manager() {
+        var biocode = $('#hidBioCode').val();
+        var PROTECTIONLEVELCODE = $('#tbxPROTECTIONLEVELCODE').val();
+        var LIVINGSTATUSCODE = $('#tbxLIVINGSTATUSCODE').val();
+        var dic124Value = $('#dic124Value').val().split(',');
+        var dic124Count = $('#dic124Count').val();
+        if (dic124Count != "") {
+            dic124Count = parseInt(dic124Count);
+        }
+        var propCode = "";
+        var propContent = "";
+        for (var x = 0; x < dic124Count; x++) {
+            var s = $('#tbx' + (x + 1).toString() + '').val();
+            propCode = propCode + dic124Value[x] + ",";
+            propContent = propContent + s + ",";
+        }
+        $.ajax({
+            url: '/System/WILD_ANIMALPROPManager',
+            type: 'post',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            dataType: 'json',
+            data: {
+                Biocode: $('#hidBioCode').val(),
+                PROTECTIONLEVELCODE: $('#tbxPROTECTIONLEVELCODE').val(),
+                LIVINGSTATUSCODE: $('#tbxLIVINGSTATUSCODE').val(),
+                RropCode: propCode,
+                PropContent: propContent
+            },
+            success: function (data, ioArgs) {
+                if (data.Success) {
+                    layer.msg(data.Msg, { icon: 6 });
+                    loadProp();
+                    loadDyProp();
+                }
+                else {
+                    layer.msg(data.Msg, { icon: 5 });
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("保存异常!", { icon: 5 });
+            }
+        });
+    }
+</script>

@@ -54,7 +54,14 @@ namespace ManagerSystemClassLibrary.BaseDT
                 try
                 {
                     string strid = DataBaseClass.ReturnSqlField(sb.ToString());
-                    return new Message(true, "添加成功！", strid);
+                    if (string.IsNullOrEmpty(strid) == false)
+                    {
+                        return new Message(true, "添加成功！", strid);
+                    }
+                    else
+                    {
+                        return new Message(false, "添加失败！请检查输入框是否正确！", strid);
+                    }
                 }
                 catch (Exception)
                 {
@@ -778,12 +785,12 @@ namespace ManagerSystemClassLibrary.BaseDT
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("    from    DC_RESOURCE_NEW a ");
             sb.AppendFormat("where 1 = 1 ");
-            if (sw.ORGNOS.Substring(4, 5) == "00000")//获取所有市的
+            if (sw.ORGNOS.Substring(4, 11) == "00000000000")//获取所有市的
                 sb.AppendFormat(" AND (SUBSTRING(ORGNOS,1,4) = '{0}' or ORGNOS is null or ORGNOS='')", ClsSql.EncodeSql(sw.ORGNOS.Substring(0, 4)));
-            else if (sw.ORGNOS.Substring(6, 3) == "000")//获取所有县的
+            else if (sw.ORGNOS.Substring(6, 9) == "000000000")//获取所有县的
                 sb.AppendFormat(" AND (SUBSTRING(ORGNOS,1,6) = '{0}' or ORGNOS is null or ORGNOS='')", ClsSql.EncodeSql(sw.ORGNOS.Substring(0, 6)));
             else
-                sb.AppendFormat(" AND ORGNOS = '{0}'", ClsSql.EncodeSql(sw.ORGNOS));
+                sb.AppendFormat(" AND (SUBSTRING(ORGNOS,1,9) = '{0}')", ClsSql.EncodeSql(sw.ORGNOS.Substring(0, 9)));
             string sqlC = "select count(1) " + sb.ToString();
             total = (DataBaseClass.ReturnSqlField(sqlC)).ToString();
             return total;

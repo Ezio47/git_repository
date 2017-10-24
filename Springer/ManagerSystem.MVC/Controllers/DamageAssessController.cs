@@ -24,7 +24,7 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult DamageAssess()
         {
-            pubViewBag("026001", "026001", "灾损评估");
+            pubViewBag("026001", "026001", "");
             if (ViewBag.isPageRight == false)
                 return View();
             ViewBag.FIREFROM = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "99", isShowAll = "1" });
@@ -88,7 +88,7 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("</tbody>");
             sb.AppendFormat("</table>");
             string pageInfo = PagerCls.getPagerInfoAjax(new PagerSW { curPage = int.Parse(Page), pageSize = int.Parse(PageSize), rowCount = total });
-            return Content(JsonConvert.SerializeObject(new MessagePagerAjax(true, sb.ToString(), "")), "text/html;charset=UTF-8");
+            return Content(JsonConvert.SerializeObject(new MessagePagerAjax(true, sb.ToString(), pageInfo)), "text/html;charset=UTF-8");
         }
 
         /// <summary>
@@ -169,7 +169,7 @@ namespace ManagerSystem.MVC.Controllers
                 if (result.Count() > 0)
                 {
                     sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\" style=\"width:100%\">");
-                    sb.AppendFormat("<tr><th>序号</th><th>名称</th><th>损失金额</th><th>过火木材材积(m³)</th><th>市场价格(元/m³)</th><th>残值(元)</th></tr>");
+                    sb.AppendFormat("<tr><th>序号</th><th>名称</th><th>损失金额(元)</th><th>过火木材材积(m³)</th><th>市场价格(元/m³)</th><th>残值(元)</th></tr>");
                     int i = 0;
                     foreach (var r in result)
                     {
@@ -196,7 +196,7 @@ namespace ManagerSystem.MVC.Controllers
                 if (result.Count() > 0)
                 {
                     sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\" style=\"width:100%\">");
-                    sb.AppendFormat("<tr><th>序号</th><th>名称</th><th>损失金额</th><th>重置价值(元)</th><th>年平均折旧率</th><th>烧毁率</th></tr>");
+                    sb.AppendFormat("<tr><th>序号</th><th>名称</th><th>损失金额(元)</th><th>重置价值(元)</th><th>年平均折旧率</th><th>烧毁率</th></tr>");
                     int i = 0;
                     foreach (var r in result)
                     {
@@ -537,7 +537,7 @@ namespace ManagerSystem.MVC.Controllers
                 if (result.Count() > 0)
                 {
                     sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\" style=\"width:100%\">"); ;
-                    sb.AppendFormat("<tr><th>序号</th><th>灾后处理名称</th><th>损失类别</th><th>损失金额</th></tr>");
+                    sb.AppendFormat("<tr><th>序号</th><th>灾后处理名称</th><th>损失类别</th><th>损失金额(元)</th></tr>");
                     int i = 0;
                     foreach (var r in result)
                     {
@@ -888,26 +888,26 @@ namespace ManagerSystem.MVC.Controllers
             FIRELOST_LOSTTYPE_WOOD_Model m = FIRELOST_LOSTTYPE_WOODCls.getModel(new FIRELOST_LOSTTYPE_WOOD_SW { FIRELOST_LOSTTYPE_WOODID = WOODID });
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<div class=\"divMan\" style=\"margin-left:5px;margin-top:8px\">");
-            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
+            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\" style=\"text-align:left;\">");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td style=\"width:15%\">木材损失名称:</td>");
+            sb.AppendFormat("<td class=\"tdField\" style=\"width:15%\">木材损失名称:</td>");
             sb.AppendFormat("<td style=\"width:35%\">{0}</td>", m.WOODNAME);
-            sb.AppendFormat("<td style=\"width:15%\">损失金额:</td>");
+            sb.AppendFormat("<td class=\"tdField\" style=\"width:15%\">损失金额:</td>");
             sb.AppendFormat("<td style=\"width:35%\">{0}</td>", m.LOSEMONEYCOUNT + "元");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>过火木材材积:</td>");
+            sb.AppendFormat("<td class=\"tdField\">过火木材材积:</td>");
             sb.AppendFormat("<td>{0}</td>", m.LOSEVOLUME + "m³");
-            sb.AppendFormat("<td>市场价格:</td>");
+            sb.AppendFormat("<td class=\"tdField\">市场价格:</td>");
             sb.AppendFormat("<td>{0}</td>", m.MARKETPRICE + "元/m³");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>残值:</td>");
+            sb.AppendFormat("<td class=\"tdField\">残值:</td>");
             sb.AppendFormat("<td>{0}</td>", m.RESIDUALVALUE + "元");
             sb.AppendFormat("<td colspan=\"2\"></td>");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>备注:</td>");
+            sb.AppendFormat("<td class=\"tdField\">备注:</td>");
             sb.AppendFormat("<td colspan=\"3\">{0}</td>", m.MARK);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("</table>");
@@ -1013,27 +1013,27 @@ namespace ManagerSystem.MVC.Controllers
             FIRELOST_LOSTTYPE_FIXEDASSETS_Model m = FIRELOST_LOSTTYPE_FIXEDASSETSCls.getModel(new FIRELOST_LOSTTYPE_FIXEDASSETS_SW { FIRELOST_LOSTTYPE_FIXEDASSETSID = FIXEDASSETSID });
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<div class=\"divMan\" style=\"margin-left:5px;margin-top:8px\">");
-            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
+            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\" style=\"text-align:left;\">");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td style=\"width:15%\">固定资产名称:</td>");
+            sb.AppendFormat("<td class=\"tdField\" style=\"width:15%\">固定资产名称:</td>");
             sb.AppendFormat("<td style=\"width:35%\">{0}</td>", m.FIXEDASSETSNAME);
-            sb.AppendFormat("<td style=\"width:15%\">损失金额:</td>");
+            sb.AppendFormat("<td class=\"tdField\" style=\"width:15%\">损失金额:</td>");
             sb.AppendFormat("<td style=\"width:35%\">{0}</td>", m.LOSEMONEYCOUNT + "元");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>重置价值:</td>");
+            sb.AppendFormat("<td class=\"tdField\">重置价值:</td>");
             sb.AppendFormat("<td>{0}</td>", m.RESETVALUE + "元");
-            sb.AppendFormat("<td>年平均折旧率:</td>");
+            sb.AppendFormat("<td class=\"tdField\">年平均折旧率:</td>");
             sb.AppendFormat("<td>{0}</td>", string.Format("{0:P}", float.Parse(m.YEARAVGDEPRECIATIONRATE) / 100));
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>已使用年限:</td>");
+            sb.AppendFormat("<td class=\"tdField\">已使用年限:</td>");
             sb.AppendFormat("<td>{0}</td>", m.HAVEUSEYEAR + "年");
-            sb.AppendFormat("<td>烧毁率:</td>");
+            sb.AppendFormat("<td class=\"tdField\">烧毁率:</td>");
             sb.AppendFormat("<td>{0}</td>", string.Format("{0:P}", float.Parse(m.BURNRATE) / 100));
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>备注:</td>");
+            sb.AppendFormat("<td class=\"tdField\">备注:</td>");
             sb.AppendFormat("<td colspan=\"3\">{0}</td>", m.MARK);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("</table>");
@@ -1138,26 +1138,26 @@ namespace ManagerSystem.MVC.Controllers
             FIRELOST_LOSTTYPE_CURRENTASSETS_Model m = FIRELOST_LOSTTYPE_CURRENTASSETSCls.getModel(new FIRELOST_LOSTTYPE_CURRENTASSETS_SW { FIRELOST_LOSTTYPE_CURRENTASSETSID = CURRENTASSETSID });
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<div class=\"divMan\" style=\"margin-left:5px;margin-top:8px\">");
-            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
+            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\" style=\"text-align:left;\">");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td style=\"width:15%\">流动资产名称:</td>");
+            sb.AppendFormat("<td class=\"tdField\" style=\"width:15%\">流动资产名称:</td>");
             sb.AppendFormat("<td style=\"width:35%\">{0}</td>", m.CURRENTASSETSNAME);
-            sb.AppendFormat("<td style=\"width:15%\">损失金额:</td>");
+            sb.AppendFormat("<td class=\"tdField\" style=\"width:15%\">损失金额:</td>");
             sb.AppendFormat("<td style=\"width:35%\">{0}</td>", m.LOSEMONEYCOUNT + "元");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>资产数量:</td>");
+            sb.AppendFormat("<td class=\"tdField\">资产数量:</td>");
             sb.AppendFormat("<td>{0}</td>", m.CURRENTASSETSCOUNT + m.CURRENTASSETSUNIT);
-            sb.AppendFormat("<td>购入价格:</td>");
+            sb.AppendFormat("<td class=\"tdField\">购入价格:</td>");
             sb.AppendFormat("<td>{0}</td>", m.CURRENTASSETSPRICE + "元/" + m.CURRENTASSETSUNIT);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>残值:</td>");
+            sb.AppendFormat("<td class=\"tdField\">残值:</td>");
             sb.AppendFormat("<td>{0}</td>", m.RESIDUALVALUE + "元");
             sb.AppendFormat("<td colspan=\"2\"></td>");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>备注:</td>");
+            sb.AppendFormat("<td class=\"tdField\">备注:</td>");
             sb.AppendFormat("<td colspan=\"3\">{0}</td>", m.MARK);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("</table>");
@@ -1262,21 +1262,21 @@ namespace ManagerSystem.MVC.Controllers
             FIRELOST_LOSTTYPE_NTFP_Model m = FIRELOST_LOSTTYPE_NTFPCls.getModel(new FIRELOST_LOSTTYPE_NTFP_SW { FIRELOST_LOSTTYPE_NTFPID = NTFPID });
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<div class=\"divMan\" style=\"margin-left:5px;margin-top:8px\">");
-            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
+            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\" style=\"text-align:left;\">");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td style=\"width:15%\">非木质林产品名称:</td>");
-            sb.AppendFormat("<td style=\"width:35%\">{0}</td>", m.NTFPNAME);
-            sb.AppendFormat("<td style=\"width:15%\">损失金额:</td>");
-            sb.AppendFormat("<td style=\"width:35%\">{0}</td>", m.LOSEMONEYCOUNT + "元");
+            sb.AppendFormat("<td class=\"tdField\" style=\"width:20%\">非木质林产品名称:</td>");
+            sb.AppendFormat("<td style=\"width:30%\">{0}</td>", m.NTFPNAME);
+            sb.AppendFormat("<td class=\"tdField\" style=\"width:20%\">损失金额:</td>");
+            sb.AppendFormat("<td style=\"width:30%\">{0}</td>", m.LOSEMONEYCOUNT + "元");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>损失数量:</td>");
+            sb.AppendFormat("<td class=\"tdField\" >损失数量:</td>");
             sb.AppendFormat("<td>{0}</td>", m.LOSECOUNT + "kg");
-            sb.AppendFormat("<td>市场平均价格:</td>");
+            sb.AppendFormat("<td class=\"tdField\">市场平均价格:</td>");
             sb.AppendFormat("<td>{0}</td>", m.MARKETAVGPRICE + "元/kg");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>备注:</td>");
+            sb.AppendFormat("<td class=\"tdField\">备注:</td>");
             sb.AppendFormat("<td colspan=\"3\">{0}</td>", m.MARK);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("</table>");
@@ -1394,15 +1394,15 @@ namespace ManagerSystem.MVC.Controllers
             FIRELOST_LOSTTYPE_FARMPASTUREPRODUCT_Model m = FIRELOST_LOSTTYPE_FARMPASTUREPRODUCTCls.getModel(new FIRELOST_LOSTTYPE_FARMPASTUREPRODUCT_SW { FIRELOST_LOSTTYPE_FARMPASTUREPRODUCTID = PRODUCTID });
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<div class=\"divMan\" style=\"margin-left:5px;margin-top:8px\">");
-            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
+            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\" style=\"text-align:left;\">");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td style=\"width:15%\">农牧产品名称:</td>");
+            sb.AppendFormat("<td class=\"tdField\" style=\"width:15%\">农牧产品名称:</td>");
             sb.AppendFormat("<td style=\"width:35%\">{0}</td>", m.FARMPASTUREPRODUCNAME);
-            sb.AppendFormat("<td style=\"width:15%\">损失类别:</td>");
+            sb.AppendFormat("<td class=\"tdField\" style=\"width:15%\">损失类别:</td>");
             sb.AppendFormat("<td style=\"width:35%\">{0}</td>", m.PASTUREPRODUCCODENAME);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>损失金额:</td>");
+            sb.AppendFormat("<td class=\"tdField\">损失金额:</td>");
             sb.AppendFormat("<td>{0}</td>", m.LOSEMONEYCOUNT + "元");
             string loseType = "";
             string loseName = "";
@@ -1429,16 +1429,16 @@ namespace ManagerSystem.MVC.Controllers
                 loseCount += "头/或只";
                 basePrice += "元/头或只";
             }
-            sb.AppendFormat("<td>{0}:</td>", loseType);
+            sb.AppendFormat("<td class=\"tdField\">{0}:</td>", loseType);
             sb.AppendFormat("<td>{0}</td>", loseCount);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>{0}:</td>", loseName);
+            sb.AppendFormat("<td class=\"tdField\">{0}:</td>", loseName);
             sb.AppendFormat("<td>{0}</td>", basePrice);
             sb.AppendFormat("<td colspan=\"2\"></td>");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>备注:</td>");
+            sb.AppendFormat("<td class=\"tdField\">备注:</td>");
             sb.AppendFormat("<td colspan=\"3\">{0}</td>", m.MARK);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("</table>");
@@ -1677,26 +1677,26 @@ namespace ManagerSystem.MVC.Controllers
                 p1Price = (p1Model != null && !string.IsNullOrEmpty(p1Model.P1PRICE)) ? p1Model.P1PRICE : "";
                 mark = (p1Model != null && !string.IsNullOrEmpty(p1Model.MARK)) ? p1Model.MARK : "";
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td>交通工具:</td>");
-                sb.AppendFormat("<td><select id=\"tbxP1CODE\" style=\"width: 99%;\" onchange=\"p1codeChange()\">{0}</select></td>", _dicStr);
-                sb.AppendFormat("<td>单位:</td>");
-                sb.AppendFormat("<td><input id=\"P1UNIT\" type=\"text\" value=\"" + p1Unit + "\" style=\"width:98%;\" /></td>");
+                sb.AppendFormat("<td class=\"tdField\">交通工具:</td>");
+                sb.AppendFormat("<td><select id=\"tbxP1CODE\" style=\"width: 95%;\" onchange=\"p1codeChange()\">{0}</select></td>", _dicStr);
+                sb.AppendFormat("<td class=\"tdField\">单位:</td>");
+                sb.AppendFormat("<td><input id=\"P1UNIT\" type=\"text\" value=\"" + p1Unit + "\" style=\"width:95%;\" /></td>");
                 sb.AppendFormat("</tr>");
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td id=\"td1\">飞行时间:</td>");
+                sb.AppendFormat("<td class=\"tdField\" id=\"td1\">飞行时间:</td>");
                 sb.AppendFormat("<td>");
                 sb.AppendFormat("{0}", "<input id=\"tbxP1COUNT\" type=\"text\" value=\"" + p1Count + "\" style=\"width:80%;\" />");
-                sb.AppendFormat("{0}", "<span style=\"color: gray;\" id=\"span1\">h</span>");
+                sb.AppendFormat("{0}", "<span class=\"spanMark\" id=\"span1\">h</span>");
                 sb.AppendFormat("</td>");
-                sb.AppendFormat("<td id=\"td2\">飞行费:</td>");
+                sb.AppendFormat("<td class=\"tdField\" id=\"td2\">飞行费:</td>");
                 sb.AppendFormat("<td>");
                 sb.AppendFormat("{0}", "<input id=\"tbxP1PRICE\" type=\"text\" value=\"" + p1Price + "\" style=\"width:80%;\" />");
-                sb.AppendFormat("{0}", "<span style=\"color: gray;\" id=\"span2\">元/h</span>");
+                sb.AppendFormat("{0}", "<span class=\"spanMark\" id=\"span2\">元/h</span>");
                 sb.AppendFormat("</td>");
                 sb.AppendFormat("</tr>");
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td>备注:</td>");
-                sb.AppendFormat("<td colspan=\"3\"><input id=\"tbxMARK\" type=\"text\" value=\"" + mark + "\" style=\"width:99%;\" /></td>");
+                sb.AppendFormat("<td class=\"tdField\">备注:</td>");
+                sb.AppendFormat("<td colspan=\"3\"><input id=\"tbxMARK\" type=\"text\" value=\"" + mark + "\" style=\"width:96%;\" /></td>");
                 sb.AppendFormat("</tr>");
             }
             #endregion
@@ -1718,20 +1718,20 @@ namespace ManagerSystem.MVC.Controllers
                 nowPrice = (p2Model != null && !string.IsNullOrEmpty(p2Model.NOWPRICE)) ? p2Model.NOWPRICE : "";
                 mark = (p2Model != null && !string.IsNullOrEmpty(p2Model.MARK)) ? p2Model.MARK : "";
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td>材料类别:</td>");
-                sb.AppendFormat("<td><select id=\"tbxP2CODE\" style=\"width: 98%;\" onchange=\"p2codeChange()\">{0}</select></td>", _dicStr);
-                sb.AppendFormat("<td>单位:</td>");
-                sb.AppendFormat("<td><input id=\"P2UNIT\" type=\"text\" value=\"" + p2Unit + "\" style=\"width:98%;\" /></td>");
+                sb.AppendFormat("<td class=\"tdField\">材料类别:</td>");
+                sb.AppendFormat("<td><select id=\"tbxP2CODE\" style=\"width: 95%;\" onchange=\"p2codeChange()\">{0}</select></td>", _dicStr);
+                sb.AppendFormat("<td class=\"tdField\">单位:</td>");
+                sb.AppendFormat("<td><input id=\"P2UNIT\" type=\"text\" value=\"" + p2Unit + "\" style=\"width:95%;\" /></td>");
                 sb.AppendFormat("</tr>");
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td>消耗量:</td>");
-                sb.AppendFormat("<td><input id=\"tbxP2COUNT\" type=\"text\" value=\"" + p2Count + "\" style=\"width:98%;\" /></td>");
-                sb.AppendFormat("<td>现行价格:</td>");
-                sb.AppendFormat("<td><input id=\"tbxNOWPRICE\" type=\"text\" value=\"" + nowPrice + "\" style=\"width:98%;\" /></td>");
+                sb.AppendFormat("<td class=\"tdField\">消耗量:</td>");
+                sb.AppendFormat("<td><input id=\"tbxP2COUNT\" type=\"text\" value=\"" + p2Count + "\" style=\"width:95%;\" /></td>");
+                sb.AppendFormat("<td class=\"tdField\">现行价格:</td>");
+                sb.AppendFormat("<td><input id=\"tbxNOWPRICE\" type=\"text\" value=\"" + nowPrice + "\" style=\"width:95%;\" /></td>");
                 sb.AppendFormat("</tr>");
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td>备注:</td>");
-                sb.AppendFormat("<td colspan=\"3\"><input id=\"tbxMARK\" type=\"text\" value=\"" + mark + "\" style=\"width:99%;\" /></td>");
+                sb.AppendFormat("<td class=\"tdField\">备注:</td>");
+                sb.AppendFormat("<td colspan=\"3\"><input id=\"tbxMARK\" type=\"text\" value=\"" + mark + "\" style=\"width:96%;\" /></td>");
                 sb.AppendFormat("</tr>");
             }
             #endregion
@@ -1753,29 +1753,29 @@ namespace ManagerSystem.MVC.Controllers
                 attackDays = (p3Model != null && !string.IsNullOrEmpty(p3Model.ATTACKDAYS)) ? p3Model.ATTACKDAYS : "";
                 mark = (p3Model != null && !string.IsNullOrEmpty(p3Model.MARK)) ? p3Model.MARK : "";
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td>食费类别:</td>");
-                sb.AppendFormat("<td><select id=\"tbxP3CODE\" style=\"width: 98%;\" onchange=\"p3codeChange()\">{0}</select></td>", _dicStr);
-                sb.AppendFormat("<td id=\"td1\">工资标准:</td>");
+                sb.AppendFormat("<td class=\"tdField\">食费类别:</td>");
+                sb.AppendFormat("<td><select id=\"tbxP3CODE\" style=\"width: 95%;\" onchange=\"p3codeChange()\">{0}</select></td>", _dicStr);
+                sb.AppendFormat("<td class=\"tdField\" id=\"td1\">工资标准:</td>");
                 sb.AppendFormat("<td>");
                 sb.AppendFormat("{0}", "<input id=\"tbxP3MONEY\" type=\"text\" value=\"" + p3Money + "\" style=\"width:80%;\" />");
-                sb.AppendFormat("{0}", "<span style=\"color: gray;\">元/d</span>");
+                sb.AppendFormat("{0}", "<span class=\"spanMark\">元/d</span>");
                 sb.AppendFormat("</td>");
                 sb.AppendFormat("</tr>");
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td>扑救人数:</td>");
+                sb.AppendFormat("<td class=\"tdField\">扑救人数:</td>");
                 sb.AppendFormat("<td>");
                 sb.AppendFormat("{0}", "<input id=\"tbxATTACKNUMBERS\" type=\"text\" value=\"" + attackNumbers + "\" style=\"width:80%;\" />");
-                sb.AppendFormat("{0}", "<span style=\"color: gray;\">人</span>");
+                sb.AppendFormat("{0}", "<span class=\"spanMark\">人</span>");
                 sb.AppendFormat("</td>");
-                sb.AppendFormat("<td>扑救天数:</td>");
+                sb.AppendFormat("<td class=\"tdField\">扑救天数:</td>");
                 sb.AppendFormat("<td>");
                 sb.AppendFormat("{0}", "<input id=\"tbxATTACKDAYS\" type=\"text\" value=\"" + attackDays + "\" style=\"width:80%;\" />");
-                sb.AppendFormat("{0}", "<span style=\"color: gray;\">d</span>");
+                sb.AppendFormat("{0}", "<span class=\"spanMark\">d</span>");
                 sb.AppendFormat("</td>");
                 sb.AppendFormat("</tr>");
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td>备注:</td>");
-                sb.AppendFormat("<td colspan=\"3\"><input id=\"tbxMARK\" type=\"text\" value=\"" + mark + "\" style=\"width:99%;\" /></td>");
+                sb.AppendFormat("<td class=\"tdField\">备注:</td>");
+                sb.AppendFormat("<td colspan=\"3\"><input id=\"tbxMARK\" type=\"text\" value=\"" + mark + "\" style=\"width:96%;\" /></td>");
                 sb.AppendFormat("</tr>");
             }
             #endregion
@@ -1799,32 +1799,32 @@ namespace ManagerSystem.MVC.Controllers
                 haveUserYear = (p4Model != null && !string.IsNullOrEmpty(p4Model.HAVEUSEYEAR)) ? p4Model.HAVEUSEYEAR : "";
                 mark = (p4Model != null && !string.IsNullOrEmpty(p4Model.MARK)) ? p4Model.MARK : "";
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td>器材类别:</td>");
-                sb.AppendFormat("<td><select id=\"tbxP4CODE\" style=\"width: 98%;\" onchange=\"p4codeChange()\">{0}</select></td>", _dicStr);
-                sb.AppendFormat("<td>单位:</td>");
-                sb.AppendFormat("<td><input id=\"P4UNIT\" type=\"text\" value=\"" + p4Unit + "\" style=\"width:98%;\" /></td>");
+                sb.AppendFormat("<td class=\"tdField\">器材类别:</td>");
+                sb.AppendFormat("<td><select id=\"tbxP4CODE\" style=\"width: 95%;\" onchange=\"p4codeChange()\">{0}</select></td>", _dicStr);
+                sb.AppendFormat("<td class=\"tdField\">单位:</td>");
+                sb.AppendFormat("<td><input id=\"P4UNIT\" type=\"text\" value=\"" + p4Unit + "\" style=\"width:95%;\" /></td>");
                 sb.AppendFormat("</tr>");
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td>现行价格:</td>");
+                sb.AppendFormat("<td class=\"tdField\">现行价格:</td>");
                 sb.AppendFormat("<td>");
                 sb.AppendFormat("{0}", "<input id=\"tbxNOWPRICE\" type=\"text\" value=\"" + nowPrice + "\" style=\"width:70%;\" />");
-                sb.AppendFormat("{0}", "<span style=\"color: gray;\">元/台或件</span>");
+                sb.AppendFormat("{0}", "<span class=\"spanMark\">元/台或件</span>");
                 sb.AppendFormat("</td>");
-                sb.AppendFormat("<td>数量:</td>");
-                sb.AppendFormat("<td><input id=\"tbxP4COUNT\" type=\"text\" value=\"" + p4Count + "\" style=\"width:99%;\" /></td>");
+                sb.AppendFormat("<td class=\"tdField\">数量:</td>");
+                sb.AppendFormat("<td><input id=\"tbxP4COUNT\" type=\"text\" value=\"" + p4Count + "\" style=\"width:95%;\" /></td>");
                 sb.AppendFormat("</tr>");
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td>年平均折旧率:</td>");
+                sb.AppendFormat("<td class=\"tdField\">年平均折旧率:</td>");
                 sb.AppendFormat("<td>");
                 sb.AppendFormat("{0}", "<input id=\"tbxDEPRECIATIONRATE\" type=\"text\" value=\"" + depreciationRate + "\" style=\"width:80%;\" />");
-                sb.AppendFormat("{0}", "<span style=\"color: gray;\">&nbsp;%</span>");
+                sb.AppendFormat("{0}", "<span class=\"spanMark\">&nbsp;%</span>");
                 sb.AppendFormat("</td>");
-                sb.AppendFormat("<td>已使用年限:</td>");
-                sb.AppendFormat("<td><input id=\"tbxHAVEUSEYEAR\" type=\"text\" value=\"" + haveUserYear + "\" style=\"width:99%;\" /></td>");
+                sb.AppendFormat("<td class=\"tdField\">已使用年限:</td>");
+                sb.AppendFormat("<td><input id=\"tbxHAVEUSEYEAR\" type=\"text\" value=\"" + haveUserYear + "\" style=\"width:95%;\" /></td>");
                 sb.AppendFormat("</tr>");
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td>备注:</td>");
-                sb.AppendFormat("<td colspan=\"3\"><input id=\"tbxMARK\" type=\"text\" value=\"" + mark + "\" style=\"width:99%;\" /></td>");
+                sb.AppendFormat("<td class=\"tdField\">备注:</td>");
+                sb.AppendFormat("<td colspan=\"3\"><input id=\"tbxMARK\" type=\"text\" value=\"" + mark + "\" style=\"width:96%;\" /></td>");
                 sb.AppendFormat("</tr>");
             }
             #endregion
@@ -1846,29 +1846,29 @@ namespace ManagerSystem.MVC.Controllers
                 elseMoney = (p5Model != null && !string.IsNullOrEmpty(p5Model.ELSEMONEY)) ? p5Model.ELSEMONEY : "";
                 mark = (p5Model != null && !string.IsNullOrEmpty(p5Model.MARK)) ? p5Model.MARK : "";
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td>管理费类别:</td>");
-                sb.AppendFormat("<td><select id=\"tbxP5CODE\" style=\"width: 99%;\" onchange=\"p5codeChange()\">{0}</select></td>", _dicStr);
-                sb.AppendFormat("<td>费用:</td>");
+                sb.AppendFormat("<td class=\"tdField\">管理费类别:</td>");
+                sb.AppendFormat("<td><select id=\"tbxP5CODE\" style=\"width: 95%;\" onchange=\"p5codeChange()\">{0}</select></td>", _dicStr);
+                sb.AppendFormat("<td class=\"tdField\">费用:</td>");
                 sb.AppendFormat("<td>");
                 sb.AppendFormat("{0}", "<input id=\"tbxP5MONEY\" type=\"text\" value=\"" + p5Money + "\" style=\"width:80%;\" />");
-                sb.AppendFormat("{0}", "<span style=\"color: gray;\" id=\"span1\">元/d</span>");
+                sb.AppendFormat("{0}", "<span class=\"spanMark\" id=\"span1\">元/d</span>");
                 sb.AppendFormat("</td>");
                 sb.AppendFormat("</tr>");
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td>救火天数:</td>");
+                sb.AppendFormat("<td class=\"tdField\">救火天数:</td>");
                 sb.AppendFormat("<td>");
                 sb.AppendFormat("{0}", "<input id=\"tbxATTACKDAYS\" type=\"text\" value=\"" + attackDays + "\" style=\"width:80%;\" />");
-                sb.AppendFormat("{0}", "<span style=\"color: gray;\">d</span>");
+                sb.AppendFormat("{0}", "<span class=\"spanMark\">d</span>");
                 sb.AppendFormat("</td>");
-                sb.AppendFormat("<td>其他费用:</td>");
+                sb.AppendFormat("<td class=\"tdField\">其他费用:</td>");
                 sb.AppendFormat("<td>");
                 sb.AppendFormat("{0}", "<input id=\"tbxELSEMONEY\" type=\"text\" value=\"" + elseMoney + "\" style=\"width:80%;\" />");
-                sb.AppendFormat("{0}", "<span style=\"color: gray;\">元</span>");
+                sb.AppendFormat("{0}", "<span class=\"spanMark\">元</span>");
                 sb.AppendFormat("</td>");
                 sb.AppendFormat("</tr>");
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td>备注:</td>");
-                sb.AppendFormat("<td colspan=\"3\"><input id=\"tbxMARK\" type=\"text\" value=\"" + mark + "\" style=\"width:98%;\" /></td>");
+                sb.AppendFormat("<td class=\"tdField\">备注:</td>");
+                sb.AppendFormat("<td colspan=\"3\"><input id=\"tbxMARK\" type=\"text\" value=\"" + mark + "\" style=\"width:95%;\" /></td>");
                 sb.AppendFormat("</tr>");
             }
             #endregion
@@ -1884,11 +1884,11 @@ namespace ManagerSystem.MVC.Controllers
                 string louseMoeny = (p6Model != null && !string.IsNullOrEmpty(p6Model.LOSEMONEYCOUNT)) ? p6Model.LOSEMONEYCOUNT : "";
                 string mark = (p6Model != null && !string.IsNullOrEmpty(p6Model.MARK)) ? p6Model.MARK : "";
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td>损失金额:</td>");
-                sb.AppendFormat("<td colspan=\"3\"><input id=\"tbxLOSEMONEY\" type=\"text\" value=\"" + louseMoeny + "\" style=\"width:98%;\" />");
+                sb.AppendFormat("<td class=\"tdField\">损失金额:</td>");
+                sb.AppendFormat("<td colspan=\"3\"><input id=\"tbxLOSEMONEY\" type=\"text\" value=\"" + louseMoeny + "\" style=\"width:95%;\" />");
                 sb.AppendFormat("</tr>");
-                sb.AppendFormat("<td>备注:</td>");
-                sb.AppendFormat("<td colspan=\"3\"><input id=\"tbxMARK\" type=\"text\" value=\"" + mark + "\" style=\"width:98%;\" /></td>");
+                sb.AppendFormat("<td class=\"tdField\">备注:</td>");
+                sb.AppendFormat("<td colspan=\"3\"><input id=\"tbxMARK\" type=\"text\" value=\"" + mark + "\" style=\"width:96%;\" /></td>");
                 sb.AppendFormat("</tr>");
             }
             #endregion
@@ -1906,7 +1906,7 @@ namespace ManagerSystem.MVC.Controllers
             string ATTACKTYPE = Request.Params["ATTACKTYPE"];
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<div class=\"divMan\" style=\"margin-left:5px;margin-top:8px\">");
-            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
+            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\" style=\"text-align:left;\">");
             string _dicName = T_SYS_DICTCls.getDicTypeName(new T_SYS_DICTTYPE_SW { DICTTYPEID = ATTACKTYPE });
 
             #region 车马船交通费
@@ -1914,15 +1914,15 @@ namespace ManagerSystem.MVC.Controllers
             {
                 FIRELOST_LOSTTYPE_ATTACK_P1_Model p1Model = FIRELOST_LOSTTYPE_ATTACK_P1Cls.getModel(new FIRELOST_LOSTTYPE_ATTACK_P1_SW { P1ID = PID });
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td style=\"width:15%\">名称:</td>");
+                sb.AppendFormat("<td class=\"tdField\" style=\"width:15%\">名称:</td>");
                 sb.AppendFormat("<td style=\"width:35%\">{0}</td>", p1Model.P1NAME);
-                sb.AppendFormat("<td style=\"width:15%\">费用类别:</td>");
+                sb.AppendFormat("<td class=\"tdField\" style=\"width:15%\">费用类别:</td>");
                 sb.AppendFormat("<td style=\"width:35%\">{0}</td>", _dicName);
                 sb.AppendFormat("</tr>");
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td>交通工具:</td>");
+                sb.AppendFormat("<td class=\"tdField\">交通工具:</td>");
                 sb.AppendFormat("<td>{0}</td>", p1Model.P1CODENAME);
-                sb.AppendFormat("<td>单位:</td>");
+                sb.AppendFormat("<td class=\"tdField\">单位:</td>");
                 sb.AppendFormat("<td>{0}</td>", p1Model.P1UNIT);
                 sb.AppendFormat("</tr>");
                 sb.AppendFormat("<tr>");
@@ -1948,13 +1948,13 @@ namespace ManagerSystem.MVC.Controllers
                     countName = "马租用时间";
                     priceName = "租赁费";
                 }
-                sb.AppendFormat("<td>{0}:</td>", countName);
+                sb.AppendFormat("<td class=\"tdField\">{0}:</td>", countName);
                 sb.AppendFormat("<td>{0}</td>", p1Model.P1COUNT + "h");
-                sb.AppendFormat("<td>{0}:</td>", priceName);
+                sb.AppendFormat("<td class=\"tdField\">{0}:</td>", priceName);
                 sb.AppendFormat("<td>{0}</td>", p1Model.P1PRICE + "元/h");
                 sb.AppendFormat("</tr>");
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td>备注:</td>");
+                sb.AppendFormat("<td class=\"tdField\">备注:</td>");
                 sb.AppendFormat("<td colspan=\"3\">{0}</td>", p1Model.MARK);
                 sb.AppendFormat("</tr>");
             }
@@ -1965,25 +1965,25 @@ namespace ManagerSystem.MVC.Controllers
             {
                 FIRELOST_LOSTTYPE_ATTACK_P2_Model p2Model = FIRELOST_LOSTTYPE_ATTACK_P2Cls.getModel(new FIRELOST_LOSTTYPE_ATTACK_P2_SW { P2ID = PID });
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td style=\"width:15%\">名称:</td>");
-                sb.AppendFormat("<td style=\"width:35%\">{0}</td>", p2Model.P2NAME);
-                sb.AppendFormat("<td style=\"width:15%\">费用类别:</td>");
+                sb.AppendFormat("<td class=\"tdField\" style=\"width:15%\">名称:</td>");
+                sb.AppendFormat("<td  style=\"width:35%\">{0}</td>", p2Model.P2NAME);
+                sb.AppendFormat("<td class=\"tdField\" style=\"width:15%\">费用类别:</td>");
                 sb.AppendFormat("<td style=\"width:35%\">{0}</td>", _dicName);
                 sb.AppendFormat("</tr>");
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td>材料类别:</td>");
+                sb.AppendFormat("<td class=\"tdField\">材料类别:</td>");
                 sb.AppendFormat("<td>{0}</td>", p2Model.P2CODENAME);
-                sb.AppendFormat("<td>单位:</td>");
+                sb.AppendFormat("<td class=\"tdField\">单位:</td>");
                 sb.AppendFormat("<td>{0}</td>", p2Model.P2UNIT);
                 sb.AppendFormat("</tr>");
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td>消耗量:</td>");
+                sb.AppendFormat("<td class=\"tdField\">消耗量:</td>");
                 sb.AppendFormat("<td>{0}</td>", p2Model.P2COUNT + p2Model.P2UNIT);
-                sb.AppendFormat("<td>现行价格:</td>");
+                sb.AppendFormat("<td class=\"tdField\">现行价格:</td>");
                 sb.AppendFormat("<td>{0}</td>", p2Model.NOWPRICE + "元/" + p2Model.P2UNIT);
                 sb.AppendFormat("</tr>");
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td>备注:</td>");
+                sb.AppendFormat("<td class=\"tdField\">备注:</td>");
                 sb.AppendFormat("<td colspan=\"3\">{0}</td>", p2Model.MARK);
                 sb.AppendFormat("</tr>");
             }
@@ -1994,30 +1994,30 @@ namespace ManagerSystem.MVC.Controllers
             {
                 FIRELOST_LOSTTYPE_ATTACK_P3_Model p3Model = FIRELOST_LOSTTYPE_ATTACK_P3Cls.getModel(new FIRELOST_LOSTTYPE_ATTACK_P3_SW { P3ID = PID });
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td style=\"width:15%\">名称:</td>");
+                sb.AppendFormat("<td class=\"tdField\" style=\"width:15%\">名称:</td>");
                 sb.AppendFormat("<td style=\"width:35%\">{0}</td>", p3Model.P3NAME);
-                sb.AppendFormat("<td style=\"width:15%\">费用类别:</td>");
+                sb.AppendFormat("<td class=\"tdField\" style=\"width:15%\">费用类别:</td>");
                 sb.AppendFormat("<td style=\"width:35%\">{0}</td>", _dicName);
                 sb.AppendFormat("</tr>");
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td>食费类别:</td>");
+                sb.AppendFormat("<td class=\"tdField\">食费类别:</td>");
                 sb.AppendFormat("<td>{0}</td>", p3Model.P3CODENAME);
                 string typeTile = "";
                 if (p3Model.P3CODE == "301")
                     typeTile = "工资标准";
                 if (p3Model.P3CODE == "302")
                     typeTile = "伙食标准";
-                sb.AppendFormat("<td>{0}:</td>", typeTile);
+                sb.AppendFormat("<td class=\"tdField\">{0}:</td>", typeTile);
                 sb.AppendFormat("<td>{0}</td>", p3Model.P3MONEY + "元/d");
                 sb.AppendFormat("</tr>");
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td>扑救人数:</td>");
+                sb.AppendFormat("<td class=\"tdField\">扑救人数:</td>");
                 sb.AppendFormat("<td>{0}</td>", p3Model.ATTACKNUMBERS + "人");
-                sb.AppendFormat("<td>扑救天数:</td>");
+                sb.AppendFormat("<td class=\"tdField\">扑救天数:</td>");
                 sb.AppendFormat("<td>{0}</td>", p3Model.ATTACKDAYS + "d");
                 sb.AppendFormat("</tr>");
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td>备注:</td>");
+                sb.AppendFormat("<td class=\"tdField\">备注:</td>");
                 sb.AppendFormat("<td colspan=\"3\">{0}</td>", p3Model.MARK);
                 sb.AppendFormat("</tr>");
             }
@@ -2028,31 +2028,31 @@ namespace ManagerSystem.MVC.Controllers
             {
                 FIRELOST_LOSTTYPE_ATTACK_P4_Model p4Model = FIRELOST_LOSTTYPE_ATTACK_P4Cls.getModel(new FIRELOST_LOSTTYPE_ATTACK_P4_SW { P4ID = PID });
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td style=\"width:15%\">名称:</td>");
+                sb.AppendFormat("<td class=\"tdField\" style=\"width:15%\">名称:</td>");
                 sb.AppendFormat("<td style=\"width:35%\">{0}</td>", p4Model.P4NAME);
-                sb.AppendFormat("<td style=\"width:15%\">费用类别:</td>");
+                sb.AppendFormat("<td class=\"tdField\" style=\"width:15%\">费用类别:</td>");
                 sb.AppendFormat("<td style=\"width:35%\">{0}</td>", _dicName);
                 sb.AppendFormat("</tr>");
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td>器材类别:</td>");
+                sb.AppendFormat("<td class=\"tdField\">器材类别:</td>");
                 sb.AppendFormat("<td>{0}</td>", p4Model.P4CODENAME);
-                sb.AppendFormat("<td>单位:</td>");
+                sb.AppendFormat("<td class=\"tdField\">单位:</td>");
                 sb.AppendFormat("<td>{0}</td>", p4Model.P4UNIT);
                 sb.AppendFormat("</tr>");
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td>现行价格:</td>");
+                sb.AppendFormat("<td class=\"tdField\">现行价格:</td>");
                 sb.AppendFormat("<td>{0}</td>", p4Model.NOWPRICE + "元/" + p4Model.P4UNIT);
-                sb.AppendFormat("<td>数量:</td>");
+                sb.AppendFormat("<td class=\"tdField\">数量:</td>");
                 sb.AppendFormat("<td>{0}</td>", p4Model.P4COUNT + p4Model.P4UNIT);
                 sb.AppendFormat("</tr>");
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td>年平均折旧率:</td>");
+                sb.AppendFormat("<td class=\"tdField\">年平均折旧率:</td>");
                 sb.AppendFormat("<td>{0}</td>", string.Format("{0:P}", float.Parse(p4Model.YEARAVGDEPRECIATIONRATE) / 100));
-                sb.AppendFormat("<td>已使用年限:</td>");
+                sb.AppendFormat("<td class=\"tdField\">已使用年限:</td>");
                 sb.AppendFormat("<td>{0}</td>", p4Model.HAVEUSEYEAR + "年");
                 sb.AppendFormat("</tr>");
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td>备注:</td>");
+                sb.AppendFormat("<td class=\"tdField\">备注:</td>");
                 sb.AppendFormat("<td colspan=\"3\">{0}</td>", p4Model.MARK);
                 sb.AppendFormat("</tr>");
             }
@@ -2063,25 +2063,25 @@ namespace ManagerSystem.MVC.Controllers
             {
                 FIRELOST_LOSTTYPE_ATTACK_P5_Model p5Model = FIRELOST_LOSTTYPE_ATTACK_P5Cls.getModel(new FIRELOST_LOSTTYPE_ATTACK_P5_SW { P5ID = PID });
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td style=\"width:15%\">名称:</td>");
+                sb.AppendFormat("<td class=\"tdField\" style=\"width:15%\">名称:</td>");
                 sb.AppendFormat("<td style=\"width:35%\">{0}</td>", p5Model.P5NAME);
-                sb.AppendFormat("<td style=\"width:15%\">费用类别:</td>");
+                sb.AppendFormat("<td class=\"tdField\" style=\"width:15%\">费用类别:</td>");
                 sb.AppendFormat("<td style=\"width:35%\">{0}</td>", _dicName);
                 sb.AppendFormat("</tr>");
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td>管理费类别:</td>");
+                sb.AppendFormat("<td class=\"tdField\">管理费类别:</td>");
                 sb.AppendFormat("<td>{0}</td>", p5Model.P5CODENAME);
-                sb.AppendFormat("<td>费用:</td>");
+                sb.AppendFormat("<td class=\"tdField\">费用:</td>");
                 sb.AppendFormat("<td>{0}</td>", p5Model.P5MONEY + "元/d");
                 sb.AppendFormat("</tr>");
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td>救火天数:</td>");
+                sb.AppendFormat("<td class=\"tdField\">救火天数:</td>");
                 sb.AppendFormat("<td>{0}</td>", p5Model.ATTACKDAYS + "d");
-                sb.AppendFormat("<td>其他费用:</td>");
+                sb.AppendFormat("<td class=\"tdField\">其他费用:</td>");
                 sb.AppendFormat("<td>{0}</td>", p5Model.ELSEMONEY + "元/h");
                 sb.AppendFormat("</tr>");
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td>备注:</td>");
+                sb.AppendFormat("<td class=\"tdField\">备注:</td>");
                 sb.AppendFormat("<td colspan=\"3\">{0}</td>", p5Model.MARK);
                 sb.AppendFormat("</tr>");
             }
@@ -2092,17 +2092,17 @@ namespace ManagerSystem.MVC.Controllers
             {
                 FIRELOST_LOSTTYPE_ATTACK_P6_Model p6Model = FIRELOST_LOSTTYPE_ATTACK_P6Cls.getModel(new FIRELOST_LOSTTYPE_ATTACK_P6_SW { P6ID = PID });
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td style=\"width:15%\">名称:</td>");
+                sb.AppendFormat("<td class=\"tdField\" style=\"width:15%\">名称:</td>");
                 sb.AppendFormat("<td style=\"width:35%\">{0}</td>", p6Model.P6NAME);
-                sb.AppendFormat("<td style=\"width:15%\">费用类别:</td>");
+                sb.AppendFormat("<td class=\"tdField\" style=\"width:15%\">费用类别:</td>");
                 sb.AppendFormat("<td style=\"width:35%\">{0}</td>", _dicName);
                 sb.AppendFormat("</tr>");
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td>损失金额:</td>");
+                sb.AppendFormat("<td class=\"tdField\">损失金额:</td>");
                 sb.AppendFormat("<td colspan=\"3\">{0}</td>", p6Model.LOSEMONEYCOUNT + "元");
                 sb.AppendFormat("</tr>");
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td>备注:</td>");
+                sb.AppendFormat("<td class=\"tdField\">备注:</td>");
                 sb.AppendFormat("<td colspan=\"3\">{0}</td>", p6Model.MARK);
                 sb.AppendFormat("</tr>");
             }
@@ -2329,31 +2329,31 @@ namespace ManagerSystem.MVC.Controllers
             for (int i = 0; i < dicList.Count / 2; i++)
             {
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td>{0}:</td>", dicList[i * 2].DICTNAME);
+                sb.AppendFormat("<td class=\"tdField\">{0}:</td>", dicList[i * 2].DICTNAME);
                 sb.AppendFormat("<td>");
                 FIRELOST_LOSTTYPE_CASUALTYDETAIL_Model m1 = detailList.Where(a => a.CASUALTYDETAILCODE == dicList[i * 2].DICTVALUE).FirstOrDefault();
                 string money1 = (m1 != null && !string.IsNullOrEmpty(m1.CASUALTYDETAIMONEY)) ? m1.CASUALTYDETAIMONEY : "";
                 sb.AppendFormat("{0}", "<input id=\"tbx" + dicList[i * 2].DICTVALUE + "\" type=\"text\" value=\"" + money1 + "\" style=\"width:85%;\" />");
-                sb.AppendFormat("{0}", "<span style=\"color: gray;\">&nbsp;元</span>");
+                sb.AppendFormat("{0}", "<span class=\"spanMark\">&nbsp;元</span>");
                 sb.AppendFormat("</td>");
-                sb.AppendFormat("<td>{0}:</td>", dicList[i * 2 + 1].DICTNAME);
+                sb.AppendFormat("<td class=\"tdField\">{0}:</td>", dicList[i * 2 + 1].DICTNAME);
                 sb.AppendFormat("<td>");
                 FIRELOST_LOSTTYPE_CASUALTYDETAIL_Model m2 = detailList.Where(a => a.CASUALTYDETAILCODE == dicList[i * 2 + 1].DICTVALUE).FirstOrDefault();
                 string money2 = (m2 != null && !string.IsNullOrEmpty(m2.CASUALTYDETAIMONEY)) ? m2.CASUALTYDETAIMONEY : "";
                 sb.AppendFormat("{0}", "<input id=\"tbx" + dicList[i * 2 + 1].DICTVALUE + "\" type=\"text\" value=\"" + money2 + "\" style=\"width:85%;\" />");
-                sb.AppendFormat("{0}", "<span style=\"color: gray;\">&nbsp;元</span>");
+                sb.AppendFormat("{0}", "<span class=\"spanMark\">&nbsp;元</span>");
                 sb.AppendFormat("</td>");
                 sb.AppendFormat("</tr>");
             }
             if (dicList.Count % 2 > 0)
             {
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td>{0}:</td>", dicList[dicList.Count - 1].DICTNAME);
+                sb.AppendFormat("<td class=\"tdField\">{0}:</td>", dicList[dicList.Count - 1].DICTNAME);
                 sb.AppendFormat("<td>");
                 FIRELOST_LOSTTYPE_CASUALTYDETAIL_Model m3 = detailList.Where(a => a.CASUALTYDETAILCODE == dicList[dicList.Count - 1].DICTVALUE).FirstOrDefault();
                 string money3 = (m3 != null && !string.IsNullOrEmpty(m3.CASUALTYDETAIMONEY)) ? m3.CASUALTYDETAIMONEY : "";
                 sb.AppendFormat("{0}", "<input  id=\"tbx" + dicList[dicList.Count - 1].DICTVALUE + "\" type=\"text\" value=\"" + money3 + "\" style=\"width:85%;\" />");
-                sb.AppendFormat("{0}", "<span style=\"color: gray;\">&nbsp;元</span>");
+                sb.AppendFormat("{0}", "<span class=\"spanMark\">&nbsp;元</span>");
                 sb.AppendFormat("</td>");
                 sb.AppendFormat("<td colspan=\"2\">");
                 sb.AppendFormat("</td>");
@@ -2384,23 +2384,23 @@ namespace ManagerSystem.MVC.Controllers
             List<T_SYS_DICTModel> dicList = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = m.CASUALTYCODE }).ToList();
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<div class=\"divMan\" style=\"margin-left:5px;margin-top:8px\">");
-            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
+            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\" style=\"text-align:left;\">");
 
             #region 人员伤亡基本信息
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td style=\"width:15%\">伤亡名称:</td>");
-            sb.AppendFormat("<td style=\"width:35%\">{0}</td>", m.CASUALTYNAME);
-            sb.AppendFormat("<td style=\"width:15%\">伤亡类别:</td>");
-            sb.AppendFormat("<td style=\"width:35%\">{0}</td>", m.CASUALTYCODENAME);
+            sb.AppendFormat("<td class=\"tdField\" style=\"width:20%\">伤亡名称:</td>");
+            sb.AppendFormat("<td style=\"width:30%\">{0}</td>", m.CASUALTYNAME);
+            sb.AppendFormat("<td class=\"tdField\" style=\"width:20%\">伤亡类别:</td>");
+            sb.AppendFormat("<td style=\"width:30%\">{0}</td>", m.CASUALTYCODENAME);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>伤亡人数:</td>");
+            sb.AppendFormat("<td class=\"tdField\">伤亡人数:</td>");
             sb.AppendFormat("<td>{0}</td>", m.CASUALTYNUMBERS);
-            sb.AppendFormat("<td>损失金额:</td>");
+            sb.AppendFormat("<td class=\"tdField\">损失金额:</td>");
             sb.AppendFormat("<td>{0}</td>", m.LOSEMONEYCOUNT + "元");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>备注:</td>");
+            sb.AppendFormat("<td class=\"tdField\">备注:</td>");
             sb.AppendFormat("<td colspan=\"3\">{0}</td>", m.MARK);
             sb.AppendFormat("</tr>");
             #endregion
@@ -2409,10 +2409,10 @@ namespace ManagerSystem.MVC.Controllers
             for (int i = 0; i < dicList.Count / 2; i++)
             {
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td>{0}:</td>", dicList[i * 2].DICTNAME);
+                sb.AppendFormat("<td class=\"tdField\">{0}:</td>", dicList[i * 2].DICTNAME);
                 FIRELOST_LOSTTYPE_CASUALTYDETAIL_Model m1 = detailList.Where(a => a.CASUALTYDETAILCODE == dicList[i * 2].DICTVALUE).FirstOrDefault();
                 sb.AppendFormat("<td>{0}</td>", (m1 != null && !string.IsNullOrEmpty(m1.CASUALTYDETAIMONEY)) ? m1.CASUALTYDETAIMONEY + "元" : "");
-                sb.AppendFormat("<td>{0}:</td>", dicList[i * 2 + 1].DICTNAME);
+                sb.AppendFormat("<td class=\"tdField\">{0}:</td>", dicList[i * 2 + 1].DICTNAME);
                 FIRELOST_LOSTTYPE_CASUALTYDETAIL_Model m2 = detailList.Where(a => a.CASUALTYDETAILCODE == dicList[i * 2 + 1].DICTVALUE).FirstOrDefault();
                 sb.AppendFormat("<td>{0}</td>", (m2 != null && !string.IsNullOrEmpty(m2.CASUALTYDETAIMONEY)) ? m2.CASUALTYDETAIMONEY + "元" : "");
                 sb.AppendFormat("</tr>");
@@ -2420,7 +2420,7 @@ namespace ManagerSystem.MVC.Controllers
             if (dicList.Count % 2 > 0)
             {
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td>{0}:</td>", dicList[dicList.Count - 1].DICTNAME);
+                sb.AppendFormat("<td class=\"tdField\">{0}:</td>", dicList[dicList.Count - 1].DICTNAME);
                 FIRELOST_LOSTTYPE_CASUALTYDETAIL_Model m3 = detailList.Where(a => a.CASUALTYDETAILCODE == dicList[dicList.Count - 1].DICTVALUE).FirstOrDefault();
                 sb.AppendFormat("<td>{0}</td>", (m3 != null && !string.IsNullOrEmpty(m3.CASUALTYDETAIMONEY)) ? m3.CASUALTYDETAIMONEY + "元" : "");
                 sb.AppendFormat("<td colspan=\"2\">");
@@ -2541,27 +2541,27 @@ namespace ManagerSystem.MVC.Controllers
             FIRELOST_LOSTTYPE_RESIDENTPROPERTY_Model m = FIRELOST_LOSTTYPE_RESIDENTPROPERTYCls.getModel(new FIRELOST_LOSTTYPE_RESIDENTPROPERTY_SW { RESIDENTPROPERTYID = ROPERTYID });
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<div class=\"divMan\" style=\"margin-left:5px;margin-top:8px\">");
-            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
+            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\" style=\"text-align:left;\">");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td style=\"width:15%\">财产名称:</td>");
+            sb.AppendFormat("<td class=\"tdField\" style=\"width:15%\">财产名称:</td>");
             sb.AppendFormat("<td style=\"width:35%\">{0}</td>", m.RESIDENTPROPERTYNAME);
-            sb.AppendFormat("<td style=\"width:15%\">损失金额:</td>");
+            sb.AppendFormat("<td class=\"tdField\" style=\"width:15%\">损失金额:</td>");
             sb.AppendFormat("<td style=\"width:35%\">{0}</td>", m.LOSEMONEYCOUNT + "元");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>损失数量:</td>");
+            sb.AppendFormat("<td class=\"tdField\">损失数量:</td>");
             sb.AppendFormat("<td>{0}</td>", m.LOSEMONEYCOUNT + m.RESIDENTPROPERTYUNIT);
-            sb.AppendFormat("<td>购入价(造价):</td>");
+            sb.AppendFormat("<td class=\"tdField\">购入价(造价):</td>");
             sb.AppendFormat("<td>{0}</td>", m.RESIDENTPROPERTYPRICE + "元/" + m.RESIDENTPROPERTYUNIT);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>年平均折旧率:</td>");
+            sb.AppendFormat("<td class=\"tdField\">年平均折旧率:</td>");
             sb.AppendFormat("<td>{0}</td>", string.Format("{0:P}", float.Parse(m.YEARAVGDEPRECIATIONRATE) / 100));
-            sb.AppendFormat("<td>已使用年限:</td>");
+            sb.AppendFormat("<td class=\"tdField\">已使用年限:</td>");
             sb.AppendFormat("<td>{0}</td>", m.HAVEUSEYEAR + "年");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>备注:</td>");
+            sb.AppendFormat("<td class=\"tdField\">备注:</td>");
             sb.AppendFormat("<td colspan=\"3\">{0}</td>", m.MARK);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("</table>");
@@ -2668,26 +2668,26 @@ namespace ManagerSystem.MVC.Controllers
             FIRELOST_LOSTTYPE_WILDANIMAL_Model m = FIRELOST_LOSTTYPE_WILDANIMALCls.getModel(new FIRELOST_LOSTTYPE_WILDANIMAL_SW { WILDANIMALID = DANIMALID });
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<div class=\"divMan\" style=\"margin-left:5px;margin-top:8px\">");
-            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
+            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\" style=\"text-align:left;\">");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td style=\"width:18%\">野生动物名称:</td>");
-            sb.AppendFormat("<td style=\"width:32%\">{0}</td>", m.WILDANIMALNAME);
-            sb.AppendFormat("<td style=\"width:18%\">损失金额:</td>");
-            sb.AppendFormat("<td style=\"width:32%\">{0}</td>", m.LOSEMONEYCOUNT + "元");
+            sb.AppendFormat("<td class=\"tdField\" style=\"width:20%\">野生动物名称:</td>");
+            sb.AppendFormat("<td style=\"width:30%\">{0}</td>", m.WILDANIMALNAME);
+            sb.AppendFormat("<td class=\"tdField\" style=\"width:20%\">损失金额:</td>");
+            sb.AppendFormat("<td style=\"width:30%\">{0}</td>", m.LOSEMONEYCOUNT + "元");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>烧死数量(头或只):</td>");
+            sb.AppendFormat("<td class=\"tdField\">烧死数量(头或只):</td>");
             sb.AppendFormat("<td>{0}</td>", m.WILDANIMALCOUNT);
-            sb.AppendFormat("<td>价格(元/头或只):</td>");
+            sb.AppendFormat("<td class=\"tdField\">价格(元/头或只):</td>");
             sb.AppendFormat("<td>{0}</td>", m.WILDANIMALPRICE);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>残值:</td>");
+            sb.AppendFormat("<td class=\"tdField\">残值:</td>");
             sb.AppendFormat("<td>{0}</td>", m.RESIDUALVALUE + "元");
             sb.AppendFormat("<td colspan=\"2\"></td>");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>备注:</td>");
+            sb.AppendFormat("<td class=\"tdField\">备注:</td>");
             sb.AppendFormat("<td colspan=\"3\">{0}</td>", m.MARK);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("</table>");
@@ -2815,15 +2815,15 @@ namespace ManagerSystem.MVC.Controllers
             FIRELOST_LOSTTYPE_STOPREDUCTION_Model m = FIRELOST_LOSTTYPE_STOPREDUCTIONCls.getModel(new FIRELOST_LOSTTYPE_STOPREDUCTION_SW { STOPREDUCTIONID = STOPID });
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<div class=\"divMan\" style=\"margin-left:5px;margin-top:8px\">");
-            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
+            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\" style=\"text-align:left;\">");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td style=\"width:15%\">停(减)产名称:</td>");
+            sb.AppendFormat("<td class=\"tdField\" style=\"width:15%\">停(减)产名称:</td>");
             sb.AppendFormat("<td style=\"width:35%\">{0}</td>", m.STOPREDUCTIONNAME);
-            sb.AppendFormat("<td style=\"width:15%\">停(减)产类别:</td>");
+            sb.AppendFormat("<td class=\"tdField\" style=\"width:15%\">停(减)产类别:</td>");
             sb.AppendFormat("<td style=\"width:35%\">{0}</td>", m.STOPREDUCTIONCODENAME);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>损失金额:</td>");
+            sb.AppendFormat("<td class=\"tdField\">损失金额:</td>");
             sb.AppendFormat("<td>{0}</td>", m.LOSEMONEYCOUNT + "元");
             string countTilte = "", timeTitle = "", priceTitle = "";
             string stopCount = m.STOPREDUCTIONCOUNT, stopTime = m.STOPREDUCTIONTIME, stopPrice = m.STOPREDUCTIONPRICE;
@@ -2854,17 +2854,17 @@ namespace ManagerSystem.MVC.Controllers
                 stopTime += "d";
                 stopPrice += "元/d";
             }
-            sb.AppendFormat("<td>{0}:</td>", countTilte);
+            sb.AppendFormat("<td class=\"tdField\">{0}:</td>", countTilte);
             sb.AppendFormat("<td>{0}</td>", stopCount);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>{0}:</td>", timeTitle);
+            sb.AppendFormat("<td class=\"tdField\">{0}:</td>", timeTitle);
             sb.AppendFormat("<td>{0}</td>", stopTime);
-            sb.AppendFormat("<td>{0}:</td>", priceTitle);
+            sb.AppendFormat("<td class=\"tdField\">{0}:</td>", priceTitle);
             sb.AppendFormat("<td>{0}</td>", stopPrice);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>备注:</td>");
+            sb.AppendFormat("<td class=\"tdField\">备注:</td>");
             sb.AppendFormat("<td colspan=\"3\">{0}</td>", m.MARK);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("</table>");
@@ -2972,20 +2972,20 @@ namespace ManagerSystem.MVC.Controllers
             FIRELOST_LOSTTYPE_LOSTPROCESS_Model m = FIRELOST_LOSTTYPE_LOSTPROCESSCls.getModel(new FIRELOST_LOSTTYPE_LOSTPROCESS_SW { LOSTPROCESSID = PROCESSID });
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<div class=\"divMan\" style=\"margin-left:5px;margin-top:8px\">");
-            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
+            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\" style=\"text-align:left;\">");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td style=\"width:15%\">灾后处理名称:</td>");
+            sb.AppendFormat("<td class=\"tdField\" style=\"width:15%\">灾后处理名称:</td>");
             sb.AppendFormat("<td style=\"width:35%\">{0}</td>", m.LOSTPROCESSNAME);
-            sb.AppendFormat("<td style=\"width:15%\">灾后处理类别:</td>");
+            sb.AppendFormat("<td class=\"tdField\" style=\"width:15%\">灾后处理类别:</td>");
             sb.AppendFormat("<td style=\"width:35%\">{0}</td>", m.LOSTPROCESSCODENAME);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>损失金额:</td>");
+            sb.AppendFormat("<td class=\"tdField\">损失金额:</td>");
             sb.AppendFormat("<td>{0}</td>", m.LOSEMONEYCOUNT + "元");
             sb.AppendFormat("<td colspan=\"2\"></td>");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>备注:</td>");
+            sb.AppendFormat("<td class=\"tdField\">备注:</td>");
             sb.AppendFormat("<td colspan=\"3\">{0}</td>", m.MARK);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("</table>");
@@ -3014,6 +3014,41 @@ namespace ManagerSystem.MVC.Controllers
         }
         #endregion
 
+        #endregion
+
+        #region 灾损评估新
+        /// <summary>
+        /// 灾损评估新
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult FireLostAssessNew()
+        {
+            string JCFID = Request.Params["JCFID"];
+            FIRERECORD_FIREINFO_Model m;
+            FIRELOST_FIREINFO_Model model;
+            T_SYS_DICTTYPE_Model dicType501;
+            GetModelandDicType(JCFID, out m, out model, out dicType501);
+            string dicCount = "";
+            if (dicType501 != null && dicType501.DICTTYPEListModel.Count() > 0)
+            {
+                for (int x = 0; x < dicType501.DICTTYPEListModel.Count(); x++)
+                {
+                    if (dicType501.DICTTYPEListModel[x].DICTListModel.Count() > 0)
+                        dicCount += T_SYS_DICTCls.getDicValueStr(dicType501.DICTTYPEListModel[x].DICTListModel) + ";";
+                    else
+                        dicCount += "0" + ";";
+                }
+            }
+            if (dicCount.Length > 0)
+                dicCount = dicCount.Substring(0, dicCount.Length - 1);
+            ViewBag.dicType501 = dicType501;
+            ViewBag.dicCount = dicCount;
+            ViewBag.JCFID = m.JCFID;
+            ViewBag.FIRECODE = m.FIRECODE;
+            ViewBag.ORGNAME = m.ORGNAME;
+            ViewBag.FIRETIME = m.FIRETIME;
+            return View(model);
+        }
         #endregion
 
         #region Private
@@ -3069,41 +3104,41 @@ namespace ManagerSystem.MVC.Controllers
             List<FIRELOST_LOSTTYPECOUNT_Model> templist = FIRELOST_LOSTTYPECOUNTCls.getListModel(new FIRELOST_LOSTTYPECOUNT_SW { FIRELOST_FIREINFOID = model.FIRELOST_FIREINFOID }).ToList();
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<div class=\"divMan\" style=\"margin-left:5px;margin-top:8px\">");
-            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
+            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\" style=\"text-align:left;\">");
             sb.AppendFormat("<thead><tr><th colspan=\"4\">森林火灾损失汇总表</th></tr></thead>");
             sb.AppendFormat("<tbody>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td class=\"center\" style=\"width: 25%\">森林火灾编号</td>");
-            sb.AppendFormat("<td class=\"left\" style=\"width: 25%\"  colspan=\"3\">{0}</td>", m.FIRECODE);
+            sb.AppendFormat("<td class=\"tdField\" style=\"width: 25%\">森林火灾编号</td>");
+            sb.AppendFormat("<td style=\"width: 25%\" colspan=\"3\">{0}</td>", m.FIRECODE);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td class=\"center\" style=\"width: 25%\">起火单位</td>");
-            sb.AppendFormat("<td class=\"center\" style=\"width: 25%\">{0}</td>", m.ORGNAME);
-            sb.AppendFormat("<td class=\"center\" style=\"width: 25%\">起火时间</td>");
-            sb.AppendFormat("<td class=\"center\" style=\"width: 25%\">{0}</td>", m.FIRETIME);
+            sb.AppendFormat("<td  class=\"tdField\" style=\"width:25%\">起火单位</td>");
+            sb.AppendFormat("<td style=\"width:25%\">{0}</td>", m.ORGNAME);
+            sb.AppendFormat("<td class=\"tdField\" style=\"width:25%\">起火时间</td>");
+            sb.AppendFormat("<td style=\"width:25%\">{0}</td>", m.FIRETIME);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td class=\"center\">火场面积/hm²</td>");
-            sb.AppendFormat("<td class=\"center\">{0}</td>", model.FIREAREA);
-            sb.AppendFormat("<td class=\"center\">森林火灾受害面积/hm²</td>");
-            sb.AppendFormat("<td class=\"center\">{0}</td>", model.FIRELOSEAREA);
+            sb.AppendFormat("<td class=\"tdField\">火场面积/hm²</td>");
+            sb.AppendFormat("<td>{0}</td>", model.FIREAREA);
+            sb.AppendFormat("<td class=\"tdField\">森林火灾受害面积/hm²</td>");
+            sb.AppendFormat("<td>{0}</td>", model.FIRELOSEAREA);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td class=\"center\">伤(亡)人数/人</td>");
-            sb.AppendFormat("<td class=\"center\">{0}</td>", model.CASUALTYCOUNT);
-            sb.AppendFormat("<td class=\"center\">损失林木蓄积/hm²</td>");
-            sb.AppendFormat("<td class=\"center\">{0}</td>", model.XJLLOSE);
+            sb.AppendFormat("<td class=\"tdField\">伤(亡)人数/人</td>");
+            sb.AppendFormat("<td>{0}</td>", model.CASUALTYCOUNT);
+            sb.AppendFormat("<td class=\"tdField\">损失林木蓄积/hm²</td>");
+            sb.AppendFormat("<td >{0}</td>", model.XJLLOSE);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td class=\"center\">建筑物(或构建物)<br />损失量/m²</td>");
-            sb.AppendFormat("<td class=\"center\">{0}</td>", model.BUILDINGLOSECOUNT);
-            sb.AppendFormat("<td class=\"center\">机械设备损失量/<br />台、件</td>");
-            sb.AppendFormat("<td class=\"center\">{0}</td>", model.MACHINERYLOSECOUNT);
+            sb.AppendFormat("<td class=\"tdField\">建筑物(或构建物)损失量/m²</td>");
+            sb.AppendFormat("<td>{0}</td>", model.BUILDINGLOSECOUNT);
+            sb.AppendFormat("<td class=\"tdField\">机械设备损失量/台、件</td>");
+            sb.AppendFormat("<td>{0}</td>", model.MACHINERYLOSECOUNT);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td colspan=\"2\" class=\"center\">损失分类</td>");
-            sb.AppendFormat("<td class=\"center\">损失金额(元)</td>");
-            sb.AppendFormat("<td class=\"center\">备注</td>");
+            sb.AppendFormat("<td colspan=\"2\" class=\"center tdField\">损失分类</td>");
+            sb.AppendFormat("<td class=\"center tdField\">损失金额(元)</td>");
+            sb.AppendFormat("<td class=\"center tdField\">备注</td>");
             sb.AppendFormat("</tr>");
             if (dicType501 != null && dicType501.DICTTYPEListModel.Count > 0)
             {
@@ -3116,10 +3151,10 @@ namespace ManagerSystem.MVC.Controllers
                         string louseMoney1 = (m1 != null && !string.IsNullOrEmpty(m1.LOSEMONEY)) ? m1.LOSEMONEY : "";
                         string mark1 = (m1 != null && !string.IsNullOrEmpty(m1.MARK)) ? m1.MARK : "";
                         sb.AppendFormat("<tr>");
-                        sb.AppendFormat("<td rowspan=\"{1}\" class=\"center\">{0}</td>", type.DICTTYPENAME, rowCount);
-                        sb.AppendFormat("<td class=\"left\">{0}</td>", type.DICTListModel[0].DICTNAME);
-                        sb.AppendFormat("<td class=\"center\">{0}</td>", louseMoney1);
-                        sb.AppendFormat("<td class=\"center\">{0}</td>", mark1);
+                        sb.AppendFormat("<td rowspan=\"{1}\" class=\"tdField\">{0}</td>", type.DICTTYPENAME, rowCount);
+                        sb.AppendFormat("<td class=\"tdField\">{0}</td>", type.DICTListModel[0].DICTNAME);
+                        sb.AppendFormat("<td>{0}</td>", louseMoney1);
+                        sb.AppendFormat("<td>{0}</td>", mark1);
                         sb.AppendFormat("</tr>");
                         for (int i = 1; i < rowCount; i++)
                         {
@@ -3127,35 +3162,35 @@ namespace ManagerSystem.MVC.Controllers
                             string louseMoney2 = (m2 != null && !string.IsNullOrEmpty(m2.LOSEMONEY)) ? m2.LOSEMONEY : "";
                             string mark2 = (m2 != null && !string.IsNullOrEmpty(m2.MARK)) ? m2.MARK : "";
                             sb.AppendFormat("<tr>");
-                            sb.AppendFormat("<td class=\"left\">{0}</td>", type.DICTListModel[i].DICTNAME);
-                            sb.AppendFormat("<td class=\"center\">{0}</td>", louseMoney2);
-                            sb.AppendFormat("<td class=\"center\">{0}</td>", mark2);
+                            sb.AppendFormat("<td class=\"tdField\">{0}</td>", type.DICTListModel[i].DICTNAME);
+                            sb.AppendFormat("<td>{0}</td>", louseMoney2);
+                            sb.AppendFormat("<td>{0}</td>", mark2);
                             sb.AppendFormat("</tr>");
                         }
                     }
                 }
             }
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td colspan=\"2\" class=\"center\">损失总计</td>");
-            sb.AppendFormat("<td colspan=\"2\" class=\"center\">{0}元</td>", model.LOSSCOUNT);
+            sb.AppendFormat("<td class=\"tdField\" colspan=\"2\">损失总计</td>");
+            sb.AppendFormat("<td colspan=\"2\">{0}元</td>", model.LOSSCOUNT);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td colspan=\"2\" class=\"center\">森林资源损失率/%</td>");
-            sb.AppendFormat("<td colspan=\"2\" class=\"center\">{0}</td>", model.FORESTRESOURCELOSSRATIO);
+            sb.AppendFormat("<td class=\"tdField\" colspan=\"2\">森林资源损失率</td>");
+            sb.AppendFormat("<td colspan=\"2\">{0}</td>", model.FORESTRESOURCELOSSRATIO);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td colspan=\"2\" class=\"center\">人均损失价值<br />元/人</td>");
-            sb.AppendFormat("<td colspan=\"2\" class=\"center\">{0}</td>", model.AVGLOSSPERCATITAVALUE);
+            sb.AppendFormat("<td class=\"tdField\" colspan=\"2\">人均损失价值</td>");
+            sb.AppendFormat("<td colspan=\"2\">{0}元/人</td>", model.AVGLOSSPERCATITAVALUE);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td colspan=\"2\" class=\"center\">林地损失平均价值量<br />元/hm²</td>");
-            sb.AppendFormat("<td colspan=\"2\" class=\"center\">{0}</td>", model.WOODLANDLOSSAVGVALUE);
+            sb.AppendFormat("<td class=\"tdField\" colspan=\"2\">林地损失平均价值量</td>");
+            sb.AppendFormat("<td colspan=\"2\">{0}元/hm²</td>", model.WOODLANDLOSSAVGVALUE);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td colspan=\"2\" class=\"center\">扑火成效比<br />%</td>");
-            sb.AppendFormat("<td colspan=\"2\" class=\"center\">{0}</td>", model.FIRESUPPEFFECTTHAN);
+            sb.AppendFormat("<td class=\"tdField\" colspan=\"2\">扑火成效比</td>");
+            sb.AppendFormat("<td colspan=\"2\">{0}</td>", model.FIRESUPPEFFECTTHAN);
             sb.AppendFormat("</tr>");
-            sb.AppendFormat(" </tbody>");
+            sb.AppendFormat("</tbody>");
             sb.AppendFormat("</table>");
             sb.AppendFormat("</div>");
             return sb.ToString();

@@ -15,7 +15,7 @@
                 <div class="divOP">
                     <div class="home">
                         主题:<input id="tbxEMAILTITLE" type="text" style="width:200px" value="@ViewBag.EMAILTITLE" />
-                        <input type="button" value="搜索" onclick="query()" class="btnSearchCss" />
+                        <input type="button" value="查询" onclick="query()" class="btnSearchCss" />
                         <input type="button" value="删除" onclick="Manager('Del')" class="btnDelCss" />
                     </div>
                 </div>
@@ -57,25 +57,32 @@
             }
         });
     }
+
     function Manager(Method) {
         var check_val = $("input:checkbox[name='chk1']:checked").map(function (index, elem) { return $(elem).val(); }).get().join(',');
-        $.ajax({
-            url: '/Email/EmailDraftDEL',
-            data: {EMAILID: check_val,Method: Method,},
-            success: function (data) {
-                var ar = eval('(' + data + ')');
-                if (ar.Success) {
-                    if (confirm(ar.Msg + ' 请返回?')) {
-                        window.location.reload();
+        if (check_val.length > 0) {
+            layer.confirm('确实要删除吗?', { icon: 3, title: '提示' }, function (index) {
+                $.ajax({
+                    url: '/Email/EmailDraftDEL',
+                    data: { EMAILID: check_val, Method: Method, },
+                    success: function (data) {
+                        var ar = eval('(' + data + ')');
+                        if (ar.Success) {
+                            layer.msg(ar.Msg, { icon: 6 });
+                            window.location.reload();
+                        }
+                        else {
+                            layer.msg(ar.Msg, { icon: 5 });
+                        }
+                    },
+                    error: function (err, ioArgs) {
+                        layer.msg('删除异常!', { icon: 5 });
                     }
-                }
-                else {
-                    layer.msg(ar.Msg, { icon: 5 });
-                }
-            },
-            error: function (err, ioArgs) {
-                layer.msg('保存异常!', { icon: 5 });
-            }
-        });
+                });
+            });
+        }
+        else {
+            layer.msg('请选择要删除的草稿!', { icon: 5 });
+        }
     }
 </script>

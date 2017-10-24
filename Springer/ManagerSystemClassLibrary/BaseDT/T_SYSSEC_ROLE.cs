@@ -16,6 +16,7 @@ namespace ManagerSystemClassLibrary.BaseDT
     /// </summary>
     public class T_SYSSEC_ROLE
     {
+        #region 增、删、改
         /// <summary>
         /// 添加
         /// </summary>
@@ -23,7 +24,6 @@ namespace ManagerSystemClassLibrary.BaseDT
         /// <returns>参见模型</returns>
         public static Message Add(T_SYSSEC_ROLE_Model m)
         {
-
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("INSERT INTO  T_SYSSEC_ROLE(ROLENAME, ROLENOTE, SYSFLAG,ROLELEVEL, ORDERBY)");
             sb.AppendFormat("VALUES(");
@@ -35,10 +35,11 @@ namespace ManagerSystemClassLibrary.BaseDT
             sb.AppendFormat(")");
             bool bln = DataBaseClass.ExeSql(sb.ToString());
             if (bln == true)
-                return new Message(true, "添加成功！", "");
+                return new Message(true, "添加成功!", "");
             else
-                return new Message(false, "添加失败，请检查各输入框是否正确！", "");
+                return new Message(false, "添加失败，请检查各输入框是否正确!", "");
         }
+
         /// <summary>
         /// 修改
         /// </summary>
@@ -46,7 +47,6 @@ namespace ManagerSystemClassLibrary.BaseDT
         /// <returns>参见模型</returns>
         public static Message Mdy(T_SYSSEC_ROLE_Model m)
         {
-
             StringBuilder sb = new StringBuilder();
             //(ORGNO,LOGINUSERNAME,USERNAME,USERPWD,REGISTERTIME,LOGINNUM,NOTE)
             sb.AppendFormat("UPDATE T_SYSSEC_ROLE");
@@ -57,13 +57,13 @@ namespace ManagerSystemClassLibrary.BaseDT
             sb.AppendFormat(",ORDERBY='{0}'", ClsSql.EncodeSql(m.ORDERBY));
             sb.AppendFormat(" where ROLEID= '{0}'", ClsSql.EncodeSql(m.ROLEID));
             sb.AppendFormat(" and SYSFLAG= '{0}'", ClsSql.EncodeSql(m.SYSFLAG));
-
             bool bln = DataBaseClass.ExeSql(sb.ToString());
             if (bln == true)
-                return new Message(true, "修改成功！", "");
+                return new Message(true, "修改成功!", "");
             else
-                return new Message(false, "修改失败，请检查各输入框是否正确！", "");
+                return new Message(false, "修改失败，请检查各输入框是否正确!", "");
         }
+
         /// <summary>
         /// 删除
         /// </summary>
@@ -77,17 +77,19 @@ namespace ManagerSystemClassLibrary.BaseDT
             sb.AppendFormat(" and SYSFLAG= '{0}'", ClsSql.EncodeSql(m.SYSFLAG));
             bool bln = DataBaseClass.ExeSql(sb.ToString());
             if (bln == true)
-                return new Message(true, "删除成功！", "");
+                return new Message(true, "删除成功!", "");
             else
-                return new Message(false, "删除失败，请检查各输入框是否正确！", "");
-        }
+                return new Message(false, "删除失败，请检查各输入框是否正确!", "");
+        } 
+        #endregion
+
+        #region 获取数据,获取所有角色
         /// <summary>
         /// 获取数据,获取所有角色
         /// </summary>
         /// <returns>参见模型</returns>
         public static DataTable getDT(T_SYSSEC_ROLE_SW sw)
         {
-
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("SELECT    ROLEID, ROLENAME, ROLENOTE, SYSFLAG,ROLELEVEL, ORDERBY");
             sb.AppendFormat(" FROM      T_SYSSEC_ROLE");
@@ -109,7 +111,10 @@ namespace ManagerSystemClassLibrary.BaseDT
 
             DataSet ds = DataBaseClass.FullDataSet(sb.ToString());
             return ds.Tables[0];
-        }
+        } 
+        #endregion
+
+        #region 根据编码获取名称
         /// <summary>
         /// 根据编码获取名称
         /// </summary>
@@ -127,6 +132,7 @@ namespace ManagerSystemClassLibrary.BaseDT
             if (dr.Length > 0)
                 str = dr[0]["ROLENAME"].ToString();
             return str;
-        } 
+        }  
+        #endregion
     }
 }

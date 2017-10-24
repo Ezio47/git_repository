@@ -13,13 +13,13 @@
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
                 <div class="divOP">
                     <div class="home">
-                        主题:<input id="tbxEMAILTITLE" type="text" style="width:200px" value="@ViewBag.EMAILTITLE" />
-                        处理结果：<select id="tbxEMAILRECEIVESTATUS" style="width:90px">
+                        主题:<input id="tbxEMAILTITLE" type="text" style="width:200px" value="@ViewBag.EMAILTITLE" />&nbsp;&nbsp;&nbsp;
+                        处理结果：<select id="tbxEMAILRECEIVESTATUS" style="width:90px" onchange="query()">
                             <option value="0,1">全部</option>
                             <option value="0">未读</option>
                             <option value="1">已读</option>
                         </select>
-                        <input type="button" value="搜索" onclick="query()" class="btnSearchCss" />
+                        <input type="button" value="查询" onclick="query()" class="btnSearchCss" />
                         <input type="button" value="删除" onclick="Manager('SendMdy')" class="btnDelCss" />
                     </div>
                 </div>
@@ -40,6 +40,7 @@
 
 <script type="text/javascript">
     document.getElementById("tbxEMAILRECEIVESTATUS").value = '@ViewBag.EMAILRECEIVESTATUS';
+
     function query() {
         $.ajax({
             url: '/Email/EmailRecieveListQuery',
@@ -66,27 +67,31 @@
     }
 
     function Manager() {
-        var check_val = $("input:checkbox[name='chk1']:checked").map(function (index, elem) {
-            return $(elem).val();
-        }).get().join(',');
-        $.ajax({
-            url: '/Email/EmailRECManger',
-            data: { ERID: check_val, Method: 'SendMdy' },
-            type: 'post',
-            success: function (data) {
-                var ar = eval('(' + data + ')');
-                if (ar.Success) {
-                    if (confirm(ar.Msg + ' 请返回?')) {
-                        window.location.reload();
+        var check_val = $("input:checkbox[name='chk1']:checked").map(function (index, elem) { return $(elem).val(); }).get().join(',');
+        if (check_val.length > 0) {
+            layer.confirm('确实要删除吗?', { icon: 3, title: '提示' }, function (index) {
+                $.ajax({
+                    url: '/Email/EmailRECManger',
+                    data: { ERID: check_val, Method: 'SendMdy' },
+                    type: 'post',
+                    success: function (data) {
+                        var ar = eval('(' + data + ')');
+                        if (ar.Success) {
+                            layer.msg(ar.Msg, { icon: 6 });
+                            window.location.reload();
+                        }
+                        else {
+                            layer.msg(ar.Msg, { icon: 5 });
+                        }
+                    },
+                    error: function (err, ioArgs) {
+                        layer.msg('删除异常!', { icon: 5 });
                     }
-                }
-                else {
-                    layer.msg(ar.Msg, { icon: 5 });
-                }
-            },
-            error: function (err, ioArgs) {
-                layer.msg('保存异常!', { icon: 5 });
-            }
-        });
+                });
+            });
+        }
+        else {
+            layer.msg('请选择要删除的邮件!', { icon: 5 });
+        }
     }
 </script>

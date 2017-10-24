@@ -303,7 +303,7 @@ namespace ManagerSystemClassLibrary.BaseDT
             }
             else
             {
-                ms = new Message(false, "保存失败，事物回滚!", "");
+                ms = new Message(false, "保存失败,事物回滚!", "");
             }
             return ms;
         }
@@ -437,7 +437,6 @@ namespace ManagerSystemClassLibrary.BaseDT
                 ms = new Message(false, "处理失败，事物回滚机制!", "");
             }
             return ms;
-
         }
         #endregion
 

@@ -45,9 +45,12 @@ namespace ManagerSystemSearchWhereModel
        public string BYORGNO { get; set; }
        /// <summary>
        /// 是否有效
-       /// </summary>
-       
+       /// </summary>     
        public string ISENABLE { get; set; }
+       /// <summary>
+       /// 需巡检距离
+       /// </summary>
+       public string PATROLLENGTH { get; set; }
        /// <summary>
        /// 护林员和电话号码
        /// </summary>

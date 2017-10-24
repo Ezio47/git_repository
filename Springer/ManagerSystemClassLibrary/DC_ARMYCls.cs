@@ -188,7 +188,6 @@ namespace ManagerSystemClassLibrary
                 if (m.BYORGNO.Substring(6,9)!="000000000")
                 {
                     m.ORGName = BaseDT.T_SYS_ORG.getName(dtORG, m.BYORGNO);
-                    
                 }
                 m.ORGXSName = BaseDT.T_SYS_ORG.getSXName(dtORG, m.BYORGNO);
                 m.ARMYTYPEName = BaseDT.T_SYS_DICT.getName(dt26, m.ARMYTYPE);

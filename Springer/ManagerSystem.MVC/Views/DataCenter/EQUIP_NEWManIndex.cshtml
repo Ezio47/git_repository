@@ -1,0 +1,401 @@
+﻿@using ManagerSystemClassLibrary;
+@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+    var curorgno = SystemCls.getCurUserOrgNo();
+    if (curorgno.Substring(6, 9) == "000000000" && curorgno.Substring(4, 2) != "00")
+    {
+        curorgno = curorgno.Substring(0, 6) + "xxxxxxxxx";
+    }
+    else
+    {
+        curorgno = SystemCls.getCurUserOrgNo();
+    }
+    var curorgno1 = SystemCls.getCurUserOrgNo();//添加的时候组织机判断
+}
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'center'" title="" style=" border: none; ">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="homeUL">
+                        <input type="button" value="保存" onclick="Manager()" id="btnSave" class="btnSaveCss">
+                    </div>
+                </div>
+            </div>
+
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <div class="divMan">
+                    <table cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td style="width:80px;" class="tdField">
+                                单位名称：
+                            </td>
+                            <td>
+                                <select id="BYORGNO" class="easyui-combotree" style="width:200px;"></select>
+                            </td>
+                            <td style="width:80px;" class="tdField">
+                                装备类型：
+                            </td>
+                            <td>
+                                <select id="EQUIPTYPE">
+                                    @Html.Raw(@ViewBag.equiptypeadd)
+                                </select>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="width:80px;" class="tdField">
+                                @*<span style="color:red;">*</span>*@
+                                名称：
+                            </td>
+                            <td>
+                                <input type="text" id="NAME" class="input-small" value="" />
+                                <span class="spanRequiredField">*</span>
+                            </td>
+                            <td style="width:80px;" class="tdField">
+                                @*<span style="color:red;">*</span>*@
+                                编号：
+                            </td>
+                            <td>
+                                <input id="NUMBER" type="text" class="input-small" value="" />
+                                <span class="spanRequiredField">*</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:80px;" class="tdField">
+                                @*<span style="color:red;">*</span>*@
+                                型号：
+                            </td>
+                            <td>
+                                <input id="MODEL" type="text" class="input-small" value="" />
+                                <span class="spanRequiredField">*</span>
+                            </td>
+                            <td style="width:80px;" class="tdField">
+                                购买年份：
+                            </td>
+                            <td>
+                                <input class="easyui-datebox" id="BUYYEAR" type="text" style="width:90px;height:28px;" value="" />
+                            </td>
+                            @*<td style="width:80px;" class="tdField">
+                                    使用现状：
+                                </td>
+                                <td>
+                                    <select id="USESTATE">
+                                        @Html.Raw(@ViewBag.useatateadd)
+                                    </select>
+                                </td>*@
+                        </tr>
+                        <tr>
+                            <td style="width:80px;" class="tdField">
+                                所属仓库：
+                            </td>
+                            <td>
+                                <select id="REPID" onchange="GetJD()">
+                                    @Html.Raw(@ViewBag.repository)
+                                </select>
+                            </td>
+                            <td style="width:80px;" class="tdField">
+                                储存地点：
+                            </td>
+                            <td>
+                                <input id="STOREADDR" type="text" class="input-small" value="" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:80px;" class="tdField">
+                                使用现状：
+                            </td>
+                            <td>
+                                <select id="USESTATE">
+                                    @Html.Raw(@ViewBag.useatateadd)
+                                </select>
+                            </td>
+                            <td style="width:80px;" class="tdField">
+                                数量：
+                            </td>
+                            <td>
+                                <input id="EQUIPAMOUNT" type="text" class="input-small" value="" />
+                                <select id="DCSUPPROPUNIT">
+                                    @Html.Raw(@ViewBag.Unit)
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:80px;" class="tdField">
+                                单价：
+                            </td>
+                            <td>
+                                <input id="PRICE" type="text" class="input-small" value="" onblur="jsfunc(this)" />
+                                <span class="spanRequiredField">*</span><span class="spanMark">元</span>
+                            </td>
+                            <td style="width:80px;" class="tdField">
+                                总价：
+                            </td>
+                            <td>
+                                <input id="WORTH" type="text" class="input-small" value="" readonly /><span class="spanMark">元</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:80px;" class="tdField">
+                                经度：
+                            </td>
+                            <td>
+                                <input id="JD" type="text" class="input-small" value="" />
+                            </td>
+                            <td style="width:80px;" class="tdField">
+                                纬度：
+                            </td>
+                            <td>
+                                <input id="WD" type="text" class="input-small" value="" />
+                                <input type="button" value="地图定位" onclick="setPoint()" class="btnMapLoaclCss" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:80px;" class="tdField">
+                                备注：
+                            </td>
+                            <td colspan="3">
+                                <input id="MARK" style="width:97%" type="text" class="input-small" value="" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $('#BYORGNO').combotree({
+            url: '/DataCenter/OnlyOrgTreeget',
+            editable: false,
+            required: true,
+            panelHeight: 300,
+            onLoadSuccess: function (node, data) {
+                var t = $("#BYORGNO").combotree('tree');//获取tree
+                t.tree("collapseAll");
+                node = t.tree("find", data[0].id);
+                t.tree("expand", node.target);//展开节点 expandTo
+            }
+        });
+        $('#BYORGNO').combotree('setValue', "@curorgno1");
+    });
+    if ('@ViewBag.T_Method' == "Del") {
+        Manager();
+    }
+    if ('@ViewBag.T_Method' == 'Mdy') {
+        $.ajax({
+            url: '/DataCenter/GetEquipNewjson',
+            cache: false,
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: { DC_EQUIP_NEW_ID: '@ViewBag.ID' },
+            success: function (data, ioArgs) {
+                var data = eval('(' + data + ')');
+                if (data.DC_EQUIP_NEW_ID != null) {
+                    document.getElementById("EQUIPTYPE").value = data.EQUIPTYPE;
+                    document.getElementById("NUMBER").value = data.NUMBER;
+                    document.getElementById("NAME").value = data.NAME;
+                    //document.getElementById("BYORGNO").value = data.BYORGNO;
+                    $('#BYORGNO').combotree('setValue', data.BYORGNO);
+                    document.getElementById("MODEL").value = data.MODEL;
+                    //document.getElementById("BUYYEAR").value = data.BUYYEAR;
+                    document.getElementById("USESTATE").value = data.USESTATE;
+                    document.getElementById("STOREADDR").value = data.STOREADDR;
+                    document.getElementById("MARK").value = data.MARK;
+                    document.getElementById("JD").value = data.JD;
+                    document.getElementById("WD").value = data.WD;
+                    document.getElementById("WORTH").value = data.WORTH;
+                    document.getElementById("EQUIPAMOUNT").value = data.EQUIPAMOUNT;
+                    $('#BUYYEAR').datebox('setValue', data.BUYYEAR);
+                    document.getElementById("REPID").value = data.REPID;
+                    document.getElementById("DCSUPPROPUNIT").value = data.DCSUPPROPUNIT;
+                    document.getElementById("PRICE").value = data.PRICE;
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('登录异常');
+            }
+        });
+    }
+
+    function GetJD() {
+        var repid = $('#REPID').val();
+        if (repid != "") {
+            $.ajax({
+                type: "Post",
+                url: "/DataCenter/GetREPOSITORYjson",
+                data: {
+                    DCREPOSITORYID: repid,
+                },
+                dataType: "json",
+                error: function () {
+                    layer.msg('错误:异常!', 'error');
+                },
+                success: function (re) {
+                    $('#JD').val(re.JD);
+                    $('#WD').val(re.WD);
+                }
+            });
+        }
+        else {
+            $('#JD').val("");
+            $('#WD').val("");
+        }
+
+    }
+
+    function setPoint() {
+        var name = document.getElementById("NAME").value;
+        var jd = document.getElementById("JD").value;
+        var wd = document.getElementById("WD").value;
+        parent.layer.open({
+            type: 2,
+            title: name + '地图位置设置',
+            btn: ['保存', '关闭'],
+            area: ['1000px', '600px'],
+            fix: true, //不固定
+            maxmin: true,
+            content: '/MapCommon/GetMapPontIndex?jd=' + jd + "&wd=" + wd,
+            shade: 0,
+            yes: function (index, layero) { //或者使用btn1
+                //按钮【按钮一】的回调
+                var ptxt = parent.layer.getChildFrame("p", index);
+                var arr = ptxt.html().split(',');
+                if ($.trim(arr) != "") {
+                    var jd = parseFloat(arr[0]).toFixed(6);
+                    var wd = parseFloat(arr[1]).toFixed(6);
+                    $('#JD').val(jd);
+                    $('#WD').val(wd);
+                }
+                parent.layer.close(index);
+            }, cancel: function (index) {
+                parent.layer.close(index);
+            }
+        });
+    }
+    function Manager() {
+        var t1 = $('#JD').val();
+        var t2 = $('#WD').val();
+        var t3 = $('#EQUIPAMOUNT ').val();
+        var t7 = $('#WORTH').val();
+        var t5 = $('#NAME').val();
+        var t6 = $('#NUMBER').val();
+        var t4 = $('#PRICE').val();
+        var t8 = $('#MODEL').val();
+        if ($.trim(t1) != "") {
+            reg = /^-?\d+\.\d{1,6}$/;
+            if (!reg.test(t1)) {
+                layer.msg('经度格式不正确！', { icon: 5 });
+                $('#JD').focus();
+                return;
+            }
+        }
+        if ($.trim(t2) != "") {
+            reg = /^-?\d+\.\d{1,6}$/;
+            if (!reg.test(t2)) {
+                layer.msg('纬度格式不正确！', { icon: 5 });
+                $('#WD').focus();
+                return;
+            }
+        }
+        if ($.trim(t5) == "") {
+            layer.msg('请填写名称！', { icon: 5 });
+            $('#NAME').focus();
+            return;
+        }
+        if ($.trim(t6) == "") {
+            layer.msg('请填写编号！', { icon: 5 });
+            $('#NUMBER').focus();
+            return;
+        }
+        if ($.trim(t8) == "") {
+            layer.msg('请填写型号！', { icon: 5 });
+            $('#MODEL').focus();
+            return;
+        }
+        if ($.trim(t3) != "") {
+            if (CheckINT($.trim(t3)) == false) {
+                layer.msg('数量请填写整数！', { icon: 5 });
+                $('#EQUIPAMOUNT ').focus();
+                return;
+            }
+        }
+        if ($.trim(t4) == "") {
+            layer.msg('请填写单价！', { icon: 5 });
+            $('#PRICE').focus();
+            return;
+        }
+        if ($.trim(t4) != "") {
+            if (CheckNUM($.trim(t7)) == false) {
+                layer.msg('单价请填写数字！', { icon: 5 });
+                $('#PRICE ').focus();
+                return;
+            }
+        }
+
+        if ($.trim(t7) != "") {
+            if (CheckNUM($.trim(t7)) == false) {
+                layer.msg('总价请填写数字！', { icon: 5 });
+                $('#WORTH ').focus();
+                return;
+            }
+        }
+
+        $.ajax({
+            type: "Post",
+            url: "/DataCenter/EquipNewManager",
+            data: {
+                DC_EQUIP_NEW_ID: '@ViewBag.ID',
+                Method: '@ViewBag.T_Method',
+                EQUIPTYPE: document.getElementById("EQUIPTYPE").value,
+                NUMBER: document.getElementById("NUMBER").value,
+                NAME: document.getElementById("NAME").value,
+                //BYORGNO: document.getElementById("BYORGNO").value,
+                BYORGNO: $('#BYORGNO').combotree('getValue'),
+                MODEL: document.getElementById("MODEL").value,
+                //BUYYEAR: document.getElementById("BUYYEAR").value,
+                USESTATE: document.getElementById("USESTATE").value,
+                STOREADDR: document.getElementById("STOREADDR").value,
+                MARK: document.getElementById("MARK").value,
+                JD: document.getElementById("JD").value,
+                WD: document.getElementById("WD").value,
+                WORTH: document.getElementById("WORTH").value,
+                EQUIPAMOUNT: document.getElementById("EQUIPAMOUNT").value,
+                REPID: document.getElementById("REPID").value,
+                DCSUPPROPUNIT: document.getElementById("DCSUPPROPUNIT").value,
+                BUYYEAR: $('#BUYYEAR').datebox('getValue'),
+                PRICE: document.getElementById("PRICE").value,
+            },
+            dataType: "json",
+            success: function (data) {
+                if (data.Success) {
+                    parent.layer.msg(data.Msg, { icon: 6 });
+                    var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                    parent.layer.close(index);
+                }
+                else {
+                    layer.msg(data.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('保存异常!');
+            }
+        });
+    }
+
+    //自动计算总价
+    function jsfunc(obj) {
+        var count = $('#EQUIPAMOUNT').val();
+        var price = $('#PRICE').val();
+        if ($.trim(count) == "" || $.trim(price) == "") {
+            $('#WORTH').val('');
+        }
+        var currency = (Number(price) * Number(count)).toFixed(2);//总金额
+        //var str = "<font color='red'>" + currency + "</font>";
+        $('#WORTH').val(currency);
+
+    }
+</script>
+
+

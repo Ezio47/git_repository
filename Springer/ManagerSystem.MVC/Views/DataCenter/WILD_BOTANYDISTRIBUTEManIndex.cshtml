@@ -1,0 +1,215 @@
+﻿@using ManagerSystemClassLibrary;
+@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+    var curorgno1 = SystemCls.getCurUserOrgNo();//添加的时候组织机判断
+}
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'center'" title="" style=" border: none; ">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="homeUL">
+                        <input type="button" value="保存" onclick="Manager()" id="btnSave" class="btnSaveCss">
+                    </div>
+                </div>
+            </div>
+
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <div class="divMan">
+                    <table cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td style="width:80px;" class="tdField">
+                                植物：
+                            </td>
+                            <td>
+                                <select id="tbxGICALTYPECODE">
+                                    @Html.Raw(@ViewBag.BOTANYAdd)
+                                </select>
+                            </td>
+                            <td style="width:80px;" class="tdField">
+                                单位名称：
+                            </td>
+                            <td>
+                                <select id="BYORGNO" class="easyui-combotree" style="width:180px;"></select>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="width:80px;" class="tdField"> 经度： </td>
+                            <td><input id="JD" type="text" class="input-small" value="" /></td>
+                            <td style="width:80px;" class="tdField"> 纬度：</td>
+                            <td>
+                                <input id="WD" type="text" class="input-small" value="" />
+                                <input type="button" value="所在位置" onclick="setPoint()" class="btnMapLoaclCss" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="width:80px;" class="tdField">
+                                族群：
+                            </td>
+                            <td>
+                                <select id="tbxPOPULATIONTYPE">
+                                    @Html.Raw(@ViewBag.POPULATIONTYPEadd)
+                                </select>
+                            </td>
+                            <td style="width:80px;" class="tdField">
+                                植物数量：
+                            </td>
+                            <td>
+                                <input id="BOTANYCOUNT" type="text" class="input-small" value="" />
+                            </td>
+                        </tr>
+
+
+
+                        <tr>
+                            <td style="width:80px;" class="tdField">
+                                面积：
+                            </td>
+                            <td>
+                                <input id="BOTANYAREA" type="text" class="input-small" value="" />
+                                <span class="spanMark">km²</span>
+                            </td>
+                            <td style="width:80px;" class="tdField">
+                                备注：
+                            </td>
+                            <td>
+                                <input id="MARK" type="text" class="input-small" value="" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $('#BYORGNO').combotree({
+            url: '/DataCenter/OnlyOrgTreeget',
+            editable: false,
+            required: true,
+            panelHeight: 300,
+            onLoadSuccess: function (node, data) {
+                var t = $("#BYORGNO").combotree('tree');//获取tree
+                t.tree("collapseAll");
+                node = t.tree("find", data[0].id);
+                t.tree("expand", node.target);//展开节点 expandTo
+            }
+        });
+        $('#BYORGNO').combotree('setValue', "@curorgno1");
+    });
+    if ('@ViewBag.T_Method' == "Del") {
+        Manager();
+    }
+    if ('@ViewBag.T_Method' == 'Mdy') {
+        $.ajax({
+            url: '/DataCenter/GetWILD_BOTANYDISTRIBUTEjson',
+            cache: false,
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: { WILD_BOTANYDISTRIBUTEID: '@ViewBag.ID' },
+            success: function (data, ioArgs) {
+                var data = eval('(' + data + ')');
+                if (data.WILD_BOTANYDISTRIBUTEID != null) {
+                    //$('#tbxGICALTYPECODE').combotree('setValue', data.GICALTYPECODE);
+                    document.getElementById("tbxGICALTYPECODE").value = data.BIOLOGICALTYPECODE;
+                    document.getElementById("tbxPOPULATIONTYPE").value = data.POPULATIONTYPE;
+                    $('#BYORGNO').combotree('setValue', data.BYORGNO);
+                    document.getElementById("BOTANYCOUNT").value = data.BOTANYCOUNT;
+                    document.getElementById("BOTANYAREA").value = data.BOTANYAREA;
+                    document.getElementById("MARK").value = data.MARK;
+                    document.getElementById("JD").value = data.JD;
+                    document.getElementById("WD").value = data.WD;
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('登录异常');
+            }
+        });
+    }
+    function setPoint() {
+        //var name = document.getElementById("NAME").value;
+        var jd = document.getElementById("JD").value;
+        var wd = document.getElementById("WD").value;
+        parent.layer.open({
+            type: 2,
+            title: '地图位置设置',
+            btn: ['保存', '关闭'],
+            area: ['1000px', '600px'],
+            fix: true, //不固定
+            maxmin: true,
+            content: '/MapCommon/GetMapPontIndex?jd=' + jd + "&wd=" + wd,
+            shade: 0,
+            yes: function (index, layero) { //或者使用btn1
+                //按钮【按钮一】的回调
+                var ptxt = parent.layer.getChildFrame("p", index);
+                var arr = ptxt.html().split(',');
+                if ($.trim(arr) != "") {
+                    var jd = parseFloat(arr[0]).toFixed(6);
+                    var wd = parseFloat(arr[1]).toFixed(6);
+                    $('#JD').val(jd);
+                    $('#WD').val(wd);
+                }
+                parent.layer.close(index);
+            }, cancel: function (index) {
+                parent.layer.close(index);
+            }
+        });
+    }
+   
+    function Manager() {
+        var t1 = $('#BOTANYCOUNT').val();
+        if ($.trim(t1) != "") {
+            if (CheckNUM($.trim(t1)) == false) {
+                layer.msg('数量请填写数字！', { icon: 5 });
+                $('#BOTANYCOUNT').focus();
+                return;
+            }
+        }
+        var t2 = $('#BOTANYAREA').val();
+        if ($.trim(t2) != "") {
+            if (CheckNUM($.trim(t2)) == false) {
+                layer.msg('面积请填写数字！', { icon: 5 });
+                $('#BOTANYAREA').focus();
+                return;
+            }
+        }
+        $.ajax({
+            type: "Post",
+            url: "/DataCenter/WILD_BOTANYDISTRIBUTEManager",
+            data: {
+                WILD_BOTANYDISTRIBUTEID: '@ViewBag.ID',
+                Method: '@ViewBag.T_Method',
+                //BIOLOGICALTYPECODE: $('#tbxGICALTYPECODE').combotree('getValue'),
+                BIOLOGICALTYPECODE: document.getElementById("tbxGICALTYPECODE").value,
+                POPULATIONTYPE: document.getElementById("tbxPOPULATIONTYPE").value,
+                BYORGNO: $('#BYORGNO').combotree('getValue'),
+                JD: document.getElementById("JD").value,
+                WD: document.getElementById("WD").value,
+                BOTANYCOUNT: document.getElementById("BOTANYCOUNT").value,
+                BOTANYAREA: document.getElementById("BOTANYAREA").value,
+                MARK: document.getElementById("MARK").value,
+            },
+            dataType: "json",
+            success: function (data) {
+                if (data.Success) {
+                    parent.layer.msg(data.Msg, { icon: 6 });
+                    var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                    parent.layer.close(index);
+                }
+                else {
+                    layer.msg(data.Msg);
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('保存异常!');
+            }
+        });
+    }
+</script>
+
+
+
+

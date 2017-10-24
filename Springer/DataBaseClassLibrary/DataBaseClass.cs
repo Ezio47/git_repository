@@ -9,7 +9,6 @@ using System.Web;
 using System.Configuration;
 namespace DataBaseClassLibrary
 {
-    ///xbh
     /// <summary>
     /// 数据库操作类
     /// 创建人：叶磊
@@ -141,7 +140,7 @@ namespace DataBaseClassLibrary
         public static bool JudgeRecordExists(string sql)
         {
             bool bln = false;
-            DataSet ds = FullDataSet(sql );
+            DataSet ds = FullDataSet(sql);
             if (ds.Tables[0].Rows.Count > 0)
                 bln = true;
             ds.Clear();

@@ -36,10 +36,8 @@ namespace ManagerSystem.MVC.Controllers
             StringBuilder sb = new StringBuilder();
 
             #region 天气预报
-            sb.AppendFormat("<h1 style=\"margin-left:20px\"><b>天气预报</b></h1>");
             sb.AppendFormat("<table id=\"tableweather\" cellpadding=\"0\" cellspacing=\"0\">");
             sb.AppendFormat("<thead>");
-            sb.AppendFormat("<tr><th colspan=\"6\">红河州森林火险气象等级预报</th></tr>");
             sb.AppendFormat("<tr><th>区域</th><th>天气</th><th>气温</th><th>风向风速</th><th>火险等级</th><th>日期</th></tr>");
             sb.AppendFormat("</thead>");
             sb.AppendFormat("<tbody>");
@@ -79,7 +77,7 @@ namespace ManagerSystem.MVC.Controllers
                     }
                     if (YJ_DANGERCLASSCls.isExists(new YJ_DANGERCLASS_SW { DCDATE = DCDATE, TOWNNAME = arr[0] }))
                     {
-                        return Content(@"<script>alert('导入失败，该日期已经有数据！');window.location.href='FireLevelIndex';</script>");
+                        return Content(@"<script>alert('导入失败，该日期已经有数据!');window.location.href='FireLevelIndex';</script>");
                     }
                     else
                     {
@@ -133,17 +131,17 @@ namespace ManagerSystem.MVC.Controllers
                 }
             }
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td colspan=\"6\" class=\"cneter\">{0}</td>", "<input type=\"button\" value=\"保存\" id=\"addWeather\" onclick=\"SaveFireLevel()\" class=\"btnSaveCss\" />");
+            sb.AppendFormat("<td colspan=\"6\" class=\"center\">{0}</td>", "<input type=\"button\" value=\"保存\" id=\"addWeather\" onclick=\"SaveFireLevel()\" class=\"btnSaveCss\" />");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("</tbody>");
             sb.AppendFormat("</table>");
             #endregion
 
+            sb.AppendFormat("<br /><br />");
+
             #region 卫星热点
-            sb.AppendFormat("<h1 style=\"margin-left:20px\"><b>卫星热点</b></h1>");
             sb.AppendFormat("<table id=\"Satellite\" cellpadding=\"0\" cellspacing=\"0\">");
             sb.AppendFormat("<thead>");
-            sb.AppendFormat("<tr><th colspan=\"6\">红河州卫星热点监测</th></tr>");
             sb.AppendFormat("<tr><th>区域</th><th>火点像元个数(像素)</th> <th>经度</th><th>纬度</th><th>日期</th></tr>");
             sb.AppendFormat("</thead>");
             sb.AppendFormat("<tbody>");
@@ -367,7 +365,7 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult FireLevelInput()
         {
-            pubViewBag("021003", "021003", "火险等级录入");
+            pubViewBag("021003", "021003", "");
             if (ViewBag.isPageRight == false)
                 return View();
             var DCDATE = Request.Params["DCDATE"];
@@ -386,7 +384,6 @@ namespace ManagerSystem.MVC.Controllers
 
             #region 表头
             sb.AppendFormat("<thead>");
-            sb.AppendFormat("<tr><th colspan=\"6\">红河州森林火险气象等级预报</th></tr>");
             sb.AppendFormat("<tr><th>区域</th><th>天气</th><th>气温</th><th>风向风速</th><th>火险等级</th><th>时间</th></tr>");
             sb.AppendFormat("</thead>");
             #endregion

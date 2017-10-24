@@ -1,0 +1,103 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+}
+@section Header{
+    <script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'center'" title="" class="LayoutCenterBG">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home">
+                        <ul>
+                            <li class="active">
+                                @using (@Html.BeginForm("FIRECHANNELList", "DataCenter", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                                {
+                                    <input name="file" style="width:130px;" type="file" id="file" class="btn btn-info btn-sm" />
+                                    <button type="submit" name="Upload" value="导入" class="btnInputCss">预览</button>
+                                }
+                            <li class="active">
+                                <a href="~/UploadFile/DataCenterExcel/防火通道模板.xls" target="_blank" title="右键，另存为">下载模板</a>
+                            </li>
+                            <li class="homeUL">
+                                <input type="button" value="保存" onclick="Upload()" class="btnUnEnableCss" />
+                            </li>
+                        </ul>
+                    </div>
+                </div>;
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+                <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+                    <div data-options="region:'center'" title="" style=" border: none; ">
+                        <div class="divTable">
+                            @Html.Raw(@ViewBag.FIRECHANNELList)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var Num = '@ViewBag.row';
+
+    function Upload() {
+        if (Num == "0") {
+            layer.msg("请先导入的防火通道表格预览后操作!", { icon: 5 });
+            return false;
+        }
+        var arr = new Array();
+        var len = $("#FIRECHANNELList tr").length - 3;
+        for (var i = len; i >= 0; i--) {
+            $.ajax({
+                url:'/DataCenter/FIRECHANNELUpload',
+                timeout: 10000, //10秒后超时，如果为0则永不超时,
+                async: false,
+                data: {
+                    BYORGNOName: $("table").find("tr").eq(i + 2).find("input").eq(0).val(),
+                    LENGTH:$("table").find("tr").eq(i + 2).find("input").eq(2).val(),
+                    NAME: $("table").find("tr").eq(i + 2).find("input").eq(1).val(),
+                    NUMBER: $("table").find("tr").eq(i + 2).find("input").eq(3).val(),
+                    USESTATEName: $("table").find("tr").eq(i + 2).find("input").eq(4).val(),
+                    MANAGERSTATEName: $("table").find("tr").eq(i + 2).find("input").eq(5).val(),
+                    FIRECHANNELLEVELTYPEName: $("table").find("tr").eq(i + 2).find("input").eq(6).val(),
+                    FIRECHANNELUSERTYPEName: $("table").find("tr").eq(i + 2).find("input").eq(7).val(),
+                    WORTH: $("table").find("tr").eq(i + 2).find("input").eq(9).val(),
+                    BUILDDATE: $("table").find("tr").eq(i + 2).find("input").eq(8).val(),
+                    State: $("table").find("tr").eq(i + 2).find("input").eq(10).val(),
+                },
+                dataType: 'json',
+                success: function (data, ioArgs) {
+                    if (data.Success) {
+                        $("table").find("tr").eq(i + 2).find("input").eq(10).val("成功");
+                        $("table").find("tr").eq(i + 2).remove();
+                        arr.push("0");
+                    }
+                    else {
+                        $("table").find("tr").eq(i + 2).find("input").eq(10).val(data.Msg);
+                        arr.push("1");
+                    }
+                },
+                error: function (err, ioArgs) {
+                    layer.msg("保存异常!", { icon: 5 });
+                }
+            });
+        }
+        if (arr.indexOf("1") == -1) {
+            parent.layer.msg("全部导入成功!", { icon: 6 });
+            var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+            parent.layer.close(index);
+        }
+        else {
+            parent.layer.msg("表格中数据有错误,请仔细检查!", { icon: 5 });
+        }
+    }
+</script>
+
+
+
+

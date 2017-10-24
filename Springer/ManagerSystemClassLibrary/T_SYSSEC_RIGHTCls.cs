@@ -125,9 +125,7 @@ namespace ManagerSystemClassLibrary
         /// <returns>参见模型</returns>
         private static IEnumerable<T_SYSSEC_RIGHT_ByRole_Model> getRightByRoleTmpModel(DataTable dt, DataTable dtRole, string rightid)
         {
-
             var result = new List<T_SYSSEC_RIGHT_ByRole_Model>();
-
             DataRow[] dr = dt.Select("len(RIGHTID)=" + (rightid.Length + 3).ToString() + "  AND SUBSTRING(RIGHTID,1," + (rightid.Length).ToString() + ")='" + rightid + "'", "ORDERBY");
             for (int i = 0; i < dr.Length; i++)
             {
@@ -148,7 +146,6 @@ namespace ManagerSystemClassLibrary
         /// <returns>参见模型</returns>
         public static IEnumerable<T_SYSSEC_RIGHT_ByRole_Model> getRightByRoleModel(T_SYSSEC_ROLE_RIGHT_SW sw)
         {
-
             DataTable dtRight = BaseDT.T_SYSSEC_RIGHT.getDT(new T_SYSSEC_RIGHT_SW { SYSFLAG = ConfigCls.getSystemFlag() });
             DataTable dtRoleRight = BaseDT.T_SYSSEC_ROLE_RIGHT.getDT(new T_SYSSEC_ROLE_RIGHT_SW { ROLEID = sw.ROLEID });
             return getRightByRoleTmpModel(dtRight, dtRoleRight, "");
@@ -218,7 +215,5 @@ namespace ManagerSystemClassLibrary
         }
 
         #endregion
-
-
     }
 }

@@ -26,6 +26,10 @@ namespace ManagerSystem.MVC.Controllers
     {
         private ILog logs = LogHelper.GetInstance();
 
+        #region 面积单位
+        private string dic113Name = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "113" }).ToList()[0].DICTNAME;
+        #endregion
+
         #region 主页
         public ActionResult Index()
         {
@@ -177,16 +181,11 @@ namespace ManagerSystem.MVC.Controllers
             //默认为添加
             T_SYS_NOTICE_Model m = new T_SYS_NOTICE_Model();
             if (string.IsNullOrEmpty(Method))
-            {
                 Method = "Add";
-            }
             if (string.IsNullOrEmpty(INFOTITLE))
-                return Content(JsonConvert.SerializeObject(new Message(false, "请输入标题！", "")), "text/html;charset=UTF-8");
+                return Content(JsonConvert.SerializeObject(new Message(false, "请输入标题!", "")), "text/html;charset=UTF-8");
             if (Method == "Add")
-            {
-                // m.FBTIME = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 m.NUM = "0";
-            }
             m.FBTIME = FBTIME;
             m.INFOID = INFOID;
             m.INFOTITLE = INFOTITLE;
@@ -345,12 +344,12 @@ namespace ManagerSystem.MVC.Controllers
             if (Method == "Add" || Method == "Mdy")
             {
                 if (string.IsNullOrEmpty(HNAME))
-                    return Content(JsonConvert.SerializeObject(new Message(false, "请输入护林员姓名！", "")), "text/html;charset=UTF-8");
+                    return Content(JsonConvert.SerializeObject(new Message(false, "请输入护林员姓名!", "")), "text/html;charset=UTF-8");
             }
             if (Method == "Enable" || Method == "UnEnable" || Method == "Del")
             {
                 if (string.IsNullOrEmpty(HID))
-                    return Content(JsonConvert.SerializeObject(new Message(false, "请选择要操作的护林员！", "")), "text/html;charset=UTF-8");
+                    return Content(JsonConvert.SerializeObject(new Message(false, "请选择要操作的护林员!", "")), "text/html;charset=UTF-8");
             }
             T_IPSFR_USER_Model m = new T_IPSFR_USER_Model();
             m.BIRTH = BIRTH;
@@ -491,9 +490,7 @@ namespace ManagerSystem.MVC.Controllers
         {
             pubViewBag("006004", "006004", "");
             if (ViewBag.isPageRight == false)
-            {
                 return View();
-            }
             ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = SystemCls.getCurUserOrgNo(), IsEnableCUN = "1" });// ipsuM.ORGNAME });
             ViewBag.vdISENABLE = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTFLAG = "启用状态", isShowAll = "1" });
             return View();
@@ -530,6 +527,7 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("        <th>出生日期</th>");
             sb.AppendFormat("        <th>固\\兼职	</th>");
             sb.AppendFormat("        <th>状态	</th>");
+            sb.AppendFormat("        <th>巡检距离(米)</th>");
             sb.AppendFormat("        <th></th>");
             sb.AppendFormat("    </tr>");
             sb.AppendFormat("</thead>");
@@ -553,9 +551,14 @@ namespace ManagerSystem.MVC.Controllers
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.BIRTH);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.ONSTATENAME);
                 if (v.ISENABLE == "0")
+                {
                     sb.AppendFormat("<td class=\"center\"><font color=red>{0}</font></td>", v.ISENABLENAME);
+                }
                 else
+                {
                     sb.AppendFormat("<td class=\"center\">{0}</td>", v.ISENABLENAME);
+                }
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.PATROLLENGTH);
                 sb.AppendFormat("    <td class=\" \">");
                 sb.AppendFormat("&nbsp;<a href=\"#\" onclick=\"GetPhoto('{0}')\" title='图片' class=\"searchBox_01 LinkPhoto\">图片</a>", v.HID);
                 //sb.AppendFormat("            <a href=\"/System/FRUserMan?Method=Mdy&ID={0}&tNo={1}\" title='编辑' class=\"searchBox_01 LinkMdy\">修改</a>", v.HID, tNo);
@@ -710,9 +713,136 @@ namespace ManagerSystem.MVC.Controllers
         }
         #endregion
 
+        #region 护林员导入时先读取数据
+        /// <summary>
+        /// 护林员导入时先读取数据
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        public ActionResult FRUserListBrowse()
+        {
+            pubViewBag("006004", "006004", "");
+            var result = new List<T_IPSFR_USER_Model>();
+
+            if (Request.Params["savePath"] != "" && Request.Params["savePath"] != null)//文件模板导入
+            {
+                string filePath = Server.UrlDecode(Request.Params["savePath"]);
+                HSSFWorkbook hssfworkbook;
+                try
+                {
+                    using (FileStream file = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                    {
+                        hssfworkbook = new HSSFWorkbook(file);
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+                NPOI.SS.UserModel.ISheet sheet = hssfworkbook.GetSheetAt(0);
+                int rowCount = sheet.LastRowNum;
+                for (int i = (sheet.FirstRowNum + 1); i <= rowCount; i++)
+                {
+
+                    IRow row = sheet.GetRow(i);
+                    string[] arr = new string[9];
+                    for (int k = 0; k < arr.Length; k++)
+                    {
+                        if (k != 8)
+                            arr[k] = row.GetCell(k) == null ? "" : row.GetCell(k).ToString();//循环获取每一单元格内容
+                        else
+                            arr[k] = row.GetCell(k).DateCellValue.ToString("yyyy-MM-dd");
+                    }
+                    T_IPSFR_USER_Model m = new T_IPSFR_USER_Model();
+                    //所属县	所属乡镇	所属乡村	姓名	终端编号	手机号码	性别	固兼职	出生日期
+                    if (string.IsNullOrEmpty(arr[2]) == false)
+                    {
+                        m.ORGNAME = arr[2];
+                    }
+                    if (string.IsNullOrEmpty(arr[1]) == false)
+                    {
+                        m.ORGXZNAME = arr[1];
+                    }
+                    if (string.IsNullOrEmpty(arr[0]) == false)
+                    {
+                        m.ORGXSNAME = arr[0];
+                    }
+
+                    m.HNAME = arr[3];
+                    m.SN = arr[4];
+                    m.PHONE = arr[5];
+                    if (string.IsNullOrEmpty(arr[6]))//性别
+                    {
+                        m.SEX = "0";
+                    }
+                    else
+                    {
+                        m.SEX = (arr[6] == "男") ? "0" : "1";
+                    }
+                    m.SEXNAME = arr[6];
+                    if (string.IsNullOrEmpty(arr[7]))//是否固职
+                    {
+                        m.ONSTATE = "1";
+                    }
+                    else
+                    {
+                        m.ONSTATE = (arr[7] == "固职") ? "1" : "2";
+                    }
+                    m.ONSTATENAME = arr[7];
+                    m.BIRTH = arr[8];
+                    if (m.BIRTH == "9999-12-31")
+                    {
+                        m.BIRTH = "1900-01-01";
+                    }
+                    m.ISENABLE = "1";
+                    result.Add(m);
+                }
+            }
+            StringBuilder sb = new StringBuilder();
+            #region 数据表
+            sb.AppendFormat("<table id=\"FRUserListBrowse\" cellpadding=\"0\" cellspacing=\"0\">");
+
+            #region 表头
+            sb.AppendFormat("<thead>");
+            sb.AppendFormat("<tr><th colspan=\"10\">护林员导入浏览</th></tr>");
+            sb.AppendFormat("<tr><th style=\"width:10%;\">所属县</th><th style=\"width:10%;\">所属乡镇</th><th style=\"width:10%;\">所属乡村</th><th style=\"width:10%;\">姓名</th><th style=\"width:10%;\">终端编号</th><th style=\"width:10%;\">手机号码</th><th style=\"width:5%;\">性别</th><th style=\"width:5%;\">固兼职</th><th style=\"width:10%;\">出生日期</th><th style=\"width:20%;\">状态</th></tr>");
+            sb.AppendFormat("</thead>");
+            #endregion
+            int j = 0;
+            if (result.Any())
+            {
+
+                foreach (var item in result)
+                {
+                    #region 表身
+                    sb.AppendFormat("<tbody id=\"tcontent\" >");
+                    sb.AppendFormat("<tr>");
+                    sb.AppendFormat("<td class=\"center\">{0}</td>", "<input id=\"tbxORGXS" + j + "\" name=\"tbxORGXS\" type=\"text\" style=\"width:98%;\" class=\"center\" value=\"" + item.ORGXSNAME + "\"  />");
+                    sb.AppendFormat("<td class=\"center\">{0}</td>", "<input id=\"tbxORGXZ" + j + "\" name=\"tbxORGXZ\" type=\"text\" style=\"width:98%;\" class=\"center\" value=\"" + item.ORGXZNAME + "\"  />");
+                    sb.AppendFormat("<td class=\"center\">{0}</td>", "<input id=\"tbxORGCUN" + j + "\" name=\"tbxORGCUN\" type=\"text\" style=\"width:98%;\" class=\"center\" value=\"" + item.ORGNAME + "\" />");
+                    sb.AppendFormat("<td class=\"center\">{0}</td>", "<input id=\"tbxHNAME" + j + "\" name=\"tbxHNAME\" style=\"width:98%;\" type=\"text\" class=\"center\" value=\"" + item.HNAME + "\"  />");
+                    sb.AppendFormat("<td class=\"center\">{0}</td>", "<input id=\"tbxSN" + j + "\" name=\"tbxSN\" style=\"width:98%;\" type=\"text\" class=\"center\" value=\"" + item.SN + "\"  />");
+                    sb.AppendFormat("<td class=\"center\">{0}</td>", "<input id=\"tbxPHONE" + j + "\" name=\"tbxPHONE\" style=\"width:98%;\" type=\"text\" class=\"center\" value=\"" + item.PHONE + "\"  />");
+                    sb.AppendFormat("<td class=\"center\">{0}</td>", "<input id=\"tbxSEXNAME" + j + "\" name=\"tbxSEXNAME\" style=\"width:98%;\" type=\"text\" class=\"center\" value=\"" + item.SEXNAME + "\"  />");
+                    sb.AppendFormat("<td class=\"center\">{0}</td>", "<input id=\"tbxONSTATENAME" + j + "\" name=\"tbxONSTATENAME\" style=\"width:98%;\" type=\"text\" class=\"center\" value=\"" + item.ONSTATENAME + "\"  />");
+                    sb.AppendFormat("<td class=\"center\">{0}</td>", "<input id=\"tbxBIRTH" + j + "\" name=\"tbxBIRTH\" type=\"text\" style=\"width:98%;\" class=\"Wdate\" onclick=\"WdatePicker({ dateFmt: 'yyyy-MM-dd'})\"   value=\"" + Convert.ToDateTime(item.BIRTH).ToString("yyyy-MM-dd") + "\" />");
+                    sb.AppendFormat("<td class=\"center\">{0}</td>", "<input id=\"tbxState" + j + "\" name=\"tbxState\" style=\"width:98%;\" type=\"text\" class=\"center\" />");
+                    j++;
+                    #endregion
+                }
+                sb.AppendFormat("</tbody>");
+                sb.AppendFormat("</table>");
+            }
+            #endregion
+            ViewBag.pageList = sb.ToString();
+            ViewBag.row = j;
+            return View();
+        }
+        #endregion
+
         #region 护林员上传
         [HttpPost]
-        public ActionResult FRUserList(FormCollection form)
+        public ActionResult FRUserListBrowse(FormCollection form)
         {
             pubViewBag("006004", "006004", "");
             string savePath = "";
@@ -732,11 +862,11 @@ namespace ManagerSystem.MVC.Controllers
                     string name = DateTime.Now.ToString("护林员导入-yyyyMMddHHmmss") + extension;
                     if (!FileType.Contains(extension))
                     {
-                        return Content(@"<script>alert('文件类型不对，只能导入xls和xlsx格式的文件');history.go(-1);</script>");
+                        return Content(@"<script>alert('文件类型不对，只能导入xls和xlsx格式的文件!');history.go(-1);</script>");
                     }
                     if (filesize >= Maxsize)
                     {
-                        return Content(@"<script>alert('上传文件超过4M，不能上传');history.go(-1);</script>");
+                        return Content(@"<script>alert('上传文件超过4M，不能上传!');history.go(-1);</script>");
                     }
                     try
                     {
@@ -748,19 +878,96 @@ namespace ManagerSystem.MVC.Controllers
                         }
                         savePath = Path.Combine(filePath, name);
                         File.SaveAs(savePath);
-                        T_IPSFR_USERCls.HRUserUpload(savePath);
+                        var EncodeSavepath = Server.UrlEncode(savePath);//编码 
+                        return Content("<script>window.location.href='FRUserListBrowse?savePath=" + EncodeSavepath + "'</script>");
                     }
                     catch (Exception)
                     {
-                        return Content(@"<script>alert('上传文件模板错误，请确认后再上传！');history.go(-1);</script>");
+                        return Content(@"<script>alert('上传文件模板错误，请确认后再上传!');history.go(-1);</script>");
                     }
                 }
                 else
                 {
-                    return Content(@"<script>alert('请选择需要导入的护林员表格');history.go(-1);</script>");
+                    return Content(@"<script>alert('请选择需要导入的护林员表格!');history.go(-1);</script>");
                 }
             }
-            return Content("<script>alert('导入成功');window.location.href='FRUserList';</script>");
+
+            return View();
+        }
+        #endregion
+
+        #region 护林员导入管理
+        /// <summary>
+        /// 护林员导入管理
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult FRUserUpload()
+        {
+            T_IPSFR_USER_Model m = new T_IPSFR_USER_Model();
+            string State = Request.Params["State"];
+            string BYORGNOSXName = Request.Params["BYORGNOSXName"];
+            string BYORGNOCUNName = Request.Params["BYORGNOCUNName"];
+            string BYORGNOSZName = Request.Params["BYORGNOSZName"];
+            if (string.IsNullOrEmpty(BYORGNOCUNName) == false)
+            {
+                m.BYORGNO = T_SYS_ORGCls.getCodeByName(BYORGNOCUNName);
+                if (string.IsNullOrEmpty(m.BYORGNO))
+                {
+                    return Content(JsonConvert.SerializeObject(new Message(false, "乡村名称错误或者该乡村未录入组织机构!", "")), "text/html;charset=UTF-8");
+                }
+            }
+            else if (string.IsNullOrEmpty(BYORGNOSZName) == false)
+            {
+                m.BYORGNO = T_SYS_ORGCls.getCodeByName(BYORGNOSZName);
+                if (string.IsNullOrEmpty(m.BYORGNO))
+                {
+                    return Content(JsonConvert.SerializeObject(new Message(false, "乡镇名称错误或者该乡镇未录入组织机构!", "")), "text/html;charset=UTF-8");
+                }
+            }
+            else
+            {
+                m.BYORGNO = T_SYS_ORGCls.getCodeByName(BYORGNOSXName);
+                if (string.IsNullOrEmpty(m.BYORGNO))
+                {
+                    return Content(JsonConvert.SerializeObject(new Message(false, "县市名称错误或者该县市未录入组织机构!", "")), "text/html;charset=UTF-8");
+                }
+            }
+            string ONSTATENAME = Request.Params["ONSTATENAME"];
+            if (string.IsNullOrEmpty(ONSTATENAME))
+            {
+                m.ONSTATE = "1";
+            }
+            else
+            {
+                m.ONSTATE = (ONSTATENAME == "固职") ? "1" : "2";
+            }
+            m.HNAME = Request.Params["HNAME"];
+            //m.ONSTATE = Request.Params["ONSTATE"];
+            m.PHONE = Request.Params["PHONE"];
+            if (SpringerCommonValidate.IsHandset(m.PHONE) == false)
+            {
+                return Content(JsonConvert.SerializeObject(new Message(false, "手机号码格式错误,请重新输入!", "")), "text/html;charset=UTF-8");
+            }
+            string SEXNAME = Request.Params["SEXNAME"];
+            if (string.IsNullOrEmpty(SEXNAME))
+            {
+                m.SEX = "0";
+            }
+            else
+            {
+                m.SEX = (SEXNAME == "男") ? "0" : "1";
+            }
+            m.ISENABLE = Request.Params["ISENABLE"];
+            m.SN = Request.Params["SN"];
+            m.opMethod = "Add";
+            m.BIRTH = Request.Params["BIRTH"];
+            if (string.IsNullOrEmpty(m.HNAME))
+                return Content(JsonConvert.SerializeObject(new Message(false, "请输入护林员姓名!", "")), "text/html;charset=UTF-8");
+            if (State == "成功")
+            {
+                return Content(JsonConvert.SerializeObject(new Message(true, "成功", "")), "text/html;charset=UTF-8");
+            }
+            return Content(JsonConvert.SerializeObject(T_IPSFR_USERCls.Manager(m)), "text/html;charset=UTF-8");
         }
         #endregion
 
@@ -1184,7 +1391,10 @@ namespace ManagerSystem.MVC.Controllers
             int i = 0;
             foreach (var v in result)
             {
-                sb.AppendFormat("<tr onclick=\"showValue('{0}')\">", v.RIGHTID);
+                if (i % 2 == 0)
+                    sb.AppendFormat("<tr onclick=\"showValue('{0}')\">", v.RIGHTID);
+                else
+                    sb.AppendFormat("<tr class='row1' onclick=\"showValue('{0}')\">", v.RIGHTID);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", (i + 1).ToString());
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.RIGHTID);
                 if (v.SYSFLAG != ConfigCls.getSystemFlag())
@@ -1317,7 +1527,6 @@ namespace ManagerSystem.MVC.Controllers
         {
             pubViewBag("006002", "006002", "");
             if (ViewBag.isPageRight == false) { return View(); }
-            //ViewBag.RoleList = getRoleStr();// T_SYSSEC_IPSUSERCls.getUserList();
             return View();
         }
 
@@ -1389,22 +1598,22 @@ namespace ManagerSystem.MVC.Controllers
             if (Method != "Del")
             {
                 if (string.IsNullOrEmpty(LOGINUSERNAME))
-                    return Content(JsonConvert.SerializeObject(new Message(false, "请输入用户名！", "")), "text/html;charset=UTF-8");
+                    return Content(JsonConvert.SerializeObject(new Message(false, "请输入用户名!", "")), "text/html;charset=UTF-8");
                 if (Method == "Add")
                 {
                     if (string.IsNullOrEmpty(USERPWD))
-                        return Content(JsonConvert.SerializeObject(new Message(false, "请输入密码！", "")), "text/html;charset=UTF-8");
+                        return Content(JsonConvert.SerializeObject(new Message(false, "请输入密码!", "")), "text/html;charset=UTF-8");
                     if (USERPWD != USERPWD1)
-                        return Content(JsonConvert.SerializeObject(new Message(false, "两次密码输入不一致！", "")), "text/html;charset=UTF-8");
+                        return Content(JsonConvert.SerializeObject(new Message(false, "两次密码输入不一致!", "")), "text/html;charset=UTF-8");
                 }
                 if (Method == "Mdy")
                 {
                     if (string.IsNullOrEmpty(USERPWD) == false && string.IsNullOrEmpty(USERPWD1))
-                        return Content(JsonConvert.SerializeObject(new Message(false, "请输入确认密码！", "")), "text/html;charset=UTF-8");
+                        return Content(JsonConvert.SerializeObject(new Message(false, "请输入确认密码!", "")), "text/html;charset=UTF-8");
                     if (string.IsNullOrEmpty(USERPWD) && string.IsNullOrEmpty(USERPWD1) == false)
-                        return Content(JsonConvert.SerializeObject(new Message(false, "请先输入密码之后再确认密码！", "")), "text/html;charset=UTF-8");
+                        return Content(JsonConvert.SerializeObject(new Message(false, "请先输入密码之后再确认密码!", "")), "text/html;charset=UTF-8");
                     if (USERPWD != USERPWD1)
-                        return Content(JsonConvert.SerializeObject(new Message(false, "两次密码输入不一致！", "")), "text/html;charset=UTF-8");
+                        return Content(JsonConvert.SerializeObject(new Message(false, "两次密码输入不一致!", "")), "text/html;charset=UTF-8");
                 }
             }
             T_SYSSEC_IPSUSER_Model m = new T_SYSSEC_IPSUSER_Model();
@@ -1477,8 +1686,10 @@ namespace ManagerSystem.MVC.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public string GetOrgByDepartByFlag(string orgNo)
+        public string GetOrgByDepartByFlag()
         {
+            string orgNo = Request.Params["orgNo"];
+            string showAll = Request.Params["showAll"];
             string sysorgFlag = "1";
             var bxz = PublicCls.OrgIsZhen(orgNo);//乡镇
             var bsx = PublicCls.OrgIsXian(orgNo);//市县
@@ -1490,7 +1701,7 @@ namespace ManagerSystem.MVC.Controllers
             {
                 sysorgFlag = "2";
             }
-            ViewBag.depart = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "46", STANDBY1 = sysorgFlag });
+            ViewBag.depart = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "46", STANDBY1 = sysorgFlag, isShowAll = showAll });
             return ViewBag.depart;
         }
 
@@ -1575,7 +1786,7 @@ namespace ManagerSystem.MVC.Controllers
                 // sb.AppendFormat("<a href=\"/System/UserMan?Method=Mdy&USERID={0}\" class=\"searchBox_01 LinkMdy\">修改</a>", v.USERID);
                 sb.AppendFormat("<a href='#' onclick=\"Mdy('{0}','Mdy')\"  class=\"searchBox_01 LinkMdy\">修改</a>", v.USERID);
                 sb.AppendFormat("&nbsp;<a href='#' onclick='Manager(\"{0}\")' class=\"searchBox_01 LinkDel\">删除</a>", v.USERID);
-                sb.AppendFormat("    </td>");
+                sb.AppendFormat("</td>");
                 sb.AppendFormat("</tr>");
                 i++;
             }
@@ -1682,7 +1893,7 @@ namespace ManagerSystem.MVC.Controllers
                 string SysORGNO = Request.Params["SysORGNO"];
                 string SysDeptID = Request.Params["SysDeptID"];
                 string OADeptID = Request.Params["OADeptID"];
-                T_SysDept_OADept_Model m = new T_SysDept_OADept_Model();
+                T_SYS_Dept_OADept_Model m = new T_SYS_Dept_OADept_Model();
                 m.SysORGNO = SysORGNO;
                 m.SysDeptID = SysDeptID;
                 m.OADeptID = OADeptID;
@@ -1701,50 +1912,10 @@ namespace ManagerSystem.MVC.Controllers
         public ActionResult OAUserList()
         {
             pubViewBag("006015", "006015", "");
-            if (ViewBag.isPageRight == false) { return View(); }
-            string page = Request.Params["page"];//当前页数
-            string trans = Request.Params["trans"];//传递网页参数
-            if (string.IsNullOrEmpty(page)) { page = "1"; }
-            //查询条件
-            string[] arr = new string[4];//存放查询条件的数组 根据实际存放的数据
-            if (string.IsNullOrEmpty(trans) == false)
-                arr = ClsStr.DecryptA01(trans, "kkkkkkkk").Split('|');
-            if (string.IsNullOrEmpty(arr[0]) == true)
-                arr[0] = PagerCls.getDefaultPageSize().ToString();//默认记录数
-            if (string.IsNullOrEmpty(arr[2]) == true)
-                arr[2] = SystemCls.getCurUserOrgNo();
-
-            StringBuilder sb = new StringBuilder();
-            #region 账户状态
-            sb.AppendFormat("<option value=\"\">{0}</option>", "--所有--");
-            if (!string.IsNullOrEmpty(arr[3]))
-            {
-                if (arr[3] == "1")
-                {
-                    sb.AppendFormat("<option value=\"{1}\" selected>{0}</option>", "--已开通--", "1");
-                    sb.AppendFormat("<option value=\"{1}\">{0}</option>", "--未开通--", "0");
-                }
-                if (arr[3] == "0")
-                {
-                    sb.AppendFormat("<option value=\"{1}\">{0}</option>", "--已开通--", "1");
-                    sb.AppendFormat("<option value=\"{1}\" selected>{0}</option>", "--未开通--", "0");
-                }
-            }
-            else
-            {
-                sb.AppendFormat("<option value=\"{1}\">{0}</option>", "--已开通--", "1");
-                sb.AppendFormat("<option value=\"{1}\">{0}</option>", "--未开通--", "0");
-            }
-            #endregion
-            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { TopORGNO = SystemCls.getCurUserOrgNo(), SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = arr[2] });
-            ViewBag.IsOpenOA = sb.ToString();
-            ViewBag.UserName = arr[1];//显示查询值 姓名
-            ViewBag.ORGNO = arr[2];
+            if (ViewBag.isPageRight == false)
+                return View();
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { TopORGNO = SystemCls.getCurUserOrgNo(), SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = SystemCls.getCurUserOrgNo() });
             ViewBag.OAPWD = ConfigCls.getOAPwd();
-            //用户列表
-            int total = 0;
-            ViewBag.UserList = getOAUserStr(new T_SYSSEC_IPSUSER_SW { curPage = int.Parse(page), pageSize = int.Parse(arr[0]), USERNAME = arr[1], ORGNO = arr[2], IsOpenOA = arr[3] }, out total);
-            ViewBag.PagerInfo = PagerCls.getPagerInfo_New(new PagerSW { curPage = int.Parse(page), pageSize = int.Parse(arr[0]), rowCount = total, url = "/System/OAUserList?trans=" + trans });
             ViewBag.Open = (SystemCls.isRight("006015001")) ? "1" : "0"; //是否拥有开通OA账户权限
             ViewBag.Close = (SystemCls.isRight("006015002")) ? "1" : "0";
             return View();
@@ -1753,20 +1924,25 @@ namespace ManagerSystem.MVC.Controllers
         /// <summary>
         /// 获得用户列表
         /// </summary>
-        /// <param name="sw"></param>
-        /// <param name="total"></param>
         /// <returns></returns>
-        private string getOAUserStr(T_SYSSEC_IPSUSER_SW sw, out int total)
+        public ActionResult GetOAUserList()
         {
+            string PageSize = Request.Params["PageSize"];
+            if (PageSize == "0")
+                PageSize = ConfigCls.getTableDefaultPageSize();
+            string UserName = Request.Params["UserName"];
+            string ORGNO = Request.Params["ORGNO"];
+            string IsOpenOA = Request.Params["IsOpenOA"];
+            string Page = Request.Params["Page"];
+            int total = 0;
+            T_SYSSEC_IPSUSER_SW sw = new T_SYSSEC_IPSUSER_SW { curPage = int.Parse(Page), pageSize = int.Parse(PageSize), USERNAME = UserName, ORGNO = ORGNO, IsOpenOA = IsOpenOA };
             List<T_SYSSEC_IPSUSER_Pager_Model> result = T_SYSSEC_IPSUSERCls.getOAUserModel(sw, out total).ToList();
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<table id=\"OAUserTable\" cellpadding=\"0\" cellspacing=\"0\">");
             sb.AppendFormat("<thead>");
             sb.AppendFormat("<tr>");
-            if (result.Count <= 0)
-                sb.AppendFormat("<th style=\"width:5%\"><input id=\"tbxUserIDALL\" name=\"tbxUserIDALL\" type=\"checkbox\" class=\"ace\" value=\"ALL\" onclick=\"selectall(this.value,this.checked)\" disabled=\"disabled\" /></th>");
-            else
-                sb.AppendFormat("<th style=\"width:5%\"><input id=\"tbxUserIDALL\" name=\"tbxUserIDALL\" type=\"checkbox\" class=\"ace\" value=\"ALL\" onclick=\"selectall(this.value,this.checked)\" /></th>");
+            string dis = result.Count <= 0 ? "disabled=\"disabled\"" : "";
+            sb.AppendFormat("<th style=\"width:5%\"><input id=\"tbxUserIDALL\" name=\"tbxUserIDALL\" type=\"checkbox\" class=\"ace\" value=\"ALL\" onclick=\"selectall(this.value,this.checked)\" {0} /></th>", dis);
             sb.AppendFormat("<th>序号</th><th style=\"width:15%\">单位</th><th style=\"width:15%\">科室</th><th style=\"width:15%\">姓名</th><th style=\"width:15%\">登录名</th><th>是否开通OA</th><th>操作</th></tr>");
             sb.AppendFormat("</thead>");
             sb.AppendFormat("<tbody>");
@@ -1787,29 +1963,15 @@ namespace ManagerSystem.MVC.Controllers
                 if (v.IsOpenOA == "1")
                     sb.AppendFormat("<td class=\"center\">{0}</td>", "<input type=\"button\" value=\"初始化密码\" class=\"searchBox_01 LinkMdy\" onclick=\"InitPwd('" + v.USERID + "','" + ConfigCls.getOAPwd() + "')\" />");
                 else
-                    sb.AppendFormat("<td class=\"center\">{0}</td>", "<input type=\"button\" value=\"初始化密码\" class=\"searchBox_01 LinkMdy\" disabled=\"disabled\" />");
+                    sb.AppendFormat("<td class=\"center\">{0}</td>", "<input type=\"button\" value=\"初始化密码\" class=\"searchBox_01 LinkMdy\" disabled=\"disabled\" style=\"background-color:gray;\" />");
                 sb.AppendFormat("</tr>");
                 i++;
                 j++;
             }
             sb.AppendFormat("</tbody>");
             sb.AppendFormat("</table>");
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// 用户列表查询
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult OAUserListQuery()
-        {
-            string PageSize = Request.Params["PageSize"];
-            string UserName = Request.Params["UserName"];
-            string ORGNO = Request.Params["ORGNO"];
-            string IsOpenOA = Request.Params["IsOpenOA"];
-            string Page = Request.Params["Page"];
-            string str = ClsStr.EncryptA01(PageSize + "|" + UserName + "|" + ORGNO + "|" + IsOpenOA, "kkkkkkkk");
-            return Content(JsonConvert.SerializeObject(new Message(true, "", "/System/OAUserList?trans=" + str + "&page=" + Page)), "text/html;charset=UTF-8");
+            string pageInfo = PagerCls.getPagerInfoAjax(new PagerSW { curPage = sw.curPage, pageSize = sw.pageSize, rowCount = total });
+            return Content(JsonConvert.SerializeObject(new MessagePagerAjax(true, sb.ToString(), pageInfo)), "text/html;charset=UTF-8");
         }
 
         /// <summary>
@@ -2013,12 +2175,12 @@ namespace ManagerSystem.MVC.Controllers
             if (m.opMethod == "Mdy" || m.opMethod == "Del")
             {
                 if (string.IsNullOrEmpty(m.ATID))
-                    return Content(JsonConvert.SerializeObject(new Message(false, "请选择要操作的记录！", "")), "text/html;charset=UTF-8");
+                    return Content(JsonConvert.SerializeObject(new Message(false, "请选择要操作的记录!", "")), "text/html;charset=UTF-8");
             }
             if (string.IsNullOrEmpty(m.ORDERBY))
-                return Content(JsonConvert.SerializeObject(new Message(false, "请输入排序号！", "")), "text/html;charset=UTF-8");
+                return Content(JsonConvert.SerializeObject(new Message(false, "请输入排序号!", "")), "text/html;charset=UTF-8");
             if (string.IsNullOrEmpty(m.RTNAME))
-                return Content(JsonConvert.SerializeObject(new Message(false, "请输入名称！", "")), "text/html;charset=UTF-8");
+                return Content(JsonConvert.SerializeObject(new Message(false, "请输入名称!", "")), "text/html;charset=UTF-8");
             return Content(JsonConvert.SerializeObject(T_SYS_ADDREDDTYPECls.Manager(m)), "text/html;charset=UTF-8");
         }
 
@@ -2046,11 +2208,6 @@ namespace ManagerSystem.MVC.Controllers
             string nameForMat = "{ADNAME}[{USERJOB}] [电话：{PHONE}] 排序号：[{ORDERBY}]";
             if (string.IsNullOrEmpty(rid))
             {
-                //if (string.IsNullOrEmpty(rid) == false)
-                //    rid = rid.Replace("typeid", "");
-                //else
-                //    rid = "0";
-                //string result = T_SYS_ADDREDDBOOKCls.getTypeTree(new T_SYS_ADDREDDTYPE_SW { treeNameShowUserType = nameForMat, isTreeOpen = "0", RATID = rid });//  T_SYS_ADDREDDTYPECls.get DC_TYPECls.getEQUIPTree(new DC_TYPE_SW { });
                 string result = T_SYS_ADDREDDBOOKCls.getTypeTree(new T_SYS_ADDREDDTYPE_SW { treeNameShowUserType = nameForMat, isTreeOpen = "0" });
                 return Content(result, "application/json");
             }
@@ -2079,14 +2236,14 @@ namespace ManagerSystem.MVC.Controllers
             if (m.opMethod != "Del")
             {
                 if (string.IsNullOrEmpty(m.ADNAME))
-                    return Content(JsonConvert.SerializeObject(new Message(false, "请输入姓名！", "")), "text/html;charset=UTF-8");
+                    return Content(JsonConvert.SerializeObject(new Message(false, "请输入姓名!", "")), "text/html;charset=UTF-8");
                 if (string.IsNullOrEmpty(m.PHONE))
-                    return Content(JsonConvert.SerializeObject(new Message(false, "请输入手机号码！", "")), "text/html;charset=UTF-8");
+                    return Content(JsonConvert.SerializeObject(new Message(false, "请输入手机号码!", "")), "text/html;charset=UTF-8");
             }
             if (m.opMethod == "Add")
             {
                 if (string.IsNullOrEmpty(m.ATID))
-                    return Content(JsonConvert.SerializeObject(new Message(false, "请点击要添加的类别！", "")), "text/html;charset=UTF-8");
+                    return Content(JsonConvert.SerializeObject(new Message(false, "请点击要添加的类别!", "")), "text/html;charset=UTF-8");
             }
             return Content(JsonConvert.SerializeObject(T_SYS_ADDREDDBOOKCls.Manager(m)), "text/html;charset=UTF-8");
         }
@@ -2124,9 +2281,9 @@ namespace ManagerSystem.MVC.Controllers
             string Path = "";
             string[] arr = hfc[0].FileName.Split('.');
             if (string.IsNullOrEmpty(hfc[0].FileName))
-                return Json(new Message(false, "请选择附件！", ""));
+                return Json(new Message(false, "请选择附件!", ""));
             if (arr[arr.Length - 1].ToLower() == "exe")
-                return Json(new Message(false, "禁止上传exe文件！", ""));
+                return Json(new Message(false, "禁止上传exe文件!", ""));
             string filename = DateTime.Now.ToString("yyyyMMddHHmmss.") + arr[arr.Length - 1];
             string ipath = "~/UploadFile/FirePlan/";//相对路径 
             string PhyPath = Server.MapPath(ipath);
@@ -2168,11 +2325,11 @@ namespace ManagerSystem.MVC.Controllers
             if (Method != "Del")
             {
                 if (string.IsNullOrEmpty(PLANTITLE))
-                    return Content(JsonConvert.SerializeObject(new Message(false, "请输入标题！", "")), "text/html;charset=UTF-8");
+                    return Content(JsonConvert.SerializeObject(new Message(false, "请输入标题!", "")), "text/html;charset=UTF-8");
                 if (string.IsNullOrEmpty(BYORGNO))
-                    return Content(JsonConvert.SerializeObject(new Message(false, "请选择单位！", "")), "text/html;charset=UTF-8");
+                    return Content(JsonConvert.SerializeObject(new Message(false, "请选择单位!", "")), "text/html;charset=UTF-8");
                 if (string.IsNullOrEmpty(FIRELEVEL))
-                    return Content(JsonConvert.SerializeObject(new Message(false, "请选择火灾级别！", "")), "text/html;charset=UTF-8");
+                    return Content(JsonConvert.SerializeObject(new Message(false, "请选择火灾级别!", "")), "text/html;charset=UTF-8");
             }
             JC_FIRE_PLAN_Model m = new JC_FIRE_PLAN_Model();
             m.JC_FIRE_PLANID = JC_FIRE_PLANID;
@@ -2397,17 +2554,15 @@ namespace ManagerSystem.MVC.Controllers
             m.returnUrl = Request.Params["returnUrl"];
             if (m.opMethod == "MdyISENABLE")
             {
-                //if (string.IsNullOrEmpty(m.SMSGROUPNAME))
-                //    return Content(JsonConvert.SerializeObject(new Message(false, "请输入标题名称！", "")), "text/html;charset=UTF-8");
                 if (string.IsNullOrEmpty(m.YJ_DCSMS_TMPID))
-                    return Content(JsonConvert.SerializeObject(new Message(false, "请选择要操作的记录！", "")), "text/html;charset=UTF-8");
+                    return Content(JsonConvert.SerializeObject(new Message(false, "请选择要操作的记录!", "")), "text/html;charset=UTF-8");
             }
             if (m.opMethod != "Del" && m.opMethod != "MdyISENABLE")
             {
                 if (string.IsNullOrEmpty(m.SMSGROUPNAME))
-                    return Content(JsonConvert.SerializeObject(new Message(false, "请输入标题名称！", "")), "text/html;charset=UTF-8");
+                    return Content(JsonConvert.SerializeObject(new Message(false, "请输入标题名称!", "")), "text/html;charset=UTF-8");
                 if (string.IsNullOrEmpty(m.TMPCONTENT))
-                    return Content(JsonConvert.SerializeObject(new Message(false, "请输入短信模板内容！", "")), "text/html;charset=UTF-8");
+                    return Content(JsonConvert.SerializeObject(new Message(false, "请输入短信模板内容!", "")), "text/html;charset=UTF-8");
             }
             return Content(JsonConvert.SerializeObject(YJ_DCSMS_TMPCls.Manager(m)), "text/html;charset=UTF-8");
         }
@@ -3607,7 +3762,6 @@ namespace ManagerSystem.MVC.Controllers
             return View();
         }
 
-
         /// <summary>
         /// 菜单管理列表--异步查询
         /// </summary>
@@ -3645,7 +3799,7 @@ namespace ManagerSystem.MVC.Controllers
                 sb.AppendFormat("<a href=\"/System/MenuList?MENUCODE={0}\" >{1}</a>", v.MENUCODE, v.MENUCODE);
                 sb.AppendFormat("</td>");
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.MENUNAME);
-                sb.AppendFormat("<td class=\"center\">{0}</td>", v.LICLASS);               
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.LICLASS);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.MENURIGHTFLAG);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.SYSFLAG);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", v.MENUOPENMETHODName);
@@ -3747,8 +3901,6 @@ namespace ManagerSystem.MVC.Controllers
                     m1.NHID = "";
                 }
             }
-
-
             TASK_TURNOVER_Model m2 = new TASK_TURNOVER_Model();
             //m2.TASK_INFOID = Request.Params["TASK_INFOID"];
             m2.OPUID = SystemCls.getUserID();//操作人
@@ -3758,7 +3910,6 @@ namespace ManagerSystem.MVC.Controllers
             m2.OPIP = ClsHtml.GetIP();
             var ms = TASK_INFOCls.Manager(m, m1, m2);
             return Content(JsonConvert.SerializeObject(ms), "text/html;charset=UTF-8");
-
         }
 
         /// <summary>
@@ -3793,7 +3944,6 @@ namespace ManagerSystem.MVC.Controllers
         {
             string TASK_INFOID = Request.Params["TASK_INFOID"];
             return Content(JsonConvert.SerializeObject(TASK_INFOCls.getModel(new TASK_INFO_SW { TASK_INFOID = TASK_INFOID })), "text/html;charset=UTF-8");
-
         }
 
         /// <summary>
@@ -3877,7 +4027,6 @@ namespace ManagerSystem.MVC.Controllers
                 sb.AppendFormat("</tr>");
                 i++;
             }
-
             sb.AppendFormat("</tbody>");
             sb.AppendFormat("</table>");
             string pageInfo = PagerCls.getPagerInfoAjax(new PagerSW { curPage = int.Parse(page), pageSize = int.Parse(PageSize), rowCount = total });
@@ -3913,52 +4062,50 @@ namespace ManagerSystem.MVC.Controllers
             }
             hname = hname.Substring(0, hname.Length - 1);
             StringBuilder sb = new StringBuilder();
-
             var type = T_SYS_DICTCls.getModel(new T_SYS_DICTSW { DICTTYPEID = "401", DICTVALUE = m.TASKTYPE }).DICTNAME;
             var level = T_SYS_DICTCls.getModel(new T_SYS_DICTSW { DICTTYPEID = "402", DICTVALUE = m.TASKLEVEL }).DICTNAME;
-
             sb.AppendFormat("<div class=\"divMan\" style=\"margin-left:5px;margin-top:8px\">");
-            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
+            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\" style=\"text-align:left\">");
             sb.AppendFormat("<thead>");
             sb.AppendFormat("<tr><th colspan=\"4\">任务信息</th></tr>");
             sb.AppendFormat("</thead>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td style=\"width:15%\">单位名称:</td>");
+            sb.AppendFormat("<td class=\"tdField\" style=\"width:15%\">单位名称:</td>");
             sb.AppendFormat("<td style=\"width:35%\">{0}</td>", m.ORGNAME);
-            sb.AppendFormat("<td style=\"width:15%\">任务名称:</td>");
+            sb.AppendFormat("<td class=\"tdField\" style=\"width:15%\">任务名称:</td>");
             sb.AppendFormat("<td style=\"width:35%\">{0}</td>", m.TASKTITLE);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td >任务类型:</td>");
+            sb.AppendFormat("<td class=\"tdField\">任务类型:</td>");
             sb.AppendFormat("<td >{0}</td>", type);
-            sb.AppendFormat("<td >任务级别:</td>");
+            sb.AppendFormat("<td class=\"tdField\">任务级别:</td>");
             sb.AppendFormat("<td >{0}</td>", level);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td >任务开始时间:</td>");
+            sb.AppendFormat("<td class=\"tdField\">任务开始时间:</td>");
             sb.AppendFormat("<td >{0}</td>", Convert.ToDateTime(m.TASKBEGINTIME).ToString("yyyy-MM-dd hh:mm:ss"));
-            sb.AppendFormat("<td >任务结束时间:</td>");
+            sb.AppendFormat("<td class=\"tdField\">任务结束时间:</td>");
             sb.AppendFormat("<td >{0}</td>", Convert.ToDateTime(m.TASKENDTIME).ToString("yyyy-MM-dd hh:mm:ss"));
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td >任务发起时间:</td>");
+            sb.AppendFormat("<td class=\"tdField\">任务发起时间:</td>");
             sb.AppendFormat("<td >{0}</td>", Convert.ToDateTime(m.TASKBEGINTIME).ToString("yyyy-MM-dd hh:mm:ss"));
-            sb.AppendFormat("<td>是否下发:</td>");
+            sb.AppendFormat("<td class=\"tdField\">是否下发:</td>");
             if (m.TASKSTAUTS == "2" || m.TASKSTAUTS == "3" || m.TASKSTAUTS == "4")
                 sb.AppendFormat("<td><input type=\"checkbox\" checked=\"checked\" disabled=\"disabled\"></td>");
             else
                 sb.AppendFormat("<td><input type=\"checkbox\" disabled=\"disabled\"></td>");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>指派护林员:</td>");
+            sb.AppendFormat("<td class=\"tdField\">指派护林员:</td>");
             sb.AppendFormat("<td colspan=\"3\">{0}</td>", hname);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>任务内容:</td>");
+            sb.AppendFormat("<td class=\"tdField\">任务内容:</td>");
             sb.AppendFormat("<td colspan=\"3\">{0}</td>", m.TASKCONTENT);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tbody>");
-            sb.AppendFormat("</div>");
+            sb.AppendFormat("</table>");
 
             sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
             sb.AppendFormat("<thead>");
@@ -3971,7 +4118,6 @@ namespace ManagerSystem.MVC.Controllers
                 foreach (var item in result)
                 {
                     sb.AppendFormat("<tr>");
-
                     sb.AppendFormat("<td class=\"center\">{0}</td>", item.HNAME);
                     if (item.ACCEPTTIME != "1900/1/1 0:00:00")
                         sb.AppendFormat("<td class=\"center\">{0}</td>", Convert.ToDateTime(item.ACCEPTTIME).ToString("yyyy-MM-dd hh:mm:ss"));
@@ -3981,24 +4127,22 @@ namespace ManagerSystem.MVC.Controllers
                         sb.AppendFormat("<td class=\"center\">{0}</td>", Convert.ToDateTime(item.FEEDBACKTIME).ToString("yyyy-MM-dd hh:mm:ss"));
                     else
                         sb.AppendFormat("<td class=\"center\">{0}</td>", "");
-                    sb.AppendFormat("<td class=\"center\">{0}</td>", item.FEEDBACKCONTENT);
+                    sb.AppendFormat("<td class=\"left\">{0}</td>", item.FEEDBACKCONTENT);
                     sb.AppendFormat("</tr>");
                 }
             }
             else
             {
                 sb.AppendFormat("<tr>");
-                sb.AppendFormat("<td class=\"center\">无护林员反馈信息！</td>");
+                sb.AppendFormat("<td class=\"center\">无护林员反馈信息!</td>");
                 sb.AppendFormat("</tr>");
             }
             sb.AppendFormat("</tbody>");
             sb.AppendFormat("</table>");
-
+            sb.AppendFormat("</div>");
             ViewBag.SeeDetail = sb.ToString();
             return View();
-            //return Content(sb.ToString(), "text/html;charset=UTF-8");
         }
-
 
         /// <summary>
         /// 获取组织机构
@@ -4008,9 +4152,7 @@ namespace ManagerSystem.MVC.Controllers
         {
             string orgno = Request.Params["orgno"];
             if (string.IsNullOrEmpty(orgno))
-            {
                 orgno = SystemCls.getCurUserOrgNo();
-            }
             var str = T_SYS_ORGCls.getORGTree(new T_SYS_ORGSW { ORGNO = orgno });
             return Content(str.ToString(), "application/json");
         }
@@ -4023,9 +4165,7 @@ namespace ManagerSystem.MVC.Controllers
         {
             string orgno = Request.Params["orgno"];
             if (string.IsNullOrEmpty(orgno))
-            {
                 orgno = SystemCls.getCurUserOrgNo();
-            }
             var str = T_SYS_ORGCls.getOnlyORGTree(new T_SYS_ORGSW { ORGNO = orgno });
             return Content(str.ToString(), "application/json");
         }
@@ -4035,13 +4175,11 @@ namespace ManagerSystem.MVC.Controllers
         public ActionResult UavManager()
         {
             JC_UAV_Model m = new JC_UAV_Model();
-
             m.BYORGNO = Request.Params["BYORGNO"];
             m.UAVNAME = Request.Params["NAME"];
             m.UAVEQUIPNAME = Request.Params["EQUIPNAME"];
             m.UAVID = Request.Params["UAVID"];
             m.opMethod = Request.Params["METHOD"];
-
             var ms = JC_UAVCls.Manager(m);
             return Content(JsonConvert.SerializeObject(ms), "text/html;charset=UTF-8");
         }
@@ -4054,7 +4192,6 @@ namespace ManagerSystem.MVC.Controllers
         {
             string UAVID = Request.Params["UAVID"];
             return Content(JsonConvert.SerializeObject(JC_UAVCls.getModel(new JC_UAV_SW { UAVID = UAVID })), "text/html;charset=UTF-8");
-
         }
 
         public ActionResult UavList()
@@ -4076,8 +4213,6 @@ namespace ManagerSystem.MVC.Controllers
             string page = Request.Params["page"];
             string NAME = Request.Params["NAME"];
             string BYORGNO = Request.Params["BYORGNO"];
-
-
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
             sb.AppendFormat("<thead>");
@@ -4134,52 +4269,1878 @@ namespace ManagerSystem.MVC.Controllers
             var m = JC_UAVCls.getModel(new JC_UAV_SW { UAVID = ID });
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<div class=\"divMan\" style=\"margin-left:5px;margin-top:8px\">");
-            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
+            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\" style=\"text-align:left\">");
             sb.AppendFormat("<thead>");
-            sb.AppendFormat("<tr><th colspan=\"4\">无人机信息</th></tr>");
+            sb.AppendFormat("<tr><th colspan=\"6\">无人机信息</th></tr>");
             sb.AppendFormat("</thead>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td style=\"width:15%\">单位名称:</td>");
-            sb.AppendFormat("<td style=\"width:35%\">{0}</td>", m.ORGNAME);
-            sb.AppendFormat("<td style=\"width:15%\">无人机名称:</td>");
-            sb.AppendFormat("<td style=\"width:35%\">{0}</td>", m.UAVNAME);
+            sb.AppendFormat("<td class=\"tdField\" >单位名称:</td>");
+            sb.AppendFormat("<td >{0}</td>", m.ORGNAME);
+            sb.AppendFormat("<td class=\"tdField\" >无人机名称:</td>");
+            sb.AppendFormat("<td >{0}</td>", m.UAVNAME);
+            sb.AppendFormat("<td  class=\"tdField\" >设备名称:</td>");
+            sb.AppendFormat("<td >{0}</td>", m.UAVEQUIPNAME);
             sb.AppendFormat("</tr>");
-            sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td style=\"width:15%\">设备名称:</td>");
-            sb.AppendFormat("<td colspan=\"3\" style=\"width:35%\">{0}</td>", m.UAVEQUIPNAME);
-            sb.AppendFormat("</tr>");
+            //sb.AppendFormat("<tr>");
+            //sb.AppendFormat("<td  class=\"tdField\" style=\"width:15%\">设备名称:</td>");
+            //sb.AppendFormat("<td colspan=\"3\" style=\"width:35%\">{0}</td>", m.UAVEQUIPNAME);
+            //sb.AppendFormat("</tr>");
             sb.AppendFormat("</table>");
             ViewBag.uav = sb.ToString();
             return View();
         }
-
         #endregion
 
-        #region 页面跳转  #########无用，拟删除
+        #region 生物分类管理
         /// <summary>
-        /// 页面跳转
+        /// 生物分类
         /// </summary>
         /// <returns></returns>
-        public ActionResult Redirect()
+        public ActionResult BiologicalTypeList()
         {
-            string url = "";
-            string type = Request.Params["type"];
-            CookieModel cookieInfo = SystemCls.getCookieInfo();
-            if (type == "oa")
+            pubViewBag("006025", "006025", "");
+            if (ViewBag.isPageRight == false)
+                return View();
+            return View();
+        }
+
+        /// <summary>
+        /// 取出树形菜单
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult BiologicalTypeTreeGet()
+        {
+            string idcode = Request.Params["id"];
+            string result = T_SYS_BIOLOGICALTYPECls.GetTypeTree(new T_SYS_BIOLOGICALTYPE_SW { BIOLOCODE = idcode });
+            return Content(result, "application/json");
+        }
+
+        /// <summary>
+        /// 分类分别下拉框
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult BiologicalTypeOptionGet()
+        {
+            string code = Request.Params["BioloCode"];
+            string option = T_SYS_BIOLOGICALTYPECls.GetSelectOption(new T_SYS_BIOLOGICALTYPE_SW { CurCODE = code });
+            return Content(JsonConvert.SerializeObject(new Message(true, option, "")), "text/html;charset=UTF-8");
+        }
+
+        /// <summary>
+        /// 类别改变自动生成类别编码
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult BiologicalTypeChange()
+        {
+            string code = Request.Params["BioloCode"];
+            string new_code = "";
+            if (!string.IsNullOrEmpty(code))
             {
-                if (OACls.isExists(cookieInfo.UID))
+                if (PublicCls.BioCodeIsZHong(code))
                 {
-                    url = ConfigCls.getOAAddress() + "/Portal/AutoLogin/Login/login.aspx?userid=" + cookieInfo.UID + "&menuid=66666666";
+                    new_code = GeneralZhongCode(code);
                 }
                 else
                 {
-                    url = ConfigCls.getOAAddress() + "/Portal/Oxic_Sea/Login/Login.aspx";
+                    List<T_SYS_BIOLOGICALTYPE_Model> templist = T_SYS_BIOLOGICALTYPECls.getListModel(new T_SYS_BIOLOGICALTYPE_SW { BIOLOCODE = code, IsOnlyGetChild = true }).ToList();
+                    if (templist.Count > 0)
+                    {
+                        new_code = templist[templist.Count - 1].BIOLOCODE;
+                        if (PublicCls.BioCodeIsJie(new_code))
+                            new_code = GeneralJieCode(new_code);
+                        else if (PublicCls.BioCodeIsMen(new_code))
+                            new_code = GeneralMenCode(new_code);
+                        else if (PublicCls.BioCodeIsGang(new_code))
+                            new_code = GeneralGangCode(new_code);
+                        else if (PublicCls.BioCodeIsMu(new_code))
+                            new_code = GeneralMuCode(new_code);
+                        else if (PublicCls.BioCodeIsKe(new_code))
+                            new_code = GeneralKeCode(new_code);
+                        else if (PublicCls.BioCodeIsShu(new_code))
+                            new_code = GeneralShuCode(new_code);
+                        else if (PublicCls.BioCodeIsZHong(new_code))
+                            new_code = GeneralZhongCode(new_code);
+                    }
+                    else
+                    {
+                        new_code = code;
+                        if (PublicCls.BioCodeIsJie(new_code))
+                            new_code = GeneralMenCode(new_code);
+                        else if (PublicCls.BioCodeIsMen(new_code))
+                            new_code = GeneralGangCode(new_code);
+                        else if (PublicCls.BioCodeIsGang(new_code))
+                            new_code = GeneralMuCode(new_code);
+                        else if (PublicCls.BioCodeIsMu(new_code))
+                            new_code = GeneralKeCode(new_code);
+                        else if (PublicCls.BioCodeIsKe(new_code))
+                            new_code = GeneralShuCode(new_code);
+                        else if (PublicCls.BioCodeIsShu(new_code))
+                            new_code = GeneralZhongCode(new_code);
+                    }
                 }
             }
-            ViewBag.redUrl = url;
-            return View();
+            else
+                new_code = "01000000000000";
+            return Content(JsonConvert.SerializeObject(new Message(true, new_code, "")), "text/html;charset=UTF-8");
+        }
+
+        /// <summary>
+        /// 获取生物分类模型
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult GetBiologicalTypeJson()
+        {
+            string code = Request.Params["BioloCode"];
+            return Content(JsonConvert.SerializeObject(T_SYS_BIOLOGICALTYPECls.getModel(new T_SYS_BIOLOGICALTYPE_SW { BIOLOCODE = code })), "text/html;charset=UTF-8");
+        }
+
+        /// <summary>
+        /// 生物分类管理
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult BiologicalTypeManager()
+        {
+            T_SYS_BIOLOGICALTYPE_Model m = new T_SYS_BIOLOGICALTYPE_Model();
+            m.BIOLOTYPE = Request.Params["BioloType"];
+            m.BIOLOCODE = Request.Params["BioloCode"];
+            m.BIOLONAME = Request.Params["BioloName"];
+            m.BIOLOENNAME = Request.Params["BioEnName"];
+            m.ORDERBY = Request.Params["ORDERBY"];
+            m.opMethod = Request.Params["Method"];
+            if (string.IsNullOrEmpty(m.ORDERBY))
+                m.ORDERBY = "0";
+            if (m.opMethod != "Del")
+            {
+                if (m.BIOLOCODE.Substring(0, 2) == "00")
+                    return Content(JsonConvert.SerializeObject(new Message(false, "界级编码不能输入00!", "")), "text/html;charset=UTF-8");
+                if (m.BIOLOCODE == "00000000000000")
+                    return Content(JsonConvert.SerializeObject(new Message(false, "7级编码不能同时输入00!", "")), "text/html;charset=UTF-8");
+            }
+            return Content(JsonConvert.SerializeObject(T_SYS_BIOLOGICALTYPECls.Manager(m)), "text/html;charset=UTF-8");
         }
         #endregion
 
+        #region 本地化生物关联
+        /// <summary>
+        /// 本地化生物关联
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult LocalPestJoin()
+        {
+            pubViewBag("006019", "006019", "");
+            if (ViewBag.isPageRight == false)
+                return View();
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { TopORGNO = SystemCls.getCurUserOrgNo(), SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = SystemCls.getCurUserOrgNo() });
+            ViewBag.vdSearType = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "123", isShowAll = "1" });
+            return View();
+        }
+
+        /// <summary>
+        /// 本地化生物关联--异步查询
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult LocalPestJoinQuery()
+        {
+            string PageSize = Request.Params["PageSize"];
+            if (PageSize == "0")
+                PageSize = ConfigCls.getTableDefaultPageSize();
+            string Page = Request.Params["Page"];
+            string orgNO = Request.Params["ORGNO"];
+            string searchType = Request.Params["SEARCHTYPE"];
+            int total = 0;
+            PEST_LOCALPESTJOIN_SW sw = new PEST_LOCALPESTJOIN_SW { CurPage = int.Parse(Page), PageSize = int.Parse(PageSize), BYORGNO = orgNO, SEARCHTYPE = searchType };
+            var result = PEST_LOCALPESTJOINCls.getListModel(sw, out total).Where(a => a.PESTBYCODENAME != "");
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
+            sb.AppendFormat("<thead><tr><th>序号</th><th>单位</th><th>调查类型</th><th>科</th><th>属</th><th>种</th><th>操作</th></tr></thead>");
+            sb.AppendFormat("<tbody>");
+            int i = 0;
+            foreach (var v in result)
+            {
+                sb.AppendFormat("<tr class=\"{0}\">", (i % 2 == 0) ? "" : "row1");
+                sb.AppendFormat("<td class=\"center\">{0}</td>", (i + 1).ToString());
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.ORGNONAME);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.SEARCHTYPENAME);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.PESTKENAME);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.PESTSHUNAME);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.PESTBYCODENAME);
+                sb.AppendFormat("<td class=\"center\">");
+                sb.AppendFormat("<a href='#' onclick=\"manager('prop','{0}')\" style=\"width:120px\" class=\"searchBox_01 LinkMdy\">属性管理</a>", v.PESTBYCODE);
+                sb.AppendFormat("</td>");
+                sb.AppendFormat("</tr>");
+                i++;
+            }
+            sb.AppendFormat("</tbody>");
+            sb.AppendFormat("</table>");
+            string pageInfo = PagerCls.getPagerInfoAjax(new PagerSW { curPage = sw.CurPage, pageSize = sw.PageSize, rowCount = total });
+            return Content(JsonConvert.SerializeObject(new MessagePagerAjax(true, sb.ToString(), pageInfo)), "text/html;charset=UTF-8");
+        }
+
+        #region 本地化管理
+        /// <summary>
+        /// 本地化生物管理
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult LocalPestJoinMan()
+        {
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { TopORGNO = SystemCls.getCurUserOrgNo(), SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = SystemCls.getCurUserOrgNo() });
+            ViewBag.vdSearType = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "123" });
+            return View();
+        }
+
+        /// <summary>
+        /// 获取种级生物列表
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult GetPestBioZhongList()
+        {
+            StringBuilder sb = new StringBuilder();
+            var result = T_SYS_BIOLOGICALTYPECls.getZhongListModel(new T_SYS_BIOLOGICALTYPE_SW { IsOnlyGetZhong = true });
+            int i = 0;
+            foreach (var v in result)
+            {
+                sb.AppendFormat("{0}{1}", "<input id=\"tbxBioCode" + i + "\" name=\"tbxBioCode\"  type=\"checkbox\" class=\"ace\" value=\"" + v.BIOLOCODE + "\" onclick=\"selectall(this.value,this.checked)\" />", v.BIOLOKENAME + "-" + v.BIOLOSHUNAME + "-" + v.BIOLONAME);
+                if (i != result.Count() - 1)
+                    sb.AppendFormat("<br /><br />");
+                i++;
+            }
+            return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), "")), "text/html;charset=UTF-8");
+        }
+
+        /// <summary>
+        /// 获取已关联的种级生物列表
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult GetPestJoinBioZhongList()
+        {
+            string orgNO = Request.Params["ORGNO"];
+            string searchType = Request.Params["SEARCHTYPE"];
+            StringBuilder sb = new StringBuilder();
+            var result = PEST_LOCALPESTJOINCls.getListModel(new PEST_LOCALPESTJOIN_SW { BYORGNO = orgNO, SEARCHTYPE = searchType });
+            int i = 0;
+            foreach (var v in result)
+            {
+                sb.AppendFormat("{0}{1}", "<input id=\"tbxJoinBioCode" + i + "\" name=\"tbxJoinBioCode\"  type=\"checkbox\" class=\"ace\" value=\"" + v.PESTBYCODE + "\" onclick=\"selectall(this.value,this.checked)\" />", v.PESTKENAME + "-" + v.PESTSHUNAME + "-" + v.PESTBYCODENAME);
+                if (i != result.Count() - 1)
+                    sb.AppendFormat("<br /><br />");
+                i++;
+            }
+            return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), "")), "text/html;charset=UTF-8");
+        }
+
+        /// <summary>
+        /// 本地化树种关联数据管理-增、删、改
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult LocalPestJoinManager()
+        {
+            PEST_LOCALPESTJOIN_Model m = new PEST_LOCALPESTJOIN_Model();
+            m.BYORGNO = Request.Params["ORGNO"];
+            m.PESTBYCODE = Request.Params["BIOCODE"];
+            m.SEARCHTYPE = Request.Params["SEARCHTYPE"];
+            m.opMethod = Request.Params["Method"];
+            return Content(JsonConvert.SerializeObject(PEST_LOCALPESTJOINCls.Manager(m)), "text/html;charset=UTF-8");
+        }
+        #endregion
+
+        /// <summary>
+        /// 属性管理
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult PropTotalMan()
+        {
+            return View();
+        }
+
+        #region 属性管理
+        /// <summary>
+        /// 属性管理
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult PropMan()
+        {
+            string bioCode = Request.Params["BioCode"];
+            string bioName = T_SYS_BIOLOGICALTYPECls.getName(bioCode);
+            ViewBag.BioCode = bioCode;
+            ViewBag.BioName = bioName;
+            List<T_SYS_DICTModel> _dic124List = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "124" }).ToList();
+            ViewBag.dic124Value = T_SYS_DICTCls.getDicValueStr(_dic124List);
+            ViewBag.dic124Count = _dic124List.Count;
+            ViewBag.vdQurantine = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "125" });
+            ViewBag.vdRisk = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "126" });
+            return View();
+        }
+
+        /// <summary>
+        /// 获取基本属性
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult GetProp()
+        {
+            string bioCode = Request.Params["Biocode"];
+            PEST_PESTPROP_Model m = PEST_PESTPROPCls.getModel(new PEST_PESTPROP_SW { BIOLOGICALTYPECODE = bioCode });
+            return Content(JsonConvert.SerializeObject(m), "text/html;charset=UTF-8");
+        }
+
+        /// <summary>
+        /// 获取动态属性
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult GetDyProp()
+        {
+            string bioCode = Request.Params["Biocode"];
+            List<T_SYS_DICTModel> _dic124List = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "124" }).ToList();
+            List<PEST_PESTDYNAMICPROP_Model> _templist = PEST_PESTDYNAMICPROPCls.getListModel(new PEST_PESTDYNAMICPROP_SW { BIOLOGICALTYPECODE = bioCode }).ToList();
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < _dic124List.Count; i++)
+            {
+                string content = "";
+                PEST_PESTDYNAMICPROP_Model dm = _templist.Find(a => a.DYNAMICPROPCODE == _dic124List[i].DICTVALUE);
+                if (dm != null && dm.DYNAMICPROPCONTENT != null)
+                    content = dm.DYNAMICPROPCONTENT;
+                sb.AppendFormat("<tr>");
+                sb.AppendFormat("<td class=\"tdField\">{0}：</td>", _dic124List[i].DICTNAME);
+                sb.AppendFormat("<td colspan=\"3\" style=\"height:50px;\"><textarea id=\"tbx" + _dic124List[i].DICTVALUE + "\" style=\"width:99%; height: 100%\">" + content + "</textarea></td>");
+                sb.AppendFormat("</tr>");
+            }
+            return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), "")), "text/html;charset=UTF-8");
+        }
+
+        /// <summary>
+        /// 属性数据-增、删、改
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult PropManager()
+        {
+            PEST_PESTPROP_Model m = new PEST_PESTPROP_Model();
+            m.BIOLOGICALTYPECODE = Request.Params["Biocode"];
+            m.QUARANTINE = Request.Params["Qurantine"];
+            m.RISK = Request.Params["Risk"];
+            var ms = PEST_PESTPROPCls.Manager(m);
+            if (ms.Success)
+            {
+                PEST_PESTDYNAMICPROP_Model dm = new PEST_PESTDYNAMICPROP_Model();
+                dm.BIOLOGICALTYPECODE = m.BIOLOGICALTYPECODE;
+                dm.DYNAMICPROPCODE = Request.Params["RropCode"];
+                dm.DYNAMICPROPCONTENT = Request.Params["PropContent"];
+                PEST_PESTDYNAMICPROPCls.Manager(dm);
+            }
+            return Content(JsonConvert.SerializeObject(ms), "text/html;charset=UTF-8");
+        }
+        #endregion
+
+        #region 附件管理
+        /// <summary>
+        /// 附件管理
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult InfoFileMan()
+        {
+            string bioCode = Request.Params["BioCode"];
+            string bioName = T_SYS_BIOLOGICALTYPECls.getName(bioCode);
+            ViewBag.BioCode = bioCode;
+            ViewBag.BioName = bioName;
+            return View();
+        }
+
+        /// <summary>
+        /// 获取附件列表
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult GetFiles()
+        {
+            string bioCode = Request.Params["BioCode"];
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
+            sb.AppendFormat("<thead><tr><th>序号</th><th>生物名称</th><th>照片名称</th><th>上传时间</th><th>缩略图</th></tr></thead>");
+            sb.AppendFormat("<tbody>");
+            int i = 0;
+            var result = PEST_PESTINFOFILECls.getModelList(new PEST_PESTINFOFILE_SW { BIOLOGICALTYPECODE = bioCode });
+            foreach (var s in result)
+            {
+                sb.AppendFormat("<tr class=\"{4}\" onclick=\"showValues('{0}','{1}','{2}','{3}')\">", s.PESTFILEID, s.BIOLOGICALTYPECODE, s.PESTFILETITLE, s.PESTFILENAME, (i % 2 == 0) ? "" : "row1");
+                sb.AppendFormat("<td class=\"center\">{0}</td>", (i + 1).ToString());
+                sb.AppendFormat("<td class=\"center\">{0}</td>", s.BIOLOGICALTYPENAME);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", s.PESTFILETITLE);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", s.UPLOADTIME);
+                sb.AppendFormat("<td class=\"center\">");
+                sb.AppendFormat("<a href=\"{0}\" target=\"_blank\"><img src=\"{0}\" alt=\"alttext\" title=\"{1}\" height =\"35px\" wideth=\"35px\"/></a>", s.PESTFILENAME, s.PESTFILETITLE);
+                sb.AppendFormat("</td>");
+                sb.AppendFormat("<td class=\"center\"></td>");
+                sb.AppendFormat("</tr>");
+                i++;
+            }
+            sb.AppendFormat("</tbody>");
+            sb.AppendFormat("</table>");
+            return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), "")), "text/html;charset=UTF-8");
+        }
+
+        /// <summary>
+        /// 附件图片上传
+        /// </summary>
+        /// <returns></returns>
+        public JsonResult InfoFileUpload()
+        {
+            string pestFileId = Request.Params["PestFileId"];
+            string bioCode = Request.Params["BioCode"];
+            string pestFileTitle = Request.Params["PestFileTitle"];
+            string pestFileName = Request.Params["PestFileName"];
+            string Method = Request.Params["Method"];
+            string UID = SystemCls.getCookieInfo().UID;
+            Message ms = null;
+            HttpFileCollection hfc = System.Web.HttpContext.Current.Request.Files;
+            string[] arr = hfc[0].FileName.Split('.');
+            string type = arr[arr.Length - 1].ToLower();
+            if (Method == "Mdy" && string.IsNullOrEmpty(hfc[0].FileName))
+            {
+                PEST_PESTINFOFILE_Model m = new PEST_PESTINFOFILE_Model();
+                m.PESTFILEID = pestFileId;
+                m.BIOLOGICALTYPECODE = bioCode;
+                m.PESTFILETITLE = pestFileTitle;
+                m.UID = UID;
+                m.opMethod = "MdyTP";
+                ms = PEST_PESTINFOFILECls.Manager(m);
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(pestFileTitle))
+                    return Json(new Message(false, "请输入附件名!", ""));
+                if (string.IsNullOrEmpty(hfc[0].FileName))
+                    return Json(new Message(false, "请选择上传图片!", ""));
+                if (type != "jpg" && type != "jpeg" && type != "bmp" && type != "gif" && type != "png")
+                    return Json(new Message(false, "禁止上传非图片文件!", ""));
+                if (hfc.Count > 0)
+                {
+                    string ipath = "~/UploadFile/PESTINFOFILE/";//相对路径
+                    string phyPath = Server.MapPath(ipath);
+                    if (!Directory.Exists(phyPath))//判断文件夹是否已经存在
+                        Directory.CreateDirectory(phyPath);//创建文件夹
+                    PEST_PESTINFOFILE_Model m = new PEST_PESTINFOFILE_Model();
+                    for (int i = 0; i < hfc.Count; i++)
+                    {
+                        m.PESTFILEID = pestFileId;
+                        m.BIOLOGICALTYPECODE = bioCode;
+                        m.PESTFILETITLE = pestFileTitle;
+                        m.UPLOADTIME = DateTime.Now.ToString();
+                        m.PESTFILENAME = "/UploadFile/PESTINFOFILE/" + DateTime.Now.ToString("yyyyMMddHHmmss") + "." + type;
+                        m.UID = UID;
+                        string PhysicalPath = Server.MapPath(m.PESTFILENAME);
+                        hfc[i].SaveAs(PhysicalPath);
+                        m.opMethod = Method;
+                    }
+                    ms = PEST_PESTINFOFILECls.Manager(m);
+                }
+            }
+            return Json(ms);
+        }
+
+        /// <summary>
+        /// 附件管理
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult InfoFileManager()
+        {
+            PEST_PESTINFOFILE_Model m = new PEST_PESTINFOFILE_Model();
+            m.PESTFILEID = Request.Params["PestFileId"];
+            m.BIOLOGICALTYPECODE = Request.Params["BioCode"];
+            m.PESTFILETITLE = Request.Params["PestFileTitle"];
+            m.PESTFILENAME = Request.Params["PestFileName"];
+            m.UPLOADTIME = DateTime.Now.ToString();
+            m.UID = SystemCls.getCookieInfo().UID;
+            m.opMethod = Request.Params["Method"];
+            if (string.IsNullOrEmpty(m.opMethod) == true)
+                m.opMethod = "Add";
+            if (m.opMethod == "Del")
+            {
+                string file = Server.MapPath(m.PESTFILENAME);
+                if (System.IO.File.Exists(file))
+                    System.IO.File.Delete(file);
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(m.PESTFILETITLE))
+                    return Content(JsonConvert.SerializeObject(new Message(false, "请输入附件名称!", "")), "text/html;charset=UTF-8");
+            }
+            return Content(JsonConvert.SerializeObject(PEST_PESTINFOFILECls.Manager(m)), "text/html;charset=UTF-8");
+        }
+        #endregion
+
+        #endregion
+
+        #region 本地化树种关联
+        /// <summary>
+        /// 本地化树种管理
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult LocalTreeJoin()
+        {
+            pubViewBag("006020", "006020", "");
+            if (ViewBag.isPageRight == false)
+                return View();
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { TopORGNO = SystemCls.getCurUserOrgNo(), SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = SystemCls.getCurUserOrgNo() });
+            ViewBag.Save = (SystemCls.isRight("006020001")) ? 1 : 0;
+            return View();
+        }
+
+        /// <summary>
+        /// 本地树种管理--异步查询
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult LocalTreeJoinQuery()
+        {
+            string PageSize = Request.Params["PageSize"];
+            if (PageSize == "0")
+                PageSize = ConfigCls.getTableDefaultPageSize();
+            string Page = Request.Params["Page"];
+            string OrgNo = Request.Params["ORGNO"];
+            int total = 0;
+            PEST_LOCALTREESPECIES_SW sw = new PEST_LOCALTREESPECIES_SW { CurPage = int.Parse(Page), PageSize = int.Parse(PageSize), BYORGNO = OrgNo };
+            List<PEST_LOCALTREESPECIES_Model> _templist = PEST_LOCALTREESPECIESCls.getListModel(sw, out total).Where(a => a.TSPNAME != "").ToList();
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("<table id=\"localTreeTable\"  cellpadding=\"0\" cellspacing=\"0\">");
+            sb.AppendFormat("<thead>");
+            sb.AppendFormat("<tr><th>序号</th><th>单位</th><th>科</th><th>属</th><th>种</th><th>树种面积<br />(" + dic113Name + ")</th></tr>");
+            sb.AppendFormat("</thead>");
+            sb.AppendFormat("<tbody>");
+            for (int i = 0; i < _templist.Count; i++)
+            {
+                string area = !string.IsNullOrEmpty(_templist[i].TSPAREA) ? string.Format("{0:0.00}", float.Parse(_templist[i].TSPAREA)) : "";
+                sb.AppendFormat("<tr class=\"{0}\">", (i % 2 == 0) ? "" : "row1");
+                sb.AppendFormat("<td class=\"center\">{0}</td>", (i + 1).ToString());
+                sb.AppendFormat("<td class=\"center\">{0}{1}</td>", _templist[i].ORGNONAME, "<input id=\"tbx" + i + "\"  type=\"hidden\"  value=\"" + _templist[i].PEST_LOCALTREESPECIESID + "\"  />");
+                sb.AppendFormat("<td class=\"center\">{0}</td>", _templist[i].TSPKENAME);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", _templist[i].TSPSHUNAME);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", _templist[i].TSPNAME);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", "<input id=\"tbxAREA" + i + "\"  type=\"text\"  value=\"" + area + "\" style=\"width:150px;\" class=\"center\"  />");
+                sb.AppendFormat("</tr>");
+            }
+            sb.AppendFormat("</tbody>");
+            sb.AppendFormat("</table>");
+            string pageInfo = PagerCls.getPagerInfoAjax(new PagerSW { curPage = sw.CurPage, pageSize = sw.PageSize, rowCount = total });
+            return Content(JsonConvert.SerializeObject(new MessagePagerAjax(true, sb.ToString(), pageInfo)), "text/html;charset=UTF-8");
+        }
+
+        /// <summary>
+        /// 本地树种管理
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult LocalTreeJoinMan()
+        {
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { TopORGNO = SystemCls.getCurUserOrgNo(), SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = SystemCls.getCurUserOrgNo() });
+            return View();
+        }
+
+        /// <summary>
+        /// 获取种级树种列表
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult GetTreeBioZhongList()
+        {
+            StringBuilder sb = new StringBuilder();
+            var result = T_SYS_BIOLOGICALTYPECls.getZhongListModel(new T_SYS_BIOLOGICALTYPE_SW { BIOLOCODE = "02000000000000", IsOnlyGetZhong = true });
+            int i = 0;
+            foreach (var v in result)
+            {
+                sb.AppendFormat("{0}{1}", "<input id=\"tbxBioCode" + i + "\" name=\"tbxBioCode\"  type=\"checkbox\" class=\"ace\" value=\"" + v.BIOLOCODE + "\" onclick=\"selectall(this.value,this.checked)\" />", v.BIOLOKENAME + "-" + v.BIOLOSHUNAME + "-" + v.BIOLONAME);
+                if (i != result.Count() - 1)
+                    sb.AppendFormat("<br /><br />");
+                i++;
+            }
+            return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), "")), "text/html;charset=UTF-8");
+        }
+
+        /// <summary>
+        /// 获取已关联的树种生物列表
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult GetTreeJoinBioZhongList()
+        {
+            string orgNO = Request.Params["ORGNO"];
+            StringBuilder sb = new StringBuilder();
+            var result = PEST_LOCALTREESPECIESCls.getListModel(new PEST_LOCALTREESPECIES_SW { BYORGNO = orgNO });
+            int i = 0;
+            foreach (var v in result)
+            {
+                sb.AppendFormat("{0}{1}", "<input id=\"tbxJoinBioCode" + i + "\" name=\"tbxJoinBioCode\"  type=\"checkbox\" class=\"ace\" value=\"" + v.TSPCODE + "\" onclick=\"selectall(this.value,this.checked)\" />", v.TSPKENAME + "-" + v.TSPSHUNAME + "-" + v.TSPNAME);
+                if (i != result.Count() - 1)
+                    sb.AppendFormat("<br /><br />");
+                i++;
+            }
+            return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), "")), "text/html;charset=UTF-8");
+        }
+
+        /// <summary>
+        /// 本地树种管理-增、删、改
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult LocalTreeJoinManager()
+        {
+            PEST_LOCALTREESPECIES_Model m = new PEST_LOCALTREESPECIES_Model();
+            m.PEST_LOCALTREESPECIESID = Request.Params["Id"];
+            m.BYORGNO = Request.Params["ORGNO"];
+            m.TSPCODE = Request.Params["TSPCODE"];
+            m.TSPAREA = Request.Params["TSPAREA"];
+            m.opMethod = Request.Params["Method"];
+            return Content(JsonConvert.SerializeObject(PEST_LOCALTREESPECIESCls.Manager(m)), "text/html;charset=UTF-8");
+        }
+        #endregion
+
+        #region 树种有害生物关联
+        /// <summary>
+        /// 树种有害生物关联
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult PestTreeJoin()
+        {
+            pubViewBag("006022", "006022", "");
+            if (ViewBag.isPageRight == false)
+                return View();
+            ViewBag.vdTREESPECIES = PEST_LOCALTREESPECIESCls.getSelectOption(new PEST_LOCALTREESPECIES_SW { IsShowAll = "1" });
+            return View();
+        }
+
+        /// <summary>
+        /// 树种有害生物--异步查询
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult PestTreeJoinQuery()
+        {
+            string PageSize = Request.Params["PageSize"];
+            if (PageSize == "0")
+                PageSize = ConfigCls.getTableDefaultPageSize();
+            string Page = Request.Params["Page"];
+            string TreeSpecies = Request.Params["TreeSpecies"];
+            int total = 0;
+            PEST_TREESPECIES_PEST_SW sw = new PEST_TREESPECIES_PEST_SW { CurPage = int.Parse(Page), PageSize = int.Parse(PageSize), TREESPECIESCODE = TreeSpecies };
+            var result = PEST_TREESPECIES_PESTCls.getListModel(sw, out total).Where(a => a.TREESPECIESNAME != "" && a.PESTBYNAME != "");
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
+            sb.AppendFormat("<thead>");
+            sb.AppendFormat("<tr><th>序号</th><th>树种名称</th><th>有害生物名称</th></tr>");
+            sb.AppendFormat("</thead>");
+            sb.AppendFormat("<tbody>");
+            int i = 0;
+            foreach (var v in result)
+            {
+                sb.AppendFormat("<tr class='{0}'>", (i % 2 == 0) ? "" : "row1");
+                sb.AppendFormat("<td class=\"center\">{0}</td>", ((sw.CurPage - 1) * sw.PageSize + i + 1).ToString());
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.TREESPECIESNAME);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.PESTBYNAME);
+                sb.AppendFormat("</tr>");
+                i++;
+            }
+            sb.AppendFormat("</tbody>");
+            sb.AppendFormat("</table>");
+            string pageInfo = PagerCls.getPagerInfoAjax(new PagerSW { curPage = sw.CurPage, pageSize = sw.PageSize, rowCount = total });
+            return Content(JsonConvert.SerializeObject(new MessagePagerAjax(true, sb.ToString(), pageInfo)), "text/html;charset=UTF-8");
+        }
+
+        /// <summary>
+        /// 树种有害生物关联
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult PestTreeJoinMan()
+        {
+            ViewBag.vdTREESPECIES = PEST_LOCALTREESPECIESCls.getSelectOption(new PEST_LOCALTREESPECIES_SW());
+            return View();
+        }
+
+        /// <summary>
+        /// 获取有害生物列表
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult GetPestTreeList()
+        {
+            StringBuilder sb = new StringBuilder();
+            var result = PEST_LOCALPESTJOINCls.getListModel(new PEST_LOCALPESTJOIN_SW());
+            int i = 0;
+            foreach (var v in result)
+            {
+                sb.AppendFormat("{0}{1}", "<input id=\"tbxBioCode" + i + "\" name=\"tbxBioCode\"  type=\"checkbox\" class=\"ace\" value=\"" + v.PESTBYCODE + "\" onclick=\"selectall(this.value,this.checked)\" />", v.PESTKENAME + "-" + v.PESTSHUNAME + "-" + v.PESTBYCODENAME);
+                if (i != result.Count() - 1)
+                    sb.AppendFormat("<br /><br />");
+                i++;
+            }
+            return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), "")), "text/html;charset=UTF-8");
+        }
+
+        /// <summary>
+        /// 获取已关联的有害生物列表
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult GetPestTreeJoinList()
+        {
+            string TreeSpecies = Request.Params["TreeSpecies"];
+            StringBuilder sb = new StringBuilder();
+            var result = PEST_TREESPECIES_PESTCls.getListModel(new PEST_TREESPECIES_PEST_SW { TREESPECIESCODE = TreeSpecies });
+            int i = 0;
+            foreach (var v in result)
+            {
+                sb.AppendFormat("{0}{1}", "<input id=\"tbxJoinBioCode" + i + "\" name=\"tbxJoinBioCode\"  type=\"checkbox\" class=\"ace\" value=\"" + v.PESTBYCODE + "\" onclick=\"selectall(this.value,this.checked)\" />", v.PESTKENAME + "-" + v.PESTSHUNAME + "-" + v.PESTBYNAME);
+                if (i != result.Count() - 1)
+                    sb.AppendFormat("<br /><br />");
+                i++;
+            }
+            return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), "")), "text/html;charset=UTF-8");
+        }
+
+        /// <summary>
+        /// 树种有害生物关联-增、删、改
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult PestTreeJoinManager()
+        {
+            PEST_TREESPECIES_PEST_Model m = new PEST_TREESPECIES_PEST_Model();
+            m.TREESPECIESCODE = Request.Params["TreeSpeciesCode"];
+            m.PESTBYCODE = Request.Params["PestCode"];
+            m.opMethod = Request.Params["Method"];
+            return Content(JsonConvert.SerializeObject(PEST_TREESPECIES_PESTCls.Manager(m)), "text/html;charset=UTF-8");
+        }
+        #endregion
+
+        #region 有害生物危害等级导入-市
+        /// <summary>
+        /// 有害生物危害等级导入
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult PestHarmClassImport()
+        {
+            pubViewBag("006021", "006021", "");
+            if (ViewBag.isPageRight == false)
+                return View();
+            string dcDate = string.IsNullOrEmpty(Request.Params["DcDate"]) ? DateTime.Now.ToString("yyyy-MM-dd") : Request.Params["DcDate"];
+            string savePath = Request.Params["SavePath"];
+            ViewBag.DcDate = dcDate;
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("<table id=\"harmClassTable\"  cellpadding=\"0\" cellspacing=\"0\">");
+            sb.AppendFormat("<thead>");
+            sb.AppendFormat("<tr><th>区域</th><th>经度</th><th>纬度</th><th>危害等级</th><th>日期</th></tr>");
+            sb.AppendFormat("</thead>");
+            sb.AppendFormat("<tbody>");
+            int i = 0;
+            if (string.IsNullOrEmpty(savePath))
+            {
+                var areaList = T_ALL_AREACls.getListModel2(new T_ALL_AREA_SW());
+                var harmClassList = PEST_HARMCLASSCls.getListModel(new PEST_HARMCLASS_SW { DCDATE = dcDate });
+                foreach (var item in areaList)
+                {
+                    if (PublicCls.OrgIsXian(item.AREACODE) == true && !item.AREANAME.Contains("林业局"))//统计市，即所有县的
+                    {
+                        PEST_HARMCLASS_Model model = harmClassList.Where(a => a.BYORGNO == item.AREACODE).FirstOrDefault();
+                        string str = model != null && !string.IsNullOrEmpty(model.HARMCLASS) ? model.HARMCLASS : "";
+                        sb.AppendFormat("<tr class='danger'>");
+                        sb.AppendFormat("<td>{0}{1}</td>",
+                            "<input type=\"text\" class=\"center\" style=\"width:95%;\"  id=\"" + "tbxAREANAME_" + i + "\" value=\"" + item.AREANAME + "\"  readonly=\"readonly\" />",
+                            "<input type=\"hidden\"  id=\"" + "tbxAREACODE_" + i + "\" value=\"" + item.AREACODE + "\"   />");
+                        sb.AppendFormat("<td>{0}</td>", "<input type=\"text\" class=\"center\" style=\"width:95%;\"  id=\"" + "tbxJD_" + i + "\" value=\"" + item.JD + "\"  />");
+                        sb.AppendFormat("<td>{0}</td>", "<input type=\"text\" class=\"center\" style=\"width:95%;\"  id=\"" + "tbxWD_" + i + "\" value=\"" + item.WD + "\"  />");
+                        sb.AppendFormat("<td>{0}</td>", "<input type=\"text\" class=\"center\" style=\"width:95%;\"  id=\"" + "tbxHarmClass_" + i + "\" value=\"" + str + "\"  />");
+                        sb.AppendFormat("<td>{0}</td>", "<input type=\"text\" class=\"Wdate\"  style=\"width:95%;\"  id=\"" + "tbxDcDate_" + i + "\"  value=\"" + Convert.ToDateTime(dcDate).ToString("yyyy-MM-dd") + "\"    onclick=\"WdatePicker({ dateFmt: 'yyyy-MM-dd'})\"  />");
+                        sb.AppendFormat("</tr>");
+                        i++;
+                    }
+                }
+            }
+            else
+            {
+                string filePath = Server.UrlDecode(savePath);
+                HSSFWorkbook hssfworkbook;
+                try
+                {
+                    using (FileStream file = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                    {
+                        hssfworkbook = new HSSFWorkbook(file);
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+                ISheet sheet = hssfworkbook.GetSheetAt(0);
+                int rowCount = sheet.LastRowNum;
+                for (int j = (sheet.FirstRowNum + 2); j < rowCount; j++)
+                {
+                    IRow row = sheet.GetRow(j);
+                    string[] arr = new string[2];
+                    arr[0] = row.GetCell(0) == null ? "" : row.GetCell(0).ToString();
+                    arr[1] = row.GetCell(1) == null ? "" : row.GetCell(1).ToString();
+                    var areaModel = T_ALL_AREACls.getModel2(new T_ALL_AREA_SW { AREAJC = arr[0] });
+                    sb.AppendFormat("<tr class='danger'>");
+                    sb.AppendFormat("<td>{0}{1}</td>",
+                        "<input type=\"text\" class=\"center\" style=\"width:95%;\"  id=\"" + "tbxAREANAME_" + i + "\" value=\"" + areaModel.AREANAME + "\"  readonly=\"readonly\" />",
+                        "<input type=\"hidden\"  id=\"" + "tbxAREACODE_" + i + "\" value=\"" + areaModel.AREACODE + "\"   />");
+                    sb.AppendFormat("<td>{0}</td>", "<input type=\"text\" class=\"center\" style=\"width:95%;\"  id=\"" + "tbxJD_" + i + "\" value=\"" + areaModel.JD + "\"  />");
+                    sb.AppendFormat("<td>{0}</td>", "<input type=\"text\" class=\"center\" style=\"width:95%;\"  id=\"" + "tbxWD_" + i + "\" value=\"" + areaModel.WD + "\"  />");
+                    sb.AppendFormat("<td>{0}</td>", "<input type=\"text\" class=\"center\" style=\"width:95%;\"  id=\"" + "tbxHarmClass_" + i + "\" value=\"" + arr[1] + "\" />");
+                    sb.AppendFormat("<td>{0}</td>", "<input type=\"text\" class=\"Wdate\"  style=\"width:95%;\"  id=\"" + "tbxDcDate_" + i + "\"  value=\"" + Convert.ToDateTime(dcDate).ToString("yyyy-MM-dd") + "\"    onclick=\"WdatePicker({ dateFmt: 'yyyy-MM-dd'})\"  />");
+                    sb.AppendFormat("</tr>");
+                    i++;
+                }
+            }
+            sb.AppendFormat("</tbody>");
+            sb.AppendFormat("</table>");
+            ViewBag.tableList = sb.ToString();
+            List<T_SYS_DICTModel> dic126list = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "126" }).ToList();
+            ViewBag.dic126Value = T_SYS_DICTCls.getDicValueStr(dic126list);
+            return View();
+        }
+
+        /// <summary>
+        /// 火险等级上传
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult PestHarmClassImport(FormCollection form)
+        {
+            string date = Request.Form["tbxDcDate"];
+            if (date == "")
+                return Content("<script>alert('请选择要导入的日期!');window.location.href='PestHarmClassImport';</script>");
+            string savePath = "";
+            if (Request.Files.Count != 0)
+            {
+                HttpPostedFileBase File = Request.Files[0];
+                string extension = System.IO.Path.GetExtension(File.FileName);
+                string Filename = File.FileName;
+                string p_Name = Filename;
+                string NoFileName = System.IO.Path.GetFileNameWithoutExtension(Filename);//获取无扩展名的文件名
+                if (File.ContentLength != 0)
+                {
+                    int filesize = File.ContentLength;//获取上传文件的大小单位为字节byte
+                    int Maxsize = 4000 * 1024;//定义上传文件的最大空间大小为4M
+                    string FileType = ".xls,.xlsx";//定义上传文件的类型字符串
+                    string name = DateTime.Now.ToString("有害生物危害等级导入-yyyyMMddHHmmss!") + extension;
+                    if (!FileType.Contains(extension))
+                    {
+                        return Content(@"<script>alert('文件类型不对,只能导入xls和xlsx格式的文件!');history.go(-1);</script>");
+                    }
+                    if (filesize >= Maxsize)
+                    {
+                        return Content(@"<script>alert('上传文件超过4M,不能上传!');history.go(-1);</script>");
+                    }
+                    try
+                    {
+                        string virthpath = "/UploadFile/PESTHARMCLASSExcel";
+                        string filePath = Server.MapPath("~" + virthpath);
+                        if (!Directory.Exists(filePath))
+                            Directory.CreateDirectory(filePath);
+                        savePath = Path.Combine(filePath, name);
+                        File.SaveAs(savePath);
+                        var EncodeSavepath = Server.UrlEncode(savePath);//编码                       
+                        return Content(@"<script>window.location.href='PestHarmClassImport?DcDate=" + date + "&SavePath=" + EncodeSavepath + "'</script>");
+                    }
+                    catch (Exception)
+                    {
+                        return Content(@"<script>alert('上传文件模板错误,请确认后再上传!');history.go(-1);</script>");
+                    }
+                }
+                else
+                    return Content(@"<script>alert('请选择需要导入的有害生物危害等级文件!');history.go(-1);</script>");
+            }
+            return View();
+        }
+
+        /// <summary>
+        /// 有害生物危害等级保存
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult PestHarmClassImportManager()
+        {
+            PEST_HARMCLASS_Model m = new PEST_HARMCLASS_Model();
+            m.DCDATE = Request.Params["DcDate"];
+            m.BYORGNO = Request.Params["ByOrgno"];
+            m.TOWNNAME = Request.Params["TownName"];
+            m.JD = Request.Params["JD"];
+            m.WD = Request.Params["WD"];
+            m.HARMCLASS = Request.Params["HarmClass"];
+            return Content(JsonConvert.SerializeObject(PEST_HARMCLASSCls.Manager(m)), "text/html;charset=UTF-8");
+        }
+        #endregion
+
+        #region 有害生物危害等级导入-市、县、乡镇
+        /// <summary>
+        /// 有害生物危害等级导入
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult PestHarmClassImportNew()
+        {
+            pubViewBag("006021", "006021", "");
+            if (ViewBag.isPageRight == false)
+                return View();
+            StringBuilder sb = new StringBuilder();
+            var result = PEST_HARMCLASSCls.getTopListModel(new PEST_HARMCLASS_SW() { });
+            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
+            sb.AppendFormat("<thead>");
+            sb.AppendFormat("<tr><th>单位</th><th>经度</th><th>纬度</th><th>时间</th><th>危害等级</th></tr>");
+            sb.AppendFormat("</thead>");
+            sb.AppendFormat("<tbody>");
+            int i = 0;
+            foreach (var item in result)
+            {
+                sb.AppendFormat("<tr class=\"{0}\">", (i % 2 == 0) ? "" : "row1");
+                sb.AppendFormat("<td class=\"left\" style=\"{1}\" >{0}</td>", item.TOWNNAME, PublicCls.getOrgTDNameClass(item.BYORGNO, item.BYORGNO));
+                sb.AppendFormat("<td>{0}</td>", item.JD);
+                sb.AppendFormat("<td>{0}</td>", item.WD);
+                sb.AppendFormat("<td>{0}</td>", item.DCDATE);
+                sb.AppendFormat("<td>{0}</td>", item.HARMCLASS);
+                sb.AppendFormat("</tr>");
+                i++;
+            }
+            sb.AppendFormat("</tbody>");
+            sb.AppendFormat("</table>");
+            ViewBag.TableList = sb.ToString();
+            return View();
+        }
+
+        /// <summary>
+        /// 火险等级文件导入
+        /// </summary>
+        /// <returns></returns>
+        public JsonResult ImportPestHarmClass()
+        {
+            Message ms = null;
+            //接收上传后的文件
+            HttpPostedFile file = System.Web.HttpContext.Current.Request.Files["Filedata"];
+            //判断上传的文件是否为空
+            if (file != null)
+            {
+                string ipath = System.Configuration.ConfigurationManager.AppSettings["PESTHARMCLASSTxtPath"].ToString();//相对路径
+                string PhysicalPath = Server.MapPath(ipath + "\\");
+                if (!Directory.Exists(PhysicalPath))//判断文件夹是否已经存在
+                {
+                    Directory.CreateDirectory(PhysicalPath);//创建文件夹
+                }
+                //保存路径
+                string type = file.FileName.Substring(file.FileName.LastIndexOf(".") + 1);
+                string newName = DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString() + DateTime.Now.Day.ToString() + DateTime.Now.Hour.ToString() + DateTime.Now.Minute.ToString() + DateTime.Now.Second.ToString() + DateTime.Now.Millisecond.ToString() + "." + type;
+                try
+                {
+                    string path = PhysicalPath + newName;
+                    //保存文件
+                    file.SaveAs(path);
+                    bool bo = ReadTxt(path);//读取txt 文件 入库
+                    if (bo)
+                    {
+                        ms = new Message(true, "上传成功!", "");
+                    }
+                    else
+                    {
+                        ms = new Message(false, "上传失败,检查导入文件格式!", "");
+                    }
+                }
+                catch (Exception)
+                {
+                    ms = new Message(false, "上传出错!", "");
+                }
+            }
+            return Json(ms);
+        }
+        #endregion
+
+        #region 本地化动物关联
+        /// <summary>
+        /// 本地化动物关联页面
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult LocalAnimalJoin()
+        {
+            pubViewBag("006027", "006027", "");
+            if (ViewBag.isPageRight == false)
+                return View();
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { TopORGNO = SystemCls.getCurUserOrgNo(), SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = SystemCls.getCurUserOrgNo() });
+            ViewBag.Save = (SystemCls.isRight("006027001")) ? 1 : 0;
+            return View();
+        }
+        public ActionResult LocalAnimalJoinQuery()
+        {
+            string PageSize = Request.Params["PageSize"];
+            if (PageSize == "0")
+                PageSize = ConfigCls.getTableDefaultPageSize();
+            string Page = Request.Params["Page"];
+            string orgNO = Request.Params["ORGNO"];
+            int total = 0;
+            WILD_LOCALANIMAL_SW sw = new WILD_LOCALANIMAL_SW { CurPage = int.Parse(Page), PageSize = int.Parse(PageSize), BYORGNO = orgNO };
+            var result = WILD_LOCALANIMALCls.getListModel(sw, out total);
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
+            sb.AppendFormat("<thead><tr><th>序号</th><th>单位</th><th>科</th><th>属</th><th>种</th><th>操作</th></tr></thead>");
+            sb.AppendFormat("<tbody>");
+            int i = 0;
+            foreach (var v in result)
+            {
+                sb.AppendFormat("<tr class=\"{0}\">", (i % 2 == 0) ? "" : "row1");
+                sb.AppendFormat("<td class=\"center\">{0}</td>", (i + 1).ToString());
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.ORGNONAME);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.PESTKENAME);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.PESTSHUNAME);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.BIOLOGICALTYPECODENAME);
+                sb.AppendFormat("<td class=\"center\">");
+                sb.AppendFormat("<a href='#' onclick=\"manager('prop','{0}')\" style=\"width:120px\" class=\"searchBox_01 LinkMdy\">属性管理</a>", v.BIOLOGICALTYPECODE);
+                sb.AppendFormat("</td>");
+                sb.AppendFormat("</tr>");
+                i++;
+            }
+            sb.AppendFormat("</tbody>");
+            sb.AppendFormat("</table>");
+            string pageInfo = PagerCls.getPagerInfoAjax(new PagerSW { curPage = sw.CurPage, pageSize = sw.PageSize, rowCount = total });
+            return Content(JsonConvert.SerializeObject(new MessagePagerAjax(true, sb.ToString(), pageInfo)), "text/html;charset=UTF-8");
+        }
+
+        #region 野生动物本地化管理
+        /// <summary>
+        /// 野生动物本地化管理
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult LocalAnimalJoinMan()
+        {
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { TopORGNO = SystemCls.getCurUserOrgNo(), SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = SystemCls.getCurUserOrgNo() });
+
+            return View();
+        }
+
+        /// <summary>
+        /// 获取种级野生动物列表
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult GetAnimalZhongList()
+        {
+            StringBuilder sb = new StringBuilder();
+            var result = T_SYS_BIOLOGICALTYPECls.getZhongListModel(new T_SYS_BIOLOGICALTYPE_SW { IsOnlyGetZhong = true, BIOLOCODE = "01000000000000" });
+            int i = 0;
+            foreach (var v in result)
+            {
+                sb.AppendFormat("{0}{1}", "<input id=\"tbxBioCode" + i + "\" name=\"tbxBioCode\"  type=\"checkbox\" class=\"ace\" value=\"" + v.BIOLOCODE + "\" onclick=\"selectall(this.value,this.checked)\" />", v.BIOLOKENAME + "-" + v.BIOLOSHUNAME + "-" + v.BIOLONAME);
+                if (i != result.Count() - 1)
+                    sb.AppendFormat("<br /><br />");
+                i++;
+            }
+            return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), "")), "text/html;charset=UTF-8");
+        }
+
+        /// <summary>
+        /// 获取已关联的野生动物列表
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult GetAnimalJoinZhongList()
+        {
+            string orgNO = Request.Params["ORGNO"];
+            StringBuilder sb = new StringBuilder();
+            var result = WILD_LOCALANIMALCls.getListModel(new WILD_LOCALANIMAL_SW { ORGNO = orgNO });
+            int i = 0;
+            foreach (var v in result)
+            {
+                sb.AppendFormat("{0}{1}", "<input id=\"tbxJoinBioCode" + i + "\" name=\"tbxJoinBioCode\"  type=\"checkbox\" class=\"ace\" value=\"" + v.BIOLOGICALTYPECODE + "\" onclick=\"selectall(this.value,this.checked)\" />", v.PESTKENAME + "-" + v.PESTSHUNAME + "-" + v.BIOLOGICALTYPECODENAME);
+                if (i != result.Count() - 1)
+                    sb.AppendFormat("<br /><br />");
+                i++;
+            }
+            return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), "")), "text/html;charset=UTF-8");
+        }
+
+        /// <summary>
+        /// 本地化野生动植物关联数据管理-增、删、改
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult LocalAnimalJoinManager()
+        {
+            WILD_LOCALANIMAL_Model m = new WILD_LOCALANIMAL_Model();
+            m.BYORGNO = Request.Params["ORGNO"];
+            m.BIOLOGICALTYPECODE = Request.Params["BIOLOGICALTYPECODE"];
+            m.WILD_LOCALANIMALID = Request.Params["WILD_LOCALANIMALID"];
+            m.opMethod = Request.Params["Method"];
+            return Content(JsonConvert.SerializeObject(WILD_LOCALANIMALCls.Manager(m)), "text/html;charset=UTF-8");
+        }
+        #endregion
+
+        #region 野生动物属性管理
+        /// <summary>
+        /// 野生动物属性管理
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult WILD_ANIMALPROPMan()
+        {
+            string bioCode = Request.Params["BioCode"];
+            string bioName = T_SYS_BIOLOGICALTYPECls.getName(bioCode);
+            ViewBag.BioCode = bioCode;
+            ViewBag.BioName = bioName;
+            List<T_SYS_DICTModel> _dic128List = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "128" }).ToList();
+            ViewBag.dic124Value = T_SYS_DICTCls.getDicValueStr(_dic128List);
+            ViewBag.dic124Count = _dic128List.Count;
+            ViewBag.PROTECTIONLEVEL = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "127" });
+            ViewBag.LIVINGSTATUS = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "129" });
+            return View();
+        }
+
+        /// <summary>
+        /// 获取基本属性
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult GetWILD_ANIMALProp()
+        {
+            string bioCode = Request.Params["Biocode"];
+            WILD_ANIMALPROP_Model m = WILD_ANIMALPROPCls.getModel(new WILD_ANIMALPROP_SW { BIOLOGICALTYPECODE = bioCode });
+            return Content(JsonConvert.SerializeObject(m), "text/html;charset=UTF-8");
+        }
+
+        /// <summary>
+        /// 获取动态属性
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult GetDyWILD_ANIMALProp()
+        {
+            string bioCode = Request.Params["Biocode"];
+            List<T_SYS_DICTModel> _dic128List = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "128" }).ToList();
+            List<WILD_ANIMALDYNAMICPROP_Model> _templist = WILD_ANIMALDYNAMICPROPCls.getListModel(new WILD_ANIMALDYNAMICPROP_SW { BIOLOGICALTYPECODE = bioCode }).ToList();
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < _dic128List.Count; i++)
+            {
+                string content = "";
+                WILD_ANIMALDYNAMICPROP_Model dm = _templist.Find(a => a.DYNAMICPROPCODE == _dic128List[i].DICTVALUE);
+                if (dm != null && dm.DYNAMICPROPCONTENT != null)
+                    content = dm.DYNAMICPROPCONTENT;
+                sb.AppendFormat("<tr>");
+                sb.AppendFormat("<td class=\"tdField\">{0}：</td>", _dic128List[i].DICTNAME);
+                sb.AppendFormat("<td colspan=\"3\" style=\"height:50px;\"><textarea id=\"tbx" + _dic128List[i].DICTVALUE + "\" style=\"width:99%; height: 100%\">" + content + "</textarea></td>");
+                sb.AppendFormat("</tr>");
+            }
+            return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), "")), "text/html;charset=UTF-8");
+        }
+
+        /// <summary>
+        /// 属性数据-增、删、改
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult WILD_ANIMALPROPManager()
+        {
+            WILD_ANIMALPROP_Model m = new WILD_ANIMALPROP_Model();
+            m.BIOLOGICALTYPECODE = Request.Params["Biocode"];
+            m.PROTECTIONLEVELCODE = Request.Params["PROTECTIONLEVELCODE"];
+            m.LIVINGSTATUSCODE = Request.Params["LIVINGSTATUSCODE"];
+            var ms = WILD_ANIMALPROPCls.Manager(m);
+            if (ms.Success)
+            {
+                WILD_ANIMALDYNAMICPROP_Model dm = new WILD_ANIMALDYNAMICPROP_Model();
+                dm.BIOLOGICALTYPECODE = m.BIOLOGICALTYPECODE;
+                dm.DYNAMICPROPCODE = Request.Params["RropCode"];
+                dm.DYNAMICPROPCONTENT = Request.Params["PropContent"];
+                WILD_ANIMALDYNAMICPROPCls.Manager(dm);
+            }
+            return Content(JsonConvert.SerializeObject(ms), "text/html;charset=UTF-8");
+        }
+        #endregion
+
+        #region 附件管理
+        /// <summary>
+        /// 附件管理
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult WILD_ANIMALInfoFileMan()
+        {
+            string bioCode = Request.Params["BioCode"];
+            string bioName = T_SYS_BIOLOGICALTYPECls.getName(bioCode);
+            ViewBag.BioCode = bioCode;
+            ViewBag.BioName = bioName;
+            return View();
+        }
+
+        /// <summary>
+        /// 获取附件列表
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult GetWILD_ANIMALFiles()
+        {
+            string bioCode = Request.Params["BioCode"];
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
+            sb.AppendFormat("<thead><tr><th>序号</th><th>生物名称</th><th>附件名称</th><th>上传时间</th><th>缩略图</th></tr></thead>");
+            sb.AppendFormat("<tbody>");
+            int i = 0;
+            var result = WILD_ANIMALFILECls.getModelList(new WILD_ANIMALFILE_SW { BIOLOGICALTYPECODE = bioCode });
+            foreach (var s in result)
+            {
+                sb.AppendFormat("<tr class=\"{4}\" onclick=\"showValues('{0}','{1}','{2}','{3}')\">", s.PESTFILEID, s.BIOLOGICALTYPECODE, s.PESTFILETITLE, s.PESTFILENAME, (i % 2 == 0) ? "" : "row1");
+                sb.AppendFormat("<td class=\"center\">{0}</td>", (i + 1).ToString());
+                sb.AppendFormat("<td class=\"center\">{0}</td>", s.BIOLOGICALTYPENAME);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", s.PESTFILETITLE);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", s.UPLOADTIME);
+                sb.AppendFormat("<td class=\"center\">");
+                sb.AppendFormat("<a href=\"{0}\" target=\"_blank\"><img src=\"{0}\" alt=\"alttext\" title=\"{1}\" height =\"35px\" wideth=\"35px\"/></a>", s.PESTFILENAME, s.PESTFILETITLE);
+                sb.AppendFormat("</td>");
+                sb.AppendFormat("<td class=\"center\"></td>");
+                sb.AppendFormat("</tr>");
+                i++;
+            }
+            sb.AppendFormat("</tbody>");
+            sb.AppendFormat("</table>");
+            return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), "")), "text/html;charset=UTF-8");
+        }
+
+        /// <summary>
+        /// 附件图片上传
+        /// </summary>
+        /// <returns></returns>
+        public JsonResult WILD_ANIMALFileUpload()
+        {
+            string pestFileId = Request.Params["PestFileId"];
+            string bioCode = Request.Params["BioCode"];
+            string pestFileTitle = Request.Params["PestFileTitle"];
+            string pestFileName = Request.Params["PestFileName"];
+            string Method = Request.Params["Method"];
+            string UID = SystemCls.getCookieInfo().UID;
+            Message ms = null;
+            HttpFileCollection hfc = System.Web.HttpContext.Current.Request.Files;
+            string[] arr = hfc[0].FileName.Split('.');
+            string type = arr[arr.Length - 1].ToLower();
+            if (Method == "Mdy" && string.IsNullOrEmpty(hfc[0].FileName))
+            {
+                WILD_ANIMALFILE_Model m = new WILD_ANIMALFILE_Model();
+                m.PESTFILEID = pestFileId;
+                m.BIOLOGICALTYPECODE = bioCode;
+                m.PESTFILETITLE = pestFileTitle;
+                m.UID = UID;
+                m.opMethod = "MdyTP";
+                ms = WILD_ANIMALFILECls.Manager(m);
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(pestFileTitle))
+                    return Json(new Message(false, "请输入附件名!", ""));
+                if (string.IsNullOrEmpty(hfc[0].FileName))
+                    return Json(new Message(false, "请选择上传图片!", ""));
+                if (type != "jpg" && type != "jpeg" && type != "bmp" && type != "gif" && type != "png")
+                    return Json(new Message(false, "禁止上传非图片文件!", ""));
+                if (hfc.Count > 0)
+                {
+                    string ipath = "~/UploadFile/WILD_ANIMALFILE/";//相对路径
+                    string phyPath = Server.MapPath(ipath);
+                    if (!Directory.Exists(phyPath))//判断文件夹是否已经存在
+                        Directory.CreateDirectory(phyPath);//创建文件夹
+                    WILD_ANIMALFILE_Model m = new WILD_ANIMALFILE_Model();
+                    for (int i = 0; i < hfc.Count; i++)
+                    {
+                        m.PESTFILEID = pestFileId;
+                        m.BIOLOGICALTYPECODE = bioCode;
+                        m.PESTFILETITLE = pestFileTitle;
+                        m.UPLOADTIME = DateTime.Now.ToString();
+                        m.PESTFILENAME = "/UploadFile/WILD_ANIMALFILE/" + DateTime.Now.ToString("yyyyMMddHHmmss") + "." + type;
+                        m.UID = UID;
+                        string PhysicalPath = Server.MapPath(m.PESTFILENAME);
+                        hfc[i].SaveAs(PhysicalPath);
+                        m.opMethod = Method;
+                    }
+                    ms = WILD_ANIMALFILECls.Manager(m);
+                }
+            }
+            return Json(ms);
+        }
+
+        /// <summary>
+        /// 附件管理
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult WILD_ANIMALFileManager()
+        {
+            WILD_ANIMALFILE_Model m = new WILD_ANIMALFILE_Model();
+            m.PESTFILEID = Request.Params["PestFileId"];
+            m.BIOLOGICALTYPECODE = Request.Params["BioCode"];
+            m.PESTFILETITLE = Request.Params["PestFileTitle"];
+            m.PESTFILENAME = Request.Params["PestFileName"];
+            m.UPLOADTIME = DateTime.Now.ToString();
+            m.UID = SystemCls.getCookieInfo().UID;
+            m.opMethod = Request.Params["Method"];
+            if (string.IsNullOrEmpty(m.opMethod) == true)
+                m.opMethod = "Add";
+            if (m.opMethod == "Del")
+            {
+                string file = Server.MapPath(m.PESTFILENAME);
+                if (System.IO.File.Exists(file))
+                    System.IO.File.Delete(file);
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(m.PESTFILETITLE))
+                    return Content(JsonConvert.SerializeObject(new Message(false, "请输入附件名称!", "")), "text/html;charset=UTF-8");
+            }
+            return Content(JsonConvert.SerializeObject(WILD_ANIMALFILECls.Manager(m)), "text/html;charset=UTF-8");
+        }
+        #endregion
+
+        #region 基本属性页面及附件整合
+        /// <summary>
+        /// 基本属性页面及附件整合
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult WILD_ANIMALPROPTotalMan()
+        {
+            return View();
+        }
+        #endregion
+        #endregion
+
+        #region 本地化植物关联
+        /// <summary>
+        /// 本地化植物关联页面
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult LocalBotanyJoin()
+        {
+            pubViewBag("006028", "006028", "");
+            if (ViewBag.isPageRight == false)
+                return View();
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { TopORGNO = SystemCls.getCurUserOrgNo(), SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = SystemCls.getCurUserOrgNo() });
+            ViewBag.Save = (SystemCls.isRight("006028001")) ? 1 : 0;
+            return View();
+        }
+        /// <summary>
+        /// 查询
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult LocalBotanyJoinQuery()
+        {
+            string PageSize = Request.Params["PageSize"];
+            if (PageSize == "0")
+                PageSize = ConfigCls.getTableDefaultPageSize();
+            string Page = Request.Params["Page"];
+            string orgNO = Request.Params["ORGNO"];
+            int total = 0;
+            WILD_LOCALBOTANY_SW sw = new WILD_LOCALBOTANY_SW { CurPage = int.Parse(Page), PageSize = int.Parse(PageSize), BYORGNO = orgNO };
+            var result = WILD_LOCALBOTANYCls.getListModel(sw, out total);
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
+            sb.AppendFormat("<thead><tr><th>序号</th><th>单位</th><th>科</th><th>属</th><th>种</th><th>操作</th></tr></thead>");
+            sb.AppendFormat("<tbody>");
+            int i = 0;
+            foreach (var v in result)
+            {
+                sb.AppendFormat("<tr class=\"{0}\">", (i % 2 == 0) ? "" : "row1");
+                sb.AppendFormat("<td class=\"center\">{0}</td>", (i + 1).ToString());
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.ORGNONAME);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.PESTKENAME);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.PESTSHUNAME);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", v.BIOLOGICALTYPECODENAME);
+                sb.AppendFormat("<td class=\"center\">");
+                sb.AppendFormat("<a href='#' onclick=\"manager('prop','{0}')\" style=\"width:120px\" class=\"searchBox_01 LinkMdy\">属性管理</a>", v.BIOLOGICALTYPECODE);
+                sb.AppendFormat("</td>");
+                sb.AppendFormat("</tr>");
+                i++;
+            }
+            sb.AppendFormat("</tbody>");
+            sb.AppendFormat("</table>");
+            string pageInfo = PagerCls.getPagerInfoAjax(new PagerSW { curPage = sw.CurPage, pageSize = sw.PageSize, rowCount = total });
+            return Content(JsonConvert.SerializeObject(new MessagePagerAjax(true, sb.ToString(), pageInfo)), "text/html;charset=UTF-8");
+        }
+
+
+        #region 野生植物本地化管理
+        /// <summary>
+        /// 野生植物本地化管理
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult LocalBotanyJoinMan()
+        {
+            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { TopORGNO = SystemCls.getCurUserOrgNo(), SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = SystemCls.getCurUserOrgNo() });
+
+            return View();
+        }
+
+        /// <summary>
+        /// 获取种级野生植物列表
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult GetBotanyZhongList()
+        {
+            StringBuilder sb = new StringBuilder();
+            var result = T_SYS_BIOLOGICALTYPECls.getZhongListModel(new T_SYS_BIOLOGICALTYPE_SW { IsOnlyGetZhong = true, BIOLOCODE = "02000000000000" });
+            int i = 0;
+            foreach (var v in result)
+            {
+                sb.AppendFormat("{0}{1}", "<input id=\"tbxBioCode" + i + "\" name=\"tbxBioCode\"  type=\"checkbox\" class=\"ace\" value=\"" + v.BIOLOCODE + "\" onclick=\"selectall(this.value,this.checked)\" />", v.BIOLOKENAME + "-" + v.BIOLOSHUNAME + "-" + v.BIOLONAME);
+                if (i != result.Count() - 1)
+                    sb.AppendFormat("<br /><br />");
+                i++;
+            }
+            return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), "")), "text/html;charset=UTF-8");
+        }
+
+        /// <summary>
+        /// 获取已关联的野生植物列表
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult GetBotanyJoinZhongList()
+        {
+            string orgNO = Request.Params["ORGNO"];
+            StringBuilder sb = new StringBuilder();
+            var result = WILD_LOCALBOTANYCls.getListModel(new WILD_LOCALBOTANY_SW { ORGNO = orgNO });
+            int i = 0;
+            foreach (var v in result)
+            {
+                sb.AppendFormat("{0}{1}", "<input id=\"tbxJoinBioCode" + i + "\" name=\"tbxJoinBioCode\"  type=\"checkbox\" class=\"ace\" value=\"" + v.BIOLOGICALTYPECODE + "\" onclick=\"selectall(this.value,this.checked)\" />", v.PESTKENAME + "-" + v.PESTSHUNAME + "-" + v.BIOLOGICALTYPECODENAME);
+                if (i != result.Count() - 1)
+                    sb.AppendFormat("<br /><br />");
+                i++;
+            }
+            return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), "")), "text/html;charset=UTF-8");
+        }
+
+        /// <summary>
+        /// 本地化野生植物关联数据管理-增、删、改
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult LocalBotanyJoinManager()
+        {
+            WILD_LOCALBOTANY_Model m = new WILD_LOCALBOTANY_Model();
+            m.BYORGNO = Request.Params["ORGNO"];
+            m.BIOLOGICALTYPECODE = Request.Params["BIOLOGICALTYPECODE"];
+            m.WILD_LOCALBOTANYID = Request.Params["WILD_LOCALBOTANYID"];
+            m.opMethod = Request.Params["Method"];
+            return Content(JsonConvert.SerializeObject(WILD_LOCALBOTANYCls.Manager(m)), "text/html;charset=UTF-8");
+        }
+        #endregion
+
+        #region 野生植物属性管理
+        /// <summary>
+        /// 野生植物属性管理
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult WILD_BOTANYPROPMan()
+        {
+            string bioCode = Request.Params["BioCode"];
+            string bioName = T_SYS_BIOLOGICALTYPECls.getName(bioCode);
+            ViewBag.BioCode = bioCode;
+            ViewBag.BioName = bioName;
+            List<T_SYS_DICTModel> _dic130List = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "130" }).ToList();
+            ViewBag.dic124Value = T_SYS_DICTCls.getDicValueStr(_dic130List);
+            ViewBag.dic124Count = _dic130List.Count;
+            ViewBag.PROTECTIONLEVEL = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "127" });
+            ViewBag.LIVINGSTATUS = T_SYS_DICTCls.getSelectOption(new T_SYS_DICTSW { DICTTYPEID = "129" });
+            return View();
+        }
+
+        /// <summary>
+        /// 获取基本属性
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult GetWILD_BOTANYProp()
+        {
+            string bioCode = Request.Params["Biocode"];
+            WILD_BOTANYPROP_Model m = WILD_BOTANYPROPCls.getModel(new WILD_BOTANYPROP_SW { BIOLOGICALTYPECODE = bioCode });
+            return Content(JsonConvert.SerializeObject(m), "text/html;charset=UTF-8");
+        }
+
+        /// <summary>
+        /// 获取动态属性
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult GetDyWILD_BOTANYProp()
+        {
+            string bioCode = Request.Params["Biocode"];
+            List<T_SYS_DICTModel> _dic130List = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "130" }).ToList();
+            List<WILD_BOTANYDYNAMICPROP_Model> _templist = WILD_BOTANYDYNAMICPROPCls.getListModel(new WILD_BOTANYDYNAMICPROP_SW { BIOLOGICALTYPECODE = bioCode }).ToList();
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < _dic130List.Count; i++)
+            {
+                string content = "";
+                WILD_BOTANYDYNAMICPROP_Model dm = _templist.Find(a => a.DYNAMICPROPCODE == _dic130List[i].DICTVALUE);
+                if (dm != null && dm.DYNAMICPROPCONTENT != null)
+                    content = dm.DYNAMICPROPCONTENT;
+                sb.AppendFormat("<tr>");
+                sb.AppendFormat("<td class=\"tdField\">{0}：</td>", _dic130List[i].DICTNAME);
+                sb.AppendFormat("<td colspan=\"3\" style=\"height:50px;\"><textarea id=\"tbx" + _dic130List[i].DICTVALUE + "\" style=\"width:99%; height: 100%\">" + content + "</textarea></td>");
+                sb.AppendFormat("</tr>");
+            }
+            return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), "")), "text/html;charset=UTF-8");
+        }
+
+        /// <summary>
+        /// 属性数据-增、删、改
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult WILD_BOTANYPROPManager()
+        {
+            WILD_BOTANYPROP_Model m = new WILD_BOTANYPROP_Model();
+            m.BIOLOGICALTYPECODE = Request.Params["Biocode"];
+            m.PROTECTIONLEVELCODE = Request.Params["PROTECTIONLEVELCODE"];
+            m.LIVINGSTATUSCODE = Request.Params["LIVINGSTATUSCODE"];
+            var ms = WILD_BOTANYPROPCls.Manager(m);
+            if (ms.Success)
+            {
+                WILD_BOTANYDYNAMICPROP_Model dm = new WILD_BOTANYDYNAMICPROP_Model();
+                dm.BIOLOGICALTYPECODE = m.BIOLOGICALTYPECODE;
+                dm.DYNAMICPROPCODE = Request.Params["RropCode"];
+                dm.DYNAMICPROPCONTENT = Request.Params["PropContent"];
+                WILD_BOTANYDYNAMICPROPCls.Manager(dm);
+            }
+            return Content(JsonConvert.SerializeObject(ms), "text/html;charset=UTF-8");
+        }
+        #endregion
+
+        #region 附件管理
+        /// <summary>
+        /// 附件管理
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult WILD_BOTANYInfoFileMan()
+        {
+            string bioCode = Request.Params["BioCode"];
+            string bioName = T_SYS_BIOLOGICALTYPECls.getName(bioCode);
+            ViewBag.BioCode = bioCode;
+            ViewBag.BioName = bioName;
+            return View();
+        }
+
+        /// <summary>
+        /// 获取附件列表
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult GetWILD_BOTANYFiles()
+        {
+            string bioCode = Request.Params["BioCode"];
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("<table cellpadding=\"0\" cellspacing=\"0\">");
+            sb.AppendFormat("<thead><tr><th>序号</th><th>生物名称</th><th>附件名称</th><th>上传时间</th><th>缩略图</th></tr></thead>");
+            sb.AppendFormat("<tbody>");
+            int i = 0;
+            var result = WILD_BOTANYFILECls.getModelList(new WILD_BOTANYFILE_SW { BIOLOGICALTYPECODE = bioCode });
+            foreach (var s in result)
+            {
+                sb.AppendFormat("<tr class=\"{4}\" onclick=\"showValues('{0}','{1}','{2}','{3}')\">", s.PESTFILEID, s.BIOLOGICALTYPECODE, s.PESTFILETITLE, s.PESTFILENAME, (i % 2 == 0) ? "" : "row1");
+                sb.AppendFormat("<td class=\"center\">{0}</td>", (i + 1).ToString());
+                sb.AppendFormat("<td class=\"center\">{0}</td>", s.BIOLOGICALTYPENAME);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", s.PESTFILETITLE);
+                sb.AppendFormat("<td class=\"center\">{0}</td>", s.UPLOADTIME);
+                sb.AppendFormat("<td class=\"center\">");
+                sb.AppendFormat("<a href=\"{0}\" target=\"_blank\"><img src=\"{0}\" alt=\"alttext\" title=\"{1}\" height =\"35px\" wideth=\"35px\"/></a>", s.PESTFILENAME, s.PESTFILETITLE);
+                sb.AppendFormat("</td>");
+                sb.AppendFormat("<td class=\"center\"></td>");
+                sb.AppendFormat("</tr>");
+                i++;
+            }
+            sb.AppendFormat("</tbody>");
+            sb.AppendFormat("</table>");
+            return Content(JsonConvert.SerializeObject(new Message(true, sb.ToString(), "")), "text/html;charset=UTF-8");
+        }
+
+        /// <summary>
+        /// 附件图片上传
+        /// </summary>
+        /// <returns></returns>
+        public JsonResult WILD_BOTANYFILEUpload()
+        {
+            string pestFileId = Request.Params["PestFileId"];
+            string bioCode = Request.Params["BioCode"];
+            string pestFileTitle = Request.Params["PestFileTitle"];
+            string pestFileName = Request.Params["PestFileName"];
+            string Method = Request.Params["Method"];
+            string UID = SystemCls.getCookieInfo().UID;
+            Message ms = null;
+            HttpFileCollection hfc = System.Web.HttpContext.Current.Request.Files;
+            string[] arr = hfc[0].FileName.Split('.');
+            string type = arr[arr.Length - 1].ToLower();
+            if (Method == "Mdy" && string.IsNullOrEmpty(hfc[0].FileName))
+            {
+                WILD_BOTANYFILE_Model m = new WILD_BOTANYFILE_Model();
+                m.PESTFILEID = pestFileId;
+                m.BIOLOGICALTYPECODE = bioCode;
+                m.PESTFILETITLE = pestFileTitle;
+                m.UID = UID;
+                m.opMethod = "MdyTP";
+                ms = WILD_BOTANYFILECls.Manager(m);
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(pestFileTitle))
+                    return Json(new Message(false, "请输入附件名!", ""));
+                if (string.IsNullOrEmpty(hfc[0].FileName))
+                    return Json(new Message(false, "请选择上传图片!", ""));
+                if (type != "jpg" && type != "jpeg" && type != "bmp" && type != "gif" && type != "png")
+                    return Json(new Message(false, "禁止上传非图片文件!", ""));
+                if (hfc.Count > 0)
+                {
+                    string ipath = "~/UploadFile/WILD_BOTANYFILE/";//相对路径
+                    string phyPath = Server.MapPath(ipath);
+                    if (!Directory.Exists(phyPath))//判断文件夹是否已经存在
+                        Directory.CreateDirectory(phyPath);//创建文件夹
+                    WILD_BOTANYFILE_Model m = new WILD_BOTANYFILE_Model();
+                    for (int i = 0; i < hfc.Count; i++)
+                    {
+                        m.PESTFILEID = pestFileId;
+                        m.BIOLOGICALTYPECODE = bioCode;
+                        m.PESTFILETITLE = pestFileTitle;
+                        m.UPLOADTIME = DateTime.Now.ToString();
+                        m.PESTFILENAME = "/UploadFile/WILD_BOTANYFILE/" + DateTime.Now.ToString("yyyyMMddHHmmss") + "." + type;
+                        m.UID = UID;
+                        string PhysicalPath = Server.MapPath(m.PESTFILENAME);
+                        hfc[i].SaveAs(PhysicalPath);
+                        m.opMethod = Method;
+                    }
+                    ms = WILD_BOTANYFILECls.Manager(m);
+                }
+            }
+            return Json(ms);
+        }
+
+        /// <summary>
+        /// 附件管理
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult WILD_BOTANYFILEManager()
+        {
+            WILD_BOTANYFILE_Model m = new WILD_BOTANYFILE_Model();
+            m.PESTFILEID = Request.Params["PestFileId"];
+            m.BIOLOGICALTYPECODE = Request.Params["BioCode"];
+            m.PESTFILETITLE = Request.Params["PestFileTitle"];
+            m.PESTFILENAME = Request.Params["PestFileName"];
+            m.UPLOADTIME = DateTime.Now.ToString();
+            m.UID = SystemCls.getCookieInfo().UID;
+            m.opMethod = Request.Params["Method"];
+            if (string.IsNullOrEmpty(m.opMethod) == true)
+                m.opMethod = "Add";
+            if (m.opMethod == "Del")
+            {
+                string file = Server.MapPath(m.PESTFILENAME);
+                if (System.IO.File.Exists(file))
+                    System.IO.File.Delete(file);
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(m.PESTFILETITLE))
+                    return Content(JsonConvert.SerializeObject(new Message(false, "请输入附件名称!", "")), "text/html;charset=UTF-8");
+            }
+            return Content(JsonConvert.SerializeObject(WILD_BOTANYFILECls.Manager(m)), "text/html;charset=UTF-8");
+        }
+        #endregion
+
+        #region 基本属性页面及附件整合
+        /// <summary>
+        /// 基本属性页面及附件整合
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult WILD_BotanyPROPTotalMan()
+        {
+            return View();
+        }
+        #endregion
+        #endregion
+
+        #region Private
+        /// <summary>
+        /// 生成界级编码
+        /// </summary>
+        /// <param name="code">code</param>
+        /// <returns></returns>
+        private static string GeneralJieCode(string code)
+        {
+            int temp = int.Parse(code.Substring(0, 2)) + 1;
+            if (temp.ToString().Length < 2)
+                code = "0" + temp.ToString() + code.Substring(2, 12);
+            else if (temp.ToString().Length > 2)
+                code = temp.ToString().Substring(0, 2) + code.Substring(2, 12);
+            else
+                code = temp.ToString() + code.Substring(2, 12);
+            return code;
+        }
+
+        /// <summary>
+        /// 生成门级编码
+        /// </summary>
+        /// <param name="code">code</param>
+        /// <returns></returns>
+        private static string GeneralMenCode(string code)
+        {
+            int temp = int.Parse(code.Substring(2, 2)) + 1;
+            if (temp.ToString().Length < 2)
+                code = code.Substring(0, 2) + "0" + temp.ToString() + code.Substring(4, 10);
+            else if (temp.ToString().Length > 2)
+                code = code.Substring(0, 2) + temp.ToString().Substring(0, 2) + code.Substring(4, 10);
+            else
+                code = code.Substring(0, 2) + temp.ToString() + code.Substring(4, 10);
+            return code;
+        }
+
+        /// <summary>
+        /// 生成纲级编码
+        /// </summary>
+        /// <param name="code">code</param>
+        /// <returns></returns>
+        private static string GeneralGangCode(string code)
+        {
+            int temp = int.Parse(code.Substring(4, 2)) + 1;
+            if (temp.ToString().Length < 2)
+                code = code.Substring(0, 4) + "0" + temp.ToString() + code.Substring(6, 8);
+            else if (temp.ToString().Length > 2)
+                code = code.Substring(0, 4) + temp.ToString().Substring(0, 2) + code.Substring(6, 8);
+            else
+                code = code.Substring(0, 4) + temp.ToString() + code.Substring(6, 8);
+            return code;
+        }
+
+        /// <summary>
+        /// 生成目级编码
+        /// </summary>
+        /// <param name="code">code</param>
+        /// <returns></returns>
+        private static string GeneralMuCode(string code)
+        {
+            int temp = int.Parse(code.Substring(6, 2)) + 1;
+            if (temp.ToString().Length < 2)
+                code = code.Substring(0, 6) + "0" + temp.ToString() + code.Substring(8, 6);
+            else if (temp.ToString().Length > 2)
+                code = code.Substring(0, 6) + temp.ToString().Substring(0, 2) + code.Substring(8, 6);
+            else
+                code = code.Substring(0, 6) + temp.ToString() + code.Substring(8, 6);
+            return code;
+        }
+
+        /// <summary>
+        /// 生成科级编码
+        /// </summary>
+        /// <param name="code">code</param>
+        /// <returns></returns>
+        private static string GeneralKeCode(string code)
+        {
+            int temp = int.Parse(code.Substring(8, 2)) + 1;
+            if (temp.ToString().Length < 2)
+                code = code.Substring(0, 8) + "0" + temp.ToString() + code.Substring(10, 4);
+            else if (temp.ToString().Length > 2)
+                code = code.Substring(0, 8) + temp.ToString().Substring(0, 2) + code.Substring(10, 4);
+            else
+                code = code.Substring(0, 8) + temp.ToString() + code.Substring(10, 4);
+            return code;
+        }
+
+        /// <summary>
+        /// 生成属级编码
+        /// </summary>
+        /// <param name="code">code</param>
+        /// <returns></returns>
+        private static string GeneralShuCode(string code)
+        {
+            int temp = int.Parse(code.Substring(10, 2)) + 1;
+            if (temp.ToString().Length < 2)
+                code = code.Substring(0, 10) + "0" + temp.ToString() + code.Substring(12, 2);
+            else if (temp.ToString().Length > 2)
+                code = code.Substring(0, 10) + temp.ToString().Substring(0, 2) + code.Substring(12, 2);
+            else
+                code = code.Substring(0, 10) + temp.ToString() + code.Substring(12, 2);
+            return code;
+        }
+
+        /// <summary>
+        /// 生成种级编码
+        /// </summary>
+        /// <param name="code">code</param>
+        /// <returns></returns>
+        private static string GeneralZhongCode(string code)
+        {
+            List<T_SYS_BIOLOGICALTYPE_Model> templist = T_SYS_BIOLOGICALTYPECls.getListModel(new T_SYS_BIOLOGICALTYPE_SW { BIOLOCODE = code, IsOnlyGetZhong = true }).ToList();
+            if (templist.Count > 0)
+            {
+                code = templist[templist.Count - 1].BIOLOCODE;
+                int temp = int.Parse(code.Substring(12, 2)) + 1;
+                if (temp.ToString().Length < 2)
+                    code = code.Substring(0, 12) + "0" + temp.ToString();
+                else if (temp.ToString().Length > 2)
+                    code = code.Substring(0, 12) + temp.ToString().Substring(0, 2);
+                else
+                    code = code.Substring(0, 12) + temp.ToString();
+            }
+            else
+                code = code.Substring(0, 12) + "01";
+            return code;
+        }
+
+        /// <summary>
+        /// 读取危害等级txt文件并入库
+        /// </summary>
+        /// <param name="path"></param>
+        public bool ReadTxt(string path)
+        {
+            StreamReader sr = new StreamReader(path, Encoding.Default);
+            String line;
+            string dt = "";
+            bool bo = false;
+            int row = 0;
+            while ((line = sr.ReadLine()) != null)
+            {
+                if (!string.IsNullOrEmpty(line.ToString()))
+                {
+                    var linelist = line.ToString().Split(' ').Where(p => !string.IsNullOrEmpty(p)).ToArray();//空格分隔
+                    if (linelist.Length == 1 && row == 0)//第一行
+                    {
+                        string time = linelist[0];
+                        if (!string.IsNullOrEmpty(time))//20171023
+                        {
+                            if (time.Length != 8)
+                            {
+                                bo = false;
+                                break;
+                            }
+                            else
+                            {
+                                dt = time.Substring(0, 4) + "-" + time.Substring(4, 2) + "-" + time.Substring(6, 2) + " 00:00:00.000";
+                                var ss = PEST_HARMCLASSCls.DeleteHarmClassData(new PEST_HARMCLASS_Model { DCDATE = dt });//根据火险等级时间删除
+                            }
+                        }
+                        else
+                        {
+                            bo = false;
+                            break;
+                        }
+                    }
+                    else if (linelist.Length == 0)
+                    {
+                        bo = false;
+                        break;
+                    }
+                    else
+                    {
+                        var model = new PEST_HARMCLASS_Model();
+                        model.DCDATE = dt;
+                        var list = T_ALL_AREACls.getListModel(new T_ALL_AREA_SW());
+                        for (int i = 0; i < linelist.Length; i++)
+                        {
+                            if (!string.IsNullOrEmpty(linelist[i]))
+                            {
+                                var str = linelist[i].ToString();
+                                if (i == 0)
+                                {
+                                    model.TOWNNAME = str;//乡镇名称
+                                    var record = list.Where(p => p.AREAJC.Trim() == str.Trim()).FirstOrDefault();
+                                    if (record != null)
+                                    {
+                                        model.BYORGNO = record.AREACODE;//机构编码
+                                    }
+                                }
+                                else if (i == 1)
+                                {
+                                    model.JD = str;//经度
+                                }
+                                else if (i == 2)
+                                {
+                                    model.WD = str;//纬度
+                                }
+                                else if (i == 3)
+                                {
+                                    model.HARMCLASS = str;//火险等级
+                                }
+                            }
+                        }
+                        var ms = PEST_HARMCLASSCls.ImportData(model);
+                        var flag = System.Configuration.ConfigurationManager.AppSettings["IsInsertSDE"].ToString();//是否更新空间数据库火险等级
+                        if (flag == "1")
+                        {
+                            var m = new PEST_HARMCLASS_Model();
+                            m.Name = model.TOWNNAME.Trim();
+                            m.DValue = model.HARMCLASS.Trim();
+                            var mm = PEST_HARMCLASSCls.UpdateAceHarmClass(m);
+                        }
+                        bo = ms.Success;
+                    }
+                }
+                ++row;
+            }
+            return bo;
+        }
+        #endregion
     }
 }

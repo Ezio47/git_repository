@@ -45,7 +45,7 @@ namespace ManagerSystemClassLibrary
                     return new Message(msgMENU.Success, msgMENU.Msg, "");
                 return new Message(msgMENU.Success, msgMENU.Msg, m.returnUrl);
             }
-            return new Message(false, "无效操作", m.returnUrl);
+            return new Message(false, "无效操作!", m.returnUrl);
         }
 
         #endregion
@@ -268,7 +268,6 @@ namespace ManagerSystemClassLibrary
             dt.Clear();
             dt.Dispose();
             return m.FRFIID;
-
         }
         #endregion
     }

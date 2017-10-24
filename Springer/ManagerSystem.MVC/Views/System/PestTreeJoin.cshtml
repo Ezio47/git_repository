@@ -1,0 +1,85 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        树种：<select id="tbxTREESPECIES" onchange="query('1')">@Html.Raw(@ViewBag.vdTREESPECIES)</select>&nbsp;&nbsp;&nbsp;
+                        <input type="button" value="查 询" onclick="query('1')" class="btnSearchCss" />
+                        <input type="button" value="关 联" onclick="manager()" class="btnSaveCss">
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <div id="divTable" class="divTable">
+
+                </div>
+            </div>
+            <div data-options="region:'south'" title="" style=" height:40px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
+                <div class="divPager" id="divPager">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        query('1');
+    });
+
+    var page = 1;//当前默认页面为1
+    function query(Page) {
+        page = Page;
+        var pagesize = '0';
+        if (document.getElementById("selPageSize") != null) {
+            pagesize = document.getElementById("selPageSize").value;
+        }
+        $.ajax({
+            url: '/System/PestTreeJoinQuery',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: {
+                PageSize: pagesize,
+                TreeSpecies: $("#tbxTREESPECIES").val(),
+                Page: page
+            },
+            dataType: 'json',
+            success: function (data, ioArgs) {
+                if (data.Success) {
+                    $('#divTable').html(data.tableInfo);
+                    $('#divPager').html(data.pagerInfo);
+                }
+                else {
+                    $('#divTable').html('');
+                    $('#divPager').html('');
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('系统异常', { icon: 5 });
+            }
+        });
+    }
+
+    function manager() {
+        layer.open({
+            type: 2,
+            title: '树种有害生物关联',
+            area: ['700px', '500px'],
+            fix: true,
+            maxmin: true,
+            content: '/System/PestTreeJoinMan',
+            end: function () {
+                query('1');
+            }
+        });
+    }
+</script>

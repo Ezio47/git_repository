@@ -193,6 +193,7 @@ namespace ManagerSystemClassLibrary
                 m.ISSUEDTIME = ClsSwitch.SwitTM(dt.Rows[i]["ISSUEDTIME"].ToString());
                 m.MANSTATE = dt.Rows[i]["MANSTATE"].ToString();
                 m.ISSUEDTIME = ClsSwitch.SwitTM(dt.Rows[i]["LASTPROCESSTIME"].ToString());
+                m.ISOUTFIRE = dt.Rows[i]["ISOUTFIRE"].ToString();
 
                 m.ORGNAME = BaseDT.T_SYS_ORG.getName(dtORG, m.BYORGNO);
                 result.Add(m);

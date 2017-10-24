@@ -1,0 +1,130 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        单位：<select id="tbxORGNO" onchange=" query('1')">@Html.Raw(@ViewBag.vdOrg)</select>&nbsp;&nbsp;&nbsp;
+                        <input type="button" value="查 询" onclick=" query('1')" class="btnSearchCss" />
+                        <input type="button" value="保 存" onclick="manager('Save')" id="btnSave" class="btnSaveCss" style="display:none;">
+                        <input type="button" value="本地化管理" onclick="manager('local')" class="btnSaveCss" style="width:100px">
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <div id="divTable" class="divTable">
+
+                </div>
+            </div>
+            <div data-options="region:'south'" title="" style=" height:40px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
+                <div class="divPager" id="divPager">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var blnSave = '@ViewBag.Save';
+    if (blnSave == '1') {
+        document.getElementById('btnSave').style.display = "";
+    }
+
+    $(function () {
+        query('1');
+    });
+
+    var page = 1;//当前默认页面为1
+    function query(Page) {
+        page = Page;
+        var pagesize = '0';
+        if (document.getElementById("selPageSize") != null) {
+            pagesize = document.getElementById("selPageSize").value;
+        }
+        $.ajax({
+            url: '/System/LocalTreeJoinQuery',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: {
+                PageSize: pagesize,
+                ORGNO: $('#tbxORGNO').val(),
+                Page: page
+            },
+            dataType: 'json',
+            success: function (data, ioArgs) {
+                if (data.Success) {
+                    $('#divTable').html(data.tableInfo);
+                    $('#divPager').html(data.pagerInfo);
+                }
+                else {
+                    $('#divTable').html('');
+                    $('#divPager').html('');
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('系统异常', { icon: 5 });
+            }
+        });
+    }
+
+    function manager(source) {
+        if (source == 'local') {
+            layer.open({
+                type: 2,
+                title: '本地化树种管理',
+                area: ['700px', '500px'],
+                fix: true,
+                maxmin: true,
+                content: '/System/LocalTreeJoinMan',
+                end: function () {
+                    query('1')
+                }
+            });
+        }
+        if (source == 'Save') {
+            var _len = $("#localTreeTable tr").length - 1;//行数
+            if (_len > 1) {
+                var strId = "";
+                var strTSPAREA = "";
+                for (var i = 0; i < _len; i++) {
+                    var area = $('#tbxAREA' + i.toString() + '').val();
+                    if ($.trim(area) != "") {
+                        if (!CheckNUM2(area)) {
+                            layer.msg('本地面积请输入正数,且最多保留2位有效小数!', { icon: 5 });
+                            $('#tbxAREA' + i.toString() + '').focus();
+                            return;
+                        }                       
+                    }
+                    strId = strId + $('#tbx' + i.toString() + '').val() + ','
+                    strTSPAREA = strTSPAREA + area + ',';
+                }
+                $.ajax({
+                    url: '/System/LocalTreeJoinManager',
+                    timeout: 10000, //10秒后超时，如果为0则永不超时
+                    data: { Id: strId, TSPAREA: strTSPAREA, Method: 'Mdy' },
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.Success) {
+                            layer.msg(data.Msg, { icon: 6 });
+                            query('1')
+                        }
+                        else {
+                            layer.msg(data.Msg, { icon: 5 });
+                        }
+                    },
+                    error: function () {
+                        layer.msg("保存异常!", { icon: 5 });
+                    }
+                });
+            }
+        }
+    }
+</script>

@@ -1,0 +1,75 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutIndexNoMenu.cshtml";
+}
+@section Header{
+    <style type="text/css">
+        td {
+            padding-left: 2px;
+        }
+
+        .divTable table tr td h1 {
+            width: 80px;
+            /*height: 28px;*/
+            line-height: 28px;
+            color: #22a306;
+            border: 1px solid #35b719;
+            font-size: 15px;
+            border-radius: 12px;
+            background: url(../images/ico/firereport_icon.png) 7px 6px no-repeat;
+            padding-left: 28px;
+        }
+    </style>
+}
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.8.2.min.js")"></script>
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;height:100%;">
+    <div data-options="region:'center'" title="" style=" border: none;height:100%; " class="LayoutCenterBG">
+        <input id="hidBioCode" name="hidBioCode" type="hidden" value="@ViewBag.BioCode" />
+        <div class="divTable" style="margin-left:5px;margin-top:8px;height:100%;">
+            <table cellpadding="0" cellspacing="0" style="text-align: left; color: #3c7915">
+                <tr style="width:98%;" class="tdField">
+                    <td colspan="4" style="height:40px"><h1>基本属性</h1></td>
+                </tr>
+                <tr>
+                    <td style="width:80px;" class="tdField">植物名称：</td>
+                    <td colspan="3">@ViewBag.BioName</td>
+                </tr>
+                <tr>
+                    <td style="width:20%;" class="tdField">保护级别：</td>
+                    <td style="width:30%;" >@Html.Raw(ViewBag.PROTECTIONLEVELName)</td>
+                    <td style="width:20%;" class="tdField">生存现状：</td>
+                    <td style="width:30%;" >@Html.Raw(ViewBag.LIVINGSTATUSName)</td>
+                </tr>
+                <tr style="width:98%;" class="tdField">
+                    <td colspan="4" style="height:40px"><h1>动态属性</h1></td>
+                </tr>
+                <tbody id="tt"></tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+<script type="text/javascript">
+    loadDyProp();
+    function loadDyProp() {
+        $.ajax({
+            type: 'get',
+            url: '/DataCenter/GetDyWILD_BOTANYProp',
+            data: { Biocode: $('#hidBioCode').val() },
+            dataType: 'json',
+            success: function (data, ioArgs) {
+                if (data.Success) {
+                    $('#tt').html("");
+                    $('#tt').html(data.Msg);
+                }
+                else {
+                    $('#tt').html("");
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("系统异常!", { icon: 5 });
+            }
+        });
+    }
+
+</script>

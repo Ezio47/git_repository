@@ -23,10 +23,10 @@ namespace ManagerSystemClassLibrary.BaseDT.SDE
         public static Message Add(BINGCHONGHAI_Model m)
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("INSERT INTO BINGCHONGHAI(OBJECTID,NAME,category,DISPLAY_X,DISPLAY_Y,Shape) values(");
+            sb.AppendFormat("INSERT INTO BINGCHONGHAI(OBJECTID,NAME,CATEGORY,DISPLAY_X,DISPLAY_Y,Shape) values(");
             sb.AppendFormat("{0},", ClsSql.saveNullField(m.OBJECTID.ToString()));
             sb.AppendFormat("{0},", ClsSql.saveNullField(m.NAME));
-            sb.AppendFormat("{0},", ClsSql.saveNullField(m.category));
+            sb.AppendFormat("{0},", ClsSql.saveNullField(m.CATEGORY));
             sb.AppendFormat("{0},", ClsSql.saveNullField(m.DISPLAY_X));
             sb.AppendFormat("{0},", ClsSql.saveNullField(m.DISPLAY_Y));
             sb.AppendFormat("{0})", m.Shape);
@@ -47,10 +47,10 @@ namespace ManagerSystemClassLibrary.BaseDT.SDE
             if (isExists(new BINGCHONGHAI_Model { OBJECTID = m.OBJECTID }) == false)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("INSERT INTO BINGCHONGHAI(OBJECTID,NAME,category,DISPLAY_X,DISPLAY_Y,Shape) values(");
+                sb.AppendFormat(" INSERT INTO BINGCHONGHAI(OBJECTID,NAME,CATEGORY,DISPLAY_X,DISPLAY_Y,Shape) values(");
                 sb.AppendFormat("{0},", ClsSql.saveNullField(m.OBJECTID.ToString()));
                 sb.AppendFormat("{0},", ClsSql.saveNullField(m.NAME));
-                sb.AppendFormat("{0},", ClsSql.saveNullField(m.category));
+                sb.AppendFormat("{0},", ClsSql.saveNullField(m.CATEGORY));
                 sb.AppendFormat("{0},", ClsSql.saveNullField(m.DISPLAY_X));
                 sb.AppendFormat("{0},", ClsSql.saveNullField(m.DISPLAY_Y));
                 sb.AppendFormat("{0})", m.Shape);
@@ -63,15 +63,12 @@ namespace ManagerSystemClassLibrary.BaseDT.SDE
             else
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("UPDATE BINGCHONGHAI SET ");
+                sb.AppendFormat(" UPDATE BINGCHONGHAI SET ");
                 sb.AppendFormat(" NAME={0}", ClsSql.saveNullField(m.NAME));
-                sb.AppendFormat(",category={0}", ClsSql.saveNullField(m.category));              
+                sb.AppendFormat(",CATEGORY={0}", ClsSql.saveNullField(m.CATEGORY));
                 sb.AppendFormat(",DISPLAY_X={0}", ClsSql.saveNullField(m.DISPLAY_X));
                 sb.AppendFormat(",DISPLAY_Y={0}", ClsSql.saveNullField(m.DISPLAY_Y));
-                if (!string.IsNullOrEmpty(m.Shape))
-                    sb.AppendFormat(",Shape={0}", m.Shape);
-                else
-                    sb.Append(",Shape=null");
+                sb.AppendFormat(",Shape={0}", m.Shape);
                 sb.AppendFormat(" where OBJECTID= {0}", ClsSql.saveNullField(m.OBJECTID.ToString()));
                 bool bln = SDEDataBaseClass.ExeSql(sb.ToString());
                 if (bln == true)

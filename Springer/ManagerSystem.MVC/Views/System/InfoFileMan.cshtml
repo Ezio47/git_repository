@@ -1,0 +1,135 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+}
+@section Header{
+    <script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.8.2.min.js")"></script>
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'center'" title="" class="LayoutCenterBG">
+        <div class="divTable" id="divTable">
+
+        </div>
+    </div>
+
+    <div data-options="region:'south'" title="" style=" height:60px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
+        <div class="divTable">
+            <input id="hidBioCode" name="hidBioCode" type="hidden" value="@ViewBag.BioCode" />
+            <table cellpadding="0" cellspacing="0" style="text-align:left;">
+                <tr>
+                    <td class="tdField" style ="width:70px;">生物名称：</td>
+                    <td>@ViewBag.BioName</td>
+                    <td class="tdField">照片名称：</td>
+                    <td><input id="tbxInfoTitle" type="text" style="width:95%;" /></td>
+                    <td>
+                        <input id="tbxInfoId" type="hidden" />
+                        <input id="tbxInfoName" type="hidden" />
+                        <form id="uploadForm" enctype="multipart/form-data">
+                            <input type="file" id="attachment" name="attachment" value="浏览" style="width:180px;" accept=".jpg,.jpeg,.png,.bmp" />
+                            <input type="button" id="btnInfoFileAdd" value="新增" onclick="fileUpload('Add')" class="btnAddCss" />
+                            <input type="button" id="btnInfoFileMdy" value="修改" style="display:none;" onclick="fileUpload('Mdy')" class="btnMdyCss" />
+                            <input type="button" id="btnInfoFileDel" value="删除" style="display:none;" onclick="fileManager('Del')" class="btnDelCss" />
+                        </form>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    loadFiles();
+    function loadFiles() {
+        $.ajax({
+            type: 'get',
+            url: '/System/GetFiles',
+            data: { Biocode: $('#hidBioCode').val() },
+            dataType: 'json',
+            success: function (data, ioArgs) {
+                if (data.Success) {
+                    $('#divTable').html("");
+                    $('#divTable').html(data.Msg);
+                }
+                else {
+                    $('#divTable').html("");
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("系统异常!", { icon: 5 });
+            }
+        });
+    }
+
+    function showValues(Id, bioCode, title, name) {
+        $('#tbxInfoId').val(Id);
+        $('#hidBioCode').val(bioCode);
+        $('#tbxInfoTitle').val(title);
+        $('#tbxInfoName').val(name);
+        document.getElementById('btnInfoFileMdy').style.display = "";
+        document.getElementById('btnInfoFileDel').style.display = "";
+    }
+
+    function fileUpload(Method) {
+        var formData = new FormData($("#uploadForm")[0]);
+        formData.append("PestFileId", $('#tbxInfoId').val());
+        formData.append("BioCode", $('#hidBioCode').val());
+        formData.append("PestFileTitle", $('#tbxInfoTitle').val());
+        formData.append("PestFileName", $('#tbxInfoName').val());
+        formData.append("Method", Method);
+        $.ajax({
+            type: "post",
+            url: '/System/InfoFileUpload',
+            data: formData,
+            dataType: "json",
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (data) {
+                if (data.Success) {
+                    layer.msg(data.Msg, { icon: 6 });
+                    $('#tbxInfoTitle').val('');
+                    $('#attachment').val('');
+                    loadFiles();
+                }
+                else {
+                    layer.msg(data.Msg, { icon: 5 });
+                }
+            },
+            error: function (data) {
+                layer.msg("上传失败!", { icon: 5 });
+            }
+        });
+    }
+
+    function fileManager(Method) {
+        layer.confirm('确实要删除吗?', { icon: 3, title: '提示' }, function (index) {
+            $.ajax({
+                type: "post",
+                url: "/System/InfoFileManager",
+                data: {
+                    PestFileId: $('#tbxInfoId').val(),
+                    BioCode: $('#hidBioCode').val(),
+                    PestFileTitle: $('#tbxInfoTitle').val(),
+                    PestFileName: $('#tbxInfoName').val(),
+                    Method: Method
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (data.Success) {
+                        layer.msg(data.Msg, { icon: 6 });
+                        $('#tbxInfoTitle').val('');
+                        $('#attachment').val('');
+                        loadFiles();
+                    }
+                    else {
+                        layer.msg(data.Msg, { icon: 5 });
+                    }
+                },
+                error: function (err, ioArgs) {
+                    layer.msg('系统异常!', { icon: 5 });
+                }
+            });
+        });
+    }
+</script>

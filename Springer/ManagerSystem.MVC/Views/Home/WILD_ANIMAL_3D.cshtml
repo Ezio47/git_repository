@@ -1,0 +1,154 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+}
+
+@section Header{
+    <link href="~/Content/MapStyle.css" rel="stylesheet" />
+    <script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+    <script src="~/Scripts/skyline/3dMapTest.js"></script>
+    <style type="text/css">
+        td {
+            text-align: center;
+        }
+
+        .divPager .pagination > li {
+            float: left;
+            margin: 20px 0 0 5px;
+        }
+    </style>
+}
+
+<div id="divpanel" class="easyui-layout" style="width:100%;height:100%;" data-options="fit:true">
+
+    <div id="menuediv" data-options="region:'west',split:true,hideCollapsedContent:false" title="" style="width:330px;overflow-x:hidden;">
+        <ul class="ulhlytree" style="overflow-x:hidden">
+            <li id="li1" style="overflow:hidden">
+                <label><h1><span>野生动物查询</span></h1></label>
+                <ul class="warnPanel1" style="height:90px;text-align:center">
+                    <li style="text-align:center">
+                        <div id="divFloatToolsView" style=" height: 100%;">
+                            <div>
+                                动物：<select id="tbxGICALTYPECODE">
+                                    @Html.Raw(@ViewBag.ANIMAL)
+                                </select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                族群：<select id="tbxPOPULATIONTYPE">
+                                    @Html.Raw(@ViewBag.POPULATIONTYPE)
+                                </select>
+  
+                                <div>
+                                    <input type="button" value="查询" onclick="searchUser()" class="btnSearchCss" />
+                                </div>
+                                <br />
+                            </div>
+                            <hr />
+                        </div>
+                    </li>
+                </ul>
+            </li>
+
+            <li id="li2">
+                <label><h1><span>查询结果</span></h1></label>
+                <ul class="skyLineLeftMenu">
+                    <li>
+                        <div class="divTable" id="divSupplies">
+                        </div>
+                    </li>
+                    <li>
+                        <div class="divPager" id="divPager">
+                        </div>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+<object id="SGWorld" classid="CLSID:3a4f91b1-65a8-11d5-85c1-0001023952c1" style="visibility:hidden;height:0 "></object>
+
+<script type="text/javascript">
+    var strsql = "";//检索条件
+
+    $(function () {
+        menuEvent('0');
+        type = 4;//野生动物
+    })
+
+    function MapToolsPopUrl(url) {
+        var popurl = url;
+        var swidth = document.documentElement.clientWidth - 450;
+        showPopuopByUrl(" ", popurl, swidth, 20, 65, 500);
+    }
+
+    function menuOclick(id) {
+        $(".ulhlytree>li:eq(" + id + ")>label").click();
+    }
+
+    function menuEvent(id) {
+        var $parent_li, $ul, $span;
+        $(".ulhlytree li>label").click(function () {
+            $span = $(this);
+            $parent_li = $span.parent();
+            $parent_li.siblings().children("ul").slideUp();
+            $ul = $span.next("ul");
+            $ul.slideToggle();
+        });
+        $(".ulhlytree>li:eq(" + id + ")>label").click();
+    }
+
+    //重置
+    function resetArg() {
+        $("#arg").val('');
+    }
+
+    //空间数据检索方法
+    function query(page) {
+        var pagesize = '10';
+        var BIOLOGICALTYPECODE=$('#tbxGICALTYPECODE').val();
+        var POPULATIONTYPE = $('#tbxPOPULATIONTYPE').val();
+        if (document.getElementById("selPageSize") != null) {
+            pagesize = document.getElementById("selPageSize").value;
+        }
+        $('#divPager').html('');
+        $('#divSupplies').html('');
+        var index = layer.load(0, { offset: ['350px', '80px'], shade: 0.4 });
+        $.ajax({
+            url: '/DataCenter/GetYSDWAjax',
+            data: {
+                BIOLOGICALTYPECODE: BIOLOGICALTYPECODE,
+                POPULATIONTYPE: POPULATIONTYPE,
+                PageSize: pagesize,
+                Page: page
+            },
+            type: 'post',
+            success: function (data) {
+                if (data.Success) {
+                    //关闭
+                    layer.close(index);
+                    var str = data.pagerInfo.replace("<ul ", "<ol ").replace("</ul>", "</ol>");
+                    $('#divPager').html(str);
+                    $('#divSupplies').html(data.tableInfo);
+                }
+                else {
+                    //关闭
+                    layer.close(index);
+                    layer.msg("登录异常!");
+                }
+            },
+            error: function (err, ioArgs) {
+                //关闭
+                layer.close(index);
+                menuOclick('0');
+                layer.msg("查询条件有误!");
+            }
+        });
+    }
+
+    //空间数据查询
+    function searchUser() {
+        query('1');//默认第一页
+        menuOclick('1');
+    }
+
+</script>
+
+
+

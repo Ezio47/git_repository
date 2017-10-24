@@ -182,7 +182,7 @@ namespace ManagerSystemClassLibrary
                         List<T_SYS_ORGModel> citylist = orgList.Where(p => p.ORGNO.EndsWith("00000")).ToList();//市级别
                         foreach (var city in citylist)
                         {
-                            var root = getJobejctCar(dtCar,city);
+                            var root = getJobejctCar(dtCar, city);
                             jObjects.Add(root);
                         }
                     }
@@ -193,7 +193,7 @@ namespace ManagerSystemClassLibrary
                         List<T_SYS_ORGModel> countylist = orgList.Where(p => p.ORGNO.EndsWith("000")).ToList();//县级别
                         foreach (var county in countylist)
                         {
-                            var root = getJobejctCar(dtCar,county);
+                            var root = getJobejctCar(dtCar, county);
                             jObjects.Add(root);
                         }
                     }
@@ -203,7 +203,7 @@ namespace ManagerSystemClassLibrary
                         List<T_SYS_ORGModel> towerlist = orgList.Where(p => !p.ORGNO.EndsWith("000")).ToList();//乡镇级别
                         foreach (var tower in towerlist)
                         {
-                            var root = getJobejctCar(dtCar,tower);
+                            var root = getJobejctCar(dtCar, tower);
                             jObjects.Add(root);
                         }
                     }
@@ -218,7 +218,7 @@ namespace ManagerSystemClassLibrary
                     List<T_SYS_ORGModel> countylist = orgList.Where(p => p.ORGNO.EndsWith("000000000") && p.ORGNO != idorgno).ToList();
                     foreach (var county in countylist)
                     {
-                        var root = getJobejctCar(dtCar,county);
+                        var root = getJobejctCar(dtCar, county);
                         jObjects.Add(root);
                     }
                     List<DC_CAR_Model> citycarlist = DC_CARCls.getModelList(new DC_CAR_SW { BYORGNO = idorgno }).Where(p => p.BYORGNO == idorgno).ToList();//市（车辆）
@@ -237,7 +237,7 @@ namespace ManagerSystemClassLibrary
                     List<T_SYS_ORGModel> towerlist = orgList.Where(p => p.ORGNO.EndsWith("000000") && p.ORGNO != idorgno).ToList();
                     foreach (var tower in towerlist)
                     {
-                        var root = getJobejctCar(dtCar,tower);
+                        var root = getJobejctCar(dtCar, tower);
                         jObjects.Add(root);
                     }
                     List<DC_CAR_Model> countycarlist = DC_CARCls.getModelList(new DC_CAR_SW { BYORGNO = idorgno }).Where(p => p.BYORGNO == idorgno).ToList();//县（车辆）
@@ -273,8 +273,8 @@ namespace ManagerSystemClassLibrary
         /// <param name="dtCar"></param>
         /// <param name="orgNo"></param>
         /// <returns></returns>
-        public static string GetCarCount(DataTable dtCar,string orgNo)
-        {            
+        public static string GetCarCount(DataTable dtCar, string orgNo)
+        {
             string count = "0";
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("(");
@@ -287,6 +287,10 @@ namespace ManagerSystemClassLibrary
                 count = dtCar.Compute("count(BYORGNO)", "substring(BYORGNO,1,6)='" + orgNo.Substring(0, 6) + "'").ToString();
             }
             else if (PublicCls.OrgIsZhen(orgNo))
+            {
+                count = dtCar.Compute("count(BYORGNO)", "substring(BYORGNO,1,9)='" + orgNo.Substring(0, 9) + "'").ToString();
+            }
+            else if (PublicCls.OrgIsCun(orgNo))
             {
                 count = dtCar.Compute("count(BYORGNO)", "BYORGNO='" + orgNo + "'").ToString();
             }
@@ -453,7 +457,7 @@ namespace ManagerSystemClassLibrary
         /// <param name="dtCar"></param>
         /// <param name="Org"></param>
         /// <returns></returns>
-        private static JObject getJobejctCar(DataTable dtCar,T_SYS_ORGModel Org)
+        private static JObject getJobejctCar(DataTable dtCar, T_SYS_ORGModel Org)
         {
             JObject root = new JObject { { "id", Org.ORGNO }, { "text", Org.ORGNAME + GetCarCount(dtCar, Org.ORGNO) }, { "state", "closed" } };
             return root;
@@ -472,10 +476,9 @@ namespace ManagerSystemClassLibrary
             StringBuilder sb = new StringBuilder();
             string carimage = "car_" + car.CARTYPE;
             //偏移量计算
-            //  double[] arr = ClsPositionUtil.gcj_To_Gps84(double.Parse(car.WD), double.Parse(car.JD));
+            // double[] arr = ClsPositionUtil.gcj_To_Gps84(double.Parse(car.WD), double.Parse(car.JD));
             if (!string.IsNullOrEmpty(car.JD) || !string.IsNullOrEmpty(car.WD))
             {
-
                 double[] arr = ClsPositionTrans.GpsTransform(double.Parse(car.WD), double.Parse(car.JD), ConfigCls.getSDELonLatTransform());
                 if (arr.Length > 0)
                 {
@@ -489,11 +492,7 @@ namespace ManagerSystemClassLibrary
             {
                 sb.AppendFormat("<font onClick='alert(\"缺少经纬度无法定位。\")'>{0}</font>", name);
             }
-            JObject root = new JObject
-                        {
-                           {"id",car.DC_CAR_ID}//ORGNO
-                          ,{"text",sb.ToString()} 
-                         };
+            JObject root = new JObject { { "id", car.DC_CAR_ID }, { "text", sb.ToString() } };
             return root;
         }
         #endregion
@@ -506,7 +505,7 @@ namespace ManagerSystemClassLibrary
         public static string getCount()
         {
             var Count = "";
-            Count = BaseDT.DC_CAR.getNum(new DC_CAR_SW{BYORGNO=SystemCls.getCurUserOrgNo()} );
+            Count = BaseDT.DC_CAR.getNum(new DC_CAR_SW { BYORGNO = SystemCls.getCurUserOrgNo() });
             return Count;
         }
         #endregion

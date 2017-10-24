@@ -15,16 +15,12 @@
     <script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
 }
 <div class="easyui-layout" data-options="fit:true" style=" border:0;">
-
-
     <div data-options="region:'west'" title="" style=" width:220px; border: none;">
         @Html.Raw(@ViewBag.PageLeftMenu)
     </div>
+
     <div data-options="region:'center'" title="" style=" border: none;">
-
         <div class="easyui-layout" data-options="fit:true" style=" border:0;">
-
-
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
                 <div class="divOP">
                     <div class="home ">
@@ -33,7 +29,7 @@
                         @*<input id="tbxFIRENAME" type="text" class="input-small" style="width:80px ;display:none" value="" />*@
                         火情来源：<select id="tbxFIREFROM">@Html.Raw(@ViewBag.FIREFROM)</select>
                         <input type="button" value="查询" onclick="query('1')" class="btnSearchCss" />
-                        <input type="button" value="添加" onclick="Manager('','Add')" class="btnAddCss" />
+                        <input type="button" value="添加" onclick="Manager('','Add')" id="btnAdd" class="btnAddCss" style="display:none;" />
                     </div>
                 </div>
             </div>
@@ -43,12 +39,12 @@
 
                 </div>
             </div>
+
             <div data-options="region:'south'" title="" style=" height:40px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
                 <div class="divPager" id="divPager">
 
                 </div>
             </div>
-
         </div>
     </div>
 </div>
@@ -57,6 +53,11 @@
 </div>
 
 <script type="text/javascript">
+    var blnAdd = '@ViewBag.Add';
+    if (blnAdd == "1") {
+        document.getElementById('btnAdd').style.display = "";
+    }
+
     $(function () {
         $('#tbxBYORGNO').combotree({
             url: '/DataCenter/OrgTreeget',
@@ -73,6 +74,7 @@
         $('#tbxBYORGNO').combotree('setValue', "@curorgno");
         query('1');
     });
+
     var page = 1;//当前默认页面为1
     function query(Page) {
         page = Page;
@@ -100,22 +102,21 @@
                     $('#divPager').html(ar.pagerInfo);
                 }
                 else {
-                    layer.msg('登录异常');
+                    layer.msg('登录异常!', { icon: 5 });
                 }
             },
             error: function (err, ioArgs) {
-                layer.msg('登录异常');
+                layer.msg('登录异常!', { icon: 5 });
             }
         });
     }
+
     //反馈信息
     function Feedback(ID) {
         $.ajax({
             type: "Post",
             url: "/DataCenter/getFIRETICKLINGjson",
-            data: {
-                JCFID: ID,
-            },
+            data: { JCFID: ID },
             dataType: "json",
             error: function () {
                 layer.msg('错误:异常!', 'error');
@@ -151,9 +152,7 @@
     function FireReport(ID) {
         $.ajax({
             url: '/DataCenter/getFIREReport',
-            data: {
-                JCFID: ID,
-            },
+            data: { JCFID: ID },
             type: 'post',
             success: function (data, ioArgs) {
                 var ar = eval('(' + data + ')');
@@ -171,7 +170,7 @@
                 }
             },
             error: function (err, ioArgs) {
-                layer.msg('获取异常，请刷新重试');
+                layer.msg('获取异常,请刷新重试!', { icon: 5 });
             }
         });
     }
@@ -198,11 +197,11 @@
                     })
                 }
                 else {
-                    layer.msg('取值失败！', { icon: 5 });
+                    layer.msg('取值失败!', { icon: 5 });
                 }
             }
         });
-    };
+    }
 
     function See(ID, tablename) {
         layer.open({
@@ -214,6 +213,7 @@
             content: '/DataCenter/SeeIndex?tablename=' + tablename + "&ID=" + ID
         })
     }
+
     //将查看，反馈信息和操作流程，火情报告，查看火情档案综合到一个查看按钮
     function TotalSee(ID) {
         layer.open({
@@ -222,19 +222,10 @@
             area: ['65%', '80%'],
             fix: true,
             maxmin: true,
-            content: '/DataCenter/TotalSee?ID=' + ID 
+            content: '/DataCenter/TotalSee?ID=' + ID
         })
     }
-    //function TotalSee(ID, tablename, orgno, tmp) {
-    //    layer.open({
-    //        type: 2,
-    //        title: '查看',
-    //        area: ['65%', '80%'],
-    //        fix: true,
-    //        maxmin: true,
-    //        content: '/DataCenter/TotalSee?tablename=' + tablename + "&ID=" + ID + "&orgno=" + orgno
-    //    })
-    //}
+
     //选中改变颜色
     function setColor(obj, JCFID) {
         $(obj).css("background-color", "#FFDAB9");
@@ -282,7 +273,6 @@
             });
         }
         if (Method == 'Del') {
-            //if (confirm('确实要删除吗?')) {
             layer.confirm('确实要删除吗?', { icon: 3, title: '提示' }, function (index) {
                 $.ajax({
                     url: '/FIRERECORD/FIRERECORD_FIREINFOManager',
@@ -300,7 +290,7 @@
                         }
                     },
                     error: function () {
-                        layer.msg("删除异常!");
+                        layer.msg("删除异常!", { icon: 5 });
                     }
                 });
             });

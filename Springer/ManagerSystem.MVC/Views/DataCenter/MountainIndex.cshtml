@@ -148,7 +148,7 @@
             type: 2,
             title: '添加',
             fix: false, //不固定
-            area: ['80%', '80%'],
+            area: ['600px', '280px'],
             maxmin: true,
             content: '/DataCenter/MountainManIndex',
             end: function () {
@@ -156,11 +156,11 @@
             }
         });
     }
-    function Mdy(Method, ID, page, TYPE1) {
+    function Mdy(Method, ID, page, TYPE1,NAME) {
         layer.open({
             type: 2,
-            title: "修改",
-            area: ['80%', '80%'],
+            title:NAME+ "修改",
+            area: ['600px', '280px'],
             shade: false,
             fix: true,
             maxmin: true,
@@ -177,7 +177,7 @@
         layer.open({
             type: 2,
             title: name + '地图定位',
-            area: ['70%', '80%'],
+            area: ['1000px', '600px'],
             //shade: 0,
             fix: true,
             maxmin: true,
@@ -189,7 +189,7 @@
         layer.open({
             type: 2,
             title: '山数据查看',
-            area: ['50%', '45%'],
+            area: ['350px', '230px'],
             fix: true,
             maxmin: true,
             content: '/DataCenter/SeeIndex?tablename=' + tablename + "&ID=" + ID

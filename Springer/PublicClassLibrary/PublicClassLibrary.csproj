@@ -68,6 +68,7 @@
     <Compile Include="PublicCom\LogicalCalcTools.cs" />
     <Compile Include="PublicCom\PublicTools.cs" />
     <Compile Include="PublicCom\ReflectCom.cs" />
+    <Compile Include="SpringerCommonValidate.cs" />
     <Compile Include="ThirdDockService\TaskUtil.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -26,7 +26,7 @@ namespace ManagerSystemModel.SDEModel
         /// <summary>
         /// 类别
         /// </summary>
-        public string category { get; set; }
+        public string CATEGORY { get; set; }
         /// <summary>
         /// 中心X坐标
         /// </summary>

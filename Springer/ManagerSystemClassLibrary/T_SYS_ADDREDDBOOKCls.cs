@@ -172,7 +172,6 @@ namespace ManagerSystemClassLibrary
         }
         #endregion
 
-
         #region 树形菜单
         /// <summary>
         /// 类别树形菜单
@@ -194,6 +193,7 @@ namespace ManagerSystemClassLibrary
             dt.Dispose();
             return JsonConvert.SerializeObject(JA);
         }
+
         private static JArray getTreeUser(JArray childobjArray, T_SYS_ADDREDDTYPE_SW sw, string atid)
         {
 
@@ -232,6 +232,7 @@ namespace ManagerSystemClassLibrary
             dtU.Dispose();
             return childobjArray;
         }
+
         /// <summary>
         /// 获取类别子菜单
         /// </summary>
@@ -241,11 +242,8 @@ namespace ManagerSystemClassLibrary
         /// <returns></returns>
         private static JArray getTreeChild(T_SYS_ADDREDDTYPE_SW sw, DataTable dt, string RATID)
         {
-
             JArray childobjArray = new JArray();
             DataRow[] dr = dt.Select("RATID = " + RATID + "", "ORDERBY");
-
-
             getTreeUser(childobjArray, sw, RATID);
             for (int i = 0; i < dr.Length; i++)
             {
@@ -265,6 +263,7 @@ namespace ManagerSystemClassLibrary
             }
             return childobjArray;
         }
+
         /// <summary>
         /// 类别树形菜单
         /// </summary>
@@ -281,10 +280,7 @@ namespace ManagerSystemClassLibrary
             else
                 sw.isTreeOpen = "open";
             JArray JA = getTreeChild(sw, dt, sw.RATID);//, dctypetopid);
-
-
             DataRow[] dr = dt.Select("", "ORDERBY");
-
             getTreeUser(childobjArray, sw, sw.RATID);
             for (int i = 0; i < dr.Length; i++)
             {
@@ -302,13 +298,10 @@ namespace ManagerSystemClassLibrary
                 //root.Add("children", getTreeChild(sw, dt, dr[i]["ATID"].ToString()));
                 childobjArray.Add(root);
             }
-
             dt.Clear();
             dt.Dispose();
             return JsonConvert.SerializeObject(childobjArray);
         }
-
         #endregion
-
     }
 }

@@ -39,8 +39,6 @@ namespace ManagerSystem.MVC.Controllers
             m.FIRECODE = Request.Params["FIRECODE"];
             m.FIREADDRESSCOUNTY = Request.Params["FIREADDRESSCOUNTY"];
             m.FIREADDRESSTOWNS = Request.Params["FIREADDRESSTOWNS"];
-            // m.FIREADDRESSCOUNTY = T_SYS_ORGCls.getorgname(Request.Params["FIREADDRESSCOUNTY"]);//根据组织机构编码获取组织机构名
-            // m.FIREADDRESSTOWNS = T_SYS_ORGCls.getorgname(Request.Params["FIREADDRESSTOWNS"]);
             m.FIREADDRESSVILLAGES = Request.Params["FIREADDRESSVILLAGES"];
             m.FIREADDRESS = Request.Params["FIREADDRESS"];
             m.FIRETIME = Request.Params["FIRETIME"];
@@ -111,7 +109,6 @@ namespace ManagerSystem.MVC.Controllers
             ViewBag.JCFID = JCFID;
             ViewBag.StartTime = ClsSwitch.SwitTM(DateTime.Now.ToString());
             ViewBag.EndTime = ClsSwitch.SwitTM(DateTime.Now.ToString());
-            // ViewBag.isAdd = (SystemCls.isRight("011002002")) ? "1" : "0";
             return View(model);
         }
 
@@ -137,30 +134,32 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("<td colspan=\"6\"style=\" height:40px;\" ><h1 style=\" width:82px;  height: 28px;line-height: 28px;color: #22a306;border: 1px solid #35b719; border-radius: 12px;background: url(../images/ico/firereport_icon.png) 7px 6px no-repeat; padding-left: 28px;font-size: 15px;\">基 本 信 息 </h1></td>");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>起火地点:</td>");
-            sb.AppendFormat("<td  colspan=\"2\">{0}</td>", FIREADDRESSCOUNTY + FIREADDRESSTOWNS + m.FIREADDRESSVILLAGES);
-            sb.AppendFormat("<td>详细地址:</td>");
-            sb.AppendFormat("<td colspan=\"2\">{0}</td>", m.FIREADDRESS);
+            sb.AppendFormat("<td class=\"tdField\">起火地点:</td>");
+            sb.AppendFormat("<td  colspan=\"5\">{0}</td>", FIREADDRESSCOUNTY + FIREADDRESSTOWNS + m.FIREADDRESSVILLAGES);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td style=\" width:15%;\">火灾编号:</td>");
+            sb.AppendFormat("<td class=\"tdField\">详细地址:</td>");
+            sb.AppendFormat("<td colspan=\"5\">{0}</td>", m.FIREADDRESS);
+            sb.AppendFormat("</tr>");
+            sb.AppendFormat("<tr>");
+            sb.AppendFormat("<td class=\"tdField\" style=\" width:15%;\">火灾编号:</td>");
             sb.AppendFormat("<td style=\" width:14%;\">{0}</td>", m.FIRECODE);
-            sb.AppendFormat("<td style=\" width:15%;\">起火时间:</td>");
+            sb.AppendFormat("<td class=\"tdField\" style=\" width:15%;\">起火时间:</td>");
             sb.AppendFormat("<td style=\" width:16%;\">{0}</td>", m.FIRETIME);
-            sb.AppendFormat("<td style=\" width:15%;\">灭火时间:</td>");
+            sb.AppendFormat("<td class=\"tdField\" style=\" width:15%;\">灭火时间:</td>");
             sb.AppendFormat("<td style=\" width:16%;\">{0}</td>", m.FIREENDTIME);
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>火灾等级:</td>");
+            sb.AppendFormat("<td class=\"tdField\">火灾等级:</td>");
             sb.AppendFormat("<td>{0}</td>", m.FIRERECINFO001);
-            sb.AppendFormat("<td>火灾种类:</td>");
+            sb.AppendFormat("<td class=\"tdField\">火灾种类:</td>");
             sb.AppendFormat("<td>{0}</td>", m.FIRERECINFO000);
             sb.AppendFormat("<td colspan=\"2\"></td>");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>已查明火源:</td>");
+            sb.AppendFormat("<td class=\"tdField\">已查明火源:</td>");
             sb.AppendFormat("<td>{0}</td>", m.FIRERECINFO140);
-            sb.AppendFormat("<td>火源:</td>");
+            sb.AppendFormat("<td class=\"tdField\">火源:</td>");
             sb.AppendFormat("<td>{0}</td>", m.FIRERECINFO150);
             sb.AppendFormat("<td colspan=\"2\"></td>");
             sb.AppendFormat("</tr>");
@@ -168,32 +167,32 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("<td colspan=\"6\" style=\" height:40px;\"><h1 style=\" width:82px;  height: 28px;line-height: 28px;color: #22a306;border: 1px solid #35b719; border-radius: 12px;background: url(../images/ico/firereport_icon.png) 7px 6px no-repeat; padding-left: 28px;font-size: 15px;\">火 场 信 息 </h1></td>");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>受害森林面积(公顷):</td>");
-            sb.AppendFormat("<td>{0}</td>", m.FIRELOSEAREA);
-            sb.AppendFormat("<td>火场总面积(公顷):</td>");
-            sb.AppendFormat("<td>{0}</td>", m.FIRERECINFO020);
-            sb.AppendFormat("<td>有林地面积(公顷):</td>");
-            sb.AppendFormat("<td>{0}</td>", m.FIRERECINFO021);
+            sb.AppendFormat("<td class=\"tdField\">受害森林面积:</td>");
+            sb.AppendFormat("<td >{0}</td>", !string.IsNullOrEmpty(m.FIRELOSEAREA) ? m.FIRELOSEAREA + "公顷" : "");
+            sb.AppendFormat("<td class=\"tdField\">火场总面积:</td>");
+            sb.AppendFormat("<td>{0}</td>", !string.IsNullOrEmpty(m.FIRERECINFO020) ? m.FIRERECINFO020 + "公顷" : "");
+            sb.AppendFormat("<td class=\"tdField\">有林地面积(公顷):</td>");
+            sb.AppendFormat("<td>{0}</td>", !string.IsNullOrEmpty(m.FIRERECINFO021) ? m.FIRERECINFO021 + "公顷" : "");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>原始林受灾面积(公顷):</td>");
-            sb.AppendFormat("<td>{0}</td>", m.FIRERECINFO030);
-            sb.AppendFormat("<td>次生林成灾面积(公顷):</td>");
-            sb.AppendFormat("<td>{0}</td>", m.FIRERECINFO031);
-            sb.AppendFormat("<td>人工林成灾面积(公顷):</td>");
-            sb.AppendFormat("<td>{0}</td>", m.FIRERECINFO032);
+            sb.AppendFormat("<td class=\"tdField\">原始林受灾面积:</td>");
+            sb.AppendFormat("<td>{0}</td>", !string.IsNullOrEmpty(m.FIRERECINFO030) ? m.FIRERECINFO030 + "公顷" : "");
+            sb.AppendFormat("<td class=\"tdField\">次生林成灾面积:</td>");
+            sb.AppendFormat("<td>{0}</td>", !string.IsNullOrEmpty(m.FIRERECINFO031) ? m.FIRERECINFO031 + "公顷" : "");
+            sb.AppendFormat("<td class=\"tdField\">人工林成灾面积:</td>");
+            sb.AppendFormat("<td>{0}</td>", !string.IsNullOrEmpty(m.FIRERECINFO032) ? m.FIRERECINFO032 + "公顷" : "");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>成林蓄积损失(立方米):</td>");
-            sb.AppendFormat("<td >{0}</td>", m.FIRERECINFO040);
-            sb.AppendFormat("<td>幼林株数损失(万株):</td>");
-            sb.AppendFormat("<td >{0}</td>", m.FIRERECINFO041);
+            sb.AppendFormat("<td class=\"tdField\">成林蓄积损失:</td>");
+            sb.AppendFormat("<td >{0}</td>", !string.IsNullOrEmpty(m.FIRERECINFO040) ? m.FIRERECINFO040 + "立方米" : "");
+            sb.AppendFormat("<td class=\"tdField\">幼林株数损失:</td>");
+            sb.AppendFormat("<td >{0}</td>", !string.IsNullOrEmpty(m.FIRERECINFO041) ? m.FIRERECINFO041 + "万株" : "");
             sb.AppendFormat("<td colspan=\"2\"></td>");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>林龄:</td>");
+            sb.AppendFormat("<td class=\"tdField\">林龄:</td>");
             sb.AppendFormat("<td >{0}</td>", m.FIRERECINFO051);
-            sb.AppendFormat("<td>林分组成:</td>");
+            sb.AppendFormat("<td class=\"tdField\">林分组成:</td>");
             sb.AppendFormat("<td>{0}</td>", m.FIRERECINFO050);
             sb.AppendFormat("<td colspan=\"2\"></td>");
             sb.AppendFormat("</tr>");
@@ -201,53 +200,53 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("<td colspan=\"6\"  style=\" height:40px;\"><h1 style=\" width:82px;  height: 28px;line-height: 28px;color: #22a306;border: 1px solid #35b719; border-radius: 12px;background: url(../images/ico/firereport_icon.png) 7px 6px no-repeat; padding-left: 28px;font-size: 15px;\">扑 救 信 息 </h1></td>");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>火场指挥员姓名:</td>");
+            sb.AppendFormat("<td class=\"tdField\">火场指挥员姓名:</td>");
             sb.AppendFormat("<td>{0}</td>", m.FIRERECINFO060);
-            sb.AppendFormat("<td>火场指挥员职务:</td>");
+            sb.AppendFormat("<td class=\"tdField\">火场指挥员职务:</td>");
             sb.AppendFormat("<td >{0}</td>", m.FIRERECINFO061);
             sb.AppendFormat("<td colspan=\"2\"></td>");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>火案查处已处理:</td>");
+            sb.AppendFormat("<td class=\"tdField\">火案查处已处理:</td>");
             sb.AppendFormat("<td>{0}</td>", m.FIRERECINFO080);
-            sb.AppendFormat("<td>林政处罚人数(人):</td>");
-            sb.AppendFormat("<td>{0}</td>", m.FIRERECINFO081);
-            sb.AppendFormat("<td>刑事处罚人数(人):</td>");
-            sb.AppendFormat("<td >{0}</td>", m.FIRERECINFO082);
+            sb.AppendFormat("<td class=\"tdField\">林政处罚人数:</td>");
+            sb.AppendFormat("<td>{0}</td>", !string.IsNullOrEmpty(m.FIRERECINFO081) ? m.FIRERECINFO081 + "人" : "");
+            sb.AppendFormat("<td class=\"tdField\">刑事处罚人数:</td>");
+            sb.AppendFormat("<td >{0}</td>", !string.IsNullOrEmpty(m.FIRERECINFO082) ? m.FIRERECINFO082 + "人" : "");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>人员伤亡轻伤人数(人):</td>");
-            sb.AppendFormat("<td>{0}</td>", m.FIRERECINFO070);
-            sb.AppendFormat("<td>人员伤亡重伤人数(人):</td>");
-            sb.AppendFormat("<td >{0}</td>", m.FIRERECINFO071);
-            sb.AppendFormat("<td>人员伤亡亡(人):</td>");
-            sb.AppendFormat("<td>{0}</td>", m.FIRERECINFO072);
+            sb.AppendFormat("<td class=\"tdField\">人员伤亡轻伤:</td>");
+            sb.AppendFormat("<td>{0}</td>", !string.IsNullOrEmpty(m.FIRERECINFO070) ? m.FIRERECINFO070 + "人" : "");
+            sb.AppendFormat("<td class=\"tdField\">人员伤亡重伤:</td>");
+            sb.AppendFormat("<td >{0}</td>", !string.IsNullOrEmpty(m.FIRERECINFO071) ? m.FIRERECINFO071 + "人" : "");
+            sb.AppendFormat("<td class=\"tdField\">人员伤亡死亡:</td>");
+            sb.AppendFormat("<td>{0}</td>", !string.IsNullOrEmpty(m.FIRERECINFO072) ? m.FIRERECINFO072 + "人" : "");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>扑火经费(万元):</td>");
-            sb.AppendFormat("<td >{0}</td>", m.FIRERECINFO130);
-            sb.AppendFormat("<td>其他损失折款(万元):</td>");
-            sb.AppendFormat("<td>{0}</td>", m.FIRERECINFO090);
+            sb.AppendFormat("<td class=\"tdField\">扑火经费:</td>");
+            sb.AppendFormat("<td >{0}</td>", !string.IsNullOrEmpty(m.FIRERECINFO130) ? m.FIRERECINFO130 + "万元" : "");
+            sb.AppendFormat("<td class=\"tdField\">其他损失折款:</td>");
+            sb.AppendFormat("<td>{0}</td>", !string.IsNullOrEmpty(m.FIRERECINFO090) ? m.FIRERECINFO090 + "万元" : "");
             sb.AppendFormat("<td colspan=\"2\"></td>");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>出动扑火人工(工日):</td>");
-            sb.AppendFormat("<td>{0}</td>", m.FIRERECINFO100);
-            sb.AppendFormat("<td>出动飞机(架次):</td>");
-            sb.AppendFormat("<td>{0}</td>", m.FIRERECINFO120);
+            sb.AppendFormat("<td class=\"tdField\">出动扑火人工:</td>");
+            sb.AppendFormat("<td>{0}</td>", !string.IsNullOrEmpty(m.FIRERECINFO100) ? m.FIRERECINFO100 + "工日" : "");
+            sb.AppendFormat("<td class=\"tdField\">出动飞机:</td>");
+            sb.AppendFormat("<td>{0}</td>", !string.IsNullOrEmpty(m.FIRERECINFO120) ? m.FIRERECINFO120 + "架次" : "");
             sb.AppendFormat("<td colspan=\"2\"></td>");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>出动车辆合计(台):</td>");
-            sb.AppendFormat("<td >{0}</td>", m.FIRERECINFO111);
-            sb.AppendFormat("<td>其中汽车(台):</td>");
-            sb.AppendFormat("<td>{0}</td>", m.FIRERECINFO110);
+            sb.AppendFormat("<td class=\"tdField\">出动车辆合计:</td>");
+            sb.AppendFormat("<td >{0}</td>", !string.IsNullOrEmpty(m.FIRERECINFO111) ? m.FIRERECINFO111 + "台" : "");
+            sb.AppendFormat("<td class=\"tdField\">其中汽车:</td>");
+            sb.AppendFormat("<td>{0}</td>", !string.IsNullOrEmpty(m.FIRERECINFO110) ? m.FIRERECINFO110 + "台" : "");
             sb.AppendFormat("<td colspan=\"2\"></td>");
             sb.AppendFormat("</tr>");
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td>经度:</td>");
+            sb.AppendFormat("<td class=\"tdField\">经度:</td>");
             sb.AppendFormat("<td>{0}</td>", s.JD);
-            sb.AppendFormat("<td>纬度:</td>");
+            sb.AppendFormat("<td class=\"tdField\">纬度:</td>");
             sb.AppendFormat("<td>{0}</td>", s.WD);
             sb.AppendFormat("<td colspan=\"2\"></td>");
             sb.AppendFormat("</tr>");
@@ -300,16 +299,13 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult MONTHLYREPORT()
         {
-            pubViewBag("041001", "041001", "林火1表月报表");
+            pubViewBag("041001", "041001", "");
             if (ViewBag.isPageRight == false)
                 return View();
-            if (PublicCls.OrgIsShi(SystemCls.getCurUserOrgNo()))//如果是州级获取市县,否则取乡镇
-                ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = SystemCls.getCurUserOrgNo(), TopORGNO = SystemCls.getCurUserOrgNo(), OnlyGetShiXian = "1" });
-            else
-                ViewBag.vdOrg = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = SystemCls.getCurUserOrgNo(), TopORGNO = SystemCls.getCurUserOrgNo(), OnlyGetShiXianXZ = "1", GetXZOrgNOByConty = SystemCls.getCurUserOrgNo(), });
             ViewBag.Time = DateTime.Now.ToString("yyyy-MM");
             return View();
         }
+
         /// <summary>
         /// 林火1表月报表数据列表--异步查询
         /// </summary>
@@ -326,7 +322,6 @@ namespace ManagerSystem.MVC.Controllers
             string fireTime;
             string fireEndTime;
             LYReportQueryTerm(Time, out nowFireTime, out nowfireEndTime, out fireTime, out fireEndTime);
-
             #endregion
 
             #region 数据准备
@@ -355,14 +350,14 @@ namespace ManagerSystem.MVC.Controllers
 
             #region 一至本月累计
             sb.AppendFormat("<tr class=\"center\" >");
-            sb.AppendFormat("<td  class=\"center\">一至本月累计</td>");
+            sb.AppendFormat("<td class=\"center\">一至本月累计</td>");
             sb.AppendFormat("<td class=\"center\">{0}</td>", _monthlyreportList.Count);
             sb.AppendFormat(TOTAL(_monthlyreportList));
             #endregion
 
             #region 本月合计
             sb.AppendFormat("<tr class=\"{0}\">", "row1");
-            sb.AppendFormat("<td  class=\"center\">本月合计</td>");
+            sb.AppendFormat("<td class=\"center\">本月合计</td>");
             sb.AppendFormat("<td class=\"center\">{0}</td>", _nowmonthlyreportList.Count);
             sb.AppendFormat(TOTAL(_nowmonthlyreportList));
             #endregion
@@ -372,7 +367,6 @@ namespace ManagerSystem.MVC.Controllers
             {
                 sb.AppendFormat("<tr class=\"{0}\">", (i % 2 == 0) ? "" : "row1");
                 sb.AppendFormat("<td class=\"center\">{0}</td>", result[i].ORGNAME);
-                //sb.AppendFormat("<td class=\"left\" style=\"{1}\" >{0}</td>", result[i].ORGNAME, PublicCls.getOrgTDNameClass(ORGNO, result[i].ORGNO));组织机构的渐进格式
                 List<FIRERECORD_FIREINFO_Model> templist = LYReportTemplist(result, _nowmonthlyreportList, i);
                 sb.AppendFormat("<td class=\"center\">{0}</td>", templist.Count);
                 sb.AppendFormat(TOTAL(templist));
@@ -565,7 +559,7 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult AREAREPORT()
         {
-            pubViewBag("041002", "041002", "林火1表分地区报表");
+            pubViewBag("041002", "041002", "");
             if (ViewBag.isPageRight == false)
                 return View();
             ViewBag.YEAR = DateTime.Now.ToString("yyyy");
@@ -596,7 +590,7 @@ namespace ManagerSystem.MVC.Controllers
             if (PublicCls.OrgIsXian(ORGNO))
                 result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = ORGNO, OnlyGetShiXianXZ = "1" }).ToList();
             if (PublicCls.OrgIsZhen(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = ORGNO }).ToList();
+                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = ORGNO, OnlyGetXZCun = "1", IsEnableCUN = "1" }).ToList();
             List<FIRERECORD_FIREINFO_Model> _list = FIRERECORD_FIREINFOCls.getListModel(new FIRERECORD_FIREINFO_SW { BYORGNO = ORGNO, FIRETIME = fireTime, FIREENDTIME = fireEndTime }).ToList();
             List<T_SYS_DICTModel> dic304 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "304" }).ToList();
             #endregion
@@ -631,15 +625,6 @@ namespace ManagerSystem.MVC.Controllers
                 sb.AppendFormat("<tr class=\"{0}\">", (i % 2 == 0) ? "" : "row1");
                 sb.AppendFormat("<td class=\"center\">{0}</td>", result[i].ORGNAME);
                 List<FIRERECORD_FIREINFO_Model> templist = LYReportTemplist(result, _list, i);
-                //List<FIRERECORD_FIREINFO_Model> templist = new List<FIRERECORD_FIREINFO_Model>();
-                //if (PublicCls.OrgIsShi(result[i].ORGNO))
-                //    templist = _list.FindAll(a => a.FIREADDRESSTOWNS.Substring(0, 4) == result[i].ORGNO.Substring(0, 4)).ToList();
-                //if (PublicCls.OrgIsXian(result[i].ORGNO))
-                //    templist = _list.FindAll(a => a.FIREADDRESSTOWNS.Substring(0, 6) == result[i].ORGNO.Substring(0, 6)).ToList();
-                //if (PublicCls.OrgIsZhen(result[i].ORGNO))
-                //    templist = _list.FindAll(a => a.FIREADDRESSTOWNS.Substring(0, 9) == result[i].ORGNO.Substring(0, 9)).ToList();
-                //if (PublicCls.OrgIsCun(result[i].ORGNO))
-                //    templist = _list.FindAll(a => a.FIREADDRESSTOWNS == result[i].ORGNO).ToList();
                 sb.AppendFormat("<td class=\"center\">{0}</td>", templist.Count);
                 sb.AppendFormat(TOTAL(templist));
             }
@@ -766,7 +751,7 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult THEMONTHLYREPORT()
         {
-            pubViewBag("041003", "041003", "林火1表分月报表");
+            pubViewBag("041003", "041003", "");
             if (ViewBag.isPageRight == false)
                 return View();
             ViewBag.YEAR = DateTime.Now.ToString("yyyy");
@@ -779,7 +764,6 @@ namespace ManagerSystem.MVC.Controllers
         public ActionResult THEMONTHLYREPORTQuery()
         {
             StringBuilder sb = new StringBuilder();
-
             #region 数据查询条件
             string YEAR = Request.Params["YEAR"];
             string ORGNO = SystemCls.getCurUserOrgNo();
@@ -962,7 +946,7 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult FIRETYPEREPORT()
         {
-            pubViewBag("041004", "041004", " 林火1表火灾类型表");
+            pubViewBag("041004", "041004", " ");
             if (ViewBag.isPageRight == false)
                 return View();
             ViewBag.YEAR = DateTime.Now.ToString("yyyy");
@@ -975,7 +959,6 @@ namespace ManagerSystem.MVC.Controllers
         public ActionResult FIRETYPEREPORTQuery()
         {
             StringBuilder sb = new StringBuilder();
-
             #region 数据查询条件
             string YEAR = Request.Params["YEAR"];
             string ORGNO = SystemCls.getCurUserOrgNo();
@@ -1059,7 +1042,7 @@ namespace ManagerSystem.MVC.Controllers
 
             #region 全年总计
             sb.AppendFormat("<tr class=\"{0}\">", "row1");
-            sb.AppendFormat("<td  class=\"center\" rowspan=\"5\">全年总计</td>");
+            sb.AppendFormat("<td  class=\"center\" rowspan=\"{0}\">全年总计</td>", dic304.Count + 1);
             sb.AppendFormat("<td  class=\"center\">全年总计");
             sb.AppendFormat("<td  class=\"center\">{0}</td>", _firetypelist.Count);
             List<float> totalist = CalZJ(_firetypelist);
@@ -1116,7 +1099,7 @@ namespace ManagerSystem.MVC.Controllers
             for (int i = 0; i < monthList.Count; i++)
             {
                 sb.AppendFormat("<tr class=\"{0}\">", "row1");
-                sb.AppendFormat("<td class=\"center\" rowspan=\"5\" >{0}</td>", monthList[i]);
+                sb.AppendFormat("<td class=\"center\" rowspan=\"{1}\" >{0}</td>", monthList[i], dic304.Count + 1);
                 sb.AppendFormat("<td class=\"{0}\">本月合计", "row1");
                 List<FIRERECORD_FIREINFO_Model> monthtotallist = new List<FIRERECORD_FIREINFO_Model>();
                 DateTime startTime = new DateTime(int.Parse(YEAR), 1, 1);
@@ -1315,7 +1298,7 @@ namespace ManagerSystem.MVC.Controllers
             #region 表身及数据
 
             #region 全年总计
-            sheet1.AddMergedRegion(new CellRangeAddress(4, 8, 0, 0));
+            sheet1.AddMergedRegion(new CellRangeAddress(4, dic304.Count + 4, 0, 0));
             IRow row4 = sheet1.CreateRow(4);
             int j = 0;
             row4.CreateCell(j).SetCellValue("全年总计");
@@ -1348,11 +1331,11 @@ namespace ManagerSystem.MVC.Controllers
             #endregion
 
             #region 详细数据
-            int y = 9;
+            int y = dic304.Count + 5;
             for (int i = 0; i < monthList.Count; i++)
             {
                 int z = 0;
-                sheet1.AddMergedRegion(new CellRangeAddress(y, y + 4, 0, 0));
+                sheet1.AddMergedRegion(new CellRangeAddress(y, y + dic304.Count, 0, 0));
                 IRow row5 = sheet1.CreateRow(y);
                 y++;
                 row5.CreateCell(z).SetCellValue(monthList[i]);
@@ -1364,7 +1347,6 @@ namespace ManagerSystem.MVC.Controllers
                 List<FIRERECORD_FIREINFO_Model> monthtotallist = new List<FIRERECORD_FIREINFO_Model>();
                 DateTime startTime = new DateTime(int.Parse(YEAR), 1, 1);
                 DateTime endTime = new DateTime(int.Parse(YEAR), 1, 13);
-                // List<float> arealist = new List<float>();
                 startTime = new DateTime(int.Parse(YEAR), i + 1, 1);
                 if (i != monthList.Count - 1)
                     endTime = new DateTime(int.Parse(YEAR), i + 2, 1).AddSeconds(-1);
@@ -1391,7 +1373,7 @@ namespace ManagerSystem.MVC.Controllers
                     k = ExcelTotal(templist, book, row6, k);
                     rowindex1++;
                 }
-                y = y + 4;
+                y = y + dic304.Count;
             }
 
             #endregion
@@ -1418,7 +1400,7 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult SECONDMONTHLYREPORT()
         {
-            pubViewBag("041005", "041005", "林火2表月报表");
+            pubViewBag("041005", "041005", "");
             if (ViewBag.isPageRight == false)
                 return View();
             ViewBag.Time = DateTime.Now.ToString("yyyy-MM");
@@ -1448,17 +1430,8 @@ namespace ManagerSystem.MVC.Controllers
             List<FIRERECORD_FIREINFO_Model> _monthlyreportList;
             List<FIRERECORD_FIREINFO_Model> _nowmonthlyreportList;
             LYReportQueryData(ORGNO, nowFireTime, nowfireEndTime, fireTime, fireEndTime, out result, out _monthlyreportList, out _nowmonthlyreportList);
-            //List<T_SYS_ORGModel> result = new List<T_SYS_ORGModel>();
-            //if (PublicCls.OrgIsShi(ORGNO))
-            //    result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetShiXian = "1" }).ToList();
-            //if (PublicCls.OrgIsXian(ORGNO))
-            //    result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetShiXianXZ = "1" }).ToList();
-            //if (PublicCls.OrgIsZhen(ORGNO))
-            //    result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO }).ToList();
             List<T_SYS_DICTModel> dic302 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "302" }).ToList();
             List<T_SYS_DICTModel> dic203 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "203" }).ToList();
-            //List<FIRERECORD_FIREINFO_Model> _monthlyreportList = FIRERECORD_FIREINFOCls.getListModel(new FIRERECORD_FIREINFO_SW { BYORGNO = ORGNO, FIRETIME = fireTime, FIREENDTIME = nowfireEndTime }).ToList();
-            //List<FIRERECORD_FIREINFO_Model> _nowmonthlyreportList = FIRERECORD_FIREINFOCls.getListModel(new FIRERECORD_FIREINFO_SW { BYORGNO = ORGNO, FIRETIME = nowFireTime, FIREENDTIME = nowfireEndTime }).ToList();
             #endregion
 
             #region 数据表
@@ -1473,16 +1446,7 @@ namespace ManagerSystem.MVC.Controllers
 
             #region 第一行列号
             sb.AppendFormat("<tr class=\"{0}\">", "row1");
-            sb.AppendFormat(COLUMN());
-            sb.AppendFormat("<td  class=\"center\">22</td>");
-            sb.AppendFormat("<td  class=\"center\">23</td>");
-            sb.AppendFormat("<td  class=\"center\">24</td>");
-            sb.AppendFormat("<td  class=\"center\">25</td>");
-            sb.AppendFormat("<td  class=\"center\">26</td>");
-            sb.AppendFormat("<td  class=\"center\">27</td>");
-            sb.AppendFormat("<td  class=\"center\">28</td>");
-            sb.AppendFormat("<td  class=\"center\">29</td>");
-            sb.AppendFormat("<td  class=\"center\">30</td>");
+            sb.AppendFormat(COLUMN2());
             sb.AppendFormat("</tr>");
             #endregion
 
@@ -1506,15 +1470,6 @@ namespace ManagerSystem.MVC.Controllers
                 sb.AppendFormat("<tr class=\"{0}\">", (i % 2 == 0) ? "" : "row1");
                 sb.AppendFormat("<td class=\"center\" >{0}</td>", result[i].ORGNAME);
                 List<FIRERECORD_FIREINFO_Model> templist = LYReportTemplist(result, _nowmonthlyreportList, i);
-                //List<FIRERECORD_FIREINFO_Model> templist = new List<FIRERECORD_FIREINFO_Model>();
-                //if (PublicCls.OrgIsShi(result[i].ORGNO))
-                //    templist = _nowmonthlyreportList.FindAll(a => a.FIREADDRESSTOWNS.Substring(0, 4) == result[i].ORGNO.Substring(0, 4)).ToList();
-                //if (PublicCls.OrgIsXian(result[i].ORGNO))
-                //    templist = _nowmonthlyreportList.FindAll(a => a.FIREADDRESSTOWNS.Substring(0, 6) == result[i].ORGNO.Substring(0, 6)).ToList();
-                //if (PublicCls.OrgIsZhen(result[i].ORGNO))
-                //    templist = _nowmonthlyreportList.FindAll(a => a.FIREADDRESSTOWNS.Substring(0, 9) == result[i].ORGNO.Substring(0, 9)).ToList();
-                //if (PublicCls.OrgIsCun(result[i].ORGNO))
-                //    templist = _nowmonthlyreportList.FindAll(a => a.FIREADDRESSTOWNS == result[i].ORGNO).ToList();
                 sb.AppendFormat("<td class=\"center\">{0}</td>", templist.Count);
                 sb.AppendFormat(METHODS(templist));
             }
@@ -1662,7 +1617,7 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult SECONDAREAREPORT()
         {
-            pubViewBag("041006", "041006", "林火2表分地区报表");
+            pubViewBag("041006", "041006", "");
             if (ViewBag.isPageRight == false)
                 return View();
             ViewBag.Time = DateTime.Now.ToString("yyyy-MM");
@@ -1719,16 +1674,7 @@ namespace ManagerSystem.MVC.Controllers
 
             #region 第一行列号
             sb.AppendFormat("<tr>");
-            sb.AppendFormat(COLUMN());
-            sb.AppendFormat("<td  class=\"center\">22</td>");
-            sb.AppendFormat("<td  class=\"center\">23</td>");
-            sb.AppendFormat("<td  class=\"center\">24</td>");
-            sb.AppendFormat("<td  class=\"center\">25</td>");
-            sb.AppendFormat("<td  class=\"center\">26</td>");
-            sb.AppendFormat("<td  class=\"center\">27</td>");
-            sb.AppendFormat("<td  class=\"center\">28</td>");
-            sb.AppendFormat("<td  class=\"center\">29</td>");
-            sb.AppendFormat("<td  class=\"center\">30</td>");
+            sb.AppendFormat(COLUMN2());
             sb.AppendFormat("</tr>");
             #endregion
 
@@ -1927,16 +1873,7 @@ namespace ManagerSystem.MVC.Controllers
 
             #region 第一行列号
             sb.AppendFormat("<tr>");
-            sb.AppendFormat(COLUMN());
-            sb.AppendFormat("<td  class=\"center\">22</td>");
-            sb.AppendFormat("<td  class=\"center\">23</td>");
-            sb.AppendFormat("<td  class=\"center\">24</td>");
-            sb.AppendFormat("<td  class=\"center\">25</td>");
-            sb.AppendFormat("<td  class=\"center\">26</td>");
-            sb.AppendFormat("<td  class=\"center\">27</td>");
-            sb.AppendFormat("<td  class=\"center\">28</td>");
-            sb.AppendFormat("<td  class=\"center\">29</td>");
-            sb.AppendFormat("<td  class=\"center\">30</td>");
+            sb.AppendFormat(COLUMN2());
             sb.AppendFormat("</tr>");
             #endregion
 
@@ -2080,7 +2017,7 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult FIRETOTALREPORT()
         {
-            pubViewBag("041008", "041008", "林火4表森林火灾统计表");
+            pubViewBag("041008", "041008", "");
             if (ViewBag.isPageRight == false)
                 return View();
             ViewBag.Time = DateTime.Now.ToString("yyyy-MM");
@@ -2167,34 +2104,10 @@ namespace ManagerSystem.MVC.Controllers
             #region 第一行：列号
             sb.AppendFormat("<tr>");
             sb.AppendFormat("<td class=\"center\"></td>");
-            sb.AppendFormat("<td class=\"center\">1</td>");
-            sb.AppendFormat("<td class=\"center\">2</td>");
-            sb.AppendFormat("<td class=\"center\">3</td>");
-            sb.AppendFormat("<td class=\"center\">4</td>");
-            sb.AppendFormat("<td class=\"center\">5</td>");
-            sb.AppendFormat("<td class=\"center\">6</td>");
-            sb.AppendFormat("<td class=\"center\">7</td>");
-            sb.AppendFormat("<td class=\"center\">8</td>");
-            sb.AppendFormat("<td class=\"center\">9</td>");
-            sb.AppendFormat("<td class=\"center\">10</td>");
-            sb.AppendFormat("<td class=\"center\">11</td>");
-            sb.AppendFormat("<td class=\"center\">12</td>");
-            sb.AppendFormat("<td class=\"center\">13</td>");
-            sb.AppendFormat("<td class=\"center\">14</td>");
-            sb.AppendFormat("<td class=\"center\">15</td>");
-            sb.AppendFormat("<td class=\"center\">16</td>");
-            sb.AppendFormat("<td class=\"center\">17</td>");
-            sb.AppendFormat("<td class=\"center\">18</td>");
-            sb.AppendFormat("<td class=\"center\">19</td>");
-            sb.AppendFormat("<td class=\"center\">20</td>");
-            sb.AppendFormat("<td class=\"center\">21</td>");
-            sb.AppendFormat("<td class=\"center\">22</td>");
-            sb.AppendFormat("<td class=\"center\">23</td>");
-            sb.AppendFormat("<td class=\"center\">24</td>");
-            sb.AppendFormat("<td class=\"center\">25</td>");
-            sb.AppendFormat("<td class=\"center\">26</td>");
-            sb.AppendFormat("<td class=\"center\">27</td>");
-            sb.AppendFormat("<td class=\"center\">28</td>");
+            for (int i = 0; i < 28; i++)
+            {
+                sb.AppendFormat("<td class=\"center\">{0}</td>", i + 1);
+            }
             sb.AppendFormat("</tr>");
             #endregion
 
@@ -2622,7 +2535,6 @@ namespace ManagerSystem.MVC.Controllers
         public ActionResult FIRERECORD_REPORT8Manager()
         {
             FIRERECORD_REPORT8_Model m = new FIRERECORD_REPORT8_Model();
-            // m.FIRERECORD_REPORT8ID = Request.Params["FIRERECORD_REPORT8ID"];
             m.BYORGNO = Request.Params["BYORGNO"];
             m.REPORTYEAR = Request.Params["REPORTYEAR"];
             m.REPORTCODE = Request.Params["REPORTCODE"];
@@ -2631,6 +2543,7 @@ namespace ManagerSystem.MVC.Controllers
             m.opMethod = Request.Params["Method"];
             return Content(JsonConvert.SerializeObject(FIRERECORD_REPORT8Cls.Manager(m)), "text/html;charset=UTF-8");
         }
+
         /// <summary>
         /// 森林防火组织机构统计
         /// </summary>
@@ -2644,13 +2557,16 @@ namespace ManagerSystem.MVC.Controllers
             if (!string.IsNullOrEmpty(REPORTYEAR))
             {
                 if (Method == "Add")
-                {
-
                     model = FIRERECORD_REPORT8Cls.getModel(new FIRERECORD_REPORT8_SW { BYORGNO = ORGNO, REPORTYEAR = REPORTYEAR });
-                }
             }
-            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOptionByORGNO(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), OnlyGetShiXian = ORGNO, TopORGNO = ORGNO });//获取州级和市县
-            // vdorg(ORGNO);
+            string result = "";
+            if (PublicCls.OrgIsShi(ORGNO))
+                result = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = ORGNO, OnlyGetShiXian = "1" });
+            if (PublicCls.OrgIsXian(ORGNO))
+                result = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = ORGNO, OnlyGetXianXZ = "1" });
+            if (PublicCls.OrgIsZhen(ORGNO))
+                result = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = ORGNO, IsEnableCUN = "1" });
+            ViewBag.vdOrg = result;
             ViewBag.REPORTYEAR = DateTime.Now.ToString("yyyy");
             ViewBag.Method = Method;
             List<T_SYS_DICTModel> dic305list = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "305" }).ToList();
@@ -2670,7 +2586,6 @@ namespace ManagerSystem.MVC.Controllers
         {
             string REPORTYEAR = Request.Params["REPORTYEAR"];
             string BYORGNO = Request.Params["BYORGNO"];
-            // string BYORGNO = SystemCls.getCurUserOrgNo();
             return Content(JsonConvert.SerializeObject(FIRERECORD_REPORT8Cls.getListModel(new FIRERECORD_REPORT8_SW { BYORGNO = BYORGNO, REPORTYEAR = REPORTYEAR, })), "text/html;charset=UTF-8");
         }
         #endregion
@@ -2682,7 +2597,7 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult FIRERECORD_REPORT8()
         {
-            pubViewBag("041009", "041009", "森林防火组织机构统计年报表");
+            pubViewBag("041009", "041009", "");
             if (ViewBag.isPageRight == false)
                 return View();
             ViewBag.YEAR = DateTime.Now.ToString("yyyy");
@@ -2696,7 +2611,6 @@ namespace ManagerSystem.MVC.Controllers
         public ActionResult FIRERECORD_REPORT8Query()
         {
             StringBuilder sb = new StringBuilder();
-
             #region 数据查询条件
             string YEAR = Request.Params["YEAR"];
             string BYORGNO = Request.Params["BYORGNO"];
@@ -2705,15 +2619,7 @@ namespace ManagerSystem.MVC.Controllers
 
             #region 数据准备
             List<T_SYS_ORGModel> result = ResultList(ORGNO);//获取组织机构编码
-            List<FIRERECORD_REPORT8_Model> yearreportlist = new List<FIRERECORD_REPORT8_Model>();
-            if (ORGNO.Substring(4, 11) == "00000000000")
-            {
-                yearreportlist = FIRERECORD_REPORT8Cls.getListModel(new FIRERECORD_REPORT8_SW { REPORTYEAR = YEAR, }).ToList();
-            }
-            else
-            {
-                yearreportlist = FIRERECORD_REPORT8Cls.getListModel(new FIRERECORD_REPORT8_SW { BYORGNO = ORGNO, REPORTYEAR = YEAR, }).ToList();
-            }
+            List<FIRERECORD_REPORT8_Model> yearreportlist = yearreportlist = FIRERECORD_REPORT8Cls.getListModel(new FIRERECORD_REPORT8_SW { BYORGNO = ORGNO, REPORTYEAR = YEAR, }).ToList();
             List<T_SYS_DICTModel> dic305 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "305" }).ToList();//省地县
             List<T_SYS_DICTModel> dic310 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "310" }).ToList();//组织机构统计年报
             #endregion
@@ -2751,20 +2657,10 @@ namespace ManagerSystem.MVC.Controllers
             #region 第一行：列号
             sb.AppendFormat("<tr class=\"{0}\">", "row1");
             sb.AppendFormat("<td class=\"center\"colspan=\"2\">甲</td>");
-            sb.AppendFormat("<td class=\"center\">1</td>");
-            sb.AppendFormat("<td class=\"center\">2</td>");
-            sb.AppendFormat("<td class=\"center\">3</td>");
-            sb.AppendFormat("<td class=\"center\">4</td>");
-            sb.AppendFormat("<td class=\"center\">5</td>");
-            sb.AppendFormat("<td class=\"center\">6</td>");
-            sb.AppendFormat("<td class=\"center\">7</td>");
-            sb.AppendFormat("<td class=\"center\">8</td>");
-            sb.AppendFormat("<td class=\"center\">9</td>");
-            sb.AppendFormat("<td class=\"center\">10</td>");
-            sb.AppendFormat("<td class=\"center\">11</td>");
-            sb.AppendFormat("<td class=\"center\">12</td>");
-            sb.AppendFormat("<td class=\"center\">13</td>");
-            sb.AppendFormat("<td class=\"center\">14</td>");
+            for (int i = 0; i < dic310.Count; i++)
+            {
+                sb.AppendFormat("<td class=\"center\">{0}</td>", i + 1);
+            }
             sb.AppendFormat("</tr>");
             #endregion
 
@@ -2898,20 +2794,10 @@ namespace ManagerSystem.MVC.Controllers
 
             #region 数据准备
             List<T_SYS_ORGModel> result = ResultList(ORGNO);//获取组织机构编码;
-            // List<FIRERECORD_REPORT8_Model> yearreportlist = FIRERECORD_REPORT8Cls.getListModel(new FIRERECORD_REPORT8_SW { REPORTYEAR = YEAR }).ToList();
-            List<FIRERECORD_REPORT8_Model> yearreportlist = new List<FIRERECORD_REPORT8_Model>();
-            if (ORGNO.Substring(4, 11) == "00000000000")
-            {
-                yearreportlist = FIRERECORD_REPORT8Cls.getListModel(new FIRERECORD_REPORT8_SW { REPORTYEAR = YEAR, }).ToList();
-            }
-            else
-            {
-                yearreportlist = FIRERECORD_REPORT8Cls.getListModel(new FIRERECORD_REPORT8_SW { BYORGNO = ORGNO, REPORTYEAR = YEAR, }).ToList();
-            }
+            List<FIRERECORD_REPORT8_Model> yearreportlist = FIRERECORD_REPORT8Cls.getListModel(new FIRERECORD_REPORT8_SW { BYORGNO = ORGNO, REPORTYEAR = YEAR, }).ToList();
             List<T_SYS_DICTModel> dic305 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "305" }).ToList();//省地县
             List<T_SYS_DICTModel> dic310 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "310" }).ToList();//组织机构统计年报
             int colsCount = (dic310.Count + 2);
-            //string orgName = T_SYS_ORGCls.getorgname(ORGNO);
             string menuName = T_SYS_MENUCls.getMenuNameByCode(new T_SYS_MENU_SW { MENUCODE = "041009", SYSFLAG = ConfigCls.getSystemFlag() });
             string title = YEAR + "-" + menuName;
             #endregion
@@ -3188,6 +3074,7 @@ namespace ManagerSystem.MVC.Controllers
             m.opMethod = Request.Params["Method"];
             return Content(JsonConvert.SerializeObject(FIRERECORD_REPORT9Cls.Manager(m)), "text/html;charset=UTF-8");
         }
+
         /// <summary>
         /// 森林防火办事机构人员统计
         /// </summary>
@@ -3201,12 +3088,16 @@ namespace ManagerSystem.MVC.Controllers
             if (!string.IsNullOrEmpty(FIRERECORD_REPORT9ID))
             {
                 if (Method == "Add")
-                {
                     model = FIRERECORD_REPORT9Cls.getModel(new FIRERECORD_REPORT9_SW { FIRERECORD_REPORT9ID = FIRERECORD_REPORT9ID });
-                }
             }
-            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOptionByORGNO(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), OnlyGetShiXian = ORGNO, TopORGNO = ORGNO });//获取州级和市县
-            //vdorg(ORGNO);
+            string result = "";
+            if (PublicCls.OrgIsShi(ORGNO))
+                result = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = ORGNO, OnlyGetShiXian = "1" });
+            if (PublicCls.OrgIsXian(ORGNO))
+                result = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = ORGNO, OnlyGetXianXZ = "1" });
+            if (PublicCls.OrgIsZhen(ORGNO))
+                result = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = ORGNO, IsEnableCUN = "1" });
+            ViewBag.vdOrg = result;
             ViewBag.REPORTYEAR = DateTime.Now.ToString("yyyy");
             ViewBag.Method = Method;
             List<T_SYS_DICTModel> dic305list = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "305" }).ToList();
@@ -3217,7 +3108,6 @@ namespace ManagerSystem.MVC.Controllers
             ViewBag.dic311Count = dic311List.Count;
             return View(model);
         }
-
 
         /// <summary>
         /// 获取数据列表
@@ -3238,7 +3128,7 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult FIRERECORD_REPORT9()
         {
-            pubViewBag("041010", "041010", "森林防火办事机构人员统计年报表");
+            pubViewBag("041010", "041010", "");
             if (ViewBag.isPageRight == false)
                 return View();
             ViewBag.YEAR = DateTime.Now.ToString("yyyy");
@@ -3252,7 +3142,6 @@ namespace ManagerSystem.MVC.Controllers
         public ActionResult FIRERECORD_REPORT9Query()
         {
             StringBuilder sb = new StringBuilder();
-
             #region 数据查询条件
             string YEAR = Request.Params["YEAR"];
             string BYORGNO = Request.Params["BYORGNO"];
@@ -3261,16 +3150,7 @@ namespace ManagerSystem.MVC.Controllers
 
             #region 数据准备
             List<T_SYS_ORGModel> result = ResultList(ORGNO);//获取组织机构编码
-            // List<FIRERECORD_REPORT9_Model> yearreportlist = FIRERECORD_REPORT9Cls.getListModel(new FIRERECORD_REPORT9_SW { REPORTYEAR = YEAR, }).ToList();
-            List<FIRERECORD_REPORT9_Model> yearreportlist = new List<FIRERECORD_REPORT9_Model>();
-            if (ORGNO.Substring(4, 11) == "00000000000")
-            {
-                yearreportlist = FIRERECORD_REPORT9Cls.getListModel(new FIRERECORD_REPORT9_SW { REPORTYEAR = YEAR, }).ToList();
-            }
-            else
-            {
-                yearreportlist = FIRERECORD_REPORT9Cls.getListModel(new FIRERECORD_REPORT9_SW { BYORGNO = ORGNO, REPORTYEAR = YEAR, }).ToList();
-            }
+            List<FIRERECORD_REPORT9_Model> yearreportlist = FIRERECORD_REPORT9Cls.getListModel(new FIRERECORD_REPORT9_SW { BYORGNO = ORGNO, REPORTYEAR = YEAR, }).ToList();
             List<T_SYS_DICTModel> dic305 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "305" }).ToList();//省地县
             List<T_SYS_DICTModel> dic311 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "311" }).ToList();//组织机构统计年报
             #endregion
@@ -3309,25 +3189,10 @@ namespace ManagerSystem.MVC.Controllers
             #region 第一行：列号
             sb.AppendFormat("<tr class=\"{0}\">", "row1");
             sb.AppendFormat("<td class=\"center\"colspan=\"2\">甲</td>");
-            sb.AppendFormat("<td class=\"center\">1</td>");
-            sb.AppendFormat("<td class=\"center\">2</td>");
-            sb.AppendFormat("<td class=\"center\">3</td>");
-            sb.AppendFormat("<td class=\"center\">4</td>");
-            sb.AppendFormat("<td class=\"center\">5</td>");
-            sb.AppendFormat("<td class=\"center\">6</td>");
-            sb.AppendFormat("<td class=\"center\">7</td>");
-            sb.AppendFormat("<td class=\"center\">8</td>");
-            sb.AppendFormat("<td class=\"center\">9</td>");
-            sb.AppendFormat("<td class=\"center\">10</td>");
-            sb.AppendFormat("<td class=\"center\">11</td>");
-            sb.AppendFormat("<td class=\"center\">12</td>");
-            sb.AppendFormat("<td class=\"center\">13</td>");
-            sb.AppendFormat("<td class=\"center\">14</td>");
-            sb.AppendFormat("<td class=\"center\">15</td>");
-            sb.AppendFormat("<td class=\"center\">16</td>");
-            sb.AppendFormat("<td class=\"center\">17</td>");
-            sb.AppendFormat("<td class=\"center\">18</td>");
-            sb.AppendFormat("<td class=\"center\">19</td>");
+            for (int i = 0; i < dic311.Count; i++)
+            {
+                sb.AppendFormat("<td class=\"center\">{0}</td>", i + 1);
+            }
             sb.AppendFormat("</tr>");
             #endregion
 
@@ -3514,16 +3379,7 @@ namespace ManagerSystem.MVC.Controllers
 
             #region 数据准备
             List<T_SYS_ORGModel> result = ResultList(ORGNO);//获取组织机构编码
-            // List<FIRERECORD_REPORT9_Model> yearreportlist = FIRERECORD_REPORT9Cls.getListModel(new FIRERECORD_REPORT9_SW { REPORTYEAR = YEAR }).ToList();
-            List<FIRERECORD_REPORT9_Model> yearreportlist = new List<FIRERECORD_REPORT9_Model>();
-            if (ORGNO.Substring(4, 11) == "00000000000")
-            {
-                yearreportlist = FIRERECORD_REPORT9Cls.getListModel(new FIRERECORD_REPORT9_SW { REPORTYEAR = YEAR, }).ToList();
-            }
-            else
-            {
-                yearreportlist = FIRERECORD_REPORT9Cls.getListModel(new FIRERECORD_REPORT9_SW { BYORGNO = ORGNO, REPORTYEAR = YEAR, }).ToList();
-            }
+            List<FIRERECORD_REPORT9_Model> yearreportlist = FIRERECORD_REPORT9Cls.getListModel(new FIRERECORD_REPORT9_SW { BYORGNO = ORGNO, REPORTYEAR = YEAR, }).ToList();
             List<T_SYS_DICTModel> dic305 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "305" }).ToList();//省地县
             List<T_SYS_DICTModel> dic311 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "311" }).ToList();//组织机构统计年报
             int colsCount = (dic311.Count + 2);
@@ -3843,12 +3699,16 @@ namespace ManagerSystem.MVC.Controllers
             if (!string.IsNullOrEmpty(FIRERECORD_REPORT10ID))
             {
                 if (Method == "Add")
-                {
                     model = FIRERECORD_REPORT10Cls.getModel(new FIRERECORD_REPORT10_SW { FIRERECORD_REPORT10ID = FIRERECORD_REPORT10ID });
-                }
             }
-            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOptionByORGNO(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), OnlyGetShiXian = ORGNO, TopORGNO = ORGNO });//获取州级和市县
-            // vdorg(ORGNO);
+            string result = "";
+            if (PublicCls.OrgIsShi(ORGNO))
+                result = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = ORGNO, OnlyGetShiXian = "1" });
+            if (PublicCls.OrgIsXian(ORGNO))
+                result = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = ORGNO, OnlyGetXianXZ = "1" });
+            if (PublicCls.OrgIsZhen(ORGNO))
+                result = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = ORGNO, IsEnableCUN = "1" });
+            ViewBag.vdOrg = result;
             ViewBag.REPORTYEAR = DateTime.Now.ToString("yyyy");
             ViewBag.Method = Method;
             List<T_SYS_DICTModel> dic312List = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "312" }).ToList();
@@ -3867,7 +3727,6 @@ namespace ManagerSystem.MVC.Controllers
             List<FIRERECORD_REPORT10_Model> _accountlist = FIRERECORD_REPORT10Cls.getListModel(new FIRERECORD_REPORT10_SW { BYORGNO = BYORGNO, REPORTYEAR = REPORTYEAR, }).ToList();
             List<FIRERECORD_REPORT10_Model> _list = _accountlist.FindAll(a => a.REPORTYEAR == REPORTYEAR);
             return Content(JsonConvert.SerializeObject(_list));
-            //return Content(JsonConvert.SerializeObject(FIRERECORD_REPORT10Cls.getListModel(new FIRERECORD_REPORT10_SW { BYORGNO = BYORGNO, REPORTYEAR = REPORTYEAR, })), "text/html;charset=UTF-8");
         }
         #endregion
 
@@ -3892,7 +3751,6 @@ namespace ManagerSystem.MVC.Controllers
         public ActionResult FIRERECORD_REPORT10Query()
         {
             StringBuilder sb = new StringBuilder();
-
             #region 数据查询条件
             string YEAR = Request.Params["YEAR"];
             string BYORGNO = Request.Params["BYORGNO"];
@@ -3900,18 +3758,8 @@ namespace ManagerSystem.MVC.Controllers
             #endregion
 
             #region 数据准备
-            List<T_SYS_ORGModel> result = ResultList(ORGNO);//获取组织机构编码
-            // List<FIRERECORD_REPORT10_Model> _totalyearreportlist = FIRERECORD_REPORT10Cls.getListModel(new FIRERECORD_REPORT10_SW { REPORTYEAR = YEAR, }).ToList();
-            List<FIRERECORD_REPORT10_Model> _totalyearreportlist = new List<FIRERECORD_REPORT10_Model>();
-            if (ORGNO.Substring(4, 11) == "00000000000")
-            {
-                _totalyearreportlist = FIRERECORD_REPORT10Cls.getListModel(new FIRERECORD_REPORT10_SW { REPORTYEAR = YEAR, }).ToList();
-            }
-            else
-            {
-                _totalyearreportlist = FIRERECORD_REPORT10Cls.getListModel(new FIRERECORD_REPORT10_SW { BYORGNO = ORGNO, REPORTYEAR = YEAR, }).ToList();
-            }
-            var _yearreportlist = _totalyearreportlist.FindAll(a => a.REPORTYEAR == YEAR);
+            List<T_SYS_ORGModel> result = ResultList(ORGNO);//获取组织机构编码         
+            List<FIRERECORD_REPORT10_Model> _totalyearreportlist = FIRERECORD_REPORT10Cls.getListModel(new FIRERECORD_REPORT10_SW { BYORGNO = ORGNO, REPORTYEAR = YEAR, }).ToList();
             List<T_SYS_DICTModel> dic312 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "312" }).ToList();//基础设施统计年报表一
             #endregion
 
@@ -3961,26 +3809,10 @@ namespace ManagerSystem.MVC.Controllers
             #region 第一行：列号
             sb.AppendFormat("<tr class=\"{0}\">", "row1");
             sb.AppendFormat("<td class=\"center\">甲</td>");
-            sb.AppendFormat("<td class=\"center\">1</td>");
-            sb.AppendFormat("<td class=\"center\">2</td>");
-            sb.AppendFormat("<td class=\"center\">3</td>");
-            sb.AppendFormat("<td class=\"center\">4</td>");
-            sb.AppendFormat("<td class=\"center\">5</td>");
-            sb.AppendFormat("<td class=\"center\">6</td>");
-            sb.AppendFormat("<td class=\"center\">7</td>");
-            sb.AppendFormat("<td class=\"center\">8</td>");
-            sb.AppendFormat("<td class=\"center\">9</td>");
-            sb.AppendFormat("<td class=\"center\">10</td>");
-            sb.AppendFormat("<td class=\"center\">11</td>");
-            sb.AppendFormat("<td class=\"center\">12</td>");
-            sb.AppendFormat("<td class=\"center\">13</td>");
-            sb.AppendFormat("<td class=\"center\">14</td>");
-            sb.AppendFormat("<td class=\"center\">15</td>");
-            sb.AppendFormat("<td class=\"center\">16</td>");
-            sb.AppendFormat("<td class=\"center\">17</td>");
-            sb.AppendFormat("<td class=\"center\">18</td>");
-            sb.AppendFormat("<td class=\"center\">19</td>");
-            sb.AppendFormat("<td class=\"center\">20</td>");
+            for (int i = 0; i < dic312.Count + 4; i++)
+            {
+                sb.AppendFormat("<td class=\"center\">{0}</td>", i + 1);
+            }
             sb.AppendFormat("</tr>");
             #endregion
 
@@ -4013,7 +3845,7 @@ namespace ManagerSystem.MVC.Controllers
             #region 本年合计
             sb.AppendFormat("<tr class=\"{0}\">", "row1");
             sb.AppendFormat("<td class=\"center\">本 年 合 计</td>");
-            List<float> total1 = CalHJ1(_yearreportlist);
+            List<float> total1 = CalHJ1(_totalyearreportlist);
             sb.AppendFormat("<td>{0}</td>", total1[0] + total1[1] + total1[2]);
             for (int i = 0; i < dic312.Count - 6; i++)
             {
@@ -4030,8 +3862,6 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("<td>{0}</td>", total1[12]);
             sb.AppendFormat("<td>{0}</td>", total1[13]);
             sb.AppendFormat("<td>{0}</td>", total1[14]);
-            //var bzlist1 = _yearreportlist.FindAll(a => a.REPORTCODE == dic312[dic312.Count - 1].DICTVALUE);
-            //sb.AppendFormat("<td>{0}</td>", bzlist1.Count > 0 ? bzlist1[0].REPORTVALUE : "");
             sb.AppendFormat("<td>{0}</td>", "");
             sb.AppendFormat("</tr>");
             #endregion
@@ -4043,13 +3873,13 @@ namespace ManagerSystem.MVC.Controllers
                 sb.AppendFormat("<td class=\"Center\" >{0}</td>", result[i].ORGNAME);
                 List<FIRERECORD_REPORT10_Model> templist = new List<FIRERECORD_REPORT10_Model>();
                 if (PublicCls.OrgIsShi(result[i].ORGNO))
-                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(4, 11) == result[i].ORGNO.Substring(4, 11)).ToList();
+                    templist = _totalyearreportlist.FindAll(a => a.BYORGNO.Substring(4, 11) == result[i].ORGNO.Substring(4, 11)).ToList();
                 if (PublicCls.OrgIsXian(result[i].ORGNO))
-                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 6) == result[i].ORGNO.Substring(0, 6)).ToList();
+                    templist = _totalyearreportlist.FindAll(a => a.BYORGNO.Substring(0, 6) == result[i].ORGNO.Substring(0, 6)).ToList();
                 if (PublicCls.OrgIsZhen(result[i].ORGNO))
-                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 9) == result[i].ORGNO.Substring(0, 9)).ToList();
+                    templist = _totalyearreportlist.FindAll(a => a.BYORGNO.Substring(0, 9) == result[i].ORGNO.Substring(0, 9)).ToList();
                 if (PublicCls.OrgIsCun(result[i].ORGNO))
-                    templist = _yearreportlist.FindAll(a => a.BYORGNO == result[i].ORGNO).ToList();
+                    templist = _totalyearreportlist.FindAll(a => a.BYORGNO == result[i].ORGNO).ToList();
 
                 List<float> total2 = CalHJ1(templist);
                 sb.AppendFormat("<td>{0}</td>", total2[0] + total2[1] + total2[2]);
@@ -4095,17 +3925,7 @@ namespace ManagerSystem.MVC.Controllers
 
             #region 数据准备
             List<T_SYS_ORGModel> result = ResultList(ORGNO);//获取组织机构编码
-            // List<FIRERECORD_REPORT10_Model> _totalyearreportlist = FIRERECORD_REPORT10Cls.getListModel(new FIRERECORD_REPORT10_SW { REPORTYEAR = YEAR, }).ToList();
-            List<FIRERECORD_REPORT10_Model> _totalyearreportlist = new List<FIRERECORD_REPORT10_Model>();
-            if (ORGNO.Substring(4, 11) == "00000000000")
-            {
-                _totalyearreportlist = FIRERECORD_REPORT10Cls.getListModel(new FIRERECORD_REPORT10_SW { REPORTYEAR = YEAR, }).ToList();
-            }
-            else
-            {
-                _totalyearreportlist = FIRERECORD_REPORT10Cls.getListModel(new FIRERECORD_REPORT10_SW { BYORGNO = ORGNO, REPORTYEAR = YEAR, }).ToList();
-            }
-            var _yearreportlist = _totalyearreportlist.FindAll(a => a.REPORTYEAR == YEAR);
+            List<FIRERECORD_REPORT10_Model> _totalyearreportlist = FIRERECORD_REPORT10Cls.getListModel(new FIRERECORD_REPORT10_SW { BYORGNO = ORGNO, REPORTYEAR = YEAR, }).ToList();
             List<T_SYS_DICTModel> dic312 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "312" }).ToList();//基础设施统计年报表一
             int colsCount = (dic312.Count + 4);
             string menuName = T_SYS_MENUCls.getMenuNameByCode(new T_SYS_MENU_SW { MENUCODE = "041011", SYSFLAG = ConfigCls.getSystemFlag() });
@@ -4234,10 +4054,7 @@ namespace ManagerSystem.MVC.Controllers
             row5.CreateCell(j).SetCellValue("本年合计");
             row5.GetCell(j).CellStyle = getCellStyleCenter(book);
             j++;
-            j = FIRERECORD_REPORT10Excel(_yearreportlist, dic312, book, row5, j);
-            //var bzlist1 = _yearreportlist.FindAll(a => a.REPORTCODE == dic312[dic312.Count - 1].DICTVALUE);
-            //row5.CreateCell(j).SetCellValue(bzlist1.Count > 0 ? bzlist1[0].REPORTVALUE : "");
-            //row5.GetCell(j).CellStyle = getCellStyleCenter(book);
+            j = FIRERECORD_REPORT10Excel(_totalyearreportlist, dic312, book, row5, j);
             row5.CreateCell(j).SetCellValue("");
             row5.GetCell(j).CellStyle = getCellStyleCenter(book);
             #endregion
@@ -4253,13 +4070,13 @@ namespace ManagerSystem.MVC.Controllers
                 k++;
                 List<FIRERECORD_REPORT10_Model> templist = new List<FIRERECORD_REPORT10_Model>();
                 if (PublicCls.OrgIsShi(result[i].ORGNO))
-                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(4, 11) == result[i].ORGNO.Substring(4, 11)).ToList();//判断是否为州级
+                    templist = _totalyearreportlist.FindAll(a => a.BYORGNO.Substring(4, 11) == result[i].ORGNO.Substring(4, 11)).ToList();//判断是否为州级
                 if (PublicCls.OrgIsXian(result[i].ORGNO))
-                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 6) == result[i].ORGNO.Substring(0, 6)).ToList();
+                    templist = _totalyearreportlist.FindAll(a => a.BYORGNO.Substring(0, 6) == result[i].ORGNO.Substring(0, 6)).ToList();
                 if (PublicCls.OrgIsZhen(result[i].ORGNO))
-                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 9) == result[i].ORGNO.Substring(0, 9)).ToList();
+                    templist = _totalyearreportlist.FindAll(a => a.BYORGNO.Substring(0, 9) == result[i].ORGNO.Substring(0, 9)).ToList();
                 if (PublicCls.OrgIsCun(result[i].ORGNO))
-                    templist = _yearreportlist.FindAll(a => a.BYORGNO == result[i].ORGNO).ToList();
+                    templist = _totalyearreportlist.FindAll(a => a.BYORGNO == result[i].ORGNO).ToList();
                 k = FIRERECORD_REPORT10Excel(templist, dic312, book, row6, k);
                 var bzlist2 = templist.FindAll(a => a.REPORTCODE == dic312[dic312.Count - 1].DICTVALUE);
                 row6.CreateCell(k).SetCellValue(bzlist2.Count > 0 ? bzlist2[0].REPORTVALUE : "");
@@ -4314,8 +4131,14 @@ namespace ManagerSystem.MVC.Controllers
                     model = FIRERECORD_REPORT11Cls.getModel(new FIRERECORD_REPORT11_SW { FIRERECORD_REPORT11ID = FIRERECORD_REPORT11ID });
                 }
             }
-            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOptionByORGNO(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), OnlyGetShiXian = ORGNO, TopORGNO = ORGNO });//获取州级和市县
-            //vdorg(ORGNO);
+            string result = "";
+            if (PublicCls.OrgIsShi(ORGNO))
+                result = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = ORGNO, OnlyGetShiXian = "1" });
+            if (PublicCls.OrgIsXian(ORGNO))
+                result = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = ORGNO, OnlyGetXianXZ = "1" });
+            if (PublicCls.OrgIsZhen(ORGNO))
+                result = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = ORGNO, IsEnableCUN = "1" });
+            ViewBag.vdOrg = result;
             ViewBag.REPORTYEAR = DateTime.Now.ToString("yyyy");
             ViewBag.Method = Method;
             List<T_SYS_DICTModel> dic313List = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "313" }).ToList();
@@ -4335,7 +4158,6 @@ namespace ManagerSystem.MVC.Controllers
             List<FIRERECORD_REPORT11_Model> _accountlist = FIRERECORD_REPORT11Cls.getListModel(new FIRERECORD_REPORT11_SW { BYORGNO = BYORGNO, REPORTYEAR = REPORTYEAR, }).ToList();
             List<FIRERECORD_REPORT11_Model> _list = _accountlist.FindAll(a => a.REPORTYEAR == REPORTYEAR);
             return Content(JsonConvert.SerializeObject(_list));
-            // return Content(JsonConvert.SerializeObject(FIRERECORD_REPORT11Cls.getListModel(new FIRERECORD_REPORT11_SW { BYORGNO = BYORGNO, REPORTYEAR = REPORTYEAR, })), "text/html;charset=UTF-8");
         }
         #endregion
 
@@ -4346,7 +4168,7 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult FIRERECORD_REPORT11()
         {
-            pubViewBag("041012", "041012", "森林防火基础设施统计年报表二");
+            pubViewBag("041012", "041012", "");
             if (ViewBag.isPageRight == false)
                 return View();
             ViewBag.YEAR = DateTime.Now.ToString("yyyy");
@@ -4360,7 +4182,6 @@ namespace ManagerSystem.MVC.Controllers
         public ActionResult FIRERECORD_REPORT11Query()
         {
             StringBuilder sb = new StringBuilder();
-
             #region 数据查询条件
             string YEAR = Request.Params["YEAR"];
             string BYORGNO = Request.Params["BYORGNO"];
@@ -4369,17 +4190,7 @@ namespace ManagerSystem.MVC.Controllers
 
             #region 数据准备
             List<T_SYS_ORGModel> result = ResultList(ORGNO);//获取组织机构编码
-            // List<FIRERECORD_REPORT11_Model> _totalyearreportlist = FIRERECORD_REPORT11Cls.getListModel(new FIRERECORD_REPORT11_SW { REPORTYEAR = YEAR, }).ToList();
-            List<FIRERECORD_REPORT11_Model> _totalyearreportlist = new List<FIRERECORD_REPORT11_Model>();
-            if (ORGNO.Substring(4, 11) == "00000000000")
-            {
-                _totalyearreportlist = FIRERECORD_REPORT11Cls.getListModel(new FIRERECORD_REPORT11_SW { REPORTYEAR = YEAR, }).ToList();
-            }
-            else
-            {
-                _totalyearreportlist = FIRERECORD_REPORT11Cls.getListModel(new FIRERECORD_REPORT11_SW { BYORGNO = ORGNO, REPORTYEAR = YEAR, }).ToList();
-            }
-            var _yearreportlist = _totalyearreportlist.FindAll(a => a.REPORTYEAR == YEAR);
+            List<FIRERECORD_REPORT11_Model> _totalyearreportlist = FIRERECORD_REPORT11Cls.getListModel(new FIRERECORD_REPORT11_SW { BYORGNO = ORGNO, REPORTYEAR = YEAR, }).ToList();
             List<T_SYS_DICTModel> dic313 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "313" }).ToList();//基础设施统计年报表二
             #endregion
 
@@ -4426,22 +4237,10 @@ namespace ManagerSystem.MVC.Controllers
             #region 第一行：列号
             sb.AppendFormat("<tr class=\"{0}\">", "row1");
             sb.AppendFormat("<td class=\"center\">甲</td>");
-            sb.AppendFormat("<td class=\"center\">1</td>");
-            sb.AppendFormat("<td class=\"center\">2</td>");
-            sb.AppendFormat("<td class=\"center\">3</td>");
-            sb.AppendFormat("<td class=\"center\">4</td>");
-            sb.AppendFormat("<td class=\"center\">5</td>");
-            sb.AppendFormat("<td class=\"center\">6</td>");
-            sb.AppendFormat("<td class=\"center\">7</td>");
-            sb.AppendFormat("<td class=\"center\">8</td>");
-            sb.AppendFormat("<td class=\"center\">9</td>");
-            sb.AppendFormat("<td class=\"center\">10</td>");
-            sb.AppendFormat("<td class=\"center\">11</td>");
-            sb.AppendFormat("<td class=\"center\">12</td>");
-            sb.AppendFormat("<td class=\"center\">13</td>");
-            sb.AppendFormat("<td class=\"center\">14</td>");
-            sb.AppendFormat("<td class=\"center\">15</td>");
-            sb.AppendFormat("<td class=\"center\">16</td>");
+            for (int i = 0; i < dic313.Count + 1; i++)
+            {
+                sb.AppendFormat("<td class=\"center\">{0}</td>", i + 1);
+            }
             sb.AppendFormat("</tr>");
             #endregion
 
@@ -4486,7 +4285,7 @@ namespace ManagerSystem.MVC.Controllers
             #region 本年合计
             sb.AppendFormat("<tr class=\"{0}\">", "row1");
             sb.AppendFormat("<td class=\"center\">本 年 合 计</td>");
-            List<float> total1 = CalHJ2(_yearreportlist);
+            List<float> total1 = CalHJ2(_totalyearreportlist);
             for (int i = 0; i < count1; i++)
             {
                 sb.AppendFormat("<td>{0}</td>", total1[i]);
@@ -4502,8 +4301,6 @@ namespace ManagerSystem.MVC.Controllers
             {
                 sb.AppendFormat("<td>{0}</td>", total1[i]);
             }
-            //var bzlist1 = _yearreportlist.FindAll(a => a.REPORTCODE == dic313[dic313.Count - 1].DICTVALUE);
-            //sb.AppendFormat("<td>{0}</td>", bzlist1.Count > 0 ? bzlist1[0].REPORTVALUE : "");
             sb.AppendFormat("<td>{0}</td>", "");
             sb.AppendFormat("</tr>");
             #endregion
@@ -4515,13 +4312,13 @@ namespace ManagerSystem.MVC.Controllers
                 sb.AppendFormat("<td class=\"Center\"  >{0}</td>", result[i].ORGNAME);
                 List<FIRERECORD_REPORT11_Model> templist = new List<FIRERECORD_REPORT11_Model>();
                 if (PublicCls.OrgIsShi(result[i].ORGNO))
-                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(4, 11) == result[i].ORGNO.Substring(4, 11)).ToList();
+                    templist = _totalyearreportlist.FindAll(a => a.BYORGNO.Substring(4, 11) == result[i].ORGNO.Substring(4, 11)).ToList();
                 if (PublicCls.OrgIsXian(result[i].ORGNO))
-                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 6) == result[i].ORGNO.Substring(0, 6)).ToList();
+                    templist = _totalyearreportlist.FindAll(a => a.BYORGNO.Substring(0, 6) == result[i].ORGNO.Substring(0, 6)).ToList();
                 if (PublicCls.OrgIsZhen(result[i].ORGNO))
-                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 9) == result[i].ORGNO.Substring(0, 9)).ToList();
+                    templist = _totalyearreportlist.FindAll(a => a.BYORGNO.Substring(0, 9) == result[i].ORGNO.Substring(0, 9)).ToList();
                 if (PublicCls.OrgIsCun(result[i].ORGNO))
-                    templist = _yearreportlist.FindAll(a => a.BYORGNO == result[i].ORGNO).ToList();
+                    templist = _totalyearreportlist.FindAll(a => a.BYORGNO == result[i].ORGNO).ToList();
                 List<float> total2 = CalHJ2(templist);
                 for (int j = 0; j < count1; j++)
                 {
@@ -4565,17 +4362,7 @@ namespace ManagerSystem.MVC.Controllers
 
             #region 数据准备
             List<T_SYS_ORGModel> result = ResultList(ORGNO);//获取组织机构编码
-            // List<FIRERECORD_REPORT11_Model> _totalyearreportlist = FIRERECORD_REPORT11Cls.getListModel(new FIRERECORD_REPORT11_SW { REPORTYEAR = YEAR, }).ToList();
-            List<FIRERECORD_REPORT11_Model> _totalyearreportlist = new List<FIRERECORD_REPORT11_Model>();
-            if (ORGNO.Substring(4, 11) == "00000000000")
-            {
-                _totalyearreportlist = FIRERECORD_REPORT11Cls.getListModel(new FIRERECORD_REPORT11_SW { REPORTYEAR = YEAR, }).ToList();
-            }
-            else
-            {
-                _totalyearreportlist = FIRERECORD_REPORT11Cls.getListModel(new FIRERECORD_REPORT11_SW { BYORGNO = ORGNO, REPORTYEAR = YEAR, }).ToList();
-            }
-            var _yearreportlist = _totalyearreportlist.FindAll(a => a.REPORTYEAR == YEAR);
+            List<FIRERECORD_REPORT11_Model> _totalyearreportlist = FIRERECORD_REPORT11Cls.getListModel(new FIRERECORD_REPORT11_SW { BYORGNO = ORGNO, REPORTYEAR = YEAR, }).ToList();
             List<T_SYS_DICTModel> dic313 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "313" }).ToList();//基础设施统计年报表二
             int colsCount = (dic313.Count + 1);
             string menuName = T_SYS_MENUCls.getMenuNameByCode(new T_SYS_MENU_SW { MENUCODE = "041012", SYSFLAG = ConfigCls.getSystemFlag() });
@@ -4699,10 +4486,7 @@ namespace ManagerSystem.MVC.Controllers
             row5.CreateCell(j).SetCellValue("本年合计");
             row5.GetCell(j).CellStyle = getCellStyleCenter(book);
             j++;
-            j = FIRERECORD_REPORT11Excel(_yearreportlist, dic313, book, row5, j);
-            //var bzlist1 = _yearreportlist.FindAll(a => a.REPORTCODE == dic313[dic313.Count - 1].DICTVALUE);
-            //row5.CreateCell(j).SetCellValue(bzlist1.Count > 0 ? bzlist1[0].REPORTVALUE : "");
-            //row5.GetCell(j).CellStyle = getCellStyleCenter(book);
+            j = FIRERECORD_REPORT11Excel(_totalyearreportlist, dic313, book, row5, j);
             row5.CreateCell(j).SetCellValue("");
             row5.GetCell(j).CellStyle = getCellStyleCenter(book);
             #endregion
@@ -4718,13 +4502,13 @@ namespace ManagerSystem.MVC.Controllers
                 k++;
                 List<FIRERECORD_REPORT11_Model> templist = new List<FIRERECORD_REPORT11_Model>();
                 if (PublicCls.OrgIsShi(result[i].ORGNO))
-                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(4, 11) == result[i].ORGNO.Substring(4, 11)).ToList();
+                    templist = _totalyearreportlist.FindAll(a => a.BYORGNO.Substring(4, 11) == result[i].ORGNO.Substring(4, 11)).ToList();
                 if (PublicCls.OrgIsXian(result[i].ORGNO))
-                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 6) == result[i].ORGNO.Substring(0, 6)).ToList();
+                    templist = _totalyearreportlist.FindAll(a => a.BYORGNO.Substring(0, 6) == result[i].ORGNO.Substring(0, 6)).ToList();
                 if (PublicCls.OrgIsZhen(result[i].ORGNO))
-                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 9) == result[i].ORGNO.Substring(0, 9)).ToList();
+                    templist = _totalyearreportlist.FindAll(a => a.BYORGNO.Substring(0, 9) == result[i].ORGNO.Substring(0, 9)).ToList();
                 if (PublicCls.OrgIsCun(result[i].ORGNO))
-                    templist = _yearreportlist.FindAll(a => a.BYORGNO == result[i].ORGNO).ToList();
+                    templist = _totalyearreportlist.FindAll(a => a.BYORGNO == result[i].ORGNO).ToList();
                 k = FIRERECORD_REPORT11Excel(templist, dic313, book, row6, k);
                 var bzlist2 = templist.FindAll(a => a.REPORTCODE == dic313[dic313.Count - 1].DICTVALUE);
                 row6.CreateCell(k).SetCellValue(bzlist2.Count > 0 ? bzlist2[0].REPORTVALUE : "");
@@ -4763,6 +4547,7 @@ namespace ManagerSystem.MVC.Controllers
             m.opMethod = Request.Params["Method"];
             return Content(JsonConvert.SerializeObject(FIRERECORD_REPORT12Cls.Manager(m)), "text/html;charset=UTF-8");
         }
+
         /// <summary>
         /// 火情档案_森林防火建设资金统计
         /// </summary>
@@ -4776,12 +4561,16 @@ namespace ManagerSystem.MVC.Controllers
             if (!string.IsNullOrEmpty(FIRERECORD_REPORT12ID))
             {
                 if (Method == "Add")
-                {
                     model = FIRERECORD_REPORT12Cls.getModel(new FIRERECORD_REPORT12_SW { FIRERECORD_REPORT12ID = FIRERECORD_REPORT12ID });
-                }
             }
-            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOptionByORGNO(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), OnlyGetShiXian = ORGNO, TopORGNO = ORGNO });//获取州级和市县
-            // vdorg(ORGNO);
+            string result = "";
+            if (PublicCls.OrgIsShi(ORGNO))
+                result = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = ORGNO, OnlyGetShiXian = "1" });
+            if (PublicCls.OrgIsXian(ORGNO))
+                result = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = ORGNO, OnlyGetXianXZ = "1" });
+            if (PublicCls.OrgIsZhen(ORGNO))
+                result = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = ORGNO, IsEnableCUN = "1" });
+            ViewBag.vdOrg = result;
             ViewBag.REPORTYEAR = DateTime.Now.ToString("yyyy");
             ViewBag.Method = Method;
             List<T_SYS_DICTModel> dic314List = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "314" }).ToList();
@@ -4801,7 +4590,6 @@ namespace ManagerSystem.MVC.Controllers
             List<FIRERECORD_REPORT12_Model> _accountlist = FIRERECORD_REPORT12Cls.getListModel(new FIRERECORD_REPORT12_SW { BYORGNO = BYORGNO, REPORTYEAR = REPORTYEAR, }).ToList();
             List<FIRERECORD_REPORT12_Model> _list = _accountlist.FindAll(a => a.REPORTYEAR == REPORTYEAR);
             return Content(JsonConvert.SerializeObject(_list));
-            // return Content(JsonConvert.SerializeObject(FIRERECORD_REPORT12Cls.getListModel(new FIRERECORD_REPORT12_SW { BYORGNO = BYORGNO, REPORTYEAR = REPORTYEAR, })), "text/html;charset=UTF-8");
         }
         #endregion
 
@@ -4812,7 +4600,7 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult FIRERECORD_REPORT12()
         {
-            pubViewBag("041013", "041013", "森林防火建设资金统计年报表");
+            pubViewBag("041013", "041013", "");
             if (ViewBag.isPageRight == false)
                 return View();
             ViewBag.YEAR = DateTime.Now.ToString("yyyy");
@@ -4826,7 +4614,6 @@ namespace ManagerSystem.MVC.Controllers
         public ActionResult FIRERECORD_REPORT12Query()
         {
             StringBuilder sb = new StringBuilder();
-
             #region 数据查询条件
             string YEAR = Request.Params["YEAR"];
             string BYORGNO = Request.Params["BYORGNO"];
@@ -4835,17 +4622,7 @@ namespace ManagerSystem.MVC.Controllers
 
             #region 数据准备
             List<T_SYS_ORGModel> result = ResultList(ORGNO);//获取组织机构编码
-            //List<FIRERECORD_REPORT12_Model> _totalyearreportlist = FIRERECORD_REPORT12Cls.getListModel(new FIRERECORD_REPORT12_SW { REPORTYEAR = YEAR, }).ToList();
-            List<FIRERECORD_REPORT12_Model> _totalyearreportlist = new List<FIRERECORD_REPORT12_Model>();
-            if (ORGNO.Substring(4, 11) == "00000000000")
-            {
-                _totalyearreportlist = FIRERECORD_REPORT12Cls.getListModel(new FIRERECORD_REPORT12_SW { REPORTYEAR = YEAR, }).ToList();
-            }
-            else
-            {
-                _totalyearreportlist = FIRERECORD_REPORT12Cls.getListModel(new FIRERECORD_REPORT12_SW { BYORGNO = ORGNO, REPORTYEAR = YEAR, }).ToList();
-            }
-            var _yearreportlist = _totalyearreportlist.FindAll(a => a.REPORTYEAR == YEAR);
+            List<FIRERECORD_REPORT12_Model> _totalyearreportlist = FIRERECORD_REPORT12Cls.getListModel(new FIRERECORD_REPORT12_SW { BYORGNO = ORGNO, REPORTYEAR = YEAR, }).ToList();
             List<T_SYS_DICTModel> dic314 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "314" }).ToList();//森林防火建设资金统计年报表
             #endregion
 
@@ -4891,26 +4668,10 @@ namespace ManagerSystem.MVC.Controllers
             #region 第一行：列号
             sb.AppendFormat("<tr class=\"{0}\">", "row1");
             sb.AppendFormat("<td class=\"center\">甲</td>");
-            sb.AppendFormat("<td class=\"center\">1</td>");
-            sb.AppendFormat("<td class=\"center\">2</td>");
-            sb.AppendFormat("<td class=\"center\">3</td>");
-            sb.AppendFormat("<td class=\"center\">4</td>");
-            sb.AppendFormat("<td class=\"center\">5</td>");
-            sb.AppendFormat("<td class=\"center\">6</td>");
-            sb.AppendFormat("<td class=\"center\">7</td>");
-            sb.AppendFormat("<td class=\"center\">8</td>");
-            sb.AppendFormat("<td class=\"center\">9</td>");
-            sb.AppendFormat("<td class=\"center\">10</td>");
-            sb.AppendFormat("<td class=\"center\">11</td>");
-            sb.AppendFormat("<td class=\"center\">12</td>");
-            sb.AppendFormat("<td class=\"center\">13</td>");
-            sb.AppendFormat("<td class=\"center\">14</td>");
-            sb.AppendFormat("<td class=\"center\">15</td>");
-            sb.AppendFormat("<td class=\"center\">16</td>");
-            sb.AppendFormat("<td class=\"center\">17</td>");
-            sb.AppendFormat("<td class=\"center\">18</td>");
-            sb.AppendFormat("<td class=\"center\">19</td>");
-            sb.AppendFormat("<td class=\"center\">20</td>");
+            for (int i = 0; i < dic314.Count + 3; i++)
+            {
+                sb.AppendFormat("<td class=\"center\">{0}</td>", i + 1);
+            }
             sb.AppendFormat("</tr>");
             #endregion
 
@@ -4965,7 +4726,7 @@ namespace ManagerSystem.MVC.Controllers
             #region 本年合计
             sb.AppendFormat("<tr class=\"{0}\">", "row1");
             sb.AppendFormat("<td class=\"center\">本 年 合 计</td>");
-            List<float> total1 = CalHJ3(_yearreportlist);
+            List<float> total1 = CalHJ3(_totalyearreportlist);
             float JSZJ1 = total1[0] + total1[1] + total1[2] + total1[3] + total1[4] + total1[5];
             sb.AppendFormat("<td>{0}</td>", JSZJ1);
             for (int i = 0; i < count1; i++)
@@ -4985,8 +4746,6 @@ namespace ManagerSystem.MVC.Controllers
             {
                 sb.AppendFormat("<td>{0}</td>", total1[i]);
             }
-            //var bzlist1 = _yearreportlist.FindAll(a => a.REPORTCODE == dic314[dic314.Count - 1].DICTVALUE);
-            //sb.AppendFormat("<td>{0}</td>", bzlist1.Count > 0 ? bzlist1[0].REPORTVALUE : "");
             sb.AppendFormat("<td>{0}</td>", "");
             sb.AppendFormat("</tr>");
             #endregion
@@ -4998,13 +4757,13 @@ namespace ManagerSystem.MVC.Controllers
                 sb.AppendFormat("<td class=\"Center\" >{0}</td>", result[i].ORGNAME);
                 List<FIRERECORD_REPORT12_Model> templist = new List<FIRERECORD_REPORT12_Model>();
                 if (PublicCls.OrgIsShi(result[i].ORGNO))
-                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(4, 11) == result[i].ORGNO.Substring(4, 11)).ToList();
+                    templist = _totalyearreportlist.FindAll(a => a.BYORGNO.Substring(4, 11) == result[i].ORGNO.Substring(4, 11)).ToList();
                 if (PublicCls.OrgIsXian(result[i].ORGNO))
-                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 6) == result[i].ORGNO.Substring(0, 6)).ToList();
+                    templist = _totalyearreportlist.FindAll(a => a.BYORGNO.Substring(0, 6) == result[i].ORGNO.Substring(0, 6)).ToList();
                 if (PublicCls.OrgIsZhen(result[i].ORGNO))
-                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 9) == result[i].ORGNO.Substring(0, 9)).ToList();
+                    templist = _totalyearreportlist.FindAll(a => a.BYORGNO.Substring(0, 9) == result[i].ORGNO.Substring(0, 9)).ToList();
                 if (PublicCls.OrgIsCun(result[i].ORGNO))
-                    templist = _yearreportlist.FindAll(a => a.BYORGNO == result[i].ORGNO).ToList();
+                    templist = _totalyearreportlist.FindAll(a => a.BYORGNO == result[i].ORGNO).ToList();
                 List<float> total2 = CalHJ3(templist);
                 float JSZJ2 = total2[0] + total2[1] + total2[2] + total2[3] + total2[4] + total2[5];
                 sb.AppendFormat("<td>{0}</td>", JSZJ2);
@@ -5052,17 +4811,7 @@ namespace ManagerSystem.MVC.Controllers
 
             #region 数据准备
             List<T_SYS_ORGModel> result = ResultList(ORGNO);//获取组织机构编码
-            // List<FIRERECORD_REPORT12_Model> _totalyearreportlist = FIRERECORD_REPORT12Cls.getListModel(new FIRERECORD_REPORT12_SW { REPORTYEAR = YEAR, }).ToList();
-            List<FIRERECORD_REPORT12_Model> _totalyearreportlist = new List<FIRERECORD_REPORT12_Model>();
-            if (ORGNO.Substring(4, 11) == "00000000000")
-            {
-                _totalyearreportlist = FIRERECORD_REPORT12Cls.getListModel(new FIRERECORD_REPORT12_SW { REPORTYEAR = YEAR, }).ToList();
-            }
-            else
-            {
-                _totalyearreportlist = FIRERECORD_REPORT12Cls.getListModel(new FIRERECORD_REPORT12_SW { BYORGNO = ORGNO, REPORTYEAR = YEAR, }).ToList();
-            }
-            var _yearreportlist = _totalyearreportlist.FindAll(a => a.REPORTYEAR == YEAR);
+            List<FIRERECORD_REPORT12_Model> _totalyearreportlist = FIRERECORD_REPORT12Cls.getListModel(new FIRERECORD_REPORT12_SW { BYORGNO = ORGNO, REPORTYEAR = YEAR, }).ToList();
             List<T_SYS_DICTModel> dic314 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "314" }).ToList();//森林防火建设资金统计年报表
             int colsCount = (dic314.Count + 3);
             string menuName = T_SYS_MENUCls.getMenuNameByCode(new T_SYS_MENU_SW { MENUCODE = "041013", SYSFLAG = ConfigCls.getSystemFlag() });
@@ -5172,10 +4921,7 @@ namespace ManagerSystem.MVC.Controllers
             row4.CreateCell(j).SetCellValue("本年合计");
             row4.GetCell(j).CellStyle = getCellStyleCenter(book);
             j++;
-            j = FIRERECORD_REPORT12Excel(_yearreportlist, dic314, book, row4, j);
-            //var bzlist1 = _yearreportlist.FindAll(a => a.REPORTCODE == dic314[dic314.Count - 1].DICTVALUE);
-            //row4.CreateCell(j).SetCellValue(bzlist1.Count > 0 ? bzlist1[0].REPORTVALUE : "");
-            //row4.GetCell(j).CellStyle = getCellStyleCenter(book);
+            j = FIRERECORD_REPORT12Excel(_totalyearreportlist, dic314, book, row4, j);
             row4.CreateCell(j).SetCellValue("");
             row4.GetCell(j).CellStyle = getCellStyleCenter(book);
             #endregion
@@ -5191,13 +4937,13 @@ namespace ManagerSystem.MVC.Controllers
                 k++;
                 List<FIRERECORD_REPORT12_Model> templist = new List<FIRERECORD_REPORT12_Model>();
                 if (PublicCls.OrgIsShi(result[i].ORGNO))
-                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(4, 11) == result[i].ORGNO.Substring(4, 11)).ToList();
+                    templist = _totalyearreportlist.FindAll(a => a.BYORGNO.Substring(4, 11) == result[i].ORGNO.Substring(4, 11)).ToList();
                 if (PublicCls.OrgIsXian(result[i].ORGNO))
-                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 6) == result[i].ORGNO.Substring(0, 6)).ToList();
+                    templist = _totalyearreportlist.FindAll(a => a.BYORGNO.Substring(0, 6) == result[i].ORGNO.Substring(0, 6)).ToList();
                 if (PublicCls.OrgIsZhen(result[i].ORGNO))
-                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 9) == result[i].ORGNO.Substring(0, 9)).ToList();
+                    templist = _totalyearreportlist.FindAll(a => a.BYORGNO.Substring(0, 9) == result[i].ORGNO.Substring(0, 9)).ToList();
                 if (PublicCls.OrgIsCun(result[i].ORGNO))
-                    templist = _yearreportlist.FindAll(a => a.BYORGNO == result[i].ORGNO).ToList();
+                    templist = _totalyearreportlist.FindAll(a => a.BYORGNO == result[i].ORGNO).ToList();
                 k = FIRERECORD_REPORT12Excel(templist, dic314, book, row5, k);
                 var bzlist2 = templist.FindAll(a => a.REPORTCODE == dic314[dic314.Count - 1].DICTVALUE);
                 row5.CreateCell(k).SetCellValue(bzlist2.Count > 0 ? bzlist2[0].REPORTVALUE : "");
@@ -5236,6 +4982,7 @@ namespace ManagerSystem.MVC.Controllers
             m.opMethod = Request.Params["Method"];
             return Content(JsonConvert.SerializeObject(FIRERECORD_ARMYCls.Manager(m)), "text/html;charset=UTF-8");
         }
+
         /// <summary>
         /// 火情档案_队伍表
         /// </summary>
@@ -5249,12 +4996,16 @@ namespace ManagerSystem.MVC.Controllers
             if (!string.IsNullOrEmpty(FIRERECORD_ARMYID))
             {
                 if (Method == "Add")
-                {
                     model = FIRERECORD_ARMYCls.getModel(new FIRERECORD_ARMY_SW { FIRERECORD_ARMYID = FIRERECORD_ARMYID });
-                }
             }
-            ViewBag.vdOrg = T_SYS_ORGCls.getSelectOptionByORGNO(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), OnlyGetShiXian = ORGNO, TopORGNO = ORGNO });//获取州级和市县
-            //vdorg(ORGNO);
+            string result = "";
+            if (PublicCls.OrgIsShi(ORGNO))
+                result = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = ORGNO, OnlyGetShiXian = "1" });
+            if (PublicCls.OrgIsXian(ORGNO))
+                result = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = ORGNO, OnlyGetXianXZ = "1" });
+            if (PublicCls.OrgIsZhen(ORGNO))
+                result = T_SYS_ORGCls.getSelectOption(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), TopORGNO = ORGNO, IsEnableCUN = "1" });
+            ViewBag.vdOrg = result;
             ViewBag.REPORTYEAR = DateTime.Now.ToString("yyyy");
             ViewBag.Method = Method;
             List<T_SYS_DICTModel> dic315List = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "315" }).ToList();
@@ -5262,7 +5013,6 @@ namespace ManagerSystem.MVC.Controllers
             ViewBag.dic315Count = dic315List.Count;
             return View(model);
         }
-
 
         /// <summary>
         /// 获取数据列表
@@ -5275,7 +5025,6 @@ namespace ManagerSystem.MVC.Controllers
             List<FIRERECORD_ARMY_Model> _accountlist = FIRERECORD_ARMYCls.getListModel(new FIRERECORD_ARMY_SW { BYORGNO = BYORGNO, REPORTYEAR = REPORTYEAR, }).ToList();
             List<FIRERECORD_ARMY_Model> _list = _accountlist.FindAll(a => a.REPORTYEAR == REPORTYEAR);
             return Content(JsonConvert.SerializeObject(_list));
-            // return Content(JsonConvert.SerializeObject(FIRERECORD_ARMYCls.getListModel(new FIRERECORD_ARMY_SW { BYORGNO = BYORGNO, REPORTYEAR = REPORTYEAR, })), "text/html;charset=UTF-8");
         }
         #endregion
 
@@ -5286,7 +5035,7 @@ namespace ManagerSystem.MVC.Controllers
         /// <returns></returns>
         public ActionResult FIRERECORD_ARMY()
         {
-            pubViewBag("041014", "041014", "队伍表");
+            pubViewBag("041014", "041014", "");
             if (ViewBag.isPageRight == false)
                 return View();
             ViewBag.YEAR = DateTime.Now.ToString("yyyy");
@@ -5300,7 +5049,6 @@ namespace ManagerSystem.MVC.Controllers
         public ActionResult FIRERECORD_ARMYQuery()
         {
             StringBuilder sb = new StringBuilder();
-
             #region 数据查询条件
             string YEAR = Request.Params["YEAR"];
             string BYORGNO = Request.Params["BYORGNO"];
@@ -5308,18 +5056,8 @@ namespace ManagerSystem.MVC.Controllers
             #endregion
 
             #region 数据准备
-            List<T_SYS_ORGModel> result = ResultList(ORGNO);//获取组织机构编码
-            //List<FIRERECORD_ARMY_Model> _totalyearreportlist = FIRERECORD_ARMYCls.getListModel(new FIRERECORD_ARMY_SW { REPORTYEAR = YEAR, }).ToList();
-            List<FIRERECORD_ARMY_Model> _totalyearreportlist = new List<FIRERECORD_ARMY_Model>();
-            if (ORGNO.Substring(4, 11) == "00000000000")
-            {
-                _totalyearreportlist = FIRERECORD_ARMYCls.getListModel(new FIRERECORD_ARMY_SW { REPORTYEAR = YEAR, }).ToList();
-            }
-            else
-            {
-                _totalyearreportlist = FIRERECORD_ARMYCls.getListModel(new FIRERECORD_ARMY_SW { BYORGNO = ORGNO, REPORTYEAR = YEAR, }).ToList();
-            }
-            var _yearreportlist = _totalyearreportlist.FindAll(a => a.REPORTYEAR == YEAR);
+            List<T_SYS_ORGModel> result = ResultList(ORGNO);//获取组织机构编码          
+            List<FIRERECORD_ARMY_Model> _totalyearreportlist = FIRERECORD_ARMYCls.getListModel(new FIRERECORD_ARMY_SW { BYORGNO = ORGNO, REPORTYEAR = YEAR, }).ToList();
             List<T_SYS_DICTModel> dic315 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "315" }).ToList();//队伍表
             int count1 = 0;
             int count2 = 0;
@@ -5338,7 +5076,6 @@ namespace ManagerSystem.MVC.Controllers
                 {
                     count3++;
                 }
-
             }
             #endregion
 
@@ -5384,24 +5121,10 @@ namespace ManagerSystem.MVC.Controllers
             #region 第一行：列号
             sb.AppendFormat("<tr class=\"{0}\">", "row1");
             sb.AppendFormat("<td class=\"center\" >甲</td>");
-            sb.AppendFormat("<td class=\"center\">1</td>");
-            sb.AppendFormat("<td class=\"center\">2</td>");
-            sb.AppendFormat("<td class=\"center\">3</td>");
-            sb.AppendFormat("<td class=\"center\">4</td>");
-            sb.AppendFormat("<td class=\"center\">5</td>");
-            sb.AppendFormat("<td class=\"center\">6</td>");
-            sb.AppendFormat("<td class=\"center\">7</td>");
-            sb.AppendFormat("<td class=\"center\">8</td>");
-            sb.AppendFormat("<td class=\"center\">9</td>");
-            sb.AppendFormat("<td class=\"center\">10</td>");
-            sb.AppendFormat("<td class=\"center\">11</td>");
-            sb.AppendFormat("<td class=\"center\">12</td>");
-            sb.AppendFormat("<td class=\"center\">13</td>");
-            sb.AppendFormat("<td class=\"center\">14</td>");
-            sb.AppendFormat("<td class=\"center\">15</td>");
-            sb.AppendFormat("<td class=\"center\">16</td>");
-            sb.AppendFormat("<td class=\"center\">17</td>");
-            sb.AppendFormat("<td class=\"center\">18</td>");
+            for (int i = 0; i < dic315.Count + 2; i++)
+            {
+                sb.AppendFormat("<td class=\"center\">{0}</td>", i + 1);
+            }
             sb.AppendFormat("</tr>");
             #endregion
 
@@ -5432,7 +5155,8 @@ namespace ManagerSystem.MVC.Controllers
             #region 本年合计
             sb.AppendFormat("<tr class=\"{0}\">", "row1");
             sb.AppendFormat("<td class=\"center\">本 年 合 计</td>");
-            List<float> total1 = CalARMYHJ(_yearreportlist);
+            List<FIRERECORD_ARMY_Model> _totalNowyearreportlist = _totalyearreportlist.FindAll(a => a.REPORTYEAR == YEAR);
+            List<float> total1 = CalARMYHJ(_totalNowyearreportlist);
             for (int i = 0; i < count1; i++)
             {
                 sb.AppendFormat("<td>{0}</td>", total1[i]);
@@ -5460,13 +5184,13 @@ namespace ManagerSystem.MVC.Controllers
                 sb.AppendFormat("<td class=\"Center\"  >{0}</td>", result[i].ORGNAME);
                 List<FIRERECORD_ARMY_Model> templist = new List<FIRERECORD_ARMY_Model>();
                 if (PublicCls.OrgIsShi(result[i].ORGNO))
-                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(4, 11) == result[i].ORGNO.Substring(4, 11)).ToList();
+                    templist = _totalyearreportlist.FindAll(a => a.BYORGNO.Substring(4, 11) == result[i].ORGNO.Substring(4, 11) && a.REPORTYEAR == YEAR).ToList();
                 if (PublicCls.OrgIsXian(result[i].ORGNO))
-                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 6) == result[i].ORGNO.Substring(0, 6)).ToList();
+                    templist = _totalyearreportlist.FindAll(a => a.BYORGNO.Substring(0, 6) == result[i].ORGNO.Substring(0, 6) && a.REPORTYEAR == YEAR).ToList();
                 if (PublicCls.OrgIsZhen(result[i].ORGNO))
-                    templist = _yearreportlist.FindAll(a => a.BYORGNO.Substring(0, 9) == result[i].ORGNO.Substring(0, 9)).ToList();
+                    templist = _totalyearreportlist.FindAll(a => a.BYORGNO.Substring(0, 9) == result[i].ORGNO.Substring(0, 9) && a.REPORTYEAR == YEAR).ToList();
                 if (PublicCls.OrgIsCun(result[i].ORGNO))
-                    templist = _yearreportlist.FindAll(a => a.BYORGNO == result[i].ORGNO).ToList();
+                    templist = _totalyearreportlist.FindAll(a => a.BYORGNO == result[i].ORGNO && a.REPORTYEAR == YEAR).ToList();
                 List<float> total2 = CalARMYHJ(templist);
                 for (int j = 0; j < count1; j++)
                 {
@@ -5763,7 +5487,10 @@ namespace ManagerSystem.MVC.Controllers
                 if (!string.IsNullOrEmpty(v.FIRERECINFO130))
                     PHJF += float.Parse(v.FIRERECINFO130);
                 if (!string.IsNullOrEmpty(v.FIRERECINFO140))
-                    HACHSFCM += float.Parse(v.FIRERECINFO140);
+                {
+                    if (v.FIRERECINFO140 == "1")
+                        HACHSFCM += float.Parse(v.FIRERECINFO140);
+                }
             }
             _templist.Add(Area);
             _templist.Add(YSLArea);
@@ -5810,31 +5537,46 @@ namespace ManagerSystem.MVC.Controllers
         #endregion
 
         #region  第一行：列号
+        /// <summary>
+        /// 林火1表
+        /// </summary>
+        /// <returns></returns>
         private static string COLUMN()
         {
             StringBuilder sb = new StringBuilder();
+            List<T_SYS_DICTModel> dic304 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "304" }).ToList();
             sb.AppendFormat("<td class=\"center\">甲</td>");
-            sb.AppendFormat("<td class=\"center\">1</td>");
-            sb.AppendFormat("<td class=\"center\">2</td>");
-            sb.AppendFormat("<td class=\"center\">3</td>");
-            sb.AppendFormat("<td class=\"center\">4</td>");
-            sb.AppendFormat("<td class=\"center\">5</td>");
-            sb.AppendFormat("<td class=\"center\">6</td>");
-            sb.AppendFormat("<td class=\"center\">7</td>");
-            sb.AppendFormat("<td class=\"center\">8</td>");
-            sb.AppendFormat("<td class=\"center\">9</td>");
-            sb.AppendFormat("<td class=\"center\">10</td>");
-            sb.AppendFormat("<td class=\"center\">11</td>");
-            sb.AppendFormat("<td class=\"center\">12</td>");
-            sb.AppendFormat("<td class=\"center\">13</td>");
-            sb.AppendFormat("<td class=\"center\">14</td>");
-            sb.AppendFormat("<td class=\"center\">15</td>");
-            sb.AppendFormat("<td class=\"center\">16</td>");
-            sb.AppendFormat("<td class=\"center\">17</td>");
-            sb.AppendFormat("<td class=\"center\">18</td>");
-            sb.AppendFormat("<td class=\"center\">19</td>");
-            sb.AppendFormat("<td class=\"center\">20</td>");
-            sb.AppendFormat("<td class=\"center\">21</td>");
+            for (int i = 0; i < dic304.Count; i++)
+            {
+                sb.AppendFormat("<td class=\"center\">{0}</td>", i + 1);
+            }
+            int count = Convert.ToInt32(dic304.Count);
+            for (int i = 0; i < 17; i++)
+            {
+                sb.AppendFormat("<td class=\"center\">{0}</td>", count + i + 1);
+            }
+
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// 林火2表头
+        /// </summary>
+        /// <returns></returns>
+        private static string COLUMN2()
+        {
+            StringBuilder sb = new StringBuilder();
+            List<T_SYS_DICTModel> dic302 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "302" }).ToList();
+            sb.AppendFormat("<td class=\"center\">甲</td>");
+            for (int i = 0; i < dic302.Count; i++)
+            {
+                sb.AppendFormat("<td class=\"center\">{0}</td>", i + 1);
+            }
+            int count = Convert.ToInt32(dic302.Count);
+            for (int i = 0; i < 7; i++)
+            {
+                sb.AppendFormat("<td class=\"center\">{0}</td>", count + i + 1);
+            }
             return sb.ToString();
         }
         #endregion
@@ -5853,10 +5595,10 @@ namespace ManagerSystem.MVC.Controllers
             string[] sTime = Time.Split('-');
             DateTime startTime = new DateTime(int.Parse(sTime[0]), int.Parse(sTime[1]), 1); //查询时的月初
             nowFireTime = startTime.ToString();
-            DateTime nowstartTime = new DateTime(int.Parse(sTime[0]), int.Parse(sTime[1]) + 1, 1).AddSeconds(-1);  //查询时的月末
-            nowfireEndTime = nowstartTime.ToString();
-            fireTime = DateTime.Now.ToString("yyyy-01-01");//年初
-            fireEndTime = DateTime.Now.ToString("yyyy-MM-dd");//当前时间
+            DateTime endTime = startTime.AddDays(1 - startTime.Day).AddMonths(1).AddSeconds(-1);
+            nowfireEndTime = endTime.ToString();
+            fireTime = DateTime.Parse(sTime[0] + "-01-01 0:00:00").ToString();//年初
+            fireEndTime = nowfireEndTime;//当前时间
         }
 
         /// <summary>
@@ -5878,11 +5620,9 @@ namespace ManagerSystem.MVC.Controllers
             if (PublicCls.OrgIsXian(ORGNO))
                 result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetShiXianXZ = "1" }).ToList();
             if (PublicCls.OrgIsZhen(ORGNO))
-                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO }).ToList();
-            //if (PublicCls.OrgIsCun(ORGNO))
-            // result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO }).ToList();
+                result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetXZCun = "1", IsEnableCUN = "1" }).ToList();
             List<T_SYS_DICTModel> dic304 = T_SYS_DICTCls.getListModel(new T_SYS_DICTSW { DICTTYPEID = "304" }).ToList();
-            _monthlyreportList = FIRERECORD_FIREINFOCls.getListModel(new FIRERECORD_FIREINFO_SW { BYORGNO = ORGNO, FIRETIME = fireTime, FIREENDTIME = nowfireEndTime }).ToList();
+            _monthlyreportList = FIRERECORD_FIREINFOCls.getListModel(new FIRERECORD_FIREINFO_SW { BYORGNO = ORGNO, FIRETIME = fireTime, FIREENDTIME = fireEndTime }).ToList();
             _nowmonthlyreportList = FIRERECORD_FIREINFOCls.getListModel(new FIRERECORD_FIREINFO_SW { BYORGNO = ORGNO, FIRETIME = nowFireTime, FIREENDTIME = nowfireEndTime }).ToList();
         }
 
@@ -5923,12 +5663,6 @@ namespace ManagerSystem.MVC.Controllers
                 result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetXianXZ = "1" }).ToList();
             if (PublicCls.OrgIsZhen(ORGNO))
                 result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO }).ToList();
-            //if (PublicCls.OrgIsShi(ORGNO))
-            //    result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetShiXian = "1" }).ToList();
-            //if (PublicCls.OrgIsXian(ORGNO))
-            //    result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO, OnlyGetShiXianXZ = "1" }).ToList();
-            //if (PublicCls.OrgIsZhen(ORGNO))
-            //    result = T_SYS_ORGCls.getListModel(new T_SYS_ORGSW { SYSFLAG = ConfigCls.getSystemFlag(), CurORGNO = ORGNO, TopORGNO = ORGNO }).ToList();
             return result;
         }
         /// <summary>
@@ -5959,7 +5693,7 @@ namespace ManagerSystem.MVC.Controllers
             sb.AppendFormat("<tr>");
             sb.AppendFormat("<th rowspan=\"3\">{0}</th>", headname);
             sb.AppendFormat("<th colspan=\"" + (dic304.Count + 1) + "\" >森林火灾次数</th>");
-            sb.AppendFormat("<th rowspan=\"3\"> 火&nbsp;&nbsp;场</br></br>总面积</br></br>(公顷)</th>");
+            sb.AppendFormat("<th rowspan=\"3\">火&nbsp;&nbsp;场</br></br>总面积</br></br>(公顷)</th>");
             sb.AppendFormat("<th colspan=\"3\">受害森林面积(公顷)</th>");
             sb.AppendFormat("<th colspan=\"2\">损失林木</th>");
             sb.AppendFormat("<th colspan=\"4\" style=\"width:150px;\">人员伤亡</th>");
@@ -6033,6 +5767,7 @@ namespace ManagerSystem.MVC.Controllers
         #region 林火1表中的Excel表头
         private void CreatExcelHead(List<T_SYS_DICTModel> dic304, int colsCount, string title, HSSFWorkbook book, ISheet sheet1, string headname)
         {
+            int count = Convert.ToInt32(dic304.Count);
             for (int i = 0; i < colsCount; i++)
             {
                 if (i == 0)
@@ -6050,24 +5785,24 @@ namespace ManagerSystem.MVC.Controllers
             rowHead1.GetCell(0).CellStyle = getCellStyleHead(book);
             rowHead1.CreateCell(1).SetCellValue("森林火灾次数");
             rowHead1.GetCell(1).CellStyle = getCellStyleHead(book);
-            rowHead1.CreateCell(6).SetCellValue("火场\n总面积\n（公顷）");
-            rowHead1.GetCell(6).CellStyle = getCellStyleHead(book);
-            rowHead1.CreateCell(7).SetCellValue("受害森林面积（公顷）");
-            rowHead1.GetCell(7).CellStyle = getCellStyleHead(book);
-            rowHead1.CreateCell(10).SetCellValue("损失林木");
-            rowHead1.GetCell(10).CellStyle = getCellStyleHead(book);
-            rowHead1.CreateCell(12).SetCellValue("人员伤亡");
-            rowHead1.GetCell(12).CellStyle = getCellStyleHead(book);
-            rowHead1.CreateCell(16).SetCellValue("其他损失\n折款\n(万元)");
-            rowHead1.GetCell(16).CellStyle = getCellStyleHead(book);
-            rowHead1.CreateCell(17).SetCellValue("出动扑\n火人工\n(工日)");
-            rowHead1.GetCell(17).CellStyle = getCellStyleHead(book);
-            rowHead1.CreateCell(18).SetCellValue("出动车辆(台)");
-            rowHead1.GetCell(18).CellStyle = getCellStyleHead(book);
-            rowHead1.CreateCell(20).SetCellValue("出动\n飞机\n(架次)");
-            rowHead1.GetCell(20).CellStyle = getCellStyleHead(book);
-            rowHead1.CreateCell(21).SetCellValue("扑火\n经费\n(万元)");
-            rowHead1.GetCell(21).CellStyle = getCellStyleHead(book);
+            rowHead1.CreateCell(count + 2).SetCellValue("火场\n总面积\n（公顷）");
+            rowHead1.GetCell(count + 2).CellStyle = getCellStyleHead(book);
+            rowHead1.CreateCell(count + 3).SetCellValue("受害森林面积（公顷）");
+            rowHead1.GetCell(count + 3).CellStyle = getCellStyleHead(book);
+            rowHead1.CreateCell(count + 6).SetCellValue("损失林木");
+            rowHead1.GetCell(count + 6).CellStyle = getCellStyleHead(book);
+            rowHead1.CreateCell(count + 8).SetCellValue("人员伤亡");
+            rowHead1.GetCell(count + 8).CellStyle = getCellStyleHead(book);
+            rowHead1.CreateCell(count + 12).SetCellValue("其他损失\n折款\n(万元)");
+            rowHead1.GetCell(count + 12).CellStyle = getCellStyleHead(book);
+            rowHead1.CreateCell(count + 13).SetCellValue("出动扑\n火人工\n(工日)");
+            rowHead1.GetCell(count + 13).CellStyle = getCellStyleHead(book);
+            rowHead1.CreateCell(count + 14).SetCellValue("出动车辆(台)");
+            rowHead1.GetCell(count + 14).CellStyle = getCellStyleHead(book);
+            rowHead1.CreateCell(count + 16).SetCellValue("出动\n飞机\n(架次)");
+            rowHead1.GetCell(count + 16).CellStyle = getCellStyleHead(book);
+            rowHead1.CreateCell(count + 17).SetCellValue("扑火\n经费\n(万元)");
+            rowHead1.GetCell(count + 17).CellStyle = getCellStyleHead(book);
             IRow rowHead2 = sheet1.CreateRow(2);
             rowHead2.CreateCell(1).SetCellValue("合计");
             rowHead2.GetCell(1).CellStyle = getCellStyleHead(book);
@@ -6104,10 +5839,10 @@ namespace ManagerSystem.MVC.Controllers
             rowHead2.GetCell(x + 12).CellStyle = getCellStyleHead(book);
 
             IRow rowHead3 = sheet1.CreateRow(3);
-            rowHead3.CreateCell(8).SetCellValue("原始林");
-            rowHead3.GetCell(8).CellStyle = getCellStyleHead(book);
-            rowHead3.CreateCell(9).SetCellValue("人工林");
-            rowHead3.GetCell(9).CellStyle = getCellStyleHead(book);
+            rowHead3.CreateCell(count + 4).SetCellValue("原始林");
+            rowHead3.GetCell(count + 4).CellStyle = getCellStyleHead(book);
+            rowHead3.CreateCell(count + 5).SetCellValue("人工林");
+            rowHead3.GetCell(count + 5).CellStyle = getCellStyleHead(book);
 
             //CellRangeAddress四个参数为：起始行，结束行，起始列，结束列
             sheet1.AddMergedRegion(new CellRangeAddress(0, 0, 0, colsCount - 1));

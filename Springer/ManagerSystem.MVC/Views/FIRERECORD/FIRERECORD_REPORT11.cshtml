@@ -4,7 +4,7 @@
 @section Header{
     <script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
 }
-<style>
+<style type="text/css">
     input[type="text"] {
         padding: 1px;
     }
@@ -20,9 +20,9 @@
                 <div class="divOP">
                     <div class="home ">
                         日期：<input id="tbxYEAR" type="text" class="Wdate" style="width:100px" value="@ViewBag.YEAR" onclick="WdatePicker({ dateFmt: 'yyyy'})" />
-                        <input type="button" value="查询" onclick="Query()" class="btnSearchCss" />
-                        <input type="button" value="导出" onclick="Export()" id="btnExport" class="btnOutputCss">
-                        <input type="button" value="管理" onclick="Manager('','Add')" class="btnAddCss" />
+                        <input type="button" value="查 询" onclick="Query()" class="btnSearchCss" />
+                        <input type="button" value="导 出" onclick="Export()"  class="btnOutputCss">
+                        <input type="button" value="管 理" onclick="Manager('','Add')" class="btnAddCss" />
                         <input id="hidFIRERECORD_REPORT11ID" name="hidFIRERECORD_REPORT11ID" type="hidden" value="@ViewBag.FIRERECORD_REPORT11ID" />
                     </div>
                 </div>
@@ -36,6 +36,7 @@
         </div>
     </div>
 </div>
+
 <script type="text/javascript">
     Query();
     function Query() {
@@ -69,7 +70,7 @@
             layer.open({
                 type: 2,
                 title: '添加森林防火基础设施统计',
-                area: ['50%', '70%'],  //[长,高]
+                area: ['60%', '85%'],  //[长,高]
                 fix: false, //不固定
                 maxmin: true,
                 content: '/FIRERECORD/FIRERECORD_REPORT11Man?FIRERECORD_REPORT11ID=' + FIRERECORD_REPORT11ID + "&Method=" + Method,

@@ -12,7 +12,6 @@
     }
 }
 <script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
-<script src="~/Scripts/test.js"></script>
 
 <div class="easyui-layout" data-options="fit:true" style=" border:0;">
     <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
@@ -51,15 +50,17 @@
 <div class="divMan" id="tableadd" style="display:none;margin-left:5px;margin-top:8px">
     <table cellpadding="0" cellspacing="0">
         <tr>
-            <td style="width:80px;">单位名称：</td>
+            <td style="width:80px;" class="tdField">单位名称：</td>
             <td><select id="BYORGNO" class="easyui-combotree" style="width:180px"></select> </td>
-            <td style="width:80px;">无人机名称：</td>
-            <td style="width:35%"><input type="text" id="NAME" style="width:80%" class="input-small" value="" /></td>
+            <td style="width:80px;" class="tdField">无人机名称：</td>
+            <td><input type="text" id="NAME"  class="input-small" value="" /></td>
+            <td style="width:80px;" class="tdField">设备名称：</td>
+            <td><input type="text" id="EQUIPNAME" class="input-small" value="" /></td>
         </tr>
-        <tr>
-            <td style="width:80px;">设备名称：</td>
+        @*<tr>
+            <td style="width:80px;" class="tdField">设备名称：</td>
             <td colspan="3"><input type="text" id="EQUIPNAME" style="width:40%" class="input-small" value="" /></td>
-        </tr>
+        </tr>*@
     </table>
 
 </div>
@@ -188,7 +189,7 @@
             layer.open({
                 type: 1,
                 title: str,
-                area: ['50%', '40%'],
+                area: ['750px', '150px'],
                 btn: ['保存', '取消'],
                 shade: 0,
                 maxmin: true,
@@ -245,7 +246,7 @@
         layer.open({
             type: 2,
             title: '无人机信息查看',
-            area: ['50%', '40%'],
+            area: ['750px', '150px'],
             fix: true,
             maxmin: true,
             content: '/System/SeeUav?tablename=' + tablename + "&ID=" + ID

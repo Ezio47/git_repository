@@ -78,7 +78,15 @@ namespace ManagerSystemSearchWhereModel
         /// </summary>
         public string OnlyGetXianXZ { get; set; }
         /// <summary>
-        /// 获取市县乡
+        /// 只获取乡镇
+        /// </summary>
+        public string OnlyGetXZ { get; set; }
+        /// <summary>
+        /// 只获取乡镇、村
+        /// </summary>
+        public string OnlyGetXZCun { get; set; }
+        /// <summary>
+        /// 获取市、县、乡镇
         /// </summary>
         public string OnlyGetShiXianXZ { get; set; }
         /// <summary>

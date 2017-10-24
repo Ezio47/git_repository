@@ -12,10 +12,15 @@
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
                 <div class="divOP">
                     <div class="home ">
-                        单位名称：<select id="tbxORGNO" onchange="Query()"> @Html.Raw(@ViewBag.vdOrg)  </select>&nbsp;&nbsp;
-                        状态：<select id="tbxIsOpenOA">@Html.Raw(@ViewBag.IsOpenOA) </select>&nbsp;&nbsp;
-                        姓名：<input id="tbxUserName" type="text" value="@ViewBag.UserName" />
-                        <input type="button" value="查 询" onclick="Query()" class="btnSearchCss" />&nbsp;&nbsp;
+                        单位名称：<select id="tbxORGNO" onchange="query('1');"> @Html.Raw(@ViewBag.vdOrg) </select>&nbsp;&nbsp;
+                        状态：
+                        <select id="tbxIsOpenOA" onchange="query('1');">
+                            <option value="">--所有--</option>
+                            <option value="1">已开通</option>
+                            <option value="0">未开通</option>
+                        </select>&nbsp;&nbsp;
+                        姓名：<input id="tbxUserName" type="text" value="" />
+                        <input type="button" value="查 询" onclick="query('1');" class="btnSearchCss" />&nbsp;&nbsp;
                         <input id="btnOpen" type="button" value="开 通" onclick="Open()" class="btnCss" style="display:none;" />&nbsp;&nbsp;
                         <input id="btnClose" type="button" value="禁 用" onclick="Close()" class="btnCss" style="display:none;" /> &nbsp;&nbsp;
                         <font color="red">备注： 初始密码：@ViewBag.OAPWD</font>
@@ -23,12 +28,15 @@
                 </div>
             </div>
             <div data-options="region:'center'" title="" style=" border: none; ">
-                <div class="divTable">
-                    @Html.Raw(ViewBag.UserList)
+                <div class="divTable" id="divTable">
+                   
+
                 </div>
             </div>
             <div data-options="region:'south'" title="" style=" height:40px; border: none; overflow:hidden;  text-align:right;padding:2px 2px 2px 2px;">
-                @Html.Raw(@ViewBag.PagerInfo)
+                <div class="divPager" id="divPager">
+
+                </div>
             </div>
         </div>
     </div>
@@ -43,31 +51,37 @@
     if (blnClose == "1") {
         document.getElementById('btnClose').style.display = "";
     }
-    //查询
-    function Query() {
+
+    $(function () {
+        query('1');
+    });
+
+    var page = 1;//当前默认页面为1
+    function query(Page) {
+        page = Page;
+        var pagesize = '0';
+        if (document.getElementById("selPageSize") != null) {
+            pagesize = document.getElementById("selPageSize").value;
+        }
         $.ajax({
-            url: '/System/OAUserListQuery',
+            url: '/System/GetOAUserList',
             timeout: 10000, //10秒后超时，如果为0则永不超时
             data: {
-                PageSize: document.getElementById("selPageSize").value,
+                PageSize: pagesize,
                 ORGNO: document.getElementById("tbxORGNO").value,
                 UserName: document.getElementById("tbxUserName").value,
                 IsOpenOA: document.getElementById("tbxIsOpenOA").value,
-                Page: document.getElementById("selPage").value,
+                Page: Page,
             },
             dataType: 'json',
             success: function (data, ioArgs) {
                 if (data.Success) {
-                    window.location.assign(ar.Url);
-                    var _len = $("#OAUserTable tr").length - 1; //行数
-                    if (_len <= 0) {
-                        document.getElementById("tbxUserIDALL").disabled = true;
-                        document.getElementById("btnOpen").disabled = true;
-                        document.getElementById("btnClose").disabled = true;
-                    }
+                    $('#divTable').html(data.tableInfo);
+                    $('#divPager').html(data.pagerInfo);
                 }
                 else {
-                    layer.msg(data.Msg, { icon: 5 });
+                    $('#divTable').html('');
+                    $('#divPager').html('');
                 }
             },
             error: function (err, ioArgs) {
@@ -75,6 +89,7 @@
             }
         });
     }
+
     //勾选
     function selectall(v, c) {
         var _len = $("#OAUserTable tr").length - 1;//行数
@@ -86,6 +101,7 @@
             }
         }
     }
+
     //开通OA账号
     function Open() {
         var UserIDList = $("input:checkbox[name='tbxUserID']:checked").map(function (index, elem) { return $(elem).val(); }).get().join(',');
@@ -120,6 +136,7 @@
             }
         }
     }
+
     //禁用OA账号
     function Close() {
         var UserIDList = $("input:checkbox[name='tbxUserID']:checked").map(function (index, elem) { return $(elem).val(); }).get().join(',');
@@ -154,6 +171,7 @@
             }
         }
     }
+
     //初始化密码
     function InitPwd(userId, pwd) {
         $.ajax({

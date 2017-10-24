@@ -3,7 +3,8 @@
 // 全局保存当前选中窗口
 var g_iWndIndex = 0; //可以不用设置这个变量，有窗口参数的接口中，不用传值，开发包会默认使用当前选择窗口
 var szUsername = "admin";//用户名
-var szPassword = "admin12345";//密码
+//var szPassword = "admin12345";//密码
+var szPassword = "abcd1234";
 $(function () {
     // 检查插件是否已经安装过
     if (-1 == WebVideoCtrl.I_CheckPluginInstall()) {
@@ -480,9 +481,10 @@ function clickCloseSound() {
 }
 
 // 设置音量
-function clickSetVolume() {
+function clickSetVolume(value) {
     var oWndInfo = WebVideoCtrl.I_GetWindowStatus(g_iWndIndex),
-		iVolume = parseInt($("#volume").val(), 10),
+		//iVolume = parseInt($("#volume").val(), 10),
+        iVolume=value,
 		szInfo = "";
 
     if (oWndInfo != null) {

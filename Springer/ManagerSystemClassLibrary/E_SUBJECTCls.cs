@@ -23,7 +23,6 @@ namespace ManagerSystemClassLibrary
     public class E_SUBJECTCls
     {
         #region 增、删
-
         /// <summary>
         /// 增、删
         /// </summary>
@@ -40,22 +39,23 @@ namespace ManagerSystemClassLibrary
                     //获取主题ID
                     string EMAILid = BaseDT.E_SUBJECT.getID(new E_SUBJECT_SW { EMAILSENDUSERID = m.EMAILSENDUSERID, EMAILTIME = m.EMAILTIME });
                     if (msg.Success == true)
-                        return new Message(msg.Success, "草稿保存成功", m.returnUrl);
+                        return new Message(msg.Success, "草稿保存成功!", m.returnUrl);
                     else
-                        return new Message(msg.Success, "草稿保存失败，请重试", m.returnUrl);
+                        return new Message(msg.Success, "草稿保存失败,请重试!", m.returnUrl);
                 }
                 //有附件的情况更新库
                 if (string.IsNullOrEmpty(m.EMAILID) == false)
                 {
                     Message msg = BaseDT.E_SUBJECT.Mdy(m);
                     if (msg.Success == true)
-                        return new Message(msg.Success, "草稿保存成功", m.returnUrl);
+                        return new Message(msg.Success, "草稿保存成功!", m.returnUrl);
                     else
-                        return new Message(msg.Success, "草稿保存失败，请重试", m.returnUrl);
+                        return new Message(msg.Success, "草稿保存失败,请重试!", m.returnUrl);
                 }
             }
             if (m.opMethod == "AddToSend")//草稿直接发送
             {
+                #region 草稿直接发送
                 BaseDT.E_SUBJECT.Mdy(m);//主题表 修改为已发送
                 if (string.IsNullOrEmpty(m.EMAILRECUSERLIST) == false)
                 {
@@ -104,8 +104,10 @@ namespace ManagerSystemClassLibrary
                             EMAILSENDTIME = m.EMAILTIME
                         });
                     }
-                }
-                //发送短信
+                } 
+                #endregion
+
+                #region 发送短信
                 string name = SystemCls.getCookieInfo().trueName;
                 string time = PublicClassLibrary.ClsSwitch.SwitTM(DateTime.Now.ToString());
                 string title = m.EMAILTITLE;
@@ -152,7 +154,8 @@ namespace ManagerSystemClassLibrary
                 }
                 string content = "您好:" + name + "在" + time + "给您发一封主题「" + title + "」邮件,请登陆森林保护信息指挥系统查阅!";
                 SmsHelp.SmsCom.SendMsg(content, phone1);
-                return new Message(true, "发送成功", m.returnUrl);
+                return new Message(true, "发送成功!", m.returnUrl); 
+                #endregion
             }
             if (m.opMethod == "Send")//发送
             {
@@ -312,7 +315,6 @@ namespace ManagerSystemClassLibrary
                             });
                         }
                         //发送短信
-                        //发送短信
                         string name = SystemCls.getCookieInfo().trueName;
                         string time = PublicClassLibrary.ClsSwitch.SwitTM(DateTime.Now.ToString());
                         string title = m.EMAILTITLE;
@@ -360,7 +362,7 @@ namespace ManagerSystemClassLibrary
                         string content = "您好:" + name + "在" + time + "给您发一封主题「" + title + "」邮件,请登陆森林保护信息指挥系统查阅!";
                         SmsHelp.SmsCom.SendMsg(content, phone1);
                     }
-                    return new Message(true, "发送成功", m.returnUrl);
+                    return new Message(true, "发送成功!", m.returnUrl);
                 }
             }
             if (m.opMethod == "Mdy") //草稿箱的时候修改
@@ -378,7 +380,7 @@ namespace ManagerSystemClassLibrary
                 Message msgUser = BaseDT.E_SUBJECT.Del(m);
                 return new Message(msgUser.Success, msgUser.Msg, m.returnUrl);
             }
-            return new Message(false, "无效操作", "");
+            return new Message(false, "无效操作!", "");
         }
         #endregion
 
@@ -435,7 +437,6 @@ namespace ManagerSystemClassLibrary
                 m.EMAILSECRETUSERNameLIST = T_SYSSEC_IPSUSERCls.getUserCombString(new T_SYSSEC_IPSUSER_SW { USERID = m.EMAILSECRETUSERLIST, formatUserStr = "<font color=red>[userName]</font><[orgName]>", splitUserStr = "," });
                 m.EMAILSECRETUSERLIST1 = T_SYSSEC_IPSUSERCls.getUserCombString(new T_SYSSEC_IPSUSER_SW { USERID = m.EMAILSECRETUSERLIST, formatUserStr = "[userName]", splitUserStr = "," });
                 m.FileModel = E_FILECls.getListModel(new E_File_SW { BYEMAILID = m.EMAILID });
-
             }
             dt.Clear();
             dt.Dispose();
@@ -505,7 +506,6 @@ namespace ManagerSystemClassLibrary
                 m.EMAILCOPYUSERNameLIST = BaseDT.T_SYSSEC_USER.getNameByUserList(dtUser, m.EMAILCOPYUSERLIST);
                 m.EMAILSECRETUSERLIST = dt.Rows[i]["EMAILSECRETUSERLIST"].ToString();//密送人
                 m.EMAILSECRETUSERNameLIST = BaseDT.T_SYSSEC_USER.getNameByUserList(dtUser, m.EMAILSECRETUSERLIST);
-
                 result.Add(m);
             }
             dt.Clear();
@@ -546,7 +546,6 @@ namespace ManagerSystemClassLibrary
                 }
             }
             return sb.ToString();
-
         }
         #endregion
     }

@@ -51,7 +51,7 @@ namespace ManagerSystemClassLibrary
                 Message msgUser = BaseDT.E_RECEIVE.Del(m);
                 return new Message(msgUser.Success, msgUser.Msg, m.returnUrl);
             }
-            return new Message(false, "无效操作", "");
+            return new Message(false, "无效操作!", "");
         }
         #endregion
 
@@ -74,6 +74,17 @@ namespace ManagerSystemClassLibrary
                 m.EMAILRECEIVESTATUS = dt.Rows[i]["EMAILRECEIVESTATUS"].ToString();
                 m.EMAILSENDTIME = ClsSwitch.SwitTM(dt.Rows[i]["EMAILSENDTIME"].ToString());
                 m.EMAILRECEIVETIME = ClsSwitch.SwitTM(dt.Rows[i]["EMAILRECEIVETIME"].ToString());
+                m.SubjectModel = E_SUBJECTCls.getModel(new E_SUBJECT_SW { EMAILID = m.BYEMAILID });
+                m.FileModel = E_FILECls.getListModel(new E_File_SW { BYEMAILID = m.BYEMAILID });
+                if (m.EMAILRECEIVESTATUS == "0")//未读
+                {
+                    BaseDT.E_RECEIVE.Mdy(new E_RECEIVE_Model
+                    {
+                        EMAILRECEIVESTATUS = "1",
+                        EMAILRECEIVETIME = ClsSwitch.SwitTM(DateTime.Now),
+                        ERID = m.ERID
+                    });
+                }
                 result.Add(m);
             }
             dt.Clear();

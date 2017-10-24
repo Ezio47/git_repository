@@ -3,95 +3,45 @@
 }
 @section Header{
 }
+
 <div class="easyui-layout" data-options="fit:true" style=" border:0;">
-
-
-    @*<div data-options="region:'west'" title="" style=" width:220px; border: none;">
-        @Html.Raw(@ViewBag.PageLeftMenu)
-    </div>*@
     <div data-options="region:'center'" title="" style=" border: none; ">
-
         <div class="easyui-layout" data-options="fit:true" style=" border:0;">
-
-
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
                 <div class="divOP">
                     <div class="homeUL">
-                        <input type="button" value="保存" class="btnSaveCss"  onclick="Manager()" id="btnSave" style="display:none;" />
-                        @*<input type="button" value="返回" class="btnReturnCss" onclick="javascript: history.go(-1);" />*@
+                        <input type="button" value="保存" class="btnSaveCss" onclick="Manager()" id="btnSave" style="display:none;" />
                     </div>
                 </div>
             </div>
-            <div data-options="region:'center'" title="" style=" border: none; ">
 
+            <div data-options="region:'center'" title="" style=" border: none; ">
                 <div class="divMan">
                     <table cellpadding="0" cellspacing="0">
-
-                        <tr class='row1'>
-                            <td style="width:80px;">
-                                姓名:
-                            </td>
-                            <td>
-                                <input id="tbxHNAME" type="text" value="" style="width:90%;" />
-                            </td>
-                            <td style="width:80px;">
-                                所属乡镇:
-                            </td>
-                            <td>
-                                <select id="tbxBYORGNO">
-                                    @Html.Raw(@ViewBag.vdOrg)
-                                </select>
-                            </td>
+                        <tr >
+                            <td style="width:80px;" class="tdField">姓名:</td>
+                            <td><input id="tbxHNAME" type="text" value="" style="width:90%;" /><span class="spanRequiredField">*</span></td>
+                            <td style="width:80px;" class="tdField">所属乡镇: </td>
+                            <td><select id="tbxBYORGNO">@Html.Raw(@ViewBag.vdOrg)</select></td>
                         </tr>
                         <tr>
-                            <td>
-                                终端编号:
-                            </td>
-                            <td>
-                                <input id="tbxSN" type="text" value="" style="width:90%;" />
-                            </td>
-                            <td>
-                                手机号码:
-                            </td>
-                            <td>
-                                <input id="tbxPHONE" type="text" value="" style="width:90%;" />
-                            </td>
-                        </tr>
-                        <tr class='row1'>
-                            <td>
-                                性别:
-                            </td>
-                            <td>
-                                <select id="tbxSEX">
-                                    @Html.Raw(@ViewBag.vdSex)
-                                </select>
-                            </td>
-                            <td>
-                                固\兼职:
-                            </td>
-                            <td>
-                                <select id="tbxONSTATE">
-                                    @Html.Raw(@ViewBag.vdONSTATE)
-                                </select>
-                            </td>
+                            <td class="tdField">终端编号:</td>
+                            <td><input id="tbxSN" type="text" value="" style="width:90%;" /></td>
+                            <td class="tdField">手机号码:</td>
+                            <td><input id="tbxPHONE" type="text" value="" style="width:90%;" /><span class="spanRequiredField">*</span></td>
                         </tr>
                         <tr>
-                            <td>
-                                出生日期:
-                            </td>
-                            <td>
-                                <input class="easyui-datebox" id="tbxBIRTH" type="text" style="width:90px;height:28px;" value="@ViewBag.TIMEBegin" />
-                            </td>
-                            <td>
-                                状态:
-                            </td>
-                            <td>
-                                <select id="tbxISENABLE">
-                                    @Html.Raw(@ViewBag.vdISENABLE)
-                                </select>
-                            </td>
+                            <td class="tdField">性别:</td>
+                            <td><select id="tbxSEX" style="width:90px;">@Html.Raw(@ViewBag.vdSex)</select></td>
+                            <td class="tdField">固\兼职:</td>
+                            <td><select id="tbxONSTATE" style="width:90px;">@Html.Raw(@ViewBag.vdONSTATE) </select></td>
                         </tr>
-
+                        <tr>
+                            <td class="tdField">出生日期:</td>
+                            <td><input class="easyui-datebox" id="tbxBIRTH" type="text" style="width:90px;height:28px;" value="@ViewBag.TIMEBegin" /> </td>
+                            <td class="tdField">状态:</td>
+                            <td><select id="tbxISENABLE" style="width:90px;"> @Html.Raw(@ViewBag.vdISENABLE)</select></td>
+                        </tr>
                     </table>
                 </div>
             </div>
@@ -109,10 +59,7 @@
         url: '/System/getFRUserJson',
         cache: false,
         timeout: 10000, //10秒后超时，如果为0则永不超时
-
-        data: {
-            ID: '@ViewBag.T_ID'
-        },
+        data: { ID: '@ViewBag.T_ID' },
         success: function (data, ioArgs) {
             var ar = eval('(' + data + ')');
             if (ar.HID != null) {
@@ -125,7 +72,6 @@
                 document.getElementById("tbxSEX").value = ar.SEX
                 document.getElementById("tbxSN").value = ar.SN
                 document.getElementById("tbxISENABLE").value = ar.ISENABLE
-
                 if ('@ViewBag.T_Method' == "See") {
                     document.getElementById('btnSave').style.display = 'none';
                 }
@@ -153,17 +99,16 @@
         var t1 = $('#tbxPHONE').val().trim();
         var id = '@ViewBag.T_ID';
         if (t1 == "") {
-            layer.msg('手机号码不可为空！', { icon: 5 });
+            layer.msg('手机号码不可为空!', { icon: 5 });
             $('#tbxPHONE').focus();
             return false;
         } else {
             if (!checkPhone(t1)) {
-                layer.msg('手机号码格式不正确！', { icon: 5 });
+                layer.msg('手机号码格式不正确!', { icon: 5 });
                 $('#tbxPHONE').focus();
                 return false;
             }
             else {
-
                 $.ajax({
                     type: 'post',
                     url: '/System/ValidatePhone',
@@ -171,14 +116,10 @@
                     dataType: 'json',
                     async: false,
                     timeout: 10000, //10秒后超时，如果为0则永不超时
-                    data: {
-                        tbxPHONE: t1,
-                        method: method,
-                        ID: id
-                    },
+                    data: { tbxPHONE: t1, method: method, ID: id },
                     success: function (data) {
                         if (!data.Success) {
-                            alert(data.Msg);
+                            layer.msg(data.Msg, { icon: 5 });
                             $('#tbxPHONE').focus()
                             return false;
                         } else {
@@ -195,19 +136,19 @@
                                     PHONE: document.getElementById("tbxPHONE").value,
                                     SEX: document.getElementById("tbxSEX").value,
                                     ISENABLE: document.getElementById("tbxISENABLE").value,
-                                    SN: document.getElementById("tbxSN").value
-                                    , ID: id
-                                    , Method: '@ViewBag.T_Method'
-                                    , returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)'
+                                    SN: document.getElementById("tbxSN").value,
+                                    ID: id,
+                                    Method: '@ViewBag.T_Method',
+                                    returnUrl: '@Html.Raw(@ViewBag.T_UrlReferrer)'
                                 },
                                 success: function (data, ioArgs) {
                                     var ar = eval('(' + data + ')');
                                     if (ar.Success) {
-                                        if (confirm(ar.Msg + ' 请返回！')) {
+                                        layer.confirm(ar.Msg + ' 请返回?', { icon: 3, title: '提示' }, function (index2) {
+                                            layer.close(index2);
                                             var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
                                             parent.layer.close(index);
-                                           // window.location.assign(ar.Url);
-                                        }
+                                        });
                                     }
                                     else {
                                         layer.msg(ar.Msg, { icon: 5 });
@@ -227,8 +168,5 @@
 
             }
         }
-
-
-
     }
 </script>

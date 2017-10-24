@@ -11,40 +11,6 @@ using PublicClassLibrary;
 
 namespace ManagerSystemClassLibrary
 {
-    //    /// <summary>
-    //    /// 系统菜单管理公共类
-    //    /// </summary>
-    //    public class T_SYS_MENUCls
-    //    {
-    //        /// <summary>
-    //        /// 获取系统菜单单条记录
-    //        /// </summary>
-    //        /// <param name="sw">参见模型 sw.SYSFLAG系统标识符 sw.MENUCODE 菜单编码</param>
-    //        /// <returns>参见模型</returns>
-    //        public static T_SYS_MENU_Model getModel(T_SYS_MENU_SW sw)
-    //        {
-    //            DataTable dt = BaseDT.T_SYS_MENU.getModel(sw);
-    //            T_SYS_MENU_Model m = new T_SYS_MENU_Model();
-    //            if (dt == null)
-    //                return m;
-    //            if (dt.Rows.Count > 0)
-    //            {
-
-    //                 int i = 0;
-    //                m.MENUCODE = dt.Rows[i]["MENUCODE"].ToString();
-    //                m.MENUNAME = dt.Rows[i]["MENUNAME"].ToString();
-    //                m.MENUURL = dt.Rows[i]["MENUURL"].ToString();
-    //                m.MENUICO = dt.Rows[i]["MENUICO"].ToString();
-    //                m.LICLASS = dt.Rows[i]["LICLASS"].ToString();
-    //                m.ORDERBY = dt.Rows[i]["ORDERBY"].ToString();
-    //                m.MENURIGHTFLAG = dt.Rows[i]["MENURIGHTFLAG"].ToString();
-    //          }
-    //            dt.Clear();
-    //            dt.Dispose();
-
-    //            return m;
-    //        }
-
     /// <summary>
     /// 系统菜单管理公共类
     /// </summary>

@@ -30,28 +30,56 @@
                         <tbody>
                             @if (Model.Any())
                             {
+                                int i = 0;
                                 foreach (var item in Model)
                                 {
-                                    <tr>
-                                        <td>@item.AreaName</td>
-                                        @if (Convert.ToInt32(@item.FireLevel) >= 3)
-                                        {
-                                            <td>
-                                                @item.FireLevel
-                                                @*<span class="label label-warning">
-                                                    <i class="icon-warning-sign bigger-120"></i>
-                                                    危险
-                                                </span>*@
-                                            </td>
-                                        }
-                                        else
-                                        {
-                                            <td>@item.FireLevel</td>
-                                        }
-                                        <td>@item.LevelDate</td>
-                                        <td>@item.SourceForm</td>
-                                        <td>@item.MessageStatus</td>
-                                    </tr>
+                                    i++;
+                                    if (i % 2 == 0)
+                                    {
+                                        <tr>
+                                            <td>@item.AreaName</td>
+                                            @if (Convert.ToInt32(@item.FireLevel) >= 3)
+                                            {
+                                                <td>
+                                                    @item.FireLevel
+                                                    @*<span class="label label-warning">
+                                                            <i class="icon-warning-sign bigger-120"></i>
+                                                            危险
+                                                        </span>*@
+                                                </td>
+                                            }
+                                            else
+                                            {
+                                                <td>@item.FireLevel</td>
+                                            }
+                                            <td>@item.LevelDate</td>
+                                            <td>@item.SourceForm</td>
+                                            <td>@item.MessageStatus</td>
+                                        </tr>
+                                    }
+                                    else
+                                    {
+                                        <tr class="row1">
+                                            <td>@item.AreaName</td>
+                                            @if (Convert.ToInt32(@item.FireLevel) >= 3)
+                                            {
+                                                <td>
+                                                    @item.FireLevel
+                                                    @*<span class="label label-warning">
+                                                            <i class="icon-warning-sign bigger-120"></i>
+                                                            危险
+                                                        </span>*@
+                                                </td>
+                                            }
+                                            else
+                                            {
+                                                <td>@item.FireLevel</td>
+                                            }
+                                            <td>@item.LevelDate</td>
+                                            <td>@item.SourceForm</td>
+                                            <td>@item.MessageStatus</td>
+                                        </tr>
+                                    }
                                 }
                             }
                         </tbody>

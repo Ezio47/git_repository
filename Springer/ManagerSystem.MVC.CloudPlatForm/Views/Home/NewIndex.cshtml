@@ -1,0 +1,76 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOut.cshtml";
+}
+
+@*<html class="fullHtml">*@
+<div class="indexBody">
+    <div class="indexHeader">
+        <div class="logo"></div>
+        <div class="right">
+            <span>admin</span>欢迎访问<span class="divide"></span><a href="/System/NewLogin">退出登录</a>
+        </div>
+    </div>
+    <div class="indexContain">
+        <div class="indexLeftMenu">
+            <ul class="leftMenu" id="leftMenu">
+                <li class="sel">
+                    <a class="home" link="/System/Desk">
+                        首页
+                    </a>
+                </li>
+                <li>
+                    <a class="zhyj" link="/System/ZHYJ">
+                        林业灾害应急平台
+                    </a>
+                </li>
+                <li>
+                    <a class="zhyy" link="/System/ZHYY">
+                        林业综合应用平台
+                    </a>
+                </li>
+                <li>
+                    <a class="zwfu" link="/System/ZWFW">
+                        林业政务服务平台
+                    </a>
+                </li>
+                <li>
+                    <a class="jyfu" link="/System/JWFW">
+                        林业警务服务平台
+                    </a>
+                </li>
+                <li>
+                    <a class="jcgz" link="/System/JCGZ">
+                        林业基础感知平台
+                    </a>
+                </li>
+                <li>
+                    <a class="jczc" link="/System/JCZC">
+                        林业基础支持平台
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="indexMain">
+            <iframe src="/System/Desk" class="mainFrame"></iframe>
+            <div class="bottomText">
+                技术支持：福建特力惠信息科技股份有限公司<br />
+                Copyright © 2015-2018 特力惠智慧林业云平台 All Rights Reserved.
+            </div>
+        </div>
+    </div>
+</div>
+@*</html>*@
+
+<script>
+    $(function () {
+        $("#leftMenu").on("click", "li", function () {
+            $(this).addClass("sel");
+            $(this).siblings().removeClass("sel");
+        }).on("click", "a", function () {
+            var link = $(this).attr("link")
+            if (link != "") {
+                $(".mainFrame").attr({ "src": link });
+            }
+        })
+    })
+</script>

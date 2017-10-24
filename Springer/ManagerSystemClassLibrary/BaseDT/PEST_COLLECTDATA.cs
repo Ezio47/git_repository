@@ -29,36 +29,44 @@ namespace ManagerSystemClassLibrary.BaseDT
             sb.AppendFormat("HOSTTREESPECIESCODE, SEARCHTYPE, COLLECTPESTCODE, HARMPOSITION, HARMLEVEL, DEADCOUNT, UNKNOWNDIEOFFCOUNT ,");
             sb.AppendFormat("ELSEDIEOFFCOUNT, SAMPLECOUNT, MARK, UPLOADTIME, MANSTATE, MANRESULT, MANTIME, MANUSERID, KID, JWDLIST) ");
             sb.AppendFormat(" OUTPUT INSERTED.PESTCOLLDATAID ");
-            sb.AppendFormat("VALUES(");
-            sb.AppendFormat("'{0}'", ClsSql.EncodeSql(m.HID));
+            sb.AppendFormat(" VALUES(");
+            sb.AppendFormat(" '{0}'", ClsSql.EncodeSql(m.HID));
             sb.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.BYORGNO));
             sb.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.COLLECTRESOURCE));
             sb.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.VILLAGENAME));
             sb.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.SMALLADDRESS));
             sb.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.SMALLCLASSCODE));
-            sb.AppendFormat(",{0}", ClsSql.saveNullField(m.SMALLCLASSAREA));
+            sb.AppendFormat(", {0}", ClsSql.saveNullField(m.SMALLCLASSAREA));
             sb.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.HOSTTREESPECIESCODE));
             sb.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.SEARCHTYPE));
             sb.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.COLLECTPESTCODE));
             sb.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.HARMPOSITION));
             sb.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.HARMLEVEL));
-            sb.AppendFormat(",{0}", ClsSql.saveNullField(m.DEADCOUNT));
-            sb.AppendFormat(",{0}", ClsSql.saveNullField(m.UNKNOWNDIEOFFCOUNT));
-            sb.AppendFormat(",{0}", ClsSql.saveNullField(m.ELSEDIEOFFCOUNT));
-            sb.AppendFormat(",{0}", ClsSql.saveNullField(m.SAMPLECOUNT));
-            sb.AppendFormat(",{0}", ClsSql.saveNullField(m.MARK));
+            sb.AppendFormat(", {0}", ClsSql.saveNullField(m.DEADCOUNT));
+            sb.AppendFormat(", {0}", ClsSql.saveNullField(m.UNKNOWNDIEOFFCOUNT));
+            sb.AppendFormat(", {0}", ClsSql.saveNullField(m.ELSEDIEOFFCOUNT));
+            sb.AppendFormat(", {0}", ClsSql.saveNullField(m.SAMPLECOUNT));
+            sb.AppendFormat(", {0}", ClsSql.saveNullField(m.MARK));
             sb.AppendFormat(",'{0}'", m.UPLOADTIME);
             sb.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.MANSTATE));
-            sb.AppendFormat(",{0}", ClsSql.saveNullField(m.MANRESULT));
+            sb.AppendFormat(", {0}", ClsSql.saveNullField(m.MANRESULT));
             sb.AppendFormat(",'{0}'", m.MANTIME);
             sb.AppendFormat(",'{0}'", ClsSql.EncodeSql(m.MANUSERID));
-            sb.AppendFormat(",{0}", ClsSql.saveNullField(m.KID));
-            sb.AppendFormat(",{0})", ClsSql.saveNullField(m.JWDLIST));
-            bool bln = DataBaseClass.ExeSql(sb.ToString());
-            if (bln == true)
-                return new Message(true, "添加成功!", "");
-            else
+            sb.AppendFormat(", {0}", ClsSql.saveNullField(m.KID));
+            sb.AppendFormat(", {0}", ClsSql.saveNullField(m.JWDLIST));
+            sb.AppendFormat(")");
+            try
+            {
+                string sId = DataBaseClass.ReturnSqlField(sb.ToString());
+                if (sId != "")
+                    return new Message(true, "添加成功!", sId);
+                else
+                    return new Message(false, "添加失败!", "");
+            }
+            catch
+            {
                 return new Message(false, "添加失败!", "");
+            }
         }
 
         /// <summary>
@@ -69,9 +77,9 @@ namespace ManagerSystemClassLibrary.BaseDT
         public static Message Mdy(PEST_COLLECTDATA_Model m)
         {
             if (isExists(new PEST_COLLECTDATA_SW { PESTCOLLDATAID = m.PESTCOLLDATAID }) == false)
-                return new Message(false, "修改失败，采集数据不存在!", "");
+                return new Message(false, "修改失败,采集数据不存在!", "");
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("update PEST_COLLECTDATA SET ");
+            sb.AppendFormat("Update PEST_COLLECTDATA SET ");
             sb.AppendFormat(" HID='{0}'", ClsSql.EncodeSql(m.HID));
             sb.AppendFormat(",BYORGNO='{0}'", ClsSql.EncodeSql(m.BYORGNO));
             sb.AppendFormat(",COLLECTRESOURCE='{0}'", ClsSql.EncodeSql(m.COLLECTRESOURCE));
@@ -110,18 +118,9 @@ namespace ManagerSystemClassLibrary.BaseDT
         /// <returns>参见模型</returns>
         public static Message Del(PEST_COLLECTDATA_Model m)
         {
-            string[] arrPESTCOLLDATAID = m.PESTCOLLDATAID.Split(',');
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("delete from PEST_COLLECTDATA");
-            sb.AppendFormat(" where PESTCOLLDATAID  in  (");
-            for (int i = 0; i < arrPESTCOLLDATAID.Length; i++)
-            {
-                if (i != arrPESTCOLLDATAID.Length - 1)
-                    sb.AppendFormat("'{0}',", ClsSql.EncodeSql(arrPESTCOLLDATAID[i]));
-                else
-                    sb.AppendFormat("'{0}'", ClsSql.EncodeSql(arrPESTCOLLDATAID[i]));
-            }
-            sb.AppendFormat(")");
+            sb.AppendFormat("delete from PEST_COLLECTDATA ");
+            sb.AppendFormat(" WHERE PESTCOLLDATAID= '{0}'", ClsSql.EncodeSql(m.PESTCOLLDATAID));
             bool bln = DataBaseClass.ExeSql(sb.ToString());
             if (bln == true)
                 return new Message(true, "删除成功!", "");
@@ -148,54 +147,7 @@ namespace ManagerSystemClassLibrary.BaseDT
 
         #region 获取数据列表
         /// <summary>
-        /// 获取数据列表
-        /// </summary>
-        /// <param name="sw">查询模型</param>
-        /// <param name="total">总记录数</param>
-        /// <returns></returns>
-        public static DataTable getDT(PEST_COLLECTDATA_SW sw, out int total)
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendFormat(" FROM PEST_COLLECTDATA  WHERE 1=1");
-
-            #region 查询条件
-            //根据时间查询
-            if (string.IsNullOrEmpty(sw.StartTime) == false)
-                sb.AppendFormat(" AND UPLOADTIME >= '{0}'", DateTime.Parse(sw.StartTime));
-            if (string.IsNullOrEmpty(sw.EndTime) == false)
-                sb.AppendFormat(" AND UPLOADTIME <= '{0}'", DateTime.Parse(sw.EndTime).AddDays(1).AddSeconds(-1));
-            //根据村名查询
-            if (string.IsNullOrEmpty(sw.VILLAGENAME) == false)
-                sb.AppendFormat(" AND VILLAGENAME like  '%{0}%'", ClsSql.EncodeSql(sw.VILLAGENAME));
-            //根据小地名查询
-            if (string.IsNullOrEmpty(sw.SMALLADDRESS) == false)
-                sb.AppendFormat(" AND SMALLADDRESS = '{0}'", ClsSql.EncodeSql(sw.SMALLADDRESS));
-            //根据组织机构查询
-            if (!string.IsNullOrEmpty(sw.BYORGNO))
-            {
-                if (sw.BYORGNO.Substring(4, 11) == "00000000000")  //获取所有市的
-                    sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,4) = '{0}')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 4)));
-                else if (sw.BYORGNO.Substring(6, 9) == "000000000" && sw.BYORGNO.Substring(4, 11) != "00000000000") //获取所有县的
-                    sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,6) = '{0}')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 6)));
-                else if (sw.BYORGNO.Substring(9, 6) == "000000" && sw.BYORGNO.Substring(6, 9) != "000000000")   //获取所有乡镇的
-                    sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,9) = '{0}')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 9)));
-                else if (sw.BYORGNO.Substring(9, 6) != "000000")   //获取所有村的
-                    sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,12) = '{0}')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 12)));
-                else
-                    sb.AppendFormat(" AND BYORGNO = '{0}'", ClsSql.EncodeSql(sw.BYORGNO));
-            }
-            #endregion
-
-            string sql = "SELECT * " + sb.ToString() + " order by BYORGNO,UPLOADTIME DESC ";
-            string sqlC = "select count(1) " + sb.ToString();
-            total = int.Parse(DataBaseClass.ReturnSqlField(sqlC));
-            sw.CurPage = PagerCls.getCurPage(new PagerSW { curPage = sw.CurPage, pageSize = sw.PageSize, rowCount = total });
-            DataSet ds = DataBaseClass.FullDataSet(sql, (sw.CurPage - 1) * sw.PageSize, sw.PageSize, "PEST_COLLECTDATA");
-            return ds.Tables[0];
-        }
-
-        /// <summary>
-        ///  获取数据
+        ///  获取数据列表
         /// </summary>
         /// <param name="sw"></param>
         /// <returns></returns>
@@ -239,6 +191,56 @@ namespace ManagerSystemClassLibrary.BaseDT
             DataSet ds = DataBaseClass.FullDataSet(sql);
             return ds.Tables[0];
         }
+
+        /// <summary>
+        /// 分页获取数据列表
+        /// </summary>
+        /// <param name="sw">查询模型</param>
+        /// <param name="total">总记录数</param>
+        /// <returns></returns>
+        public static DataTable getDT(PEST_COLLECTDATA_SW sw, out int total)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat(" FROM PEST_COLLECTDATA  WHERE 1=1");
+
+            #region 查询条件
+            //根据组织机构查询
+            if (!string.IsNullOrEmpty(sw.BYORGNO))
+            {
+                if (sw.BYORGNO.Substring(4, 11) == "00000000000")  //获取所有市的
+                    sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,4) = '{0}')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 4)));
+                else if (sw.BYORGNO.Substring(6, 9) == "000000000" && sw.BYORGNO.Substring(4, 11) != "00000000000") //获取所有县的
+                    sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,6) = '{0}')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 6)));
+                else if (sw.BYORGNO.Substring(9, 6) == "000000" && sw.BYORGNO.Substring(6, 9) != "000000000")   //获取所有乡镇的
+                    sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,9) = '{0}')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 9)));
+                else if (sw.BYORGNO.Substring(9, 6) != "000000")   //获取所有村的
+                    sb.AppendFormat(" AND (SUBSTRING(BYORGNO,1,12) = '{0}')", ClsSql.EncodeSql(sw.BYORGNO.Substring(0, 12)));
+                else
+                    sb.AppendFormat(" AND BYORGNO = '{0}'", ClsSql.EncodeSql(sw.BYORGNO));
+            }
+            //根据调查类型查询
+            if (string.IsNullOrEmpty(sw.SEARCHTYPE) == false)
+                sb.AppendFormat(" AND SEARCHTYPE = '{0}'", ClsSql.EncodeSql(sw.SEARCHTYPE)); 
+            //根据时间查询
+            if (string.IsNullOrEmpty(sw.StartTime) == false)
+                sb.AppendFormat(" AND UPLOADTIME >= '{0}'", DateTime.Parse(sw.StartTime));
+            if (string.IsNullOrEmpty(sw.EndTime) == false)
+                sb.AppendFormat(" AND UPLOADTIME <= '{0}'", DateTime.Parse(sw.EndTime).AddDays(1).AddSeconds(-1));
+            //根据村名查询
+            if (string.IsNullOrEmpty(sw.VILLAGENAME) == false)
+                sb.AppendFormat(" AND VILLAGENAME like '%{0}%'", ClsSql.EncodeSql(sw.VILLAGENAME));
+            //根据小地名查询
+            if (string.IsNullOrEmpty(sw.SMALLADDRESS) == false)
+                sb.AppendFormat(" AND SMALLADDRESS like '%{0}%'", ClsSql.EncodeSql(sw.SMALLADDRESS));            
+            #endregion
+
+            string sql = "SELECT * " + sb.ToString() + " order by BYORGNO,UPLOADTIME DESC ";
+            string sqlC = "select count(1) " + sb.ToString();
+            total = int.Parse(DataBaseClass.ReturnSqlField(sqlC));
+            sw.CurPage = PagerCls.getCurPage(new PagerSW { curPage = sw.CurPage, pageSize = sw.PageSize, rowCount = total });
+            DataSet ds = DataBaseClass.FullDataSet(sql, (sw.CurPage - 1) * sw.PageSize, sw.PageSize, "PEST_COLLECTDATA");
+            return ds.Tables[0];
+        }      
         #endregion
     }
 }

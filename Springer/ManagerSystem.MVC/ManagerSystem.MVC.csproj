@@ -58,8 +58,7 @@
     <IntermediateOutputPath>C:\Users\shenchen\AppData\Local\Temp\vsC9EA.tmp\Debug\</IntermediateOutputPath>
     <IntermediateOutputPath>C:\Users\yelei\AppData\Local\Temp\vsBB98.tmp\Debug\</IntermediateOutputPath>
     <IntermediateOutputPath>C:\Users\shenchen\AppData\Local\Temp\vs78AB.tmp\Debug\</IntermediateOutputPath>
-    <IntermediateOutputPath>C:\Users\ADMINI~1\AppData\Local\Temp\vsC03D.tmp\Debug\</IntermediateOutputPath>
-    <IntermediateOutputPath>C:\Users\ADMINI~1\AppData\Local\Temp\vs2F93.tmp\Debug\</IntermediateOutputPath>
+    <IntermediateOutputPath>C:\Users\ADMINI~1\AppData\Local\Temp\vs74EF.tmp\Debug\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -104,7 +103,7 @@
     <IntermediateOutputPath>C:\Users\yelei\AppData\Local\Temp\vsBB98.tmp\Release\</IntermediateOutputPath>
     <IntermediateOutputPath>C:\Users\shenchen\AppData\Local\Temp\vs78AB.tmp\Release\</IntermediateOutputPath>
     <IntermediateOutputPath>C:\Users\ADMINI~1\AppData\Local\Temp\vsC03D.tmp\Release\</IntermediateOutputPath>
-    <IntermediateOutputPath>C:\Users\ADMINI~1\AppData\Local\Temp\vs2F93.tmp\Release\</IntermediateOutputPath>
+    <IntermediateOutputPath>C:\Users\ADMINI~1\AppData\Local\Temp\vs74EF.tmp\Release\</IntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Aspose.Words, Version=11.9.0.0, Culture=neutral, PublicKeyToken=5792fed8a2c090cb, processorArchitecture=MSIL">
@@ -3403,6 +3402,7 @@
     <Content Include="Scripts\Chart\bmap.js" />
     <Content Include="Scripts\Chart\chartCom.js" />
     <Content Include="Scripts\Chart\china.js" />
+    <Content Include="Scripts\Chart\DataCenterChart\ArchivalCount.js" />
     <Content Include="Scripts\Chart\DataCenterChart\ArmyCount.js" />
     <Content Include="Scripts\Chart\DataCenterChart\CampCount.js" />
     <Content Include="Scripts\Chart\DataCenterChart\CarCount.js" />
@@ -3511,6 +3511,7 @@
     <Content Include="Content\themes\assets\font\fontawesome-webfont.ttf" />
     <Content Include="Content\themes\assets\font\FontAwesome.otf" />
     <Content Include="Scripts\Chart\json\honghe.json" />
+    <None Include="Properties\PublishProfiles\LYSSpringer.pubxml" />
     <None Include="Service References\SMSServiceReference\SMService.disco" />
     <None Include="Service References\SMSServiceReference\configuration91.svcinfo" />
     <None Include="Service References\SMSServiceReference\configuration.svcinfo" />
@@ -3556,6 +3557,24 @@
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
     <None Include="Service References\SpringerServiceReference\SpringerRemoteSystemService1.disco" />
+    <Content Include="UploadFile\3DPhoto\3DMap\20170706085740392536.bmp" />
+    <Content Include="UploadFile\3DPhoto\3DMap\20170918022831.jpg" />
+    <Content Include="UploadFile\3DPhoto\NewMap\20170918022831.png" />
+    <Content Include="UploadFile\3DPhoto\OriginalMap\1280.png" />
+    <Content Include="UploadFile\3DPhoto\OriginalMap\Example.png" />
+    <Content Include="UploadFile\3DPhoto\OriginalMap\Logo.png" />
+    <Content Include="UploadFile\DCPhoto\1.png" />
+    <Content Include="UploadFile\DCPhoto\2.png" />
+    <Content Include="UploadFile\DCPhoto\3.png" />
+    <Content Include="UploadFile\INFRAREDCAMERA\1.jpg" />
+    <Content Include="UploadFile\INFRAREDCAMERA\2.jpg" />
+    <Content Include="UploadFile\PESTINFOFILE\20170919092100.jpg" />
+    <Content Include="UploadFile\PESTINFOFILE\20170919092251.jpg" />
+    <Content Include="UploadFile\PESTINFOFILE\20170919100459.jpg" />
+    <Content Include="UploadFile\PESTINFOFILE\20171017155739.png" />
+    <Content Include="UploadFile\PESTINFOFILE\20171018090445.png" />
+    <Content Include="UploadFile\PESTPhoto\22.jpg" />
+    <Content Include="UploadFile\PESTPhoto\7.jpg" />
     <Content Include="Views\MapCommon\Index.cshtml" />
     <Content Include="Views\MainYJJC\YJJCNIndex.cshtml" />
     <Content Include="Views\EmergencyHand\Index.cshtml" />
@@ -3699,7 +3718,6 @@
     <Content Include="Views\BaseCommon\VideoIndex.cshtml" />
     <Content Include="Views\Email\SendMessage.cshtml" />
     <Content Include="Views\EmergencyHand\Draw.cshtml" />
-    <Content Include="Views\PEST\PESTList.cshtml" />
     <Content Include="Views\Home\playvideo.cshtml" />
     <Content Include="Views\AncientTrees\TreeSpeciesList.cshtml" />
     <Content Include="Views\AncientTrees\TreesInfoList.cshtml" />
@@ -3718,7 +3736,6 @@
     <Content Include="Views\PEST\QUARANTINEREPORT.cshtml" />
     <Content Include="Views\PEST\HARMREPORT.cshtml" />
     <Content Include="Views\Home\Total2DIndex.cshtml" />
-    <Content Include="Views\PEST\SZYHSWGL.cshtml" />
     <Content Include="Views\BaseCommon\SenMsgIndex.cshtml" />
     <None Include="Scripts\jquery-1.8.2.intellisense.js" />
     <Content Include="js\bdlib\BDAnoLayer.js" />
@@ -14084,7 +14101,6 @@
     <Content Include="Views\System\MenuList.cshtml" />
     <Content Include="Views\System\MenuMan.cshtml" />
     <Content Include="Views\RealSupervision\Float2DIndex.cshtml" />
-    <Content Include="Views\AncientTrees\LOCALTREESPECIES.cshtml" />
     <Content Include="Views\Shared\SharedMap\_LayoutMap.cshtml" />
     <Content Include="Views\PEST\DIEPINESURVEYREPORTDataSee.cshtml" />
     <Content Include="Views\System\TaskList.cshtml" />
@@ -14141,10 +14157,6 @@
     <Content Include="Views\DataCenter\TotalSee.cshtml">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="Views\DataCenter\TotalSee.cshtml" />
-    <Content Include="Views\DataCenterCount\PROPAGANDASTELECountMan.cshtml" />
-    <Content Include="Views\DataCenterCount\RESOURCECountMan.cshtml" />
-    <Content Include="Views\DataCenter\TotalSee.cshtml" />
     <Content Include="Views\DataCenterCount\PROPAGANDASTELECountMan.cshtml" />
     <Content Include="Views\DataCenterCount\RESOURCECountMan.cshtml" />
     <Content Include="Views\DamageAssess\WOOD.cshtml" />
@@ -14194,19 +14206,125 @@
     <Content Include="Views\DamageAssess\ATTACKDataSee.cshtml" />
     <Content Include="Views\Home\HLY3D.cshtml" />
     <Content Include="Views\Home\YJJC3D.cshtml" />
-    <Content Include="Views\Home\YJZH3D.cshtml" />
     <Content Include="Views\Uav\Index.cshtml" />
-    <Content Include="Views\FIRERECORD\FIRERECORD_REPORT9.cshtml" />
-    <Content Include="Views\FIRERECORD\FIRERECORD_REPORT9Man.cshtml" />
-    <Content Include="Views\Home\HLY3D.cshtml" />
-    <Content Include="Views\Home\YJJC3D.cshtml" />
     <Content Include="Views\Home\YJZH3D.cshtml" />
     <Content Include="Views\Home\GYL3D.cshtml" />
+    <Content Include="Views\SystemConfig\SystemUpdate.cshtml" />
+    <Content Include="Views\SystemConfig\UpdateDataBase.cshtml" />
+    <Content Include="Views\SystemConfig\UpdateHlyRoute.cshtml" />
+    <Content Include="Views\SystemConfig\UpdateLayer.cshtml" />
+    <Content Include="Views\DataCenter\ARMY_NEWManIndex.cshtml" />
+    <Content Include="Views\DataCenter\CarManIndex.cshtml" />
+    <Content Include="Views\DataCenter\RESOURCE_NEWManIndex.cshtml" />
+    <Content Include="Views\DataCenter\DEPTlistMan.cshtml" />
+    <Content Include="Views\DataCenter\CAMPManIndex.cshtml" />
+    <Content Include="Views\DataCenter\OVERWATCHManIndex.cshtml" />
+    <Content Include="Views\DataCenter\ISOLATIONSTRIPManIndex.cshtml" />
+    <Content Include="Views\DataCenter\FIRECHANNELManIndex.cshtml" />
+    <Content Include="Views\DataCenter\PROPAGANDASTELEManIndex.cshtml" />
+    <Content Include="Views\DataCenter\RELAYManIndex.cshtml" />
+    <Content Include="Views\DataCenter\MONITORINGSTATIONManIndex.cshtml" />
+    <Content Include="Views\DataCenter\FACTORCOLLECTSTATIONManIndex.cshtml" />
+    <Content Include="Views\DataCenter\MountainManIndex.cshtml" />
+    <Content Include="Views\DataCenter\EQUIP_NEWManIndex.cshtml" />
+    <Content Include="Views\MainYJJC\FireInfo.cshtml" />
+    <Content Include="Views\DataCenter\ARMYList.cshtml" />
+    <Content Include="Views\DataCenter\RESOURCEList.cshtml" />
+    <Content Include="Views\DataCenter\EquipList.cshtml" />
+    <Content Include="Views\System\FRUserListBrowse.cshtml" />
+    <Content Include="Views\DataCenter\CarList.cshtml" />
+    <Content Include="Views\DataCenter\CAMPList.cshtml" />
+    <Content Include="Views\DataCenter\OVERWATCHList.cshtml" />
+    <Content Include="Views\DataCenter\ISOLATIONSTRIPList.cshtml" />
+    <Content Include="Views\DataCenter\FIRECHANNELList.cshtml" />
+    <Content Include="Views\DataCenter\PROPAGANDASTELEList.cshtml" />
+    <Content Include="Views\DataCenter\RELAYList.cshtml" />
+    <Content Include="Views\DataCenter\MONITORINGSTATIONList.cshtml" />
+    <Content Include="Views\DataCenter\FACTORCOLLECTSTATIONList.cshtml" />
+    <Content Include="Views\JCFireInfo\GetOrgUserIndex.cshtml" />
+    <Content Include="Views\MainYJJC\See.cshtml" />
+    <Content Include="Views\MainYJJC\See.cshtml" />
+    <Content Include="Views\System\BiologicalTypeList.cshtml" />
+    <Content Include="Views\DataCenter\ARMY_NEWTotalIndex.cshtml" />
+    <Content Include="Views\DataCenter\RESOURCE_NEWTotalIndex.cshtml" />
+    <Content Include="Views\DataCenter\CAMPTotalIndex.cshtml" />
+    <Content Include="Views\DataCenter\OVERWATCHTotalIndex.cshtml" />
+    <Content Include="Views\System\LocalPestJoin.cshtml" />
+    <Content Include="Views\System\LocalPestJoinMan.cshtml" />
+    <Content Include="Views\System\PropTotalMan.cshtml" />
+    <Content Include="Views\System\PropMan.cshtml" />
+    <Content Include="Views\System\InfoFileMan.cshtml" />
+    <Content Include="Views\System\LocalTreeJoin.cshtml" />
+    <Content Include="Views\System\LocalTreeJoinMan.cshtml" />
+    <Content Include="Views\System\PestTreeJoin.cshtml" />
+    <Content Include="Views\System\PestTreeJoinMan.cshtml" />
+    <Content Include="Views\System\LocalAnimalJoin.cshtml" />
+    <Content Include="Views\System\LocalAnimalJoinMan.cshtml" />
+    <Content Include="Views\System\WILD_ANIMALInfoFileMan.cshtml" />
+    <Content Include="Views\System\WILD_ANIMALPROPTotalMan.cshtml" />
+    <Content Include="Views\System\WILD_ANIMALPROPMan.cshtml" />
+    <Content Include="Views\System\LocalBotanyJoin.cshtml" />
+    <Content Include="Views\System\LocalBotanyJoinMan.cshtml" />
+    <Content Include="Views\System\WILD_BOTANYPROPMan.cshtml" />
+    <Content Include="Views\System\WILD_BOTANYInfoFileMan.cshtml" />
+    <Content Include="Views\System\WILD_BotanyPROPTotalMan.cshtml" />
+    <Content Include="Views\DataCenter\BOTANYTotalIndex.cshtml" />
+    <Content Include="Views\DataCenter\WILD_ANIMALDISTRIBUTEManIndex.cshtml" />
+    <Content Include="Views\DataCenter\WILD_ANIMALDISTRIBUTEIndex.cshtml" />
+    <Content Include="Views\DataCenter\WILD_ANIMALTotalIndex.cshtml" />
+    <Content Include="Views\DataCenter\WILD_BOTANYDISTRIBUTEIndex.cshtml" />
+    <Content Include="Views\DataCenter\WILD_BOTANYDISTRIBUTEManIndex.cshtml" />
+    <Content Include="Views\DataCenter\ANIMALProlist.cshtml" />
+    <Content Include="Views\DataCenter\BOTANYProlist.cshtml" />
+    <Content Include="Views\System\PestHarmClassImport.cshtml" />
+    <Content Include="Views\Home\WILD_ANIMAL_3D.cshtml" />
+    <Content Include="Views\Home\WILD_BOTANY_3D.cshtml" />
+    <Content Include="Views\Home\PEST_3D.cshtml" />
+    <Content Include="Views\DataCenter\ANIMALProPhotoIndex.cshtml" />
+    <Content Include="Views\DataCenter\BOTANYProPhotoIndex.cshtml" />
+    <Content Include="Views\DataCenter\PhotoSeeIndex.cshtml" />
+    <Content Include="Views\DamageAssess\FireLostAssessNew.cshtml" />
+    <Content Include="Views\DataCenter\ARMY_MEMBERlist.cshtml" />
+    <Content Include="Views\DataCenter\ARMY_EQUIPlist.cshtml" />
+    <Content Include="Views\System\PestHarmClassImportNew.cshtml" />
+    <Content Include="UploadFile\DataCenterExcel\中继站模板.xls" />
+    <Content Include="UploadFile\DataCenterExcel\因子采集站模板.xls" />
+    <Content Include="UploadFile\DataCenterExcel\宣传碑牌模板.xls" />
+    <Content Include="UploadFile\DataCenterExcel\监测站模板.xls" />
+    <Content Include="UploadFile\DataCenterExcel\瞭望台模板.xls" />
+    <Content Include="UploadFile\DataCenterExcel\营房模板.xls" />
+    <Content Include="UploadFile\DataCenterExcel\装备模板.xls" />
+    <Content Include="UploadFile\DataCenterExcel\资源模板.xls" />
+    <Content Include="UploadFile\DataCenterExcel\车辆模板.xls" />
+    <Content Include="UploadFile\DataCenterExcel\队伍模板.xls" />
+    <Content Include="UploadFile\DataCenterExcel\防火通道模板.xls" />
+    <Content Include="UploadFile\DataCenterExcel\隔离带模板.xls" />
+    <Content Include="UploadFile\HRExcel\护林员模板.xls" />
+    <Content Include="UploadFile\HRExcel\组织机构图乡镇模板.xls" />
+    <Content Include="UploadFile\HXDJExcel\火险等级模板.rar" />
+    <Content Include="UploadFile\HXDJExcel\火险等级模板.xls" />
+    <Content Include="UploadFile\MBDoc\firelevelmb.doc" />
+    <Content Include="UploadFile\MBDoc\firereportmb.doc" />
+    <Content Include="UploadFile\MBDoc\firereportmb_sc.doc" />
+    <Content Include="UploadFile\PESTHARMCLASSExcel\有害生物危害等级模板.rar" />
+    <Content Include="UploadFile\PESTHARMCLASSExcel\有害生物危害等级模板.xls" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Images\skyline\App_LocalResources\" />
     <Folder Include="Images\skyline\skyline\App_LocalResources\" />
-    <Folder Include="Properties\PublishProfiles\" />
+    <Folder Include="UploadFile\Cloud\" />
+    <Folder Include="UploadFile\DacPhoto\" />
+    <Folder Include="UploadFile\Doc\" />
+    <Folder Include="UploadFile\DownLoad\" />
+    <Folder Include="UploadFile\Email\" />
+    <Folder Include="UploadFile\FireLevelTxt\" />
+    <Folder Include="UploadFile\FirePlan\" />
+    <Folder Include="UploadFile\FireReport\" />
+    <Folder Include="UploadFile\FlaFile\" />
+    <Folder Include="UploadFile\Output\" />
+    <Folder Include="UploadFile\PESTHARMCLASSTxt\" />
+    <Folder Include="UploadFile\WXRDExcel\" />
+    <Folder Include="UploadFile\WxYtImages\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

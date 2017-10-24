@@ -1,0 +1,124 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndexNoMenu.cshtml";
+}
+
+<div class="easyui-layout" data-options="fit:true" style=" border:0;">
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="home ">
+                        单位：<select id="tbxORGNO" onchange="query2()">@Html.Raw(@ViewBag.vdOrg)</select>&nbsp;&nbsp;&nbsp;
+                        <input type="button" value="查 询" onclick="query2()" class="btnSearchCss" />
+                    </div>
+                </div>
+            </div>
+
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <div class="divMan">
+                    <table cellpadding="0" cellspacing="0" border="1" style="height:335px">
+                        <tr><th style="width: 42%;">植物列表</th><th style="width: 10%;"></th><th style="width: 42%;">已关联植物列表</th></tr>
+                        <tr>
+                            <td id="td1" style="text-align: left;" valign="top" class="left"></td>
+                            <td>
+                                <input type="button" value="添 加" onclick="manager('Add')" class="btnAddCss" />
+                                <br /><br />
+                                <input type="button" value="删 除" onclick="manager('Del')" class="btnDelCss" />
+                            </td>
+                            <td id="td2" style="text-align: left;" valign="top" class="left"></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    query1();
+    query2();
+
+    //查询所有生物列表
+    function query1() {
+        $.ajax({
+            type: 'get',
+            url: '/System/GetBotanyZhongList',
+            dataType: 'json',
+            success: function (data, ioArgs) {
+                if (data.Success) {
+                    $('#td1').html("");
+                    $('#td1').html(data.Msg);
+                }
+                else {
+                    $('#td1').html("");
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("查询异常!", { icon: 5 });
+            }
+        });
+    }
+
+    //查询已关联的生物列表
+    function query2() {
+        $.ajax({
+            type: 'get',
+            url: '/System/GetBotanyJoinZhongList',
+            data: { ORGNO: $('#tbxORGNO').val() },
+            dataType: 'json',
+            success: function (data, ioArgs) {
+                if (data.Success) {
+                    $('#td2').html("");
+                    $('#td2').html(data.Msg);
+                }
+                else {
+                    $('#td2').html("");
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("查询异常!", { icon: 5 });
+            }
+        });
+    }
+
+    function manager(method) {
+        var bioCode = "";
+        var str = "";
+        if (method == "Add") {
+            bioCode = $("input:checkbox[name='tbxBioCode']:checked").map(function (index, elem) { return $(elem).val(); }).get().join(',');
+            str = "添加";
+        }
+        if (method == "Del") {
+            bioCode = $("input:checkbox[name='tbxJoinBioCode']:checked").map(function (index, elem) { return $(elem).val(); }).get().join(',');
+            str = "删除";
+        }
+        if (bioCode.length <= 0) {
+            layer.msg("请选择要" + str + "的野生植物种类!", { icon: 5 });
+            return;
+        }
+        $.ajax({
+            type: 'get',
+            url: '/System/LocalBotanyJoinManager',
+            data: {
+                ORGNO: $('#tbxORGNO').val(),
+                BIOLOGICALTYPECODE: bioCode,
+                Method: method
+            },
+            dataType: 'json',
+            success: function (data, ioArgs) {
+                if (data.Success) {
+                    layer.msg(data.Msg, { icon: 6 });
+                    query1();
+                    query2();
+                }
+                else {
+                    layer.msg(data.Msg, { icon: 5 });
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("系统异常!", { icon: 5 });
+            }
+        });
+    }
+</script>
+
+

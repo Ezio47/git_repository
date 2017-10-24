@@ -1,0 +1,337 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayOutIndex.cshtml";
+}
+
+<div class="easyui-layout" data-options="fit:true" style="border:0;">
+    <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
+        @Html.Raw(@ViewBag.PageLeftMenu)
+    </div>
+
+    <div data-options="region:'center'" title="" style=" border: none;">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="homeUL">
+                        生物分类信息
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center'" title="" style=" border: none; ">
+                <div id="tt" style="overflow: hidden;" class="easyui-tree">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div data-options="region:'east'" title="" style=" width:500px; border: none; ">
+        <div class="easyui-layout" data-options="fit:true" style=" border:0;">
+            <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
+                <div class="divOP">
+                    <div class="homeUL">
+                        生物分类管理
+                    </div>
+                </div>
+            </div>
+
+            <div data-options="region:'center'" title="" style=" border: none;">
+                <div class="divMan">
+                    <table cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td class="tdField" style="width:80px;">类别:</td>
+                            <td><select id="tbxType" onchange="typeChange()" style="width: 200px;"></select></td>
+                        </tr>
+                        <tr class='row1'>
+                            <td class="tdField">分类编码:</td>
+                            <td><input id="tbxBIOLOCODE" type="text" value="" style="width:200px;" /></td>
+                        </tr>
+                        <tr>
+                            <td class="tdField">分类名称:</td>
+                            <td><input id="tbxBIOLONAME" type="text" value="" style="width: 200px;" /></td>
+                        </tr>
+                        <tr class='row1'>
+                            <td class="tdField">英文名称: </td>
+                            <td><input id="tbxBIOLOENNAME" type="text" value="" style="width: 200px; font-style: initial" /></td>
+                        </tr>
+                        <tr>
+                            <td class="tdField">排序号:</td>
+                            <td><input id="tbxORDERBY" type="text" value="" style="width: 200px;" /></td>
+                        </tr>
+                        <tr class='row1'>
+                            <td colspan="2">
+                                <input id="HidBIOLOCODE" type="hidden" value="" />
+                                <input type="button" value="增加" id="btnAdd" onclick="manager('Add')" class="btnAddCss" />&nbsp;&nbsp;&nbsp;
+                                <input type="button" value="修改" id="btnMdy" onclick="manager('Mdy')" class="btnMdyCss" />&nbsp;&nbsp;&nbsp;
+                                <input type="button" value="删除" id="btnDel" onclick="manager('Del')" class="btnDelCss" />&nbsp;&nbsp;&nbsp;
+                            </td>
+                        </tr>
+                        <tr><td colspan="3">编码规则：7级：界、门、纲、目、科、属、种(2位一级)</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    bindTree('', '');
+    clearValue();
+    loadType('', 'yes');
+
+    function bindTree(AddressID, typeID) {
+        $('#tt').tree({
+            url: '/System/BiologicalTypeTreeGet',
+            checked: false,
+            animate: true,
+            lines: true,
+            cache: false,
+            checkbox: false,
+            onLoadSuccess: function (data) {
+                if (AddressID != '') {
+                    var node = $('#tt').tree('find', AddressID);
+                    if (node != null) {
+                        $('#tt').tree('expandTo', node.target);
+                    }
+                }
+                if (typeID != '') {
+                    var node = $('#tt').tree('find', typeID);
+                    if (node != null) {
+                        var children = $('#tt').tree('getChildren', node.target);
+                        if (children.length > 0) {
+                            var node1 = $('#tt').tree('find', children[0].id);
+                            if (node1 != null) {
+                                $('#tt').tree('expandTo', node1.target);
+                            }
+                        }
+                        else {
+                            $('#tt').tree('expandTo', node.target);
+                        }
+                    }
+                }
+            },
+            onClick: function (node) {
+                if ($.trim(node.id) == "") {
+                    layer.msg('node.id出错!', { icon: 5 });
+                    return false;
+                }
+                else {
+                    showValue(node.id);
+                }
+            }
+        });
+    }
+
+    function clearValue() {
+        $("#tbxBIOLOCODE").val('');
+        $("#tbxBIOLONAME").val('');
+        $("#tbxBIOLOENNAME").val('');
+        $("#tbxORDERBY").val('');
+        $("#HidBIOLOCODE").val('');
+    }
+
+    function loadType(code, type) {
+        $.ajax({
+            type: 'get',
+            url: '/System/BiologicalTypeOptionGet',
+            type: 'get',
+            dataType: 'json',
+            data: { BioloCode: code },
+            success: function (data, ioArgs) {
+                if (data.Success) {
+                    $('#tbxType').html('');
+                    $('#tbxType').html(data.Msg);
+                    if (type != '') {
+                        typeChange();
+                    }
+                }
+                else {
+                    $('#tbxType').html("");
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg("系统异常!", { icon: 5 });
+            }
+        });
+    }
+
+    function typeChange() {
+        clearValue();
+        var code = $('#tbxType').val();
+        $.ajax({
+            url: '/System/BiologicalTypeChange',
+            cache: false,
+            type: 'get',
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: { BioloCode: code },
+            dataType: 'json',
+            success: function (data) {
+                if (data.Success) {
+                    $("#tbxBIOLOCODE").val(data.Msg);
+                }
+                else {
+                    layer.msg("系统异常!", { icon: 5 });
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('登录异常!', { icon: 5 });
+            }
+        });
+    }
+
+    function manager(Method) {
+        var t0 = $('#tbxType').val();
+        var t1 = $('#tbxBIOLOCODE').val();
+        var t2 = $('#tbxBIOLONAME').val();
+        var t3 = $('#tbxBIOLOENNAME').val();
+        var t4 = $('#tbxORDERBY').val();
+        var t5 = $('#HidBIOLOCODE').val();
+        if (Method == "Del") {
+            if ($.trim(t5) == "") {
+                layer.msg('请选择要删除的生物类别!', { icon: 5 });
+                return;
+            }
+            layer.confirm('确实要删除吗?', { icon: 3, title: '提示' }, function (index) {
+                $.ajax({
+                    url: '/System/BiologicalTypeManager',
+                    cache: false,
+                    type: 'post',
+                    timeout: 10000, //10秒后超时，如果为0则永不超时
+                    data: {
+                        BioloType: t0,
+                        BioloCode: t5,
+                        BioloName: t2,
+                        BioEnName: t3,
+                        ORDERBY: t4,
+                        Method: Method
+                    },
+                    dataType: 'json',
+                    success: function (data, ioArgs) {
+                        if (data.Success) {
+                            layer.msg(data.Msg, { icon: 6 });
+                            $('#tt').tree('reload');
+                            bindTree(data.Url, '');
+                            clearValue();
+                            loadType(t1, 'yes');
+                        }
+                        else {
+                            layer.msg(data.Msg, { icon: 5 });
+                        }
+                    },
+                    error: function (err, ioArgs) {
+                        layer.msg('系统异常!', { icon: 5 });
+                    }
+                });
+            });
+        }
+        else {
+            if ($.trim(t1) != "") {
+                var len = $.trim(t1).length;
+                if (len == 14) {
+                    var reg = /^\d{14}$/;
+                    if (!reg.test($.trim(t1))) {
+                        layer.msg('亲,只能输入14位数字编码哦!', { icon: 5 });
+                        $('#tbxBIOLOCODE').focus();
+                        return;
+                    }
+                }
+                if (len > 14) {
+                    layer.msg('亲,你已输入' + len + '位编码了,只能输入14位哦!', { icon: 5 });
+                    $('#tbxBIOLOCODE').focus();
+                    return;
+                }
+                if (len < 14) {
+                    layer.msg('亲,你才输入' + len + '位编码,需要输入14位哦!', { icon: 5 });
+                    $('#tbxBIOLOCODE').focus();
+                    return;
+                }
+            }
+            else {
+                layer.msg('请输入分类编码!', { icon: 5 });
+                $('#tbxBIOLOCODE').focus();
+                return;
+            }
+
+            if ($.trim(t2) == "") {
+                layer.msg('请输入分类名称!', { icon: 5 });
+                $('#tbxBIOLONAME').focus();
+                return;
+            }
+
+            if ($.trim(t3) == "") {
+                layer.msg('请输入英文名称!', { icon: 5 });
+                $('#tbxBIOLOENNAME').focus();
+                return;
+            }
+
+            //if ($.trim(t4) == "") {
+            //    layer.msg('请输入排序号!', { icon: 5 });
+            //    $('#tbxORDERBY').focus();
+            //    return;
+            //}
+            if (Method == 'Mdy') {
+                if (t1 != t5) {
+                    layer.msg('分类编码不允许修改!', { icon: 5 });
+                    $('#tbxBIOLOCODE').focus();
+                    return;
+                }
+            }
+            $.ajax({
+                url: '/System/BiologicalTypeManager',
+                cache: false,
+                type: 'post',
+                timeout: 10000, //10秒后超时，如果为0则永不超时
+                data: {
+                    BioloType: t0,
+                    BioloCode: t1,
+                    BioloName: t2,
+                    BioEnName: t3,
+                    ORDERBY: t4,
+                    Method: Method
+                },
+                dataType: 'json',
+                success: function (data, ioArgs) {
+                    if (data.Success) {
+                        layer.msg(data.Msg, { icon: 6 });
+                        $('#tt').tree('reload');
+                        bindTree($("#tbxBIOLOCODE").val(), '');
+                        clearValue();
+                        loadType(t1, 'yes');
+                    }
+                    else {
+                        layer.msg(data.Msg, { icon: 5 });
+                    }
+                },
+                error: function (err, ioArgs) {
+                    layer.msg('系统异常!', { icon: 5 });
+                }
+            });
+        }
+    }
+
+    function showValue(code) {
+        clearValue();
+        loadType(code, '');
+        $.ajax({
+            url: '/System/GetBiologicalTypeJson',
+            cache: false,
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: { BioloCode: code },
+            dataType: 'json',
+            success: function (data) {
+                if (data.BIOLOCODE != null) {
+                    $("#tbxBIOLOCODE").val(data.BIOLOCODE);
+                    $("#tbxBIOLONAME").val(data.BIOLONAME);
+                    $("#tbxBIOLOENNAME").val(data.BIOLOENNAME);
+                    $("#tbxORDERBY").val(data.ORDERBY);
+                    $("#HidBIOLOCODE").val(data.BIOLOCODE);
+                }
+                else {
+                    layer.msg("系统异常!", { icon: 5 });
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('登录异常!', { icon: 5 });
+            }
+        });
+    }
+</script>

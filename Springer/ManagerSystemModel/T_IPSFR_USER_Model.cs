@@ -111,7 +111,14 @@ namespace ManagerSystemModel
         ///  组织机构名称	
         /// </summary>
         public string ORGNAME { get; set; }
-       
+       /// <summary>
+       /// 组织机构县市名称
+       /// </summary>
+        public string ORGXSNAME { get; set; }
+        /// <summary>
+        /// 组织机构乡镇名称
+        /// </summary>
+        public string ORGXZNAME { get; set; }
         /// <summary>
         /// 操作方法
         /// </summary>
@@ -186,5 +193,9 @@ namespace ManagerSystemModel
        /// 护林员参数
        /// </summary>
        public string MOBILEPARAMLIST { get; set; }
+       /// <summary>
+       /// 巡检距离
+       /// </summary>
+       public string PATROLLENGTH { get; set; }
    }
 }

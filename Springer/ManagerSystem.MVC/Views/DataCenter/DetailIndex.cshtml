@@ -55,32 +55,32 @@
         if (document.getElementById("selPageSize") != null) {
             pagesize = document.getElementById("selPageSize").value;
         }
-            $.ajax({
-                url: '/DataCenter/DEPTdetaillist',
-                data: {
-                    REPID: repid,
-                    SUPID: document.getElementById("tbxsupplieid").value,
-                    DCREPFLAG: document.getElementById("tbxDCREPFLAG").value,
-                    PageSize: pagesize,
-                    Page: Page,
-                    DateBegin: $('#tbxDateBegin').datebox('getValue'),
-                    DateEnd: $('#tbxDateEnd').datebox('getValue')
-                },
-                type: 'post',
-                success: function (data) {
-                    var ar = eval('(' + data + ')');
-                    if (ar.Success) {
-                        $('#divTable').html(ar.tableInfo);
-                        $('#divPager').html(ar.pagerInfo);
-                    }
-                    else {
-                        alert('登录异常');
-                    }
-                },
-                error: function (err, ioArgs) {
+        $.ajax({
+            url: '/DataCenter/DEPTdetaillist',
+            data: {
+                REPID: repid,
+                SUPID: document.getElementById("tbxsupplieid").value,
+                DCREPFLAG: document.getElementById("tbxDCREPFLAG").value,
+                PageSize: pagesize,
+                Page: Page,
+                DateBegin: $('#tbxDateBegin').datebox('getValue'),
+                DateEnd: $('#tbxDateEnd').datebox('getValue')
+            },
+            type: 'post',
+            success: function (data) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#divTable').html(ar.tableInfo);
+                    $('#divPager').html(ar.pagerInfo);
+                }
+                else {
                     alert('登录异常');
                 }
-            });       
+            },
+            error: function (err, ioArgs) {
+                alert('登录异常');
+            }
+        });
     }
     ///查看页面
     function See(ID, tablename) {

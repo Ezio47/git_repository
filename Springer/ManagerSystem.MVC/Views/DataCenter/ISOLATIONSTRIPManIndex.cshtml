@@ -18,13 +18,13 @@
                 <div class="divMan">
                     <table cellpadding="0" cellspacing="0">
                         <tr>
-                            <td style="width:80px;">
+                            <td style="width:80px;" class="tdField">
                                 单位：
                             </td>
                             <td>
                                 <select id="BYORGNO" class="easyui-combotree" style="width:160px;"></select>
                             </td>
-                            <td style="width:80px;">
+                            <td style="width:80px;" class="tdField">
                                 隔离带类型：
                             </td>
                             <td>
@@ -35,23 +35,25 @@
                         </tr>
 
                         <tr>
-                            <td style="width:80px;">
-                                <span style="color:red;">*</span>
+                            <td style="width:80px;" class="tdField">
+                                @*<span style="color:red;">*</span>*@
                                 名称：
                             </td>
                             <td>
                                 <input type="text" id="NAME" class="input-small" value="" />
+                                <span class="spanRequiredField">*</span>
                             </td>
-                            <td style="width:80px;">
-                                <span style="color:red;">*</span>
+                            <td style="width:80px;" class="tdField">
+                                @*<span style="color:red;">*</span>*@
                                 编号：
                             </td>
                             <td>
                                 <input id="NUMBER" type="text" class="input-small" value="" />
+                                <span class="spanRequiredField">*</span>
                             </td>
                         </tr>
                         <tr>
-                            <td style="width:80px;">
+                            <td style="width:80px;" class="tdField">
                                 使用现状类型：
                             </td>
                             <td>
@@ -59,7 +61,7 @@
                                     @Html.Raw(@ViewBag.usestateadd)
                                 </select>
                             </td>
-                            <td style="width:80px;">
+                            <td style="width:80px;" class="tdField">
                                 维护类型：
                             </td>
                             <td>
@@ -69,55 +71,58 @@
                             </td>
                         </tr>
                         <tr>
-                            <td style="width:140px;">
+                            <td style="width:80px;" class="tdField">
+                                @*<span style="color:red;">*</span>*@
                                 经纬度点：
                             </td>
-                            <td colspan="2">
-                                <input id="JWDLIST" type="text" style="width:97%" value="" readonly />
-                            </td>
-                            <td>
+                            <td colspan="3">
+                                <input id="JWDLIST" type="text" style="width:75%" value="" readonly />
+                                <span class="spanRequiredField">*</span>
                                 <input type="button" value="地图定位" onclick="setLine()" class="btnMapLoaclCss" />
                             </td>
                         </tr>
                         <tr>
-                            <td style="width:80px;">
-                                <span style="color:red;">*</span>
+                            <td style="width:80px;" class="tdField">
+                                @*<span style="color:red;">*</span>*@
                                 宽度：
                             </td>
                             <td>
-                                <input id="WIDTH" type="text" class="input-small" value="" />米
+                                <input id="WIDTH" type="text" class="input-small" value="" /><span class="spanMark">米</span>
+                                <span class="spanRequiredField">*</span>
                             </td>
-                            <td style="width:80px;">
-                                <span style="color:red;">*</span>
+                            <td style="width:80px;" class="tdField">
+                                @*<span style="color:red;">*</span>*@
                                 长度：
                             </td>
                             <td>
-                                <input id="LENGTH" type="text" class="input-small" value="" />米
+                                <input id="LENGTH" type="text" class="input-small" value="" /><span class="spanMark">米</span>
+                                <span class="spanRequiredField">*</span>
                             </td>
                         </tr>
                         <tr>
-                            <td style="width:80px;">
+                            <td style="width:80px;" class="tdField">
                                 计划面积：
                             </td>
                             <td>
-                                <input id="PLANAREA" type="text" class="input-small" value="" />公顷
+                                <input id="PLANAREA" type="text" class="input-small" value="" /><span class="spanMark">公顷</span>
                             </td>
-                            <td style="width:80px;">
+                            <td style="width:80px;" class="tdField">
                                 实际面积：
                             </td>
                             <td>
-                                <input id="REALAREA" type="text" class="input-small" value="" />公顷
+                                <input id="REALAREA" type="text" class="input-small" value="" /><span class="spanMark">公顷</span>
                             </td>
                         </tr>
-                        <tr id="Kind" style="display:none">
+                        <tr id="Kind" style="display:none" class="tdField">
                             <td style="width:80px;">
-                                <span style="color:red;">*</span>
+                                @*<span style="color:red;">*</span>*@
                                 树种：
                             </td>
                             <td>
                                 <input id="KINDTYPE" type="text" class="input-small" value="" />
+                                <span class="spanRequiredField">*</span>
                             </td>
-                            <td style="width:80px;">
+                            <td style="width:80px;" class="tdField">
                                 树种组成：
                             </td>
                             <td>
@@ -126,14 +131,14 @@
                                 </select>
                             </td>
                         </tr>
-                        <tr id="Alleyway" style="display:none">
+                        <tr id="Alleyway" style="display:none" class="tdField">
                             <td style="width:80px;">
                                 步行通道宽度：
                             </td>
                             <td>
-                                <input id="AlleywayWideth" type="text" class="input-small" value="" />米
+                                <input id="AlleywayWideth" type="text" class="input-small" value="" /><span class="spanMark">米</span>
                             </td>
-                            <td style="width:80px;">
+                            <td style="width:80px;" class="tdField">
                                 位置：
                             </td>
                             <td>
@@ -143,28 +148,28 @@
                             </td>
                         </tr>
                         <tr>
-                            <td style="width:160px;">
+                            <td style="width:80px;" class="tdField">
                                 单价：
                             </td>
                             <td>
-                                <input id="PRICE" type="text" class="input-small" value="" onblur="jsfunc(this)" />元
+                                <input id="PRICE" type="text" class="input-small" value="" onblur="jsfunc(this)" /><span class="spanMark">元</span>
                             </td>
-                            <td style="width:80px;">
+                            <td style="width:80px;" class="tdField">
                                 总价：
                             </td>
                             <td>
-                                <input id="WORTH" type="text" class="input-small" value="" />元
+                                <input id="WORTH" type="text" class="input-small" value="" /><span class="spanMark">元</span>
                             </td>
                         </tr>
                         <tr>
-                            <td style="width:100px;">
+                            <td style="width:100px;" class="tdField">
                                 规划建设日期：
                             </td>
                             <td>
                                 开始日期:<input class="easyui-datebox" id="BUILDDATEBEGIN" type="text" style="width:90px;height:28px;" value="" />&nbsp;&nbsp;&nbsp;
                                 结束日期<input class="easyui-datebox" id="BUILDDATEEND" type="text" style="width:90px;height:28px;" value="" />
                             </td>
-                            <td style="width:80px;">
+                            <td style="width:80px;" class="tdField">
                                 建成日期：
                             </td>
                             <td>
@@ -274,39 +279,39 @@
         else {
             line = "2"
         }
-        layer.open({
+        parent.layer.open({
             type: 2,
             title: name + '地图位置设置',
             btn: ['保存', '关闭'],
-            area: ['100%', '100%'],
+            area: ['1000px', '600px'],
             fix: false, //不固定
             maxmin: true,
             content: '/MapCommon/GetMapPontIndex?LINE=' + line,
             success: function (layero, index) {
-                var body = layer.getChildFrame('body', index);
+                var body = parent.layer.getChildFrame('body', index);
                 body.find('#editcollecttxt').text(str);
                 if (line == "2") {
-                    window["layui-layer-iframe" + index].getLocaCollectPolygon();//面
+                    top.window["layui-layer-iframe" + index].getLocaCollectPolygon();//面
                 }
                 else {
-                    window["layui-layer-iframe" + index].getLocaCollectLine();//线
+                    top.window["layui-layer-iframe" + index].getLocaCollectLine();//线
                 }
             },
             yes: function (index, layero) { //或者使用btn1
-                var ptxt = layer.getChildFrame("#editcollecttxt", index);
+                var ptxt = parent.layer.getChildFrame("#editcollecttxt", index);
                 $('#JWDLIST').val(ptxt.html());
 
-                var lm = layer.getChildFrame("#MjACdtxt", index)//面积
+                var lm = parent.layer.getChildFrame("#MjACdtxt", index)//面积
                 if (line == "2") {
                     $('#REALAREA').val(lm.html());//面积
                 }
                 if (line == "1") {
                     $('#LENGTH').val(lm.html());//长度
                 }
-                layer.close(index);
+                parent.layer.close(index);
             },
             cancel: function (index) {
-                layer.close(index);
+                parent.layer.close(index);
             }
         });
     }

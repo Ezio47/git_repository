@@ -5,37 +5,30 @@
 }
 
 <div class="easyui-layout" data-options="fit:true" style=" border:0;">
-
-
     <div data-options="region:'west'" title="" style=" width:220px; border: none; ">
         @Html.Raw(@ViewBag.PageLeftMenu)
     </div>
-    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
 
+    <div data-options="region:'center'" title="" style=" border: none; background:#ddceee;">
         <div class="easyui-layout" data-options="fit:true" style=" border:0;">
             <div data-options="region:'north'" title="" style=" height:35px; border: none; overflow:hidden;">
                 <div class="divOP">
                     <div class="home ">
-                        单位名称：<select id="tbxBYORGNO">
-                            @Html.Raw(@ViewBag.vdOrg)
-                        </select>
-                        设备编号：
-                        <input id="tbxTTBH" type="text" value="" />
-
+                        单位名称：<select id="tbxBYORGNO" onchange="query();"> @Html.Raw(@ViewBag.vdOrg)</select>
+                        设备编号：<input id="tbxTTBH" type="text" value="" />
                         <input type="button" value="查询" onclick="query()" class="btnSearchCss" />
                         <input type="button" value="添加" id="btnAdd" style="display:none" onclick="Add()" class="btnAddCss" />
                     </div>
                 </div>
             </div>
-            <div data-options="region:'center'" title="" style=" border: none; ">
 
+            <div data-options="region:'center'" title="" style=" border: none; ">
                 <div class="divTable" id="divTable">
                     @Html.Raw(ViewBag.MONITOR_INFOList)
                 </div>
             </div>
         </div>
     </div>
-
 </div>
 
 
@@ -45,45 +38,60 @@
         if (bln == "1") {
             document.getElementById('btnAdd').style.display = "";
         }
-    })
+    });
+
+    query();
+    function query() {
+        $.ajax({
+            url: '/YJJC/getMONITOR_INFOListAjax',
+            cache: false,
+            timeout: 10000, //10秒后超时，如果为0则永不超时
+            data: { TTBH: document.getElementById("tbxTTBH").value, BYORGNO: document.getElementById("tbxBYORGNO").value },
+            success: function (data, ioArgs) {
+                var ar = eval('(' + data + ')');
+                if (ar.Success) {
+                    $('#divTable').html(ar.tableInfo);;
+                }
+                else {
+                    layer.msg(ar.Msg, { icon: 5 });
+                }
+            },
+            error: function (err, ioArgs) {
+                layer.msg('登录异常', { icon: 5 });
+            }
+        });
+    }
 
     function Manager(id) {
-        if (confirm('确实要删除该内容吗?')) {
+        layer.confirm('确实要删除吗?', { icon: 3, title: '提示' }, function (index) {
             $.ajax({
                 url: '/YJJC/MONITOR_INFOManger',
                 cache: false,
-                data: {
-                    EMID: id
-                    , Method: 'Del'
-                    , returnUrl: ''
-                },
+                data: { EMID: id, Method: 'Del', returnUrl: '' },
                 type: 'post',
                 error: function () {
                     layer.msg('错误:异常!', { icon: 5 });
                 },
                 success: function (re) {
-
                     var ar = eval('(' + re + ')');
                     if (ar.Success) {
-                        if (confirm(ar.Msg)) {
-                            query();//  window.location.reload();//.assign(ar.Url);
-                        }
+                        layer.msg(ar.Msg, { icon: 6 });
+                        query();
                     }
                     else {
                         layer.msg(ar.Msg, { icon: 5 });
                     }
                 }
             });
-        }
-
-
+        });
     }
+
     function Add() {
         layer.open({
             type: 2,
             title: '添加',
             fix: false, //不固定
-            area: ['50%', '75%'],
+            area: ['650px', '450px'],
             maxmin: true,
             content: '/YJJC/MONITOR_INFOMan',
             end: function () {
@@ -91,16 +99,13 @@
             }
         });
     }
-    //function Add() {
-    //    window.location.assign('/YJJC/MONITOR_INFOMan');
-    //}
 
-    function Mdy(ID,Method) {
+    function Mdy(ID, Method) {
         layer.open({
             type: 2,
             title: '修改',
             fix: false, //不固定
-            area: ['58%', '75%'],
+            area: ['650px', '450px'],
             maxmin: true,
             content: '/YJJC/MONITOR_INFOMan?ID=' + ID + '&Method=Mdy',
             end: function () {
@@ -114,45 +119,17 @@
             type: 2,
             title: '查看',
             fix: false, //不固定
-            area: ['50%', '75%'],
+            area: ['650px', '450px'],
             maxmin: true,
             content: '/YJJC/MONITOR_INFOMan?ID=' + ID + '&Method=See',
-         
         });
     }
-    query();
-    function query() {
-        $.ajax({
-            url: '/YJJC/getMONITOR_INFOListAjax',
-            cache: false,
-            timeout: 10000, //10秒后超时，如果为0则永不超时
-
-            data: {
-                TTBH: document.getElementById("tbxTTBH").value,
-                BYORGNO: document.getElementById("tbxBYORGNO").value
-            },
-            success: function (data, ioArgs) {
-                var ar = eval('(' + data + ')');
-                if (ar.Success) {
-                    $('#divTable').html(ar.tableInfo);
-                    //window.location.assign(ar.Url);
-                }
-                else {
-                    layer.msg(ar.Msg);
-                }
-            },
-            error: function (err, ioArgs) {
-                layer.msg('登录异常');
-            }
-        });
-    }
-
-
+  
     //视频查看
-    function VidewView(orgno, eid,name,orgname,type) {
+    function VidewView(orgno, eid, name, orgname, type) {
         var index = layer.open({
             type: 2,
-            title: "【"+ orgname + "---" + name + "】监控点",
+            title: "【" + orgname + "---" + name + "】监控点",
             // btn: ['保存', '关闭'],
             area: ['100%', '100%'],
             fix: false, //不固定
@@ -178,11 +155,11 @@
     }
 
     //地图定位展示
-    function Position(tablename, id,name) {
+    function Position(tablename, id, name) {
         layer.open({
             type: 2,
-            title:name+ '地图定位',
-            area: ['1000px', '500px'],
+            title: name + '地图定位',
+            area: ['1000px', '600px'],
             //shade: 0,
             fix: true,
             maxmin: true,

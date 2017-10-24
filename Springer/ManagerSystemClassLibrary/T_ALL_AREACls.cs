@@ -164,6 +164,37 @@ namespace ManagerSystemClassLibrary
                 m.WD = dt.Rows[i]["WD"].ToString();
                 //扩充字段
             }
+            dt.Clear();
+            dt.Dispose();
+            return m;
+        }
+
+        /// <summary>
+        /// 获取单条记录
+        /// </summary>
+        /// <param name="sw">参见条件模型T_ALL_AREA_SW</param>
+        /// <returns>参见模型T_ALL_AREA_Model</returns>
+        public static T_ALL_AREA_Model getModel2(T_ALL_AREA_SW sw)
+        {
+            DataTable dt = BaseDT.T_ALL_AREA.getDT(sw);
+            DataTable dtOrg = BaseDT.T_SYS_ORG.getDT(new T_SYS_ORGSW());
+            T_ALL_AREA_Model m = new T_ALL_AREA_Model();
+            if (dt.Rows.Count > 0)
+            {
+                int i = 0;
+                //数据库表字段
+                m.AREAID = dt.Rows[i]["AREAID"].ToString();
+                m.AREACODE = dt.Rows[i]["AREACODE"].ToString();
+                m.AREANAME = dt.Rows[i]["AREANAME"].ToString();
+                m.AREAJC = dt.Rows[i]["AREAJC"].ToString();
+                m.JD = BaseDT.T_SYS_ORG.getJD(dtOrg, m.AREACODE);
+                m.WD = BaseDT.T_SYS_ORG.getWD(dtOrg, m.AREACODE);
+                //扩充字段
+            }
+            dt.Clear();
+            dt.Dispose();
+            dtOrg.Clear();
+            dtOrg.Dispose();
             return m;
         }
 
@@ -192,6 +223,34 @@ namespace ManagerSystemClassLibrary
             }
             dt.Clear();
             dt.Dispose();
+            return result;
+        }
+
+        /// <summary>
+        /// 获取列表
+        /// </summary>
+        /// <param name="sw">参见条件模型T_ALL_AREA_SW</param>
+        /// <returns>参见模型T_ALL_AREA_Model</returns>
+        public static IEnumerable<T_ALL_AREA_Model> getListModel2(T_ALL_AREA_SW sw)
+        {
+            var result = new List<T_ALL_AREA_Model>();
+            DataTable dt = BaseDT.T_ALL_AREA.getDT(sw);
+            DataTable dtOrg = BaseDT.T_SYS_ORG.getDT(new T_SYS_ORGSW());
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                T_ALL_AREA_Model m = new T_ALL_AREA_Model();
+                m.AREACODE = dt.Rows[i]["AREACODE"].ToString();
+                m.AREAID = dt.Rows[i]["AREAID"].ToString();
+                m.AREANAME = dt.Rows[i]["AREANAME"].ToString();
+                m.AREAJC = dt.Rows[i]["AREAJC"].ToString();
+                m.JD = BaseDT.T_SYS_ORG.getJD(dtOrg, m.AREACODE);
+                m.WD = BaseDT.T_SYS_ORG.getWD(dtOrg, m.AREACODE);
+                result.Add(m);
+            }
+            dt.Clear();
+            dt.Dispose();
+            dtOrg.Clear();
+            dtOrg.Dispose();
             return result;
         }
 
